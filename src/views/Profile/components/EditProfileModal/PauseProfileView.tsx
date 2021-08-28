@@ -10,7 +10,6 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { useProfile as useProfileContract } from 'hooks/useContract'
 import { useWeb3React } from '@web3-react/core'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
-import { ToastDescriptionWithTx } from 'components/Toast'
 
 type PauseProfilePageProps = InjectedModalProps
 
@@ -35,7 +34,7 @@ const PauseProfilePage: React.FC<PauseProfilePageProps> = ({ onDismiss }) => {
     if (receipt.status) {
       // Re-fetch profile
       await dispatch(fetchProfile(account))
-      toastSuccess(t('Profile Paused!'), <ToastDescriptionWithTx txHash={receipt.transactionHash} />)
+      toastSuccess(t('Profile Paused!'))
       onDismiss()
     } else {
       toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))

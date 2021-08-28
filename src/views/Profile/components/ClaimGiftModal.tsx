@@ -6,7 +6,6 @@ import { useClaimRefundContract } from 'hooks/useContract'
 import { useTranslation } from 'contexts/Localization'
 import { getClaimRefundContract } from 'utils/contractHelpers'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
-import { ToastDescriptionWithTx } from 'components/Toast'
 
 interface ClaimGiftProps extends InjectedModalProps {
   onSuccess: () => void
@@ -53,7 +52,7 @@ const ClaimGift: React.FC<ClaimGiftProps> = ({ onSuccess, onDismiss }) => {
     setIsConfirming(true)
     const receipt = await tx.wait()
     if (receipt.status) {
-      toastSuccess(t('Success!'), <ToastDescriptionWithTx txHash={receipt.transactionHash} />)
+      toastSuccess(t('Success!'))
       onSuccess()
       onDismiss()
     } else {

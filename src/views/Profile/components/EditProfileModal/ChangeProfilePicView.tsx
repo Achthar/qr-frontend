@@ -13,7 +13,6 @@ import { getErc721Contract } from 'utils/contractHelpers'
 import { useProfile as useProfileContract } from 'hooks/useContract'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { getPancakeProfileAddress } from 'utils/addressHelpers'
-import { ToastDescriptionWithTx } from 'components/Toast'
 import SelectionCard from '../SelectionCard'
 import ApproveConfirmButtons from '../ApproveConfirmButtons'
 
@@ -46,10 +45,10 @@ const ChangeProfilePicPage: React.FC<ChangeProfilePicPageProps> = ({ onDismiss }
 
         return callWithGasPrice(profileContract, 'updateProfile', [selectedNft.nftAddress, selectedNft.tokenId])
       },
-      onSuccess: async ({ receipt }) => {
+      onSuccess: async () => {
         // Re-fetch profile
         await dispatch(fetchProfile(account))
-        toastSuccess(t('Profile Updated!'), <ToastDescriptionWithTx txHash={receipt.transactionHash} />)
+        toastSuccess(t('Profile Updated!'))
 
         onDismiss()
       },

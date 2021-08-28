@@ -80,7 +80,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
       const translationSet = languageMap.has(currentLanguage.locale)
         ? languageMap.get(currentLanguage.locale)
         : languageMap.get(EN.locale)
-      const translatedText = translationSet[key] || key
+      const translatedText = translationSet['EN-US'] || key
 
       // Check the existence of at least one combination of %%, separated by 1 or more non space characters
       const includesVariable = translatedText.match(/%\S+?%/gm)
