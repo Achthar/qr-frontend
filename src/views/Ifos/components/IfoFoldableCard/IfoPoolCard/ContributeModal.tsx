@@ -9,7 +9,7 @@ import { WalletIfoData, PublicIfoData } from 'views/Ifos/types'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { getAddress } from 'utils/addressHelpers'
-import ApproveConfirmButtons from 'views/Profile/components/ApproveConfirmButtons'
+// import ApproveConfirmButtons from 'views/Profile/components/ApproveConfirmButtons'
 import useApproveConfirmTransaction from 'hooks/useApproveConfirmTransaction'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { DEFAULT_TOKEN_DECIMAL } from 'config'
@@ -145,7 +145,7 @@ const ContributeModal: React.FC<Props> = ({
             'If you don’t commit enough LP tokens, you may not receive any IFO tokens at all and will only receive a full refund of your LP tokens.',
           )}
         </Text>
-        <ApproveConfirmButtons
+        {/* <ApproveConfirmButtons
           isApproveDisabled={isConfirmed || isConfirming || isApproved}
           isApproving={isApproving}
           isConfirmDisabled={
@@ -154,7 +154,7 @@ const ContributeModal: React.FC<Props> = ({
           isConfirming={isConfirming}
           onApprove={handleApprove}
           onConfirm={handleConfirm}
-        />
+        /> */}
       </ModalBody>
     </Modal>
   )
