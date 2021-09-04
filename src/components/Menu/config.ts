@@ -31,46 +31,6 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
     icon: 'PoolIcon',
     href: '/pools',
   },
-  {
-    label: t('Info'),
-    icon: 'InfoIcon',
-    href: 'https://pancakeswap.info',
-  },
-  {
-    label: t('IFO'),
-    icon: 'IfoIcon',
-    href: '/ifo',
-  },
-  {
-    label: t('More'),
-    icon: 'MoreIcon',
-    items: [
-      {
-        label: t('Contact'),
-        href: 'https://docs.pancakeswap.finance/contact-us',
-      },
-      {
-        label: t('Voting'),
-        href: '/voting',
-      },
-      {
-        label: t('Github'),
-        href: 'https://github.com/pancakeswap',
-      },
-      {
-        label: t('Docs'),
-        href: 'https://docs.pancakeswap.finance',
-      },
-      {
-        label: t('Blog'),
-        href: 'https://pancakeswap.medium.com',
-      },
-      {
-        label: t('Merch'),
-        href: 'https://pancakeswap.creator-spring.com/',
-      },
-    ],
-  },
 ]
 
 export default config

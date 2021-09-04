@@ -1,5 +1,5 @@
 import React from 'react'
-import { ModalProvider, light, dark } from '@pancakeswap/uikit'
+import { ModalProvider, dark } from '@pancakeswap/uikit'
 import { Web3ReactProvider } from '@web3-react/core'
 import { HelmetProvider } from 'react-helmet-async'
 import { Provider } from 'react-redux'
@@ -13,7 +13,7 @@ import store from 'state'
 
 const ThemeProviderWrapper = (props) => {
   const [isDark] = useThemeManager()
-  return <ThemeProvider theme={isDark ? dark : light} {...props} />
+  return <ThemeProvider theme={isDark ? dark : dark} {...props} />
 }
 
 const Providers: React.FC = ({ children }) => {
