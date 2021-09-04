@@ -49,7 +49,7 @@ export default function useWrapCallback(
                     value: `0x${inputAmount.raw.toString(16)}`,
                   })
                   addTransaction(txReceipt, { summary: `Wrap ${inputAmount.toSignificant(6)} BNB to WBNB` })
-                } catch (error) {
+                } catch (error: any) {
                   console.error('Could not deposit', error)
                 }
               }
@@ -68,7 +68,7 @@ export default function useWrapCallback(
                     `0x${inputAmount.raw.toString(16)}`,
                   ])
                   addTransaction(txReceipt, { summary: `Unwrap ${inputAmount.toSignificant(6)} WBNB to BNB` })
-                } catch (error) {
+                } catch (error: any) {
                   console.error('Could not withdraw', error)
                 }
               }

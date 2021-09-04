@@ -10,7 +10,6 @@ import achievementsReducer from './achievements'
 import blockReducer from './block'
 import collectiblesReducer from './collectibles'
 import votingReducer from './voting'
-import lotteryReducer from './lottery'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
@@ -34,7 +33,6 @@ const store = configureStore({
     teams: teamsReducer,
     collectibles: collectiblesReducer,
     voting: votingReducer,
-    lottery: lotteryReducer,
 
     // Exchange
     user,

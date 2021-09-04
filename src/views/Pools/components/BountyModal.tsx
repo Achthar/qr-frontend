@@ -73,7 +73,7 @@ const BountyModal: React.FC<BountyModalProps> = ({ onDismiss, TooltipComponent }
         setPendingTx(false)
         onDismiss()
       }
-    } catch (error) {
+    } catch (error: any) {
       toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
       setPendingTx(false)
     }

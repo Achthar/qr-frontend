@@ -16,7 +16,7 @@ export default function useENSName(address?: string): { ENSName: string | null; 
     if (!debouncedAddress || !isAddress(debouncedAddress)) return [undefined]
     try {
       return debouncedAddress ? [namehash(`${debouncedAddress.toLowerCase().substr(2)}.addr.reverse`)] : [undefined]
-    } catch (error) {
+    } catch (error: any) {
       return [undefined]
     }
   }, [debouncedAddress])

@@ -25,7 +25,7 @@ const getUsername = async (address: string): Promise<string> => {
     const { username = '' } = await response.json()
 
     return username
-  } catch (error) {
+  } catch (error: any) {
     return ''
   }
 }
@@ -73,7 +73,7 @@ const getProfile = async (address: string): Promise<GetProfileResponse> => {
     } as Profile
 
     return { hasRegistered, profile }
-  } catch (error) {
+  } catch (error: any) {
     return null
   }
 }

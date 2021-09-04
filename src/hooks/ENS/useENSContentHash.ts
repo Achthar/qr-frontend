@@ -12,7 +12,7 @@ export default function useENSContentHash(ensName?: string | null): { loading: b
     if (!ensName) return [undefined]
     try {
       return ensName ? [namehash(ensName)] : [undefined]
-    } catch (error) {
+    } catch (error: any) {
       return [undefined]
     }
   }, [ensName])

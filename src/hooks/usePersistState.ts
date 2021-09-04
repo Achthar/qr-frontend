@@ -22,7 +22,7 @@ const usePersistState = (initialValue: any, userOptions: UsePersistStateOptions)
       const valueFromLS = localStorage.getItem(localStorageKey)
 
       return valueFromLS ? hydrate(JSON.parse(valueFromLS)) : initialValue
-    } catch (error) {
+    } catch (error: any) {
       return initialValue
     }
   })

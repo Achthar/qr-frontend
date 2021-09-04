@@ -507,7 +507,7 @@ export const fetchLatestUserRounds = async (account: string, size = 1000) => {
     const userRounds = await fetchUserRounds(account, cursor, size)
 
     return userRounds
-  } catch (error) {
+  } catch (error: any) {
     // When the results run out the contract throws an error.
     return null
   }

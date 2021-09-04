@@ -56,13 +56,13 @@ export function useExpertModeManager(): [boolean, () => void] {
 
 export function useThemeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
-  const isDark = useSelector<AppState, AppState['user']['isDark']>((state) => state.user.isDark)
+  // const isDark = useSelector<AppState, AppState['user']['isDark']>((state) => state.user.isDark)
 
   const toggleTheme = useCallback(() => {
     dispatch(toggleThemeAction())
   }, [dispatch])
 
-  return [isDark, toggleTheme]
+  return [true, toggleTheme]
 }
 
 export function useUserSingleHopOnly(): [boolean, (newSingleHopOnly: boolean) => void] {

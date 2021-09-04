@@ -14,7 +14,7 @@ export default function useENSAddress(ensName?: string | null): { loading: boole
     if (!debouncedName) return [undefined]
     try {
       return debouncedName ? [namehash(debouncedName)] : [undefined]
-    } catch (error) {
+    } catch (error: any) {
       return [undefined]
     }
   }, [debouncedName])

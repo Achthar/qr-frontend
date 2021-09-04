@@ -20,10 +20,10 @@ const Menu = (props) => {
       userMenu={<UserMenu />}
       globalMenu={<GlobalSettings />}
       isDark={isDark}
-      toggleTheme={toggleTheme}
+      toggleTheme={undefined}
       currentLang={currentLanguage.code}
-      langs={languageList}
-      setLang={setLanguage}
+      langs={[]}
+      setLang={undefined}
       cakePriceUsd={cakePriceUsd.toNumber()}
       links={config(t)}
       profile={{

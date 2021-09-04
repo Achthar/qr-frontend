@@ -34,7 +34,7 @@ export const getUserPointIncreaseEvents = async (account: string): Promise<UserP
     )
 
     return user.points
-  } catch (error) {
+  } catch (error: any) {
     return null
   }
 }

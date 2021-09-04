@@ -52,7 +52,7 @@ const SlippageTabs = () => {
       if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
         setUserSlippageTolerance(valueAsIntFromRoundedFloat)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
     }
   }
@@ -65,7 +65,7 @@ const SlippageTabs = () => {
       if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
         setTtl(valueAsInt)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
     }
   }

@@ -41,7 +41,7 @@ const ClaimButton: React.FC<Props> = ({ poolId, ifoVersion, walletIfoData }) => 
           {t('You have successfully claimed your rewards.')}
         </ToastDescriptionWithTx>,
       )
-    } catch (error) {
+    } catch (error: any) {
       toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
       console.error(error)
     } finally {

@@ -50,7 +50,7 @@ const getBlockAtTimestamp = async (timestamp: number) => {
       { timestampGreater: timestamp, timestampLess: timestamp + 600 },
     )
     return parseInt(blocks[0].number, 10)
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to fetch block number for ${timestamp}\n${error}`)
   }
 }
@@ -95,7 +95,7 @@ const getAprsForFarmGroup = async (addresses: string[], blockWeekAgo: number): P
       }
     }, {})
     return aprs
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to fetch LP APR data: ${error}`)
   }
 }

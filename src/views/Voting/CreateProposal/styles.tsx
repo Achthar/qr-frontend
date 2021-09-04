@@ -27,7 +27,7 @@ export const FormError: React.FC = ({ children }) => (
 export const FormErrors: React.FC<{ errors: string[] }> = ({ errors }) => {
   return (
     <Box mt="8px">
-      {errors.map((error) => {
+      {errors.map((error: any) => {
         return <FormError key={error}>{error}</FormError>
       })}
     </Box>

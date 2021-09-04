@@ -139,7 +139,7 @@ export const getAllVotes = async (proposalId: string, block?: number, votesPerCh
           votes = [...votes, ...voteChunk]
           fetchVoteChunk(newSkip + votesPerChunk)
         }
-      } catch (error) {
+      } catch (error: any) {
         reject(error)
       }
     }

@@ -84,7 +84,7 @@ export default function Updater(): null {
               dispatch(checkedTransaction({ chainId, hash, blockNumber: currentBlock }))
             }
           })
-          .catch((error) => {
+          .catch((error: any) => {
             console.error(`failed to check transaction hash: ${hash}`, error)
           })
       })

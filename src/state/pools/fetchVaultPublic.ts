@@ -32,7 +32,7 @@ export const fetchPublicVaultData = async () => {
       estimatedCakeBountyReward: new BigNumber(estimatedCakeBountyReward.toString()).toJSON(),
       totalPendingCakeHarvest: new BigNumber(totalPendingCakeHarvest.toString()).toJSON(),
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       totalShares: null,
       pricePerFullShare: null,
@@ -58,7 +58,7 @@ export const fetchVaultFees = async () => {
       withdrawalFee: withdrawalFee.toNumber(),
       withdrawalFeePeriod: withdrawalFeePeriod.toNumber(),
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       performanceFee: null,
       callFee: null,

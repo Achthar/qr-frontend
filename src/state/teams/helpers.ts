@@ -20,7 +20,7 @@ export const getTeam = async (teamId: number): Promise<Team> => {
       users: numberUsers.toNumber(),
       points: numberPoints.toNumber(),
     })
-  } catch (error) {
+  } catch (error: any) {
     return null
   }
 }
@@ -63,7 +63,7 @@ export const getTeams = async (): Promise<TeamsById> => {
     }, {})
 
     return merge({}, teamsById, onChainTeamData)
-  } catch (error) {
+  } catch (error: any) {
     return null
   }
 }

@@ -49,7 +49,7 @@ export const fetchCachedUriData = async (tokenUrl: string) => {
     const uriData = await uriDataResponse.json()
     localStorage.setItem(tokenUrl, JSON.stringify(uriData))
     return uriData
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     return null
   }
@@ -66,7 +66,7 @@ export const getTokenUriData = async (nftAddress: string, tokenId: number) => {
     }
 
     return uriData
-  } catch (error) {
+  } catch (error: any) {
     console.error('getTokenUriData', error)
     return null
   }

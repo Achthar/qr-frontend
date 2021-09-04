@@ -142,7 +142,7 @@ function toCallState(
   if (success && data) {
     try {
       result = contractInterface.decodeFunctionResult(fragment, data)
-    } catch (error) {
+    } catch (error: any) {
       console.debug('Result data parsing failed', fragment, data)
       return {
         valid: true,

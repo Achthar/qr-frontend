@@ -52,7 +52,7 @@ export const fetchProfile = (address: string) => async (dispatch: AppDispatch) =
     dispatch(profileFetchStart())
     const response = await getProfile(address)
     dispatch(profileFetchSucceeded(response))
-  } catch (error) {
+  } catch (error: any) {
     dispatch(profileFetchFailed())
   }
 }

@@ -6,7 +6,7 @@ import { useTranslation } from 'contexts/Localization'
 const ConnectWalletButton = (props) => {
   const { t } = useTranslation()
   const { login, logout } = useAuth()
-  const { onPresentConnectModal } = useWalletModal(login, logout)
+  const { onPresentConnectModal } = useWalletModal(login, logout, (_: string) => 'en')
 
   return (
     <Button onClick={onPresentConnectModal} {...props}>

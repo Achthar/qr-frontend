@@ -38,7 +38,7 @@ async function fetchChunk(
     [resultsBlockNumber, returnData] = await multicallContract.aggregate(
       chunk.map((obj) => [obj.address, obj.callData])
     )
-  } catch (error) {
+  } catch (error: any) {
     console.debug('Failed to fetch chunk inside retry', error)
     throw error
   }

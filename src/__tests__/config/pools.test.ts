@@ -34,7 +34,7 @@ describe('Config pools', () => {
       try {
         const contract = getSouschefV2Contract(pool.sousId)
         stakingTokenAddress = await contract.stakedToken()
-      } catch (error) {
+      } catch (error: any) {
         const contract = getSouschefContract(pool.sousId)
         stakingTokenAddress = await contract.syrup()
       }

@@ -180,7 +180,7 @@ export default function Swap({ history }: RouteComponentProps) {
       .then((hash) => {
         setSwapState({ attemptingTxn: false, tradeToConfirm, swapErrorMessage: undefined, txHash: hash })
       })
-      .catch((error) => {
+      .catch((error: any) => {
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
