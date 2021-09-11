@@ -1,6 +1,10 @@
 if [ "$NETLIFY" == true ]
 then
     echo "Running remote install!"
+    echo $GITHUB_USERNAME
+    echo $GITHUB_EMAIL
+    git config --global user.name "$GITHUB_USERNAME"
+    git config --global user.email "$GITHUB_EMAIL"
     mkdir ~/.ssh/
     echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
     chmod 600 ~/.ssh/id_rsa
