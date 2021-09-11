@@ -11,7 +11,6 @@ then
     echo "-----END OPENSSH PRIVATE KEY-----" >> ~/.ssh/id_rsa
     chmod 600 ~/.ssh/id_rsa
     ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts
-    ssh -vT git@github.com
 else
     echo "Running local install!"
 fi
