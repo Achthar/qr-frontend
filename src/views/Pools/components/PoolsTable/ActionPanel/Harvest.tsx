@@ -13,10 +13,12 @@ import { ActionContainer, ActionTitles, ActionContent } from './styles'
 import CollectModal from '../../PoolCard/Modals/CollectModal'
 
 interface HarvestActionProps extends Pool {
+  chainId:number
   userDataLoaded: boolean
 }
 
 const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({
+  chainId,
   sousId,
   poolCategory,
   earningToken,
@@ -38,6 +40,7 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({
 
   const [onPresentCollect] = useModal(
     <CollectModal
+      chainId={chainId}
       formattedBalance={formattedBalance}
       fullBalance={fullBalance}
       earningToken={earningToken}

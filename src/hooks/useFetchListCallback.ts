@@ -1,5 +1,5 @@
 import { nanoid } from '@reduxjs/toolkit'
-import { ChainId } from '@pancakeswap/sdk'
+ // import { ChainId } from '@pancakeswap/sdk'
 import { TokenList } from '@uniswap/token-lists'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
@@ -9,6 +9,7 @@ import { fetchTokenList } from '../state/lists/actions'
 import getTokenList from '../utils/getTokenList'
 import resolveENSContentHash from '../utils/ENS/resolveENSContentHash'
 import useWeb3Provider from './useActiveWeb3React'
+import {ChainId} from '../config/index'
 
 function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Promise<TokenList> {
   const { library } = useWeb3Provider()
@@ -17,7 +18,7 @@ function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Pr
 
   const ensResolver = useCallback(
     (ensName: string) => {
-      if (chainId !== ChainId.MAINNET) {
+      if (chainId !== ChainId.MAINNET_BSC) {
         throw new Error('Could not construct mainnet ENS resolver')
       }
       return resolveENSContentHash(ensName, library)

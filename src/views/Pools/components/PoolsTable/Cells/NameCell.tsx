@@ -11,6 +11,7 @@ import CakeVaultTokenPairImage from '../../CakeVaultCard/CakeVaultTokenPairImage
 import BaseCell, { CellContent } from './BaseCell'
 
 interface NameCellProps {
+  chainId:number
   pool: Pool
 }
 
@@ -24,7 +25,7 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const NameCell: React.FC<NameCellProps> = ({ pool }) => {
+const NameCell: React.FC<NameCellProps> = ({chainId, pool }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const { sousId, stakingToken, earningToken, userData, isFinished, isAutoVault } = pool
@@ -59,7 +60,14 @@ const NameCell: React.FC<NameCellProps> = ({ pool }) => {
       {isAutoVault ? (
         <CakeVaultTokenPairImage mr="8px" width={40} height={40} />
       ) : (
-        <TokenPairImage primaryToken={earningToken} secondaryToken={stakingToken} mr="8px" width={40} height={40} />
+        <TokenPairImage
+          chainId={chainId}
+          primaryToken={earningToken}
+          secondaryToken={stakingToken}
+          mr="8px"
+          width={40}
+          height={40}
+        />
       )}
       <CellContent>
         {showStakedTag && (

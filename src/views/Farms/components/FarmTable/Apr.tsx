@@ -8,6 +8,7 @@ import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { Skeleton } from '@pancakeswap/uikit'
 
 export interface AprProps {
+  chainId:number
   value: string
   multiplier: string
   pid: number
@@ -43,6 +44,7 @@ const AprWrapper = styled.div`
 `
 
 const Apr: React.FC<AprProps> = ({
+  chainId,
   value,
   pid,
   lpLabel,
@@ -54,7 +56,7 @@ const Apr: React.FC<AprProps> = ({
   originalValue,
   hideButton = false,
 }) => {
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({ quoteTokenAddress, tokenAddress })
+  const liquidityUrlPathParts = getLiquidityUrlPathParts({chainId, quoteTokenAddress, tokenAddress })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   return originalValue !== 0 ? (

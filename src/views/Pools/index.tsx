@@ -80,8 +80,8 @@ const NUMBER_OF_POOLS_VISIBLE = 12
 const Pools: React.FC = () => {
   const location = useLocation()
   const { t } = useTranslation()
-  const { account } = useWeb3React()
-  const { pools: poolsWithoutAutoVault, userDataLoaded } = usePools(account)
+  const { account, chainId } = useWeb3React()
+  const { pools: poolsWithoutAutoVault, userDataLoaded } = usePools(chainId, account)
   const [stakedOnly, setStakedOnly] = usePersistState(false, { localStorageKey: 'pancake_pool_staked' })
   const [numberOfPoolsVisible, setNumberOfPoolsVisible] = useState(NUMBER_OF_POOLS_VISIBLE)
   const [observerIsSet, setObserverIsSet] = useState(false)
@@ -131,7 +131,7 @@ const Pools: React.FC = () => {
 
   usePollFarmsPublicData()
   useFetchCakeVault()
-  useFetchPublicPoolsData()
+  useFetchPublicPoolsData(chainId)
 
   useEffect(() => {
     const showMorePools = (entries) => {
@@ -248,13 +248,15 @@ const Pools: React.FC = () => {
         pool.isAutoVault ? (
           <CakeVaultCard key="auto-cake" pool={pool} showStakedOnly={stakedOnly} />
         ) : (
-          <PoolCard key={pool.sousId} pool={pool} account={account} />
+          <PoolCard chainId={chainId} key={pool.sousId} pool={pool} account={account} />
         ),
       )}
     </CardLayout>
   )
 
-  const tableLayout = <PoolsTable pools={chosenPools} account={account} userDataLoaded={userDataLoaded} />
+  const tableLayout = (
+    <PoolsTable chainId={chainId} pools={chosenPools} account={account} userDataLoaded={userDataLoaded} />
+  )
 
   return (
     <>

@@ -34,11 +34,12 @@ const FixedHeightRow = styled(RowBetween)`
 `
 
 interface PositionCardProps extends CardProps {
+  chainId: number
   pair: Pair
   showUnwrapped?: boolean
 }
 
-export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCardProps) {
+export function MinimalPositionCard({chainId, pair, showUnwrapped = false }: PositionCardProps) {
   const { account } = useActiveWeb3React()
 
   const { t } = useTranslation()
@@ -48,8 +49,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(chainId, pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
@@ -151,8 +152,8 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(props.chainId, account ?? undefined, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(props.chainId, pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)

@@ -27,6 +27,7 @@ import Balance from 'components/Balance'
 import { getPoolBlockInfo } from 'views/Pools/helpers'
 
 interface ExpandedFooterProps {
+  chainId:number,
   pool: Pool
   account: string
 }
@@ -38,7 +39,7 @@ const ExpandedWrapper = styled(Flex)`
   }
 `
 
-const ExpandedFooter: React.FC<ExpandedFooterProps> = ({ pool, account }) => {
+const ExpandedFooter: React.FC<ExpandedFooterProps> = ({chainId, pool, account }) => {
   const { t } = useTranslation()
   const { currentBlock } = useBlock()
   const {
@@ -58,9 +59,9 @@ const ExpandedFooter: React.FC<ExpandedFooterProps> = ({ pool, account }) => {
     isAutoVault,
   } = pool
 
-  const tokenAddress = earningToken.address ? getAddress(earningToken.address) : ''
-  const poolContractAddress = getAddress(contractAddress)
-  const cakeVaultContractAddress = getCakeVaultAddress()
+  const tokenAddress = earningToken.address ? getAddress(chainId, earningToken.address) : ''
+  const poolContractAddress = getAddress(chainId, contractAddress)
+  const cakeVaultContractAddress = getCakeVaultAddress(chainId)
   const isMetaMaskInScope = !!window.ethereum?.isMetaMask
   const isManualCakePool = sousId === 0
 
@@ -147,7 +148,7 @@ const ExpandedFooter: React.FC<ExpandedFooterProps> = ({ pool, account }) => {
         </Flex>
       )}
       <Flex mb="2px" justifyContent="flex-end">
-        <LinkExternal href={`https://pancakeswap.info/token/${getAddress(earningToken.address)}`} bold={false} small>
+        <LinkExternal href={`https://pancakeswap.info/token/${getAddress(54, earningToken.address)}`} bold={false} small>
           {t('See Token Info')}
         </LinkExternal>
       </Flex>

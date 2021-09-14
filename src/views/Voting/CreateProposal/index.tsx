@@ -56,7 +56,7 @@ const CreateProposal = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [fieldsState, setFieldsState] = useState<{ [key: string]: boolean }>({})
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const initialBlock = useInitialBlock()
   const { push } = useHistory()
   const { library } = useWeb3Provider()
@@ -84,7 +84,7 @@ const CreateProposal = () => {
             .map((choice) => {
               return choice.value
             }),
-          metadata: generateMetaData(),
+          metadata: generateMetaData(chainId),
           type: 'single-choice',
         },
       })

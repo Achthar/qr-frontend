@@ -43,10 +43,10 @@ const Grid = styled.div`
 
 const emissionsPerBlock = 15
 
-const CakeDataRow = () => {
+const CakeDataRow = (chainId:number) => {
   const { t } = useTranslation()
-  const totalSupply = useTotalSupply()
-  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress()))
+  const totalSupply = useTotalSupply(chainId)
+  const burnedBalance = getBalanceNumber(useBurnedBalance(chainId, getCakeAddress(chainId)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0
   const cakePriceBusd = usePriceCakeBusd()
   const mcap = cakePriceBusd.times(cakeSupply)

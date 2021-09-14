@@ -37,6 +37,7 @@ const ExpandingWrapper = styled.div`
 `
 
 interface FarmCardProps {
+  chainId:number,
   farm: FarmWithStakedValue
   displayApr: string
   removed: boolean
@@ -44,7 +45,7 @@ interface FarmCardProps {
   account?: string
 }
 
-const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePrice, account }) => {
+const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed, cakePrice, account }) => {
   const { t } = useTranslation()
 
   const [showExpandableSection, setShowExpandableSection] = useState(false)
@@ -58,17 +59,19 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('CAKE + Fees')
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
+    chainId,
     quoteTokenAddress: farm.quoteToken.address,
     tokenAddress: farm.token.address,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-  const lpAddress = getAddress(farm.lpAddresses)
+  const lpAddress = getAddress(chainId, farm.lpAddresses)
   const isPromotedFarm = farm.token.symbol === 'CAKE'
 
   return (
     <StyledCard isActive={isPromotedFarm}>
       <FarmCardInnerContainer>
         <CardHeading
+          chainId={chainId}
           lpLabel={lpLabel}
           multiplier={farm.multiplier}
           isCommunityFarm={farm.isCommunity}
@@ -102,6 +105,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
           <Text bold>{earnLabel}</Text>
         </Flex>
         <CardActionsContainer
+        chainId={chainId}
           farm={farm}
           lpLabel={lpLabel}
           account={account}

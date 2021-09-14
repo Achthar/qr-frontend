@@ -9,6 +9,7 @@ import Apr from '../Apr'
 import { convertSharesToCake } from '../../../helpers'
 
 interface AprCellProps {
+  chainId:number
   pool: Pool
 }
 
@@ -19,7 +20,7 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const AutoAprCell: React.FC<AprCellProps> = ({ pool }) => {
+const AutoAprCell: React.FC<AprCellProps> = ({chainId,  pool }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
 
@@ -39,6 +40,7 @@ const AutoAprCell: React.FC<AprCellProps> = ({ pool }) => {
           {t('APY')}
         </Text>
         <Apr
+          chainId={chainId}
           pool={pool}
           stakedBalance={cakeAsBigNumber}
           performanceFee={performanceFeeAsDecimal}

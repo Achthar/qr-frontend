@@ -35,11 +35,11 @@ export interface Message {
 /**
  * Generates metadata required by snapshot to validate payload
  */
-export const generateMetaData = () => {
+export const generateMetaData = (chainId:number) => {
   return {
     plugins: {},
-    network: 56,
-    strategies: [{ name: 'cake', params: { symbol: 'CAKE', address: getCakeAddress(), decimals: 18 } }],
+    network: chainId,
+    strategies: [{ name: 'cake', params: { symbol: 'CAKE', address: getCakeAddress(chainId), decimals: 18 } }],
   }
 }
 
@@ -76,8 +76,8 @@ export const sendSnapshotData = async (message: Message) => {
   return data
 }
 
-export const getVotingPower = async (account: string, poolAddresses: string[], block?: number) => {
-  const blockNumber = block || (await simpleRpcProvider.getBlockNumber())
+export const getVotingPower = async (chainId:number, account: string, poolAddresses: string[], block?: number) => {
+  const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
   const response = await fetch(`${SNAPSHOT_VOTING_API}/power`, {
     method: 'post',
     headers: {

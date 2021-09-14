@@ -12,14 +12,14 @@ import { Web3ReactContextInterface } from '@web3-react/core/dist/types'
 const useActiveWeb3React = (): Web3ReactContextInterface<Web3Provider> => {
   const { library, chainId, ...web3React } = useWeb3React()
   const refEth = useRef(library)
-  const [provider, setprovider] = useState(library || simpleRpcProvider)
+  const [provider, setprovider] = useState(library || simpleRpcProvider(chainId))
 
   useEffect(() => {
     if (library !== refEth.current) {
-      setprovider(library || simpleRpcProvider)
+      setprovider(library || simpleRpcProvider(chainId))
       refEth.current = library
     }
-  }, [library])
+  }, [chainId, library])
 
   return { library: provider, chainId: chainId ?? parseInt(process.env.REACT_APP_CHAIN_ID, 10), ...web3React }
 }

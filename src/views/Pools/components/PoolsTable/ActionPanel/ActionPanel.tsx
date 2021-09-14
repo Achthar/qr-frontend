@@ -94,6 +94,7 @@ type MediaBreakpoints = {
 }
 
 interface ActionPanelProps {
+  chainId: number
   account: string
   pool: Pool
   userDataLoaded: boolean
@@ -112,7 +113,7 @@ const InfoSection = styled(Box)`
   }
 `
 
-const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded, expanded, breakpoints }) => {
+const ActionPanel: React.FC<ActionPanelProps> = ({ chainId, account, pool, userDataLoaded, expanded, breakpoints }) => {
   const {
     sousId,
     stakingToken,
@@ -126,8 +127,8 @@ const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded
     isAutoVault,
   } = pool
   const { t } = useTranslation()
-  const poolContractAddress = getAddress(contractAddress)
-  const cakeVaultContractAddress = getCakeVaultAddress()
+  const poolContractAddress = getAddress(chainId, contractAddress)
+  const cakeVaultContractAddress = getCakeVaultAddress(chainId)
   const { currentBlock } = useBlock()
   const { isXs, isSm, isMd } = breakpoints
   const showSubtitle = (isXs || isSm) && sousId === 0
@@ -136,7 +137,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded
     getPoolBlockInfo(pool, currentBlock)
 
   const isMetaMaskInScope = !!window.ethereum?.isMetaMask
-  const tokenAddress = earningToken.address ? getAddress(earningToken.address) : ''
+  const tokenAddress = earningToken.address ? getAddress(chainId, earningToken.address) : ''
 
   const {
     totalCakeInVault,
@@ -216,6 +217,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded
     <Flex justifyContent="space-between" alignItems="center" mb="8px">
       <Text>{isAutoVault ? t('APY') : t('APR')}:</Text>
       <Apr
+        chainId={chainId}
         pool={pool}
         showIcon
         stakedBalance={poolStakingTokenBalance}
@@ -251,7 +253,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded
         {(isXs || isSm || isMd) && totalStakedRow}
         {shouldShowBlockCountdown && blocksRow}
         <Flex mb="8px" justifyContent={['flex-end', 'flex-end', 'flex-start']}>
-          <LinkExternal href={`https://pancakeswap.info/token/${getAddress(earningToken.address)}`} bold={false}>
+          <LinkExternal href={`https://pancakeswap.info/token/${getAddress(54, earningToken.address)}`} bold={false}>
             {t('See Token Info')}
           </LinkExternal>
         </Flex>
@@ -298,7 +300,7 @@ const ActionPanel: React.FC<ActionPanelProps> = ({ account, pool, userDataLoaded
         {pool.isAutoVault ? (
           <AutoHarvest {...pool} userDataLoaded={userDataLoaded} />
         ) : (
-          <Harvest {...pool} userDataLoaded={userDataLoaded} />
+          <Harvest {...pool} chainId={chainId} userDataLoaded={userDataLoaded} />
         )}
         <Stake pool={pool} userDataLoaded={userDataLoaded} />
       </ActionContainer>

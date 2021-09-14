@@ -49,8 +49,8 @@ export const NEVER_RELOAD: ListenerOptions = {
 }
 
 // the lowest level call for subscribing to contract data
-function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
-  const { chainId } = useActiveWeb3React()
+function useCallsData(chainId: number, calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
+  // const { chainId } = useActiveWeb3React()
   const callResults = useSelector<AppState, AppState['multicall']['callResults']>(
     (state) => state.multicall.callResults,
   )
@@ -163,6 +163,7 @@ function toCallState(
 }
 
 export function useSingleContractMultipleData(
+  chainId: number,
   contract: Contract | null | undefined,
   methodName: string,
   callInputs: OptionalMethodInputs[],
@@ -183,7 +184,7 @@ export function useSingleContractMultipleData(
     [callInputs, contract, fragment],
   )
 
-  const results = useCallsData(calls, options)
+  const results = useCallsData(chainId, calls, options)
 
   const { currentBlock } = useBlock()
 
@@ -193,6 +194,7 @@ export function useSingleContractMultipleData(
 }
 
 export function useMultipleContractSingleData(
+  chainId: number,
   addresses: (string | undefined)[],
   contractInterface: Interface,
   methodName: string,
@@ -223,7 +225,7 @@ export function useMultipleContractSingleData(
     [addresses, callData, fragment],
   )
 
-  const results = useCallsData(calls, options)
+  const results = useCallsData(chainId, calls, options)
 
   const { currentBlock } = useBlock()
 
@@ -233,6 +235,7 @@ export function useMultipleContractSingleData(
 }
 
 export function useSingleCallResult(
+  chainId: number,
   contract: Contract | null | undefined,
   methodName: string,
   inputs?: OptionalMethodInputs,
@@ -251,7 +254,7 @@ export function useSingleCallResult(
       : []
   }, [contract, fragment, inputs])
 
-  const result = useCallsData(calls, options)[0]
+  const result = useCallsData(chainId, calls, options)[0]
   const { currentBlock } = useBlock()
 
   return useMemo(() => {

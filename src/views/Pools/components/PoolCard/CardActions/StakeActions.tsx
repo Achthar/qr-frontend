@@ -9,6 +9,7 @@ import NotEnoughTokensModal from '../Modals/NotEnoughTokensModal'
 import StakeModal from '../Modals/StakeModal'
 
 interface StakeActionsProps {
+  chainId: number
   pool: Pool
   stakingTokenBalance: BigNumber
   stakedBalance: BigNumber
@@ -18,6 +19,7 @@ interface StakeActionsProps {
 }
 
 const StakeAction: React.FC<StakeActionsProps> = ({
+  chainId,
   pool,
   stakingTokenBalance,
   stakedBalance,
@@ -37,6 +39,7 @@ const StakeAction: React.FC<StakeActionsProps> = ({
 
   const [onPresentStake] = useModal(
     <StakeModal
+      chainId={chainId}
       isBnbPool={isBnbPool}
       pool={pool}
       stakingTokenBalance={stakingTokenBalance}
@@ -46,6 +49,7 @@ const StakeAction: React.FC<StakeActionsProps> = ({
 
   const [onPresentUnstake] = useModal(
     <StakeModal
+      chainId={chainId}
       stakingTokenBalance={stakingTokenBalance}
       isBnbPool={isBnbPool}
       pool={pool}

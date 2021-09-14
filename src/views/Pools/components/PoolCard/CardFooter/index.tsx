@@ -8,6 +8,7 @@ import { CompoundingPoolTag, ManualPoolTag } from 'components/Tags'
 import ExpandedFooter from './ExpandedFooter'
 
 interface FooterProps {
+  chainId: number
   pool: Pool
   account: string
   totalCakeInVault?: BigNumber
@@ -21,7 +22,7 @@ const ExpandableButtonWrapper = styled(Flex)`
   }
 `
 
-const Footer: React.FC<FooterProps> = ({ pool, account }) => {
+const Footer: React.FC<FooterProps> = ({ chainId, pool, account }) => {
   const { isAutoVault } = pool
   const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
@@ -49,7 +50,7 @@ const Footer: React.FC<FooterProps> = ({ pool, account }) => {
           {isExpanded ? t('Hide') : t('Details')}
         </ExpandableLabel>
       </ExpandableButtonWrapper>
-      {isExpanded && <ExpandedFooter pool={pool} account={account} />}
+      {isExpanded && <ExpandedFooter chainId={chainId} pool={pool} account={account} />}
     </CardFooter>
   )
 }

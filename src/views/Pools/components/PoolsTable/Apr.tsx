@@ -17,13 +17,14 @@ const AprLabelContainer = styled(Flex)`
 `
 
 interface AprProps extends FlexProps {
+  chainId:number
   pool: Pool
   stakedBalance: BigNumber
   showIcon: boolean
   performanceFee?: number
 }
 
-const Apr: React.FC<AprProps> = ({ pool, showIcon, stakedBalance, performanceFee = 0, ...props }) => {
+const Apr: React.FC<AprProps> = ({chainId, pool, showIcon, stakedBalance, performanceFee = 0, ...props }) => {
   const { stakingToken, earningToken, isFinished, earningTokenPrice, stakingTokenPrice, userData, apr } = pool
   const { t } = useTranslation()
 
@@ -31,7 +32,7 @@ const Apr: React.FC<AprProps> = ({ pool, showIcon, stakedBalance, performanceFee
 
   const stakingTokenBalance = userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO
 
-  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(stakingToken.address)}` : '/swap'
+  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
 
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal

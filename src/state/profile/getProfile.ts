@@ -6,7 +6,7 @@ import { Profile } from 'state/types'
 import { getTeam } from 'state/teams/helpers'
 import { transformProfileResponse } from './helpers'
 
-const profileContract = getProfileContract()
+// const profileContract = getProfileContract()
 const profileApi = process.env.REACT_APP_API_PROFILE
 
 export interface GetProfileResponse {
@@ -30,24 +30,24 @@ const getUsername = async (address: string): Promise<string> => {
   }
 }
 
-const getProfile = async (address: string): Promise<GetProfileResponse> => {
+const getProfile = async (chainId: number, address: string): Promise<GetProfileResponse> => {
   try {
-    const hasRegistered = (await profileContract.hasRegistered(address)) as boolean
+    const hasRegistered = (await getProfileContract(chainId).hasRegistered(address)) as boolean
 
     if (!hasRegistered) {
       return { hasRegistered, profile: null }
     }
 
-    const profileResponse = await profileContract.getUserProfile(address)
+    const profileResponse = await getProfileContract(chainId).getUserProfile(address)
     const { userId, points, teamId, tokenId, nftAddress, isActive } = transformProfileResponse(profileResponse)
-    const team = await getTeam(teamId)
+    const team = await getTeam(chainId, teamId)
     const username = await getUsername(address)
 
     // If the profile is not active the tokenId returns 0, which is still a valid token id
     // so only fetch the nft data if active
     let nft: Nft
     if (isActive) {
-      nft = await getNftByTokenId(nftAddress, tokenId)
+      nft = await getNftByTokenId(chainId, nftAddress, tokenId)
 
       // Save the preview image in a cookie so it can be used on the exchange
       Cookies.set(

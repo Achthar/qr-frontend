@@ -18,19 +18,19 @@ type PublicFarmData = {
   multiplier: string
 }
 
-const fetchFarm = async (farm: Farm): Promise<PublicFarmData> => {
+const fetchFarm = async (chainId:number, farm: Farm): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
-  const lpAddress = getAddress(lpAddresses)
+  const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
     // Balance of token in the LP contract
     {
-      address: getAddress(token.address),
+      address: getAddress(chainId, token.address),
       name: 'balanceOf',
       params: [lpAddress],
     },
     // Balance of quote token on LP contract
     {
-      address: getAddress(quoteToken.address),
+      address: getAddress(chainId, quoteToken.address),
       name: 'balanceOf',
       params: [lpAddress],
     },
@@ -38,7 +38,7 @@ const fetchFarm = async (farm: Farm): Promise<PublicFarmData> => {
     {
       address: lpAddress,
       name: 'balanceOf',
-      params: [getMasterChefAddress()],
+      params: [getMasterChefAddress(chainId)],
     },
     // Total supply of LP tokens
     {
@@ -47,18 +47,18 @@ const fetchFarm = async (farm: Farm): Promise<PublicFarmData> => {
     },
     // Token decimals
     {
-      address: getAddress(token.address),
+      address: getAddress(chainId, token.address),
       name: 'decimals',
     },
     // Quote token decimals
     {
-      address: getAddress(quoteToken.address),
+      address: getAddress(chainId, quoteToken.address),
       name: 'decimals',
     },
   ]
 
   const [tokenBalanceLP, quoteTokenBalanceLP, lpTokenBalanceMC, lpTotalSupply, tokenDecimals, quoteTokenDecimals] =
-    await multicall(erc20, calls)
+    await multicall(chainId, erc20, calls)
 
   // Ratio in % of LP tokens that are staked in the MC, vs the total number in circulation
   const lpTokenRatio = new BigNumber(lpTokenBalanceMC).div(new BigNumber(lpTotalSupply))
@@ -77,14 +77,14 @@ const fetchFarm = async (farm: Farm): Promise<PublicFarmData> => {
   // Only make masterchef calls if farm has pid
   const [info, totalAllocPoint] =
     pid || pid === 0
-      ? await multicall(masterchefABI, [
+      ? await multicall(chainId, masterchefABI, [
           {
-            address: getMasterChefAddress(),
+            address: getMasterChefAddress(chainId),
             name: 'poolInfo',
             params: [pid],
           },
           {
-            address: getMasterChefAddress(),
+            address: getMasterChefAddress(chainId),
             name: 'totalAllocPoint',
           },
         ])

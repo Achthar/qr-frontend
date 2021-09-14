@@ -21,6 +21,7 @@ export interface FarmWithStakedValue extends Farm {
 }
 
 interface FarmCardActionsProps {
+  chainId:number,
   farm: FarmWithStakedValue
   account?: string
   addLiquidityUrl?: string
@@ -28,7 +29,7 @@ interface FarmCardActionsProps {
   lpLabel?: string
 }
 
-const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidityUrl, cakePrice, lpLabel }) => {
+const CardActions: React.FC<FarmCardActionsProps> = ({ chainId, farm, account, addLiquidityUrl, cakePrice, lpLabel }) => {
   const { t } = useTranslation()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { pid, lpAddresses } = farm
@@ -42,7 +43,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
   const tokenBalance = new BigNumber(tokenBalanceAsString)
   const stakedBalance = new BigNumber(stakedBalanceAsString)
   const earnings = new BigNumber(earningsAsString)
-  const lpAddress = getAddress(lpAddresses)
+  const lpAddress = getAddress(chainId, lpAddresses)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
   const dispatch = useAppDispatch()
 

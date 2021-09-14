@@ -6,12 +6,12 @@ import { State, ProfileState } from '../types'
 import { fetchProfile } from '.'
 
 export const useFetchProfile = () => {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    dispatch(fetchProfile(account))
-  }, [account, dispatch])
+    dispatch(fetchProfile(chainId, account))
+  }, [chainId, account, dispatch])
 }
 
 export const useProfile = () => {

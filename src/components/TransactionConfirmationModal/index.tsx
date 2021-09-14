@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { ChainId, Currency, Token } from '@pancakeswap/sdk'
+import { /* ChainId, */ Currency, Token } from '@pancakeswap/sdk'
 import styled from 'styled-components'
 import {
   Button,
@@ -21,6 +21,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { RowFixed } from '../Layout/Row'
 import { AutoColumn, ColumnCenter } from '../Layout/Column'
 import { getBscScanLink } from '../../utils'
+import { ChainId } from '../../config/index'
 
 const Wrapper = styled.div`
   width: 100%;

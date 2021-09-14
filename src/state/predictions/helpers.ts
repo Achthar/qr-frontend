@@ -1,5 +1,6 @@
 import { request, gql } from 'graphql-request'
 import { GRAPH_API_PREDICTION } from 'config/constants/endpoints'
+import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
 import {
   Bet,
@@ -277,28 +278,29 @@ export const getBet = async (betId: string): Promise<BetResponse> => {
 }
 
 // V2 REFACTOR
-export const getLedgerData = async (account: string, epochs: number[]) => {
-  const address = getPredictionsAddress()
+export const getLedgerData = async (chainId:number, account: string, epochs: number[]) => {
+  const address = getPredictionsAddress(chainId)
   const ledgerCalls = epochs.map((epoch) => ({
     address,
     name: 'ledger',
     params: [epoch, account],
   }))
-  const response = await multicallv2<PredictionsLedgerResponse[]>(predictionsAbi, ledgerCalls)
+  const response = await multicallv2<PredictionsLedgerResponse[]>(chainId, predictionsAbi, ledgerCalls)
   return response
 }
 
 export const getClaimStatuses = async (
+  chainId:number,
   account: string,
   epochs: number[],
 ): Promise<PredictionsState['claimableStatuses']> => {
-  const address = getPredictionsAddress()
+  const address = getPredictionsAddress(chainId)
   const claimableCalls = epochs.map((epoch) => ({
     address,
     name: 'claimable',
     params: [epoch, account],
   }))
-  const claimableResponses = await multicallv2<[PredictionsClaimableResponse][]>(predictionsAbi, claimableCalls)
+  const claimableResponses = await multicallv2<[PredictionsClaimableResponse][]>(chainId, predictionsAbi, claimableCalls)
 
   return claimableResponses.reduce((accum, claimableResponse, index) => {
     const epoch = epochs[index]
@@ -315,13 +317,14 @@ export type MarketData = Pick<
   PredictionsState,
   'status' | 'currentEpoch' | 'intervalSeconds' | 'minBetAmount' | 'bufferSeconds'
 >
-export const getPredictionData = async (): Promise<MarketData> => {
-  const address = getPredictionsAddress()
+export const getPredictionData = async (chainId:number): Promise<MarketData> => {
+  const address = getPredictionsAddress(chainId)
   const staticCalls = ['currentEpoch', 'intervalSeconds', 'minBetAmount', 'paused', 'bufferSeconds'].map((method) => ({
     address,
     name: method,
   }))
   const [[currentEpoch], [intervalSeconds], [minBetAmount], [paused], [bufferSeconds]] = await multicallv2(
+    chainId,
     predictionsAbi,
     staticCalls,
   )
@@ -335,14 +338,14 @@ export const getPredictionData = async (): Promise<MarketData> => {
   }
 }
 
-export const getRoundsData = async (epochs: number[]): Promise<PredictionsRoundsResponse[]> => {
-  const address = getPredictionsAddress()
+export const getRoundsData = async (chainId:number, epochs: number[]): Promise<PredictionsRoundsResponse[]> => {
+  const address = getPredictionsAddress(chainId)
   const calls = epochs.map((epoch) => ({
     address,
     name: 'rounds',
     params: [epoch],
   }))
-  const response = await multicallv2<PredictionsRoundsResponse[]>(predictionsAbi, calls)
+  const response = await multicallv2<PredictionsRoundsResponse[]>(chainId, predictionsAbi, calls)
   return response
 }
 
@@ -468,11 +471,12 @@ export const parseBigNumberObj = <T = Record<string, any>, K = Record<string, an
  * Fetches rounds a user has participated in
  */
 export const fetchUserRounds = async (
+  chainId: number,
   account: string,
   cursor = 0,
   size = 1000,
 ): Promise<{ [key: string]: ReduxNodeLedger }> => {
-  const contract = getPredictionsContract()
+  const contract = getPredictionsContract(chainId)
 
   try {
     const [rounds, ledgers] = await contract.getUserRounds(account, cursor, size)
@@ -493,8 +497,8 @@ export const fetchUserRounds = async (
  * Fetches the latest rounds by checking the number of rounds a user has participated in first
  * in order to calculate the correct cursor
  */
-export const fetchLatestUserRounds = async (account: string, size = 1000) => {
-  const contract = getPredictionsContract()
+export const fetchLatestUserRounds = async (chainId: number, account: string, size = 1000) => {
+  const contract = getPredictionsContract(chainId)
 
   try {
     const roundCount = await contract.getUserRoundsLength(account)
@@ -504,7 +508,7 @@ export const fetchLatestUserRounds = async (account: string, size = 1000) => {
     }
 
     const cursor = roundCount.lte(size) ? 0 : roundCount.sub(size).toNumber()
-    const userRounds = await fetchUserRounds(account, cursor, size)
+    const userRounds = await fetchUserRounds(chainId, account, cursor, size)
 
     return userRounds
   } catch (error: any) {

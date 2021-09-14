@@ -3,7 +3,7 @@ import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@pancakeswap/uikit'
-import { ChainId } from '@pancakeswap/sdk'
+// import { ChainId } from '@pancakeswap/sdk'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
 import Page from 'components/Layout/Page'
@@ -27,6 +27,7 @@ import FarmTabButtons from './components/FarmTabButtons'
 import { RowProps } from './components/FarmTable/Row'
 import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
+import { ChainId } from '../../config/index'
 
 const ControlContainer = styled.div`
   display: flex;
@@ -120,7 +121,7 @@ const Farms: React.FC = () => {
   const cakePrice = usePriceCakeBusd()
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'pancake_farm_view' })
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
   const chosenFarmsLength = useRef(0)
 
@@ -160,7 +161,7 @@ const Farms: React.FC = () => {
         }
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
         const { cakeRewardsApr, lpRewardsApr } = isActive
-          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[ChainId.MAINNET])
+          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[ChainId.MAINNET_BSC])
           : { cakeRewardsApr: 0, lpRewardsApr: 0 }
 
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -271,7 +272,9 @@ const Farms: React.FC = () => {
     const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
 
     const row: RowProps = {
+      chainId,
       apr: {
+        chainId,
         value: getDisplayApr(farm.apr, farm.lpRewardsApr),
         pid: farm.pid,
         multiplier: farm.multiplier,
@@ -283,6 +286,7 @@ const Farms: React.FC = () => {
         originalValue: farm.apr,
       },
       farm: {
+        chainId,
         label: lpLabel,
         pid: farm.pid,
         token: farm.token,
@@ -339,6 +343,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
+            chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -351,6 +356,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/history`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
+              chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -363,6 +369,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/archived`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
+            chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}

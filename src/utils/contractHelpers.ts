@@ -57,46 +57,71 @@ import MultiCallAbi from 'config/abi/Multicall.json'
 import farmAuctionAbi from 'config/abi/farmAuction.json'
 import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract } from './types'
 
-const getContract = (abi: any, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const signerOrProvider = signer ?? simpleRpcProvider
+const getContract = (
+  chainId: number,
+  abi: any,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
+  const signerOrProvider = signer ?? simpleRpcProvider(chainId)
   return new ethers.Contract(address, abi, signerOrProvider)
 }
 
-export const getBep20Contract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(bep20Abi, address, signer)
+export const getBep20Contract = (
+  chainId: number,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
+  return getContract(chainId, bep20Abi, address, signer)
 }
-export const getErc721Contract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(erc721Abi, address, signer)
+export const getErc721Contract = (
+  chainId: number,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
+  return getContract(chainId, erc721Abi, address, signer)
 }
-export const getLpContract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(lpTokenAbi, address, signer)
+export const getLpContract = (chainId: number, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, lpTokenAbi, address, signer)
 }
 // export const getIfoV1Contract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(ifoV1Abi, address, signer)
 // }
-export const getIfoV2Contract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(ifoV2Abi, address, signer)
+export const getIfoV2Contract = (
+  chainId: number,
+  address: string,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
+  return getContract(chainId, ifoV2Abi, address, signer)
 }
-export const getSouschefContract = (id: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+export const getSouschefContract = (
+  chainId: number,
+  id: number,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
   const config = poolsConfig.find((pool) => pool.sousId === id)
   const abi = config.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
-  return getContract(abi, getAddress(config.contractAddress), signer)
+  return getContract(chainId, abi, getAddress(chainId, config.contractAddress), signer)
 }
-export const getSouschefV2Contract = (id: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+export const getSouschefV2Contract = (
+  chainId: number,
+  id: number,
+  signer?: ethers.Signer | ethers.providers.Provider,
+) => {
   const config = poolsConfig.find((pool) => pool.sousId === id)
-  return getContract(sousChefV2, getAddress(config.contractAddress), signer)
+  return getContract(chainId, sousChefV2, getAddress(chainId, config.contractAddress), signer)
 }
-export const getPointCenterIfoContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(pointCenterIfo, getPointCenterIfoAddress(), signer)
+export const getPointCenterIfoContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, pointCenterIfo, getPointCenterIfoAddress(chainId), signer)
 }
-export const getCakeContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(cakeAbi, getCakeAddress(), signer)
+export const getCakeContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, cakeAbi, getCakeAddress(chainId), signer)
 }
-export const getProfileContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(profileABI, getPancakeProfileAddress(), signer)
+export const getProfileContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, profileABI, getPancakeProfileAddress(chainId), signer)
 }
-export const getPancakeRabbitContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(pancakeRabbitsAbi, getPancakeRabbitsAddress(), signer)
+export const getPancakeRabbitContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, pancakeRabbitsAbi, getPancakeRabbitsAddress(chainId), signer)
 }
 // export const getBunnyFactoryContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(bunnyFactoryAbi, getBunnyFactoryAddress(), signer)
@@ -104,14 +129,14 @@ export const getPancakeRabbitContract = (signer?: ethers.Signer | ethers.provide
 // export const getBunnySpecialContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(bunnySpecialAbi, getBunnySpecialAddress(), signer)
 // }
-export const getLotteryV2Contract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(lotteryV2Abi, getLotteryV2Address(), signer)
+export const getLotteryV2Contract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, lotteryV2Abi, getLotteryV2Address(chainId), signer)
 }
-export const getMasterchefContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(masterChef, getMasterChefAddress(), signer)
+export const getMasterchefContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, masterChef, getMasterChefAddress(chainId), signer)
 }
-export const getClaimRefundContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(claimRefundAbi, getClaimRefundAddress(), signer)
+export const getClaimRefundContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, claimRefundAbi, getClaimRefundAddress(chainId), signer)
 }
 // export const getTradingCompetitionContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(tradingCompetitionAbi, getTradingCompetitionAddress(), signer)
@@ -119,19 +144,19 @@ export const getClaimRefundContract = (signer?: ethers.Signer | ethers.providers
 // export const getEasterNftContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(easterNftAbi, getEasterNftAddress(), signer)
 // }
-export const getCakeVaultContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(cakeVaultAbi, getCakeVaultAddress(), signer)
+export const getCakeVaultContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, cakeVaultAbi, getCakeVaultAddress(chainId), signer)
 }
 
-export const getPredictionsContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(predictionsAbi, getPredictionsAddress(), signer) as PredictionsContract
+export const getPredictionsContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, predictionsAbi, getPredictionsAddress(chainId), signer) as PredictionsContract
 }
 
-export const getChainlinkOracleContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainlinkOracleAbi, getChainlinkOracleAddress(), signer) as ChainLinkOracleContract
+export const getChainlinkOracleContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainlinkOracleAbi, getChainlinkOracleAddress(chainId), signer) as ChainLinkOracleContract
 }
-export const getMulticallContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(MultiCallAbi, getMulticallAddress(), signer)
+export const getMulticallContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, MultiCallAbi, getMulticallAddress(chainId), signer)
 }
 // export const getBunnySpecialCakeVaultContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(bunnySpecialCakeVaultAbi, getBunnySpecialCakeVaultAddress(), signer)
@@ -142,6 +167,6 @@ export const getMulticallContract = (signer?: ethers.Signer | ethers.providers.P
 // export const getBunnySpecialLotteryContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
 //   return getContract(bunnySpecialLotteryAbi, getBunnySpecialLotteryAddress(), signer)
 // }
-export const getFarmAuctionContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(farmAuctionAbi, getFarmAuctionAddress(), signer) as FarmAuctionContract
+export const getFarmAuctionContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, farmAuctionAbi, getFarmAuctionAddress(chainId), signer) as FarmAuctionContract
 }

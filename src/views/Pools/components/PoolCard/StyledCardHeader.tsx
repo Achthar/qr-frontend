@@ -13,12 +13,13 @@ const Wrapper = styled(CardHeader)<{ isFinished?: boolean; background?: string }
 `
 
 const StyledCardHeader: React.FC<{
+  chainId: number,
   earningToken: Token
   stakingToken: Token
   isAutoVault?: boolean
   isFinished?: boolean
   isStaking?: boolean
-}> = ({ earningToken, stakingToken, isFinished = false, isAutoVault = false, isStaking = false }) => {
+}> = ({chainId, earningToken, stakingToken, isFinished = false, isAutoVault = false, isStaking = false }) => {
   const { t } = useTranslation()
   const isCakePool = earningToken.symbol === 'CAKE' && stakingToken.symbol === 'CAKE'
   const background = isStaking ? 'bubblegum' : 'cardHeader'
@@ -58,7 +59,7 @@ const StyledCardHeader: React.FC<{
         {isAutoVault ? (
           <CakeVaultTokenPairImage width={64} height={64} />
         ) : (
-          <TokenPairImage primaryToken={earningToken} secondaryToken={stakingToken} width={64} height={64} />
+          <TokenPairImage chainId={chainId} primaryToken={earningToken} secondaryToken={stakingToken} width={64} height={64} />
         )}
       </Flex>
     </Wrapper>

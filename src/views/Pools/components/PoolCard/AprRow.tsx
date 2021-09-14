@@ -19,12 +19,13 @@ const ApyLabelContainer = styled(Flex)`
 `
 
 interface AprRowProps {
+  chainId:number,
   pool: Pool
   stakedBalance: BigNumber
   performanceFee?: number
 }
 
-const AprRow: React.FC<AprRowProps> = ({ pool, stakedBalance, performanceFee = 0 }) => {
+const AprRow: React.FC<AprRowProps> = ({chainId,  pool, stakedBalance, performanceFee = 0 }) => {
   const { t } = useTranslation()
   const { stakingToken, earningToken, isFinished, apr, earningTokenPrice, stakingTokenPrice, userData, isAutoVault } =
     pool
@@ -39,7 +40,7 @@ const AprRow: React.FC<AprRowProps> = ({ pool, stakedBalance, performanceFee = 0
 
   const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(pool, performanceFee)
 
-  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(stakingToken.address)}` : '/swap'
+  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
 
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal

@@ -14,7 +14,7 @@ import { WalletIfoState, WalletIfoData } from '../../types'
 /**
  * Gets all data from an IFO related to a wallet
  */
-const useGetWalletIfoData = (ifo: Ifo): WalletIfoData => {
+const useGetWalletIfoData = (chainId:number, ifo: Ifo): WalletIfoData => {
   const { fastRefresh } = useRefresh()
   const [state, setState] = useState<WalletIfoState>({
     poolBasic: {
@@ -39,7 +39,7 @@ const useGetWalletIfoData = (ifo: Ifo): WalletIfoData => {
 
   const { account } = useWeb3React()
   const contract = useIfoV2Contract(address)
-  const currencyContract = useERC20(getAddress(currency.address))
+  const currencyContract = useERC20(getAddress(chainId, currency.address))
   const allowance = useIfoAllowance(currencyContract, address)
 
   const setPendingTx = (status: boolean, poolId: PoolIds) =>
@@ -68,7 +68,7 @@ const useGetWalletIfoData = (ifo: Ifo): WalletIfoData => {
       params: [account, [0, 1]],
     }))
 
-    const [userInfo, amounts] = await multicallv2(ifoV2Abi, ifoCalls)
+    const [userInfo, amounts] = await multicallv2(chainId, ifoV2Abi, ifoCalls)
 
     setState((prevState) => ({
       ...prevState,
@@ -89,7 +89,7 @@ const useGetWalletIfoData = (ifo: Ifo): WalletIfoData => {
         hasClaimed: userInfo[1][1],
       },
     }))
-  }, [account, address])
+  }, [chainId, account, address])
 
   useEffect(() => {
     if (account) {
@@ -97,7 +97,7 @@ const useGetWalletIfoData = (ifo: Ifo): WalletIfoData => {
     }
   }, [account, fetchIfoData, fastRefresh])
 
-  return { ...state, allowance, contract, setPendingTx, setIsClaimed, fetchIfoData }
+  return { ...state, chainId, allowance, contract, setPendingTx, setIsClaimed, fetchIfoData }
 }
 
 export default useGetWalletIfoData

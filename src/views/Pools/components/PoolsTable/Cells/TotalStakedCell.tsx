@@ -10,6 +10,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import BaseCell, { CellContent } from './BaseCell'
 
 interface TotalStakedCellProps {
+  chainId: number
   pool: Pool
 }
 

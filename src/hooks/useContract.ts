@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import {
   getBep20Contract,
@@ -30,7 +31,7 @@ import { getMulticallAddress } from 'utils/addressHelpers'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
-import { ChainId, WETH } from '@pancakeswap/sdk'
+import { /* ChainId, */  WETH } from '@pancakeswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../config/abi/ens-public-resolver.json'
 import ENS_ABI from '../config/abi/ens-registrar.json'
@@ -39,6 +40,8 @@ import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import { getContract } from '../utils'
+import {ChainId} from '../config/index'
+
 
 /**
  * Helper hooks to get specific contracts (by ABI)
@@ -50,26 +53,26 @@ import { getContract } from '../utils'
 // }
 
 export const useIfoV2Contract = (address: string) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getIfoV2Contract(address, library.getSigner()), [address, library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getIfoV2Contract(chainId, address, library.getSigner()), [chainId, address, library])
 }
 
 export const useERC20 = (address: string) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getBep20Contract(address, library.getSigner()), [address, library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getBep20Contract(chainId, address, library.getSigner()), [chainId, address, library])
 }
 
 /**
  * @see https://docs.openzeppelin.com/contracts/3.x/api/token/erc721
  */
 export const useERC721 = (address: string) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getErc721Contract(address, library.getSigner()), [address, library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getErc721Contract(chainId, address, library.getSigner()), [chainId, address, library])
 }
 
 export const useCake = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getCakeContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getCakeContract(chainId, library.getSigner()), [chainId, library])
 }
 
 // export const useBunnyFactory = () => {
@@ -78,38 +81,38 @@ export const useCake = () => {
 // }
 
 export const usePancakeRabbits = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getPancakeRabbitContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getPancakeRabbitContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useProfile = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getProfileContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getProfileContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useLotteryV2Contract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getLotteryV2Contract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getLotteryV2Contract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useMasterchef = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getMasterchefContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getMasterchefContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useSousChef = (id) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getSouschefContract(id, library.getSigner()), [id, library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getSouschefContract(chainId, id, library.getSigner()), [chainId, id, library])
 }
 
 export const useSousChefV2 = (id) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getSouschefV2Contract(id, library.getSigner()), [id, library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getSouschefV2Contract(chainId, id, library.getSigner()), [chainId, id, library])
 }
 
 export const usePointCenterIfoContract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getPointCenterIfoContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getPointCenterIfoContract(chainId, library.getSigner()), [chainId, library])
 }
 
 // export const useBunnySpecialContract = () => {
@@ -118,8 +121,8 @@ export const usePointCenterIfoContract = () => {
 // }
 
 export const useClaimRefundContract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getClaimRefundContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getClaimRefundContract(chainId, library.getSigner()), [chainId, library])
 }
 
 // export const useTradingCompetitionContract = () => {
@@ -133,18 +136,18 @@ export const useClaimRefundContract = () => {
 // }
 
 export const useCakeVaultContract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getCakeVaultContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getCakeVaultContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const usePredictionsContract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getPredictionsContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getPredictionsContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useChainlinkOracleContract = () => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getChainlinkOracleContract(library.getSigner()), [library])
+  const { library, chainId } = useActiveWeb3React()
+  return useMemo(() => getChainlinkOracleContract(chainId, library.getSigner()), [chainId, library])
 }
 
 // export const useSpecialBunnyCakeVaultContract = () => {
@@ -163,7 +166,7 @@ export const useChainlinkOracleContract = () => {
 // }
 
 export const useFarmAuctionContract = () => {
-  const { account, library } = useActiveWeb3React()
+  const { account, library, chainId } = useActiveWeb3React()
   // This hook is slightly different from others
   // Calls were failing if unconnected user goes to farm auction page
   // Using library instead of library.getSigner() fixes the problem for unconnected users
@@ -175,7 +178,10 @@ export const useFarmAuctionContract = () => {
   //     the functionality of the page is not affected, data is loading fine and you can interact with the contract
   //
   // Similar behavior was also noticed on Trading Competition page.
-  return useMemo(() => getFarmAuctionContract(account ? library.getSigner() : library), [library, account])
+  return useMemo(
+    () => getFarmAuctionContract(chainId, account ? library.getSigner() : library),
+    [chainId, library, account],
+  )
 }
 
 // Code below migrated from Exchange useContract.ts
@@ -210,8 +216,8 @@ export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contrac
   if (chainId) {
     // eslint-disable-next-line default-case
     switch (chainId) {
-      case ChainId.MAINNET:
-      case ChainId.TESTNET:
+      case ChainId.MAINNET_BSC:
+      case ChainId.TESTNET_BSC:
         address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
         break
     }
@@ -232,5 +238,6 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 }
 
 export function useMulticallContract(): Contract | null {
-  return useContract(getMulticallAddress(), multiCallAbi, false)
+  const{chainId} = useWeb3React()
+  return useContract(getMulticallAddress(chainId), multiCallAbi, false)
 }

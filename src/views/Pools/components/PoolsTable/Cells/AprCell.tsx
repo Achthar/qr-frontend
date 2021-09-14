@@ -9,6 +9,7 @@ import BaseCell, { CellContent } from './BaseCell'
 import Apr from '../Apr'
 
 interface AprCellProps {
+  chainId:number
   pool: Pool
 }
 
@@ -19,7 +20,7 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const AprCell: React.FC<AprCellProps> = ({ pool }) => {
+const AprCell: React.FC<AprCellProps> = ({ chainId, pool }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const { userData } = pool
@@ -31,7 +32,7 @@ const AprCell: React.FC<AprCellProps> = ({ pool }) => {
         <Text fontSize="12px" color="textSubtle" textAlign="left">
           {t('APR')}
         </Text>
-        <Apr pool={pool} stakedBalance={stakedBalance} showIcon={!isMobile} />
+        <Apr chainId={chainId} pool={pool} stakedBalance={stakedBalance} showIcon={!isMobile} />
       </CellContent>
     </StyledCell>
   )

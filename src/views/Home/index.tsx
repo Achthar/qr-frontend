@@ -15,7 +15,7 @@ import { WedgeTopLeft, InnerWedgeWrapper, OuterWedgeWrapper, WedgeTopRight } fro
 
 const Home: React.FC = () => {
   const { theme } = useTheme()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
   const HomeSectionContainerStyles = { margin: '0', width: '100%', maxWidth: '968px' }
 
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
           </InnerWedgeWrapper>
         </OuterWedgeWrapper>
         <SalesSection {...earnSectionData} />
-        <FarmsPoolsRow />
+        <FarmsPoolsRow {...chainId} />
       </PageSection>
       <PageSection
         innerProps={{ style: HomeSectionContainerStyles }}
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
         hasCurvedDivider={false}
       >
         <SalesSection {...cakeSectionData} />
-        <CakeDataRow />
+        <CakeDataRow {...chainId}/>
       </PageSection>
     </>
   )

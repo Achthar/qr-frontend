@@ -1,3 +1,4 @@
+import { useWeb3React } from '@web3-react/core'
 import poolsConfig from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import erc20ABI from 'config/abi/erc20.json'
@@ -12,37 +13,38 @@ import BigNumber from 'bignumber.js'
 const nonBnbPools = poolsConfig.filter((p) => p.stakingToken.symbol !== 'BNB')
 const bnbPools = poolsConfig.filter((p) => p.stakingToken.symbol === 'BNB')
 const nonMasterPools = poolsConfig.filter((p) => p.sousId !== 0)
-const masterChefContract = getMasterchefContract()
 
-export const fetchPoolsAllowance = async (account) => {
+// sconst masterChefContract = getMasterchefContract()
+
+export const fetchPoolsAllowance = async (chainId, account) => {
   const calls = nonBnbPools.map((p) => ({
-    address: getAddress(p.stakingToken.address),
+    address: getAddress(chainId, p.stakingToken.address),
     name: 'allowance',
-    params: [account, getAddress(p.contractAddress)],
+    params: [account, getAddress(chainId, p.contractAddress)],
   }))
 
-  const allowances = await multicall(erc20ABI, calls)
+  const allowances = await multicall(chainId, erc20ABI, calls)
   return nonBnbPools.reduce(
     (acc, pool, index) => ({ ...acc, [pool.sousId]: new BigNumber(allowances[index]).toJSON() }),
     {},
   )
 }
 
-export const fetchUserBalances = async (account) => {
+export const fetchUserBalances = async (chainId, account) => {
   // Non BNB pools
   const calls = nonBnbPools.map((p) => ({
-    address: getAddress(p.stakingToken.address),
+    address: getAddress(chainId, p.stakingToken.address),
     name: 'balanceOf',
     params: [account],
   }))
-  const tokenBalancesRaw = await multicall(erc20ABI, calls)
+  const tokenBalancesRaw = await multicall(chainId, erc20ABI, calls)
   const tokenBalances = nonBnbPools.reduce(
     (acc, pool, index) => ({ ...acc, [pool.sousId]: new BigNumber(tokenBalancesRaw[index]).toJSON() }),
     {},
   )
 
   // BNB pools
-  const bnbBalance = await simpleRpcProvider.getBalance(account)
+  const bnbBalance = await simpleRpcProvider(chainId).getBalance(account)
   const bnbBalances = bnbPools.reduce(
     (acc, pool) => ({ ...acc, [pool.sousId]: new BigNumber(bnbBalance.toString()).toJSON() }),
     {},
@@ -51,13 +53,13 @@ export const fetchUserBalances = async (account) => {
   return { ...tokenBalances, ...bnbBalances }
 }
 
-export const fetchUserStakeBalances = async (account) => {
+export const fetchUserStakeBalances = async (chainId, account) => {
   const calls = nonMasterPools.map((p) => ({
-    address: getAddress(p.contractAddress),
+    address: getAddress(chainId, p.contractAddress),
     name: 'userInfo',
     params: [account],
   }))
-  const userInfo = await multicall(sousChefABI, calls)
+  const userInfo = await multicall(chainId, sousChefABI, calls)
   const stakedBalances = nonMasterPools.reduce(
     (acc, pool, index) => ({
       ...acc,
@@ -67,18 +69,18 @@ export const fetchUserStakeBalances = async (account) => {
   )
 
   // Cake / Cake pool
-  const { amount: masterPoolAmount } = await masterChefContract.userInfo('0', account)
+  const { amount: masterPoolAmount } = await getMasterchefContract(chainId).userInfo('0', account)
 
   return { ...stakedBalances, 0: new BigNumber(masterPoolAmount.toString()).toJSON() }
 }
 
-export const fetchUserPendingRewards = async (account) => {
+export const fetchUserPendingRewards = async (chainId, account) => {
   const calls = nonMasterPools.map((p) => ({
-    address: getAddress(p.contractAddress),
+    address: getAddress(chainId, p.contractAddress),
     name: 'pendingReward',
     params: [account],
   }))
-  const res = await multicall(sousChefABI, calls)
+  const res = await multicall(chainId, sousChefABI, calls)
   const pendingRewards = nonMasterPools.reduce(
     (acc, pool, index) => ({
       ...acc,
@@ -88,7 +90,7 @@ export const fetchUserPendingRewards = async (account) => {
   )
 
   // Cake / Cake pool
-  const pendingReward = await masterChefContract.pendingCake('0', account)
+  const pendingReward = await getMasterchefContract(chainId).pendingCake('0', account)
 
   return { ...pendingRewards, 0: new BigNumber(pendingReward.toString()).toJSON() }
 }

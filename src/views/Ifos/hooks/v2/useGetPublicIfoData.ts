@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BSC_BLOCK_TIME } from 'config'
 import { Ifo, IfoStatus } from 'config/constants/types'
@@ -27,7 +28,7 @@ const formatPool = (pool) => ({
 /**
  * Gets all public data of an IFO
  */
-const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
+const useGetPublicIfoData = (chainId: number, ifo: Ifo): PublicIfoData => {
   const { address, releaseBlockNumber } = ifo
   const lpTokenPriceInUsd = useLpTokenPrice(ifo.currency.symbol)
   const { fastRefresh } = useRefresh()
@@ -92,6 +93,7 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
     ]
 
     const [startBlock, endBlock, poolBasic, poolUnlimited, taxRate, numberPoints] = await multicallv2(
+      chainId,
       ifoV2Abi,
       ifoCalls,
     )
@@ -126,7 +128,7 @@ const useGetPublicIfoData = (ifo: Ifo): PublicIfoData => {
       endBlockNum,
       numberPoints: numberPoints ? numberPoints[0].toNumber() : 0,
     }))
-  }, [address, currentBlock, releaseBlockNumber])
+  }, [chainId, address, currentBlock, releaseBlockNumber])
 
   useEffect(() => {
     fetchIfoData()

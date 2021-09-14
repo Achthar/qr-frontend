@@ -102,8 +102,8 @@ const IfoFoldableCard: React.FC<IfoFoldableCardProps> = ({ ifo, publicIfoData, w
   const [isVisible, setIsVisible] = useState(isInitiallyVisible)
   const [enableStatus, setEnableStatus] = useState(EnableStatus.DISABLED)
   const { t } = useTranslation()
-  const { account } = useWeb3React()
-  const raisingTokenContract = useERC20(getAddress(ifo.currency.address))
+  const { account, chainId } = useWeb3React()
+  const raisingTokenContract = useERC20(getAddress(chainId, ifo.currency.address))
   const Ribbon = getRibbonComponent(ifo, publicIfoData.status, t)
   const isActive = publicIfoData.status !== 'finished' && ifo.isActive
   const { contract } = walletIfoData
@@ -156,6 +156,7 @@ const IfoFoldableCard: React.FC<IfoFoldableCardProps> = ({ ifo, publicIfoData, w
           <CardsWrapper singleCard={!publicIfoData.poolBasic || !walletIfoData.poolBasic}>
             {publicIfoData.poolBasic && walletIfoData.poolBasic && (
               <IfoPoolCard
+                chainId={chainId}
                 poolId={PoolIds.poolBasic}
                 ifo={ifo}
                 publicIfoData={publicIfoData}
@@ -165,6 +166,7 @@ const IfoFoldableCard: React.FC<IfoFoldableCardProps> = ({ ifo, publicIfoData, w
               />
             )}
             <IfoPoolCard
+              chainId={chainId}
               poolId={PoolIds.poolUnlimited}
               ifo={ifo}
               publicIfoData={publicIfoData}

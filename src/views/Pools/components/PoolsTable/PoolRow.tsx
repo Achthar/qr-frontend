@@ -14,6 +14,7 @@ import AutoEarningsCell from './Cells/AutoEarningsCell'
 import AutoAprCell from './Cells/AutoAprCell'
 
 interface PoolRowProps {
+  chainId: number
   pool: Pool
   account: string
   userDataLoaded: boolean
@@ -25,7 +26,7 @@ const StyledRow = styled.div`
   cursor: pointer;
 `
 
-const PoolRow: React.FC<PoolRowProps> = ({ pool, account, userDataLoaded }) => {
+const PoolRow: React.FC<PoolRowProps> = ({ chainId, pool, account, userDataLoaded }) => {
   const { isXs, isSm, isMd, isLg, isXl, isXxl, isTablet, isDesktop } = useMatchBreakpoints()
   const isLargerScreen = isLg || isXl || isXxl
   const [expanded, setExpanded] = useState(false)
@@ -38,19 +39,20 @@ const PoolRow: React.FC<PoolRowProps> = ({ pool, account, userDataLoaded }) => {
   return (
     <>
       <StyledRow role="row" onClick={toggleExpanded}>
-        <NameCell pool={pool} />
+        <NameCell chainId={chainId} pool={pool} />
         {pool.isAutoVault ? (
-          <AutoEarningsCell pool={pool} account={account} userDataLoaded={userDataLoaded} />
+          <AutoEarningsCell chainId={chainId} pool={pool} account={account} userDataLoaded={userDataLoaded} />
         ) : (
-          <EarningsCell pool={pool} account={account} userDataLoaded={userDataLoaded} />
+          <EarningsCell chainId={chainId} pool={pool} account={account} userDataLoaded={userDataLoaded} />
         )}
-        {pool.isAutoVault ? <AutoAprCell pool={pool} /> : <AprCell pool={pool} />}
-        {isLargerScreen && <TotalStakedCell pool={pool} />}
+        {pool.isAutoVault ? <AutoAprCell chainId={chainId} pool={pool} /> : <AprCell chainId={chainId} pool={pool} />}
+        {isLargerScreen && <TotalStakedCell chainId={chainId} pool={pool} />}
         {isDesktop && <EndsInCell pool={pool} />}
         <ExpandActionCell expanded={expanded} isFullLayout={isTablet || isDesktop} />
       </StyledRow>
       {shouldRenderActionPanel && (
         <ActionPanel
+          chainId={chainId}
           account={account}
           pool={pool}
           userDataLoaded={userDataLoaded}

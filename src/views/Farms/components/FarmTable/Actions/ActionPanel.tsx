@@ -15,6 +15,7 @@ import Multiplier, { MultiplierProps } from '../Multiplier'
 import Liquidity, { LiquidityProps } from '../Liquidity'
 
 export interface ActionPanelProps {
+  chainId:number,
   apr: AprProps
   multiplier: MultiplierProps
   liquidity: LiquidityProps
@@ -131,6 +132,7 @@ const ValueWrapper = styled.div`
 `
 
 const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
+  chainId,
   details,
   apr,
   multiplier,
@@ -145,10 +147,11 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const { quoteToken, token, dual } = farm
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
+    chainId,
     quoteTokenAddress: quoteToken.address,
     tokenAddress: token.address,
   })
-  const lpAddress = getAddress(farm.lpAddresses)
+  const lpAddress = getAddress(chainId, farm.lpAddresses)
   const bsc = getBscScanLink(lpAddress, 'address')
   const info = `https://pancakeswap.info/pool/${lpAddress}`
 
@@ -185,7 +188,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
       </ValueContainer>
       <ActionContainer>
         <HarvestAction {...farm} userDataReady={userDataReady} />
-        <StakedAction {...farm} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={apr.value} />
+        <StakedAction {...farm} chainId={chainId} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={apr.value} />
       </ActionContainer>
     </Container>
   )

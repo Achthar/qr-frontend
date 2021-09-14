@@ -16,7 +16,7 @@ enum FetchStatus {
   FAILED = 'failed',
 }
 
-const useGetTopPoolsByApr = (isIntersecting: boolean) => {
+const useGetTopPoolsByApr = (chainId: number, isIntersecting: boolean) => {
   const dispatch = useAppDispatch()
   const { pools: poolsWithoutAutoVault } = useSelector((state: State) => ({
     pools: state.pools.data,
@@ -42,11 +42,11 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
-      const blockNumber = await simpleRpcProvider.getBlockNumber()
+      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
 
       try {
         await dispatch(fetchCakeVaultFees())
-        await dispatch(fetchPoolsPublicDataAsync(blockNumber))
+        await dispatch(fetchPoolsPublicDataAsync(chainId, blockNumber))
         setFetchStatus(FetchStatus.SUCCESS)
       } catch (e) {
         console.error(e)
@@ -57,7 +57,7 @@ const useGetTopPoolsByApr = (isIntersecting: boolean) => {
     if (isIntersecting && fetchStatus === FetchStatus.NOT_FETCHED) {
       fetchPoolsPublicData()
     }
-  }, [dispatch, setFetchStatus, fetchStatus, topPools, isIntersecting])
+  }, [chainId, dispatch, setFetchStatus, fetchStatus, topPools, isIntersecting])
 
   useEffect(() => {
     const getTopPoolsByApr = (activePools: Pool[]) => {

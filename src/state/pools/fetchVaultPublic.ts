@@ -5,7 +5,7 @@ import cakeVaultAbi from 'config/abi/cakeVault.json'
 import { getCakeVaultAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 
-export const fetchPublicVaultData = async () => {
+export const fetchPublicVaultData = async (chainId:number) => {
   try {
     const calls = [
       'getPricePerFullShare',
@@ -13,11 +13,12 @@ export const fetchPublicVaultData = async () => {
       'calculateHarvestCakeRewards',
       'calculateTotalPendingCakeRewards',
     ].map((method) => ({
-      address: getCakeVaultAddress(),
+      address: getCakeVaultAddress(chainId),
       name: method,
     }))
 
     const [[sharePrice], [shares], [estimatedCakeBountyReward], [totalPendingCakeHarvest]] = await multicallv2(
+      chainId,
       cakeVaultAbi,
       calls,
     )
@@ -43,14 +44,14 @@ export const fetchPublicVaultData = async () => {
   }
 }
 
-export const fetchVaultFees = async () => {
+export const fetchVaultFees = async (chainId:number) => {
   try {
     const calls = ['performanceFee', 'callFee', 'withdrawFee', 'withdrawFeePeriod'].map((method) => ({
-      address: getCakeVaultAddress(),
+      address: getCakeVaultAddress(chainId),
       name: method,
     }))
 
-    const [[performanceFee], [callFee], [withdrawalFee], [withdrawalFeePeriod]] = await multicallv2(cakeVaultAbi, calls)
+    const [[performanceFee], [callFee], [withdrawalFee], [withdrawalFeePeriod]] = await multicallv2(chainId, cakeVaultAbi, calls)
 
     return {
       performanceFee: performanceFee.toNumber(),

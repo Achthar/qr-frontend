@@ -72,7 +72,7 @@ export default function RemoveLiquidity({
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
-  const deadline = useTransactionDeadline()
+  const deadline = useTransactionDeadline(chainId)
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const formattedAmounts = {
@@ -96,7 +96,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
@@ -560,6 +560,7 @@ export default function RemoveLiquidity({
           {showDetailed && (
             <Box my="16px">
               <CurrencyInputPanel
+                chainId={chainId}
                 value={formattedAmounts[Field.LIQUIDITY]}
                 onUserInput={onLiquidityInput}
                 onMax={() => {
@@ -576,6 +577,7 @@ export default function RemoveLiquidity({
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
+                chainId={chainId}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_A]}
                 onUserInput={onCurrencyAInput}
@@ -590,6 +592,7 @@ export default function RemoveLiquidity({
                 <AddIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
+                chainId={chainId}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_B]}
                 onUserInput={onCurrencyBInput}
@@ -669,7 +672,7 @@ export default function RemoveLiquidity({
 
       {pair ? (
         <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-          <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
+          <MinimalPositionCard chainId={chainId} showUnwrapped={oneCurrencyIsWETH} pair={pair} />
         </AutoColumn>
       ) : null}
     </Page>

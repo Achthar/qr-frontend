@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ChainId } from '@pancakeswap/sdk'
+// import { ChainId } from '@pancakeswap/sdk'
 import { useFarms, usePriceCakeBusd } from 'state/farms/hooks'
 import { useAppDispatch } from 'state'
 import { fetchFarmsPublicDataAsync, nonArchivedFarms } from 'state/farms'
@@ -8,6 +8,7 @@ import BigNumber from 'bignumber.js'
 import { orderBy } from 'lodash'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import { Farm } from 'state/types'
+import { ChainId } from '../../../config/index'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -50,7 +51,7 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
           new BigNumber(farm.poolWeight),
           cakePriceBusd,
           totalLiquidity,
-          farm.lpAddresses[ChainId.MAINNET],
+          farm.lpAddresses[ChainId.MAINNET_BSC],
         )
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr }
       })

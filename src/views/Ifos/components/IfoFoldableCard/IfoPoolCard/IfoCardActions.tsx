@@ -11,6 +11,7 @@ import ClaimButton from './ClaimButton'
 import { SkeletonCardActions } from './Skeletons'
 
 interface Props {
+  chainId:number,
   poolId: PoolIds
   ifo: Ifo
   publicIfoData: PublicIfoData
@@ -19,7 +20,7 @@ interface Props {
   isLoading: boolean
 }
 
-const IfoCardActions: React.FC<Props> = ({ poolId, ifo, publicIfoData, walletIfoData, hasProfile, isLoading }) => {
+const IfoCardActions: React.FC<Props> = ({ chainId, poolId, ifo, publicIfoData, walletIfoData, hasProfile, isLoading }) => {
   const { t } = useTranslation()
   const { account } = useWeb3React()
   const userPoolCharacteristics = walletIfoData[poolId]
@@ -43,7 +44,7 @@ const IfoCardActions: React.FC<Props> = ({ poolId, ifo, publicIfoData, walletIfo
   return (
     <>
       {publicIfoData.status === 'live' && (
-        <ContributeButton poolId={poolId} ifo={ifo} publicIfoData={publicIfoData} walletIfoData={walletIfoData} />
+        <ContributeButton chainId={chainId} poolId={poolId} ifo={ifo} publicIfoData={publicIfoData} walletIfoData={walletIfoData} />
       )}
       {publicIfoData.status === 'finished' &&
         !userPoolCharacteristics.hasClaimed &&

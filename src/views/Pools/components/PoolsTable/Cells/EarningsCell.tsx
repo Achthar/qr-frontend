@@ -12,6 +12,7 @@ import BaseCell, { CellContent } from './BaseCell'
 import CollectModal from '../../PoolCard/Modals/CollectModal'
 
 interface EarningsCellProps {
+  chainId: number
   pool: Pool
   account: string
   userDataLoaded: boolean
@@ -24,7 +25,7 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const EarningsCell: React.FC<EarningsCellProps> = ({ pool, account, userDataLoaded }) => {
+const EarningsCell: React.FC<EarningsCellProps> = ({ chainId, pool, account, userDataLoaded }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const { sousId, earningToken, poolCategory, userData, earningTokenPrice } = pool
@@ -42,6 +43,7 @@ const EarningsCell: React.FC<EarningsCellProps> = ({ pool, account, userDataLoad
 
   const [onPresentCollect] = useModal(
     <CollectModal
+      chainId={chainId}
       formattedBalance={formattedBalance}
       fullBalance={fullBalance}
       earningToken={earningToken}

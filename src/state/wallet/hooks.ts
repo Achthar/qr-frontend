@@ -10,7 +10,10 @@ import { useSingleContractMultipleData, useMultipleContractSingleData } from '..
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
  */
-export function useBNBBalances(uncheckedAddresses?: (string | undefined)[]): {
+export function useBNBBalances(
+  chainId: number,
+  uncheckedAddresses?: (string | undefined)[],
+): {
   [address: string]: CurrencyAmount | undefined
 } {
   const multicallContract = useMulticallContract()
@@ -27,6 +30,7 @@ export function useBNBBalances(uncheckedAddresses?: (string | undefined)[]): {
   )
 
   const results = useSingleContractMultipleData(
+    chainId,
     multicallContract,
     'getEthBalance',
     addresses.map((address) => [address]),
@@ -47,6 +51,7 @@ export function useBNBBalances(uncheckedAddresses?: (string | undefined)[]): {
  * Returns a map of token addresses to their eventually consistent token balances for a single account.
  */
 export function useTokenBalancesWithLoadingIndicator(
+  chainId: number,
   address?: string,
   tokens?: (Token | undefined)[],
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
@@ -57,7 +62,9 @@ export function useTokenBalancesWithLoadingIndicator(
 
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens])
 
-  const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [address])
+  const balances = useMultipleContractSingleData(chainId, validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [
+    address,
+  ])
 
   const anyLoading: boolean = useMemo(() => balances.some((callState) => callState.loading), [balances])
 
@@ -81,20 +88,22 @@ export function useTokenBalancesWithLoadingIndicator(
 }
 
 export function useTokenBalances(
+  chainId: number,
   address?: string,
   tokens?: (Token | undefined)[],
 ): { [tokenAddress: string]: TokenAmount | undefined } {
-  return useTokenBalancesWithLoadingIndicator(address, tokens)[0]
+  return useTokenBalancesWithLoadingIndicator(chainId, address, tokens)[0]
 }
 
 // get the balance for a single token/account combo
-export function useTokenBalance(account?: string, token?: Token): TokenAmount | undefined {
-  const tokenBalances = useTokenBalances(account, [token])
+export function useTokenBalance(chainId: number, account?: string, token?: Token): TokenAmount | undefined {
+  const tokenBalances = useTokenBalances(chainId, account, [token])
   if (!token) return undefined
   return tokenBalances[token.address]
 }
 
 export function useCurrencyBalances(
+  chainId: number,
   account?: string,
   currencies?: (Currency | undefined)[],
 ): (CurrencyAmount | undefined)[] {
@@ -103,9 +112,9 @@ export function useCurrencyBalances(
     [currencies],
   )
 
-  const tokenBalances = useTokenBalances(account, tokens)
+  const tokenBalances = useTokenBalances(chainId, account, tokens)
   const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === ETHER) ?? false, [currencies])
-  const ethBalance = useBNBBalances(containsBNB ? [account] : [])
+  const ethBalance = useBNBBalances(chainId, containsBNB ? [account] : [])
 
   return useMemo(
     () =>
@@ -119,15 +128,15 @@ export function useCurrencyBalances(
   )
 }
 
-export function useCurrencyBalance(account?: string, currency?: Currency): CurrencyAmount | undefined {
-  return useCurrencyBalances(account, [currency])[0]
+export function useCurrencyBalance(chainId: number, account?: string, currency?: Currency): CurrencyAmount | undefined {
+  return useCurrencyBalances(chainId, account, [currency])[0]
 }
 
 // mimics useAllBalances
-export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {
+export function useAllTokenBalances(chainId: number): { [tokenAddress: string]: TokenAmount | undefined } {
   const { account } = useWeb3React()
   const allTokens = useAllTokens()
   const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [allTokens])
-  const balances = useTokenBalances(account ?? undefined, allTokensArray)
+  const balances = useTokenBalances(chainId, account ?? undefined, allTokensArray)
   return balances ?? {}
 }

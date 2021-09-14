@@ -8,6 +8,7 @@ import Balance from 'components/Balance'
 import CollectModal from '../Modals/CollectModal'
 
 interface HarvestActionsProps {
+  chainId: number
   earnings: BigNumber
   earningToken: Token
   sousId: number
@@ -17,6 +18,7 @@ interface HarvestActionsProps {
 }
 
 const HarvestActions: React.FC<HarvestActionsProps> = ({
+  chainId,
   earnings,
   earningToken,
   sousId,
@@ -36,6 +38,7 @@ const HarvestActions: React.FC<HarvestActionsProps> = ({
 
   const [onPresentCollect] = useModal(
     <CollectModal
+      chainId={chainId}
       formattedBalance={formattedBalance}
       fullBalance={fullBalance}
       earningToken={earningToken}

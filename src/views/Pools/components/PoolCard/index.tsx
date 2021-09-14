@@ -11,7 +11,7 @@ import CardFooter from './CardFooter'
 import StyledCardHeader from './StyledCardHeader'
 import CardActions from './CardActions'
 
-const PoolCard: React.FC<{ pool: Pool; account: string }> = ({ pool, account }) => {
+const PoolCard: React.FC<{ chainId: number; pool: Pool; account: string }> = ({ chainId, pool, account }) => {
   const { sousId, stakingToken, earningToken, isFinished, userData } = pool
   const { t } = useTranslation()
   const stakedBalance = userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO
@@ -23,16 +23,17 @@ const PoolCard: React.FC<{ pool: Pool; account: string }> = ({ pool, account }) 
       ribbon={isFinished && <CardRibbon variantColor="textDisabled" text={t('Finished')} />}
     >
       <StyledCardHeader
+        chainId={chainId}
         isStaking={accountHasStakedBalance}
         earningToken={earningToken}
         stakingToken={stakingToken}
         isFinished={isFinished && sousId !== 0}
       />
       <CardBody>
-        <AprRow pool={pool} stakedBalance={stakedBalance} />
+        <AprRow chainId={chainId} pool={pool} stakedBalance={stakedBalance} />
         <Flex mt="24px" flexDirection="column">
           {account ? (
-            <CardActions pool={pool} stakedBalance={stakedBalance} />
+            <CardActions chainId={chainId} pool={pool} stakedBalance={stakedBalance} />
           ) : (
             <>
               <Text mb="10px" textTransform="uppercase" fontSize="12px" color="textSubtle" bold>
@@ -43,7 +44,7 @@ const PoolCard: React.FC<{ pool: Pool; account: string }> = ({ pool, account }) 
           )}
         </Flex>
       </CardBody>
-      <CardFooter pool={pool} account={account} />
+      <CardFooter chainId={chainId} pool={pool} account={account} />
     </StyledCard>
   )
 }

@@ -16,9 +16,9 @@ interface WalletInfoProps {
 
 const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowBnbBalance, onDismiss }) => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
-  const { balance } = useGetBnbBalance()
-  const { balance: cakeBalance } = useTokenBalance(getCakeAddress())
+  const { account, chainId } = useWeb3React()
+  const { balance } = useGetBnbBalance(chainId)
+  const { balance: cakeBalance } = useTokenBalance(chainId, getCakeAddress(chainId))
   const { logout } = useAuth()
 
   const handleLogout = () => {
