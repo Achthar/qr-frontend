@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useWeb3React } from '@web3-react/core'
-import farmsConfig from 'config/constants/farms'
+import {farmsNew as farmsConfig} from 'config/constants/farms'
 import isArchivedPid from 'utils/farmHelpers'
-import priceHelperLpsConfig from 'config/constants/priceHelperLps'
-import fetchFarms from './fetchFarms'
+import {priceHelperLps as priceHelperLpsConfig, priceHelperLpsNew as priceHelperLpsConfigNew} from 'config/constants/priceHelperLps'
+import {fetchFarms} from './fetchFarms'
 import fetchFarmsPrices from './fetchFarmsPrices'
 import {
   fetchFarmUserEarnings,
@@ -11,9 +11,10 @@ import {
   fetchFarmUserTokenBalances,
   fetchFarmUserStakedBalances,
 } from './fetchFarmUser'
-import { FarmsState, Farm } from '../types'
+import { FarmsState, Farm, FarmNew } from '../types'
+import {ChainId} from '../../config/index'
 
-const noAccountFarmConfig = farmsConfig.map((farm) => ({
+const noAccountFarmConfig = farmsConfig[ChainId.MAINNET_BSC].map((farm) => ({
   ...farm,
   userData: {
     allowance: '0',
@@ -25,19 +26,19 @@ const noAccountFarmConfig = farmsConfig.map((farm) => ({
 
 const initialState: FarmsState = { data: noAccountFarmConfig, loadArchivedFarmsData: false, userDataLoaded: false }
 
-export const nonArchivedFarms = farmsConfig.filter(({ pid }) => !isArchivedPid(pid))
+export const nonArchivedFarms = (chainId: number)=> farmsConfig[chainId].filter(({ pid }) => !isArchivedPid(pid))
 
 // Async thunks
-export const fetchFarmsPublicDataAsync = createAsyncThunk<Farm[], number[]>(
+export const fetchFarmsPublicDataAsync = createAsyncThunk<FarmNew[], number[]>(
   'farms/fetchFarmsPublicDataAsync',
   async (pids) => {
     const { chainId } = useWeb3React()
-    const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
+    const farmsToFetch = farmsConfig[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
 
     // Add price helper farms
-    const farmsWithPriceHelpers = farmsToFetch.concat(priceHelperLpsConfig)
+    const farms = farmsToFetch.concat(priceHelperLpsConfigNew[chainId])
 
-    const farms = await fetchFarms(chainId, farmsWithPriceHelpers)
+    // const farms = await fetchFarmsNew(chainId, farmsWithPriceHelpersNew)
     const farmsWithPrices = await fetchFarmsPrices(farms)
 
     // Filter out price helper LP config farms
@@ -57,11 +58,13 @@ interface FarmUserDataResponse {
   earnings: string
 }
 
+
+
 export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], { account: string; pids: number[] }>(
   'farms/fetchFarmUserDataAsync',
   async ({ account, pids }) => {
     const { chainId } = useWeb3React()
-    const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
+    const farmsToFetch = farmsConfig[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
     const userFarmAllowances = await fetchFarmUserAllowances(chainId, account, farmsToFetch)
     const userFarmTokenBalances = await fetchFarmUserTokenBalances(chainId, account, farmsToFetch)
     const userStakedBalances = await fetchFarmUserStakedBalances(chainId, account, farmsToFetch)

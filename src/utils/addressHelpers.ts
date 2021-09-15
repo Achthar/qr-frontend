@@ -1,8 +1,9 @@
 // import { ChainId } from '@pancakeswap/sdk'
-import addresses from 'config/constants/contracts'
+import {addresses} from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address } from 'config/constants/types'
 import { ChainId } from '../config/index'
+
 
 export const getAddress = (chainId:number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
@@ -68,4 +69,68 @@ export const getBunnySpecialLotteryAddress = (chainId:number) => {
 }
 export const getFarmAuctionAddress = (chainId:number) => {
   return getAddress(chainId, addresses.farmAuction)
+} 
+
+
+/*
+export const getCakeAddress = () => {
+  return tokens.cake.address
 }
+export const getMasterChefAddress = () => {
+  return addresses.masterChef
+}
+export const getMulticallAddress = () => {
+  return addresses.multiCall
+}
+export const getWbnbAddress = () => {
+  return tokens.wbnb.address
+}
+export const getLotteryV2Address = () => {
+  return addresses.lotteryV2
+}
+export const getPancakeProfileAddress = () => {
+  return addresses.pancakeProfile
+}
+export const getPancakeRabbitsAddress = () => {
+  return addresses.pancakeRabbits
+}
+export const getBunnyFactoryAddress = () => {
+  return addresses.bunnyFactory
+}
+export const getClaimRefundAddress = () => {
+  return addresses.claimRefund
+}
+export const getPointCenterIfoAddress = () => {
+  return addresses.pointCenterIfo
+}
+export const getBunnySpecialAddress = () => {
+  return addresses.bunnySpecial
+}
+export const getTradingCompetitionAddress = () => {
+  return addresses.tradingCompetition
+}
+export const getEasterNftAddress = () => {
+  return addresses.easterNft
+}
+export const getCakeVaultAddress = () => {
+  return addresses.cakeVault
+}
+export const getPredictionsAddress = () => {
+  return addresses.predictions
+}
+export const getChainlinkOracleAddress = () => {
+  return addresses.chainlinkOracle
+}
+export const getBunnySpecialCakeVaultAddress = () => {
+  return addresses.bunnySpecialCakeVault
+}
+export const getBunnySpecialPredictionAddress = () => {
+  return addresses.bunnySpecialPrediction
+}
+export const getBunnySpecialLotteryAddress = () => {
+  return addresses.bunnySpecialLottery
+}
+export const getFarmAuctionAddress = () => {
+  return addresses.farmAuction
+}
+*/

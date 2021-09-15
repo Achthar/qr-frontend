@@ -34,7 +34,7 @@ const IfoSteps: React.FC<Props> = ({chainId, ifo, walletIfoData }) => {
   const { poolBasic, poolUnlimited } = walletIfoData
   const { hasProfile } = useProfile()
   const { t } = useTranslation()
-  const { balance } = useTokenBalance(chainId, getAddress(chainId, ifo.currency.address))
+  const { balance } = useTokenBalance(getAddress(chainId, ifo.currency.address))
   const stepsValidationStatus = [
     hasProfile,
     balance.isGreaterThan(0),

@@ -7,6 +7,7 @@ import { usePriceCakeBusd } from 'state/farms/hooks'
 import { Flex, Text, Heading, Skeleton } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
+import { useWeb3React } from '@web3-react/core'
 
 const StyledColumn = styled(Flex)<{ noMobileBorder?: boolean }>`
   flex-direction: column;
@@ -43,12 +44,16 @@ const Grid = styled.div`
 
 const emissionsPerBlock = 15
 
-const CakeDataRow = (chainId:number) => {
+const CakeDataRow = () => {
+  const { chainId } = useWeb3React()
+
   const { t } = useTranslation()
-  const totalSupply = useTotalSupply(chainId)
+  const totalSupply = useTotalSupply()
   const burnedBalance = getBalanceNumber(useBurnedBalance(chainId, getCakeAddress(chainId)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0
+  console.log(cakeSupply)
   const cakePriceBusd = usePriceCakeBusd()
+  console.log(cakePriceBusd)
   const mcap = cakePriceBusd.times(cakeSupply)
   const mcapString = formatLocalisedCompactNumber(mcap.toNumber())
 

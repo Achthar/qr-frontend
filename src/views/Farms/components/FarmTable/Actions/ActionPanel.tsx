@@ -151,7 +151,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
     quoteTokenAddress: quoteToken.address,
     tokenAddress: token.address,
   })
-  const lpAddress = getAddress(chainId, farm.lpAddresses)
+  const lpAddress = farm.lpAddress
   const bsc = getBscScanLink(lpAddress, 'address')
   const info = `https://pancakeswap.info/pool/${lpAddress}`
 

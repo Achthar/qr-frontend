@@ -8,27 +8,28 @@ import { getBalanceAmount } from 'utils/formatBalance'
 import { farmsConfig } from 'config/constants'
 import useRefresh from 'hooks/useRefresh'
 import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync, nonArchivedFarms } from '.'
-import { State, Farm, FarmsState } from '../types'
+import { State, FarmNew, FarmsState } from '../types'
 
 export const usePollFarmsPublicData = (includeArchive = false) => {
+  const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
-    const farmsToFetch = includeArchive ? farmsConfig : nonArchivedFarms
+    const farmsToFetch = includeArchive ? farmsConfig[chainId] : nonArchivedFarms(chainId)
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
 
     dispatch(fetchFarmsPublicDataAsync(pids))
-  }, [includeArchive, dispatch, slowRefresh])
+  }, [includeArchive, dispatch, slowRefresh, chainId])
 }
 
 export const usePollFarmsWithUserData = (includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
   useEffect(() => {
-    const farmsToFetch = includeArchive ? farmsConfig : nonArchivedFarms
+    const farmsToFetch = includeArchive ? farmsConfig[chainId] : nonArchivedFarms(chainId)
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
 
     dispatch(fetchFarmsPublicDataAsync(pids))
@@ -36,7 +37,7 @@ export const usePollFarmsWithUserData = (includeArchive = false) => {
     if (account) {
       dispatch(fetchFarmUserDataAsync({ account, pids }))
     }
-  }, [includeArchive, dispatch, slowRefresh, account])
+  }, [includeArchive, dispatch, slowRefresh, account, chainId])
 }
 
 /**
@@ -58,12 +59,12 @@ export const useFarms = (): FarmsState => {
   return farms
 }
 
-export const useFarmFromPid = (pid): Farm => {
+export const useFarmFromPid = (pid): FarmNew => {
   const farm = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid))
   return farm
 }
 
-export const useFarmFromLpSymbol = (lpSymbol: string): Farm => {
+export const useFarmFromLpSymbol = (lpSymbol: string): FarmNew => {
   const farm = useSelector((state: State) => state.farms.data.find((f) => f.lpSymbol === lpSymbol))
   return farm
 }

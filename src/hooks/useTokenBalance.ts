@@ -18,13 +18,13 @@ export enum FetchStatus {
   FAILED = 'failed',
 }
 
-const useTokenBalance = (chainId: number, tokenAddress: string) => {
+const useTokenBalance = ( tokenAddress: string) => {
   const { NOT_FETCHED, SUCCESS, FAILED } = FetchStatus
   const [balanceState, setBalanceState] = useState<UseTokenBalanceState>({
     balance: BIG_ZERO,
     fetchStatus: NOT_FETCHED,
   })
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { fastRefresh } = useRefresh()
 
   useEffect(() => {
@@ -50,9 +50,9 @@ const useTokenBalance = (chainId: number, tokenAddress: string) => {
   return balanceState
 }
 
-export const useTotalSupply = (chainId: number) => {
+export const useTotalSupply = () => {
   const { slowRefresh } = useRefresh()
-  // const {chainId } = useWeb3React()
+   const {chainId } = useWeb3React()
   const [totalSupply, setTotalSupply] = useState<BigNumber>()
 
   useEffect(() => {

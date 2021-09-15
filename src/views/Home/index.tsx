@@ -84,7 +84,7 @@ const Home: React.FC = () => {
         hasCurvedDivider={false}
       >
         <SalesSection {...cakeSectionData} />
-        <CakeDataRow {...chainId}/>
+        <CakeDataRow/>
       </PageSection>
     </>
   )

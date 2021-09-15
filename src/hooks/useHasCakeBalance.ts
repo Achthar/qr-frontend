@@ -8,7 +8,7 @@ import useTokenBalance from './useTokenBalance'
  */
 const useHasCakeBalance = (chainId:number, minimumBalance: BigNumber) => {
   // const {chainId} = useWeb3React()
-  const { balance: cakeBalance } = useTokenBalance(chainId, getCakeAddress(chainId))
+  const { balance: cakeBalance } = useTokenBalance(getCakeAddress(chainId))
   return cakeBalance.gte(minimumBalance)
 }
 
