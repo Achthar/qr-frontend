@@ -5,23 +5,24 @@ import { Button, Flex, Text } from '@pancakeswap/uikit'
 import { getAddress } from 'utils/addressHelpers'
 import { useAppDispatch } from 'state'
 import { fetchFarmUserDataAsync } from 'state/farms'
-import { Farm, FarmNew } from 'state/types'
+import { Farm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { useWeb3React } from '@web3-react/core'
 import StakeAction from './StakeAction'
 import HarvestAction from './HarvestAction'
 import useApproveFarm from '../../hooks/useApproveFarm'
 
+
 const Action = styled.div`
   padding-top: 16px;
 `
-export interface FarmWithStakedValue extends FarmNew {
+export interface FarmWithStakedValue extends Farm {
   apr?: number
 }
 
 interface FarmCardActionsProps {
-  chainId:number,
   farm: FarmWithStakedValue
   account?: string
   addLiquidityUrl?: string
@@ -31,8 +32,9 @@ interface FarmCardActionsProps {
 
 const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidityUrl, cakePrice, lpLabel }) => {
   const { t } = useTranslation()
+  const{chainId} = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { pid, lpAddress } = farm
+  const { pid, lpAddresses } = farm
   const {
     allowance: allowanceAsString = 0,
     tokenBalance: tokenBalanceAsString = 0,
@@ -43,7 +45,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
   const tokenBalance = new BigNumber(tokenBalanceAsString)
   const stakedBalance = new BigNumber(stakedBalanceAsString)
   const earnings = new BigNumber(earningsAsString)
-  // const lpAddress = getAddress(chainId, lpAddresses)
+  const lpAddress = getAddress(chainId, lpAddresses)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
   const dispatch = useAppDispatch()
 

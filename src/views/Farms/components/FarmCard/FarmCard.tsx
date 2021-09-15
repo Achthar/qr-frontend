@@ -2,19 +2,20 @@ import React, { useState } from 'react'
 import BigNumber from 'bignumber.js'
 import styled from 'styled-components'
 import { Card, Flex, Text, Skeleton } from '@pancakeswap/uikit'
-import { FarmNew } from 'state/types'
+import { Farm } from 'state/types'
 import { getBscScanLink } from 'utils'
 import { useTranslation } from 'contexts/Localization'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import { useWeb3React } from '@web3-react/core'
 import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
 import CardActionsContainer from './CardActionsContainer'
 import ApyButton from './ApyButton'
 
-export interface FarmWithStakedValue extends FarmNew {
+export interface FarmWithStakedValue extends Farm {
   apr?: number
   lpRewardsApr?: number
   liquidity?: BigNumber
@@ -37,7 +38,6 @@ const ExpandingWrapper = styled.div`
 `
 
 interface FarmCardProps {
-  chainId: number
   farm: FarmWithStakedValue
   displayApr: string
   removed: boolean
@@ -45,9 +45,9 @@ interface FarmCardProps {
   account?: string
 }
 
-const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed, cakePrice, account }) => {
+const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePrice, account }) => {
   const { t } = useTranslation()
-
+  const { chainId } = useWeb3React()
   const [showExpandableSection, setShowExpandableSection] = useState(false)
 
   const totalValueFormatted =
@@ -59,12 +59,12 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('CAKE + Fees')
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
-    chainId,
+    chainId: { chainId },
     quoteTokenAddress: farm.quoteToken.address,
     tokenAddress: farm.token.address,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-  const lpAddress = farm.lpAddress
+  const lpAddress = getAddress(chainId, farm.lpAddresses)
   const isPromotedFarm = farm.token.symbol === 'CAKE'
 
   return (
@@ -105,7 +105,6 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
           <Text bold>{earnLabel}</Text>
         </Flex>
         <CardActionsContainer
-          chainId={chainId}
           farm={farm}
           lpLabel={lpLabel}
           account={account}

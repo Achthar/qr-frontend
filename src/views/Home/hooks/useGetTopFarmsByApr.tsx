@@ -7,7 +7,7 @@ import { getFarmApr } from 'utils/apr'
 import BigNumber from 'bignumber.js'
 import { orderBy } from 'lodash'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
-import { FarmNew } from 'state/types'
+import { Farm } from 'state/types'
 import { ChainId } from '../../../config/index'
 
 enum FetchStatus {
@@ -28,7 +28,7 @@ const useGetTopFarmsByApr = (chainId:number, isIntersecting: boolean) => {
     const fetchFarmData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
       console.log(nonArchivedFarms)
-      const activeFarms = nonArchivedFarms[chainId].filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
+      const activeFarms = nonArchivedFarms.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
       try {
         await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))
         setFetchStatus(FetchStatus.SUCCESS)
@@ -44,7 +44,7 @@ const useGetTopFarmsByApr = (chainId:number, isIntersecting: boolean) => {
   }, [chainId, dispatch, setFetchStatus, fetchStatus, topFarms, isIntersecting])
 
   useEffect(() => {
-    const getTopFarmsByApr = (farmsState: FarmNew[]) => {
+    const getTopFarmsByApr = (farmsState: Farm[]) => {
       const farmsWithPrices = farmsState.filter((farm) => farm.lpTotalInQuoteToken && farm.quoteToken.busdPrice)
       const farmsWithApr: FarmWithStakedValue[] = farmsWithPrices.map((farm) => {
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
@@ -52,7 +52,7 @@ const useGetTopFarmsByApr = (chainId:number, isIntersecting: boolean) => {
           new BigNumber(farm.poolWeight),
           cakePriceBusd,
           totalLiquidity,
-          farm.lpAddress,
+          farm.lpAddresses[chainId],
         )
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr }
       })

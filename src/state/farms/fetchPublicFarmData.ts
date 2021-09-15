@@ -4,7 +4,7 @@ import erc20 from 'config/abi/erc20.json'
 import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import multicall from 'utils/multicall'
-import { Farm, FarmNew, SerializedBigNumber } from '../types'
+import { Farm, SerializedBigNumber } from '../types'
 
 type PublicFarmData = {
   tokenAmountMc: SerializedBigNumber
@@ -18,8 +18,9 @@ type PublicFarmData = {
   multiplier: string
 }
 
-export const fetchFarm = async (chainId:number, farm: FarmNew): Promise<PublicFarmData> => {
-  const { pid, lpAddress, token, quoteToken } = farm
+const fetchFarm = async (chainId: number, farm: Farm): Promise<PublicFarmData> => {
+  const { pid, lpAddresses, token, quoteToken } = farm
+  const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
     // Balance of token in the LP contract
     {
@@ -104,3 +105,5 @@ export const fetchFarm = async (chainId:number, farm: FarmNew): Promise<PublicFa
     multiplier: `${allocPoint.div(100).toString()}X`,
   }
 }
+
+export default fetchFarm

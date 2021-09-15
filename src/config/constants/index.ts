@@ -93,6 +93,6 @@ export const BLOCKED_ADDRESSES: string[] = [
   '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C',
 ]
 
-export { farmsNew as farmsConfig } from './farms'
+export { farms as farmsConfig } from './farms'
 export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'

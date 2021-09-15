@@ -5,11 +5,11 @@ import multicall from 'utils/multicall'
 import { getMasterChefAddress } from 'utils/addressHelpers'
 import masterChefABI from 'config/abi/masterchef.json'
 import { farmsConfig } from 'config/constants'
-import { FarmConfigNew } from 'config/constants/types'
+import { FarmConfig } from 'config/constants/types'
 import useRefresh from 'hooks/useRefresh'
 import { DEFAULT_TOKEN_DECIMAL } from 'config'
 
-export interface FarmWithBalance extends FarmConfigNew {
+export interface FarmWithBalance extends FarmConfig {
   balance: BigNumber
 }
 
@@ -21,14 +21,14 @@ const useFarmsWithBalance = () => {
 
   useEffect(() => {
     const fetchBalances = async () => {
-      const calls = farmsConfig[chainId].map((farm) => ({
+      const calls = farmsConfig.map((farm) => ({
         address: getMasterChefAddress(chainId),
         name: 'pendingCake',
         params: [farm.pid, account],
       }))
 
       const rawResults = await multicall(chainId, masterChefABI, calls)
-      const results = farmsConfig[chainId].map((farm, index) => ({ ...farm, balance: new BigNumber(rawResults[index]) }))
+      const results = farmsConfig.map((farm, index) => ({ ...farm, balance: new BigNumber(rawResults[index]) }))
       const farmsWithBalances = results.filter((balanceType) => balanceType.balance.gt(0))
       const totalEarned = farmsWithBalances.reduce((accum, earning) => {
         const earningNumber = new BigNumber(earning.balance)

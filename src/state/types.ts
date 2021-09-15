@@ -2,7 +2,7 @@ import { ThunkAction } from 'redux-thunk'
 import { AnyAction } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { CampaignType, FarmConfig, FarmConfigNew, LotteryStatus, LotteryTicket, Nft, PoolConfig, Team } from 'config/constants/types'
+import {  FarmConfig, FarmConfigNew, LotteryStatus, LotteryTicket, Nft, PoolConfig, Team } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
 
@@ -90,7 +90,7 @@ export interface Profile {
 
 export interface FarmsState {
 //  chainId:number
-  data: FarmNew[]
+  data: Farm[]
   loadArchivedFarmsData: boolean
   userDataLoaded: boolean
 }
@@ -152,7 +152,7 @@ export interface TeamsState {
 
 export interface Achievement {
   id: string
-  type: CampaignType
+//  type: CampaignType
   address: string
   title: TranslatableText
   description?: TranslatableText

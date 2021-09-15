@@ -9,7 +9,7 @@ import FlexLayout from 'components/Layout/Flex'
 import Page from 'components/Layout/Page'
 import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import usePersistState from 'hooks/usePersistState'
-import { Farm, FarmNew } from 'state/types'
+import { Farm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { getFarmApr } from 'utils/apr'
@@ -154,14 +154,14 @@ const Farms: React.FC = () => {
   )
 
   const farmsList = useCallback(
-    (farmsToDisplay: FarmNew[]): FarmWithStakedValue[] => {
+    (farmsToDisplay: Farm[]): FarmWithStakedValue[] => {
       let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
         if (!farm.lpTotalInQuoteToken || !farm.quoteToken.busdPrice) {
           return farm
         }
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
         const { cakeRewardsApr, lpRewardsApr } = isActive
-          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddress)
+          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[chainId])
           : { cakeRewardsApr: 0, lpRewardsApr: 0 }
 
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -175,7 +175,7 @@ const Farms: React.FC = () => {
       }
       return farmsToDisplayWithAPR
     },
-    [cakePrice, query, isActive],
+    [chainId, cakePrice, query, isActive],
   )
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -267,7 +267,7 @@ const Farms: React.FC = () => {
 
   const rowData = chosenFarmsMemoized.map((farm) => {
     const { token, quoteToken } = farm
-    const tokenAddress = token.address
+    const tokenAddress =  token.address
     const quoteTokenAddress = quoteToken.address
     const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
 
@@ -343,7 +343,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-            chainId={chainId}
+            // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -356,7 +356,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/history`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-              chainId={chainId}
+              // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -369,7 +369,7 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/archived`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-            chainId={chainId}
+             // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
