@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { Farm, Pool } from 'state/types'
+import type { Farm, Pool } from 'state/types'
 import { getAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 

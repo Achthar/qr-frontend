@@ -4,10 +4,12 @@ import QuestionHelper from 'components/QuestionHelper'
 import { useTranslation } from 'contexts/Localization'
 import { GAS_PRICE_GWEI, GAS_PRICE } from 'state/user/hooks/helpers'
 import { useGasPriceManager } from 'state/user/hooks'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const GasSettings = () => {
   const { t } = useTranslation()
-  const [gasPrice, setGasPrice] = useGasPriceManager()
+  const {chainId} =useActiveWeb3React()
+  const [gasPrice, setGasPrice] = useGasPriceManager(chainId)
 
   return (
     <Flex flexDirection="column">

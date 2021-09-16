@@ -3,7 +3,7 @@ import { Flex, Text, Button, IconButton, AddIcon, MinusIcon, useModal, Skeleton,
 import BigNumber from 'bignumber.js'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceNumber } from 'utils/formatBalance'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import Balance from 'components/Balance'
 import NotEnoughTokensModal from '../Modals/NotEnoughTokensModal'
 import StakeModal from '../Modals/StakeModal'

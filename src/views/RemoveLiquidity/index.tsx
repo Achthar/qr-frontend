@@ -58,7 +58,7 @@ export default function RemoveLiquidity({
   )
 
   const { t } = useTranslation()
-  const gasPrice = useGasPrice()
+  const gasPrice = useGasPrice(chainId)
 
   // burn state
   const { independentField, typedValue } = useBurnState()

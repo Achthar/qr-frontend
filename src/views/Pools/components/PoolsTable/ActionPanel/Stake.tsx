@@ -5,7 +5,7 @@ import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, useTooltip,
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useWeb3React } from '@web3-react/core'
 import { useCakeVault } from 'state/pools/hooks'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceNumber } from 'utils/formatBalance'

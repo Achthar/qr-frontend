@@ -7,7 +7,7 @@ import { formatNumber, getBalanceNumber, getFullDisplayBalance } from 'utils/for
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 
 import { ActionContainer, ActionTitles, ActionContent } from './styles'
 import CollectModal from '../../PoolCard/Modals/CollectModal'

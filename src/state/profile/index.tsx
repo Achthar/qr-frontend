@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ProfileState } from 'state/types'
+import type { ProfileState } from 'state/types'
 import type { AppDispatch } from 'state'
 import getProfile, { GetProfileResponse } from './getProfile'
 

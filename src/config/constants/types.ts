@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { SerializedBigNumber, TranslatableText } from 'state/types'
-import {ChainId} from '../index'
 
 export interface Address {
-  97: string
+  97?: string
   56: string
 }
 
@@ -66,23 +65,6 @@ export interface FarmConfig {
     endBlock: number
   }
 }
-
-// new: we dont have multiple addresses in the interface, we seperate them on the chain level
-export interface FarmConfigNew {
-  pid: number
-  lpSymbol: string
-  lpAddress: string
-  token: Token
-  quoteToken: Token
-  multiplier?: string
-  isCommunity?: boolean
-  dual?: {
-    rewardPerBlock: number
-    earnLabel: string
-    endBlock: number
-  }
-}
-
 
 export interface PoolConfig {
   sousId: number

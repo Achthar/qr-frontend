@@ -13,7 +13,7 @@ import {
   fetchCakeVaultFees,
   fetchPoolsStakingLimitsAsync,
 } from '.'
-import { State, Pool } from '../types'
+import type { State, Pool } from '../types'
 import { transformPool } from './helpers'
 
 export const useFetchPublicPoolsData = (chainId: number) => {

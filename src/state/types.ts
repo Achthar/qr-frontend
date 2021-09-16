@@ -2,7 +2,7 @@ import { ThunkAction } from 'redux-thunk'
 import { AnyAction } from '@reduxjs/toolkit'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import {  FarmConfig, FarmConfigNew, LotteryStatus, LotteryTicket, Nft, PoolConfig, Team } from 'config/constants/types'
+import { CampaignType, FarmConfig, LotteryStatus, LotteryTicket, Nft, PoolConfig, Team } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
 
@@ -23,23 +23,6 @@ export type TranslatableText =
 export type SerializedBigNumber = string
 
 export interface Farm extends FarmConfig {
-  tokenAmountMc?: SerializedBigNumber
-  quoteTokenAmountMc?: SerializedBigNumber
-  tokenAmountTotal?: SerializedBigNumber
-  quoteTokenAmountTotal?: SerializedBigNumber
-  lpTotalInQuoteToken?: SerializedBigNumber
-  lpTotalSupply?: SerializedBigNumber
-  tokenPriceVsQuote?: SerializedBigNumber
-  poolWeight?: SerializedBigNumber
-  userData?: {
-    allowance: string
-    tokenBalance: string
-    stakedBalance: string
-    earnings: string
-  }
-}
-
-export interface FarmNew extends FarmConfigNew {
   tokenAmountMc?: SerializedBigNumber
   quoteTokenAmountMc?: SerializedBigNumber
   tokenAmountTotal?: SerializedBigNumber
@@ -89,7 +72,6 @@ export interface Profile {
 // Slices states
 
 export interface FarmsState {
-//  chainId:number
   data: Farm[]
   loadArchivedFarmsData: boolean
   userDataLoaded: boolean
@@ -152,7 +134,7 @@ export interface TeamsState {
 
 export interface Achievement {
   id: string
-//  type: CampaignType
+  type: CampaignType
   address: string
   title: TranslatableText
   description?: TranslatableText
@@ -511,7 +493,6 @@ export type UserTicketsResponse = [ethers.BigNumber[], number[], boolean[]]
 // Global state
 
 export interface State {
-  chainId: number
   achievements: AchievementState
   block: BlockState
   farms: FarmsState

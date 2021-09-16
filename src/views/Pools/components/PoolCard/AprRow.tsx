@@ -4,7 +4,7 @@ import { Flex, TooltipText, IconButton, useModal, CalculateIcon, Skeleton, useTo
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { getAprData } from 'views/Pools/helpers'
 import { getAddress } from 'utils/addressHelpers'
 import BigNumber from 'bignumber.js'

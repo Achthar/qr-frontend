@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { getApy } from 'utils/compoundApyHelpers'
 import { getBalanceNumber, getFullDisplayBalance, getDecimalAmount } from 'utils/formatBalance'
 
