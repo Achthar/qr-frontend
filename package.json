@@ -12,7 +12,9 @@
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'",
     "format:write": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
-    "updateLPsAPR": "ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/updateLPsAPR.ts"
+    "updateLPsAPR": "ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/updateLPsAPR.ts",
+    "docker:build": "docker build $(for i in `cat build.args`; do out+=\"--build-arg $i \" ; done; echo $out;out=\"\") --build-arg SSH_PRIVATE_KEY=\"$(cat ~/.ssh/id_rsa)\" -t qr-frontend .",
+    "docker": "docker run -p 3000:3000 -v $(pwd):/user/src/app qr-frontend"
   },
   "browserslist": {
     "production": [
