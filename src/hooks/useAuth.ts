@@ -22,6 +22,7 @@ const useAuth = () => {
   const dispatch = useAppDispatch()
   const { activate, deactivate } = useWeb3React()
   const { toastError } = useToast()
+  const {chainId} = useWeb3React();
 
   const login = useCallback(
     (connectorID: ConnectorNames) => {
@@ -29,7 +30,8 @@ const useAuth = () => {
       if (connector) {
         activate(connector, async (error: Error) => {
           if (error instanceof UnsupportedChainIdError) {
-            const hasSetup = await setupNetwork()
+            
+            const hasSetup = await setupNetwork(chainId)
             if (hasSetup) {
               activate(connector)
             }
@@ -55,7 +57,7 @@ const useAuth = () => {
         toastError(t('Unable to find connector'), t('The connector config is wrong'))
       }
     },
-    [t, activate, toastError],
+    [chainId, t, activate, toastError],
   )
 
   const logout = useCallback(() => {

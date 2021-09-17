@@ -1,7 +1,8 @@
 import tokens from './tokens'
 import { FarmConfig } from './types'
+// import {ChainId} from '../index'
 
-const farms: FarmConfig[] = [
+export const farms: FarmConfig[] = [
   /**
    * These 3 farms (PID 0, 251, 252) should always be at the top of the file.
    */
@@ -4461,3 +4462,4 @@ const farms: FarmConfig[] = [
 ]
 
 export default farms
+

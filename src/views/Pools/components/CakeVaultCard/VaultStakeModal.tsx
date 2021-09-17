@@ -25,7 +25,7 @@ import BigNumber from 'bignumber.js'
 import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { fetchCakeVaultUserData } from 'state/pools'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { getAddress } from 'utils/addressHelpers'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
@@ -71,7 +71,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { stakingToken, earningToken, apr, stakingTokenPrice, earningTokenPrice } = pool
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const cakeVaultContract = useCakeVaultContract()
   const { callWithGasPrice } = useCallWithGasPrice()
   const {
@@ -101,7 +101,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   const annualRoi = interestBreakdown[3] * pool.earningTokenPrice
   const formattedAnnualRoi = formatNumber(annualRoi, annualRoi > 10000 ? 0 : 2, annualRoi > 10000 ? 0 : 2)
 
-  const getTokenLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(stakingToken.address)}` : '/swap'
+  const getTokenLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
 
   const handleStakeInputChange = (input: string) => {
     if (input) {
@@ -244,7 +244,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
           <Image
-            src={`/images/tokens/${getAddress(stakingToken.address)}.png`}
+            src={`/images/tokens/${getAddress(54, stakingToken.address)}.png`}
             width={24}
             height={24}
             alt={stakingToken.symbol}

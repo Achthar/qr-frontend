@@ -72,7 +72,7 @@ export default function Swap({ history }: RouteComponentProps) {
       return !(token.address in defaultTokens)
     })
 
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -82,7 +82,13 @@ export default function Swap({ history }: RouteComponentProps) {
 
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError: swapInputError } = useDerivedSwapInfo()
+  const {
+    v2Trade,
+    currencyBalances,
+    parsedAmount,
+    currencies,
+    inputError: swapInputError,
+  } = useDerivedSwapInfo(chainId)
 
   const {
     wrapType,
@@ -146,7 +152,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallbackFromTrade(chainId, trade, allowedSlippage)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -219,12 +225,14 @@ export default function Swap({ history }: RouteComponentProps) {
 
   // swap warning state
   const [swapWarningCurrency, setSwapWarningCurrency] = useState(null)
-  const [onPresentSwapWarningModal] = useModal(<SwapWarningModal swapCurrency={swapWarningCurrency} />)
+  const [onPresentSwapWarningModal] = useModal(
+    <SwapWarningModal chainId={chainId} swapCurrency={swapWarningCurrency} />,
+  )
 
   const shouldShowSwapWarning = (swapCurrency) => {
     const isWarningToken = Object.entries(SwapWarningTokens).find((warningTokenConfig) => {
       const warningTokenData = warningTokenConfig[1]
-      const warningTokenAddress = getAddress(warningTokenData.address)
+      const warningTokenAddress = getAddress(chainId, warningTokenData.address)
       return swapCurrency.address === warningTokenAddress
     })
     return Boolean(isWarningToken)
@@ -248,6 +256,7 @@ export default function Swap({ history }: RouteComponentProps) {
         setSwapWarningCurrency(null)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onCurrencySelection],
   )
 
@@ -267,7 +276,7 @@ export default function Swap({ history }: RouteComponentProps) {
         setSwapWarningCurrency(null)
       }
     },
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onCurrencySelection],
   )
 
@@ -309,6 +318,7 @@ export default function Swap({ history }: RouteComponentProps) {
         <Wrapper id="swap-page">
           <AutoColumn gap="md">
             <CurrencyInputPanel
+              chainId={chainId}
               label={independentField === Field.OUTPUT && !showWrap && trade ? t('From (estimated)') : t('From')}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
@@ -339,6 +349,7 @@ export default function Swap({ history }: RouteComponentProps) {
               </AutoRow>
             </AutoColumn>
             <CurrencyInputPanel
+              chainId={chainId}
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
               label={independentField === Field.INPUT && !showWrap && trade ? t('To (estimated)') : t('To')}

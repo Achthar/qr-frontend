@@ -1,11 +1,12 @@
-import { ChainId, Currency, currencyEquals, JSBI, Price, WETH } from '@pancakeswap/sdk'
+import { /* ChainId, */ Currency, currencyEquals, JSBI, Price, WETH } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'
 import { PairState, usePairs } from './usePairs'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
+import { ChainId } from '../config/index'
 
-const BUSD_MAINNET = BUSD[ChainId.MAINNET]
+const BUSD_MAINNET = BUSD[ChainId.MAINNET_BSC]
 
 /**
  * Returns the price in BUSD of the input currency
@@ -20,12 +21,15 @@ export default function useBUSDPrice(currency?: Currency): Price | undefined {
         chainId && wrapped && currencyEquals(WETH[chainId], wrapped) ? undefined : currency,
         chainId ? WETH[chainId] : undefined,
       ],
-      [wrapped?.equals(BUSD_MAINNET) ? undefined : wrapped, chainId === ChainId.MAINNET ? BUSD_MAINNET : undefined],
-      [chainId ? WETH[chainId] : undefined, chainId === ChainId.MAINNET ? BUSD_MAINNET : undefined],
+      [wrapped?.equals(BUSD_MAINNET) ? undefined : wrapped, chainId === ChainId.MAINNET_BSC ? BUSD_MAINNET : undefined],
+      [chainId ? WETH[chainId] : undefined, chainId === ChainId.MAINNET_BSC ? BUSD_MAINNET : undefined],
     ],
     [chainId, currency, wrapped],
   )
-  const [[ethPairState, ethPair], [busdPairState, busdPair], [busdEthPairState, busdEthPair]] = usePairs(tokenPairs)
+  const [[ethPairState, ethPair], [busdPairState, busdPair], [busdEthPairState, busdEthPair]] = usePairs(
+    chainId,
+    tokenPairs,
+  )
 
   return useMemo(() => {
     if (!currency || !wrapped || !chainId) {
@@ -72,7 +76,7 @@ export default function useBUSDPrice(currency?: Currency): Price | undefined {
 
 export const useCakeBusdPrice = (): Price | undefined => {
   const { chainId } = useActiveWeb3React()
-  const currentChaindId = chainId || ChainId.MAINNET
+  const currentChaindId = chainId || ChainId.MAINNET_BSC
   const cakeBusdPrice = useBUSDPrice(CAKE[currentChaindId])
   return cakeBusdPrice
 }

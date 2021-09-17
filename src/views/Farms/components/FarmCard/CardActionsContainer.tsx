@@ -9,9 +9,11 @@ import { Farm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { useWeb3React } from '@web3-react/core'
 import StakeAction from './StakeAction'
 import HarvestAction from './HarvestAction'
 import useApproveFarm from '../../hooks/useApproveFarm'
+
 
 const Action = styled.div`
   padding-top: 16px;
@@ -30,6 +32,7 @@ interface FarmCardActionsProps {
 
 const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidityUrl, cakePrice, lpLabel }) => {
   const { t } = useTranslation()
+  const{chainId} = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { pid, lpAddresses } = farm
   const {
@@ -42,7 +45,7 @@ const CardActions: React.FC<FarmCardActionsProps> = ({ farm, account, addLiquidi
   const tokenBalance = new BigNumber(tokenBalanceAsString)
   const stakedBalance = new BigNumber(stakedBalanceAsString)
   const earnings = new BigNumber(earningsAsString)
-  const lpAddress = getAddress(lpAddresses)
+  const lpAddress = getAddress(chainId, lpAddresses)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
   const dispatch = useAppDispatch()
 

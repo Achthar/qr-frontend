@@ -28,12 +28,14 @@ const IconButtonWrapper = styled.div`
 `
 
 interface StackedActionProps extends FarmWithStakedValue {
+  chainId:number,
   userDataReady: boolean
   lpLabel?: string
   displayApr?: string
 }
 
 const Staked: React.FunctionComponent<StackedActionProps> = ({
+  chainId,
   pid,
   apr,
   multiplier,
@@ -57,8 +59,9 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
-  const lpAddress = getAddress(lpAddresses)
+   const lpAddress = getAddress(chainId, lpAddresses)
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
+    chainId:{chainId},
     quoteTokenAddress: quoteToken.address,
     tokenAddress: token.address,
   })

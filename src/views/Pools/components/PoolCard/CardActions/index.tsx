@@ -5,7 +5,7 @@ import { BIG_ZERO } from 'utils/bigNumber'
 import { Flex, Text, Box } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { PoolCategory } from 'config/constants/types'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import ApprovalAction from './ApprovalAction'
 import StakeActions from './StakeActions'
 import HarvestActions from './HarvestActions'
@@ -15,11 +15,12 @@ const InlineText = styled(Text)`
 `
 
 interface CardActionsProps {
+  chainId: number
   pool: Pool
   stakedBalance: BigNumber
 }
 
-const CardActions: React.FC<CardActionsProps> = ({ pool, stakedBalance }) => {
+const CardActions: React.FC<CardActionsProps> = ({ chainId, pool, stakedBalance }) => {
   const { sousId, stakingToken, earningToken, harvest, poolCategory, userData, earningTokenPrice } = pool
   // Pools using native BNB behave differently than pools using a token
   const isBnbPool = poolCategory === PoolCategory.BINANCE
@@ -45,6 +46,7 @@ const CardActions: React.FC<CardActionsProps> = ({ pool, stakedBalance }) => {
               </InlineText>
             </Box>
             <HarvestActions
+              chainId={chainId}
               earnings={earnings}
               earningToken={earningToken}
               sousId={sousId}
@@ -63,9 +65,10 @@ const CardActions: React.FC<CardActionsProps> = ({ pool, stakedBalance }) => {
           </InlineText>
         </Box>
         {needsApproval ? (
-          <ApprovalAction pool={pool} isLoading={isLoading} />
+          <ApprovalAction chainId={chainId} pool={pool} isLoading={isLoading} />
         ) : (
           <StakeActions
+            chainId={chainId}
             isLoading={isLoading}
             pool={pool}
             stakingTokenBalance={stakingTokenBalance}

@@ -20,6 +20,7 @@ import useHarvestPool from '../../../hooks/useHarvestPool'
 import useStakePool from '../../../hooks/useStakePool'
 
 interface CollectModalProps {
+  chainId:number
   formattedBalance: string
   fullBalance: string
   earningToken: Token
@@ -31,6 +32,7 @@ interface CollectModalProps {
 }
 
 const CollectModal: React.FC<CollectModalProps> = ({
+  chainId,
   formattedBalance,
   fullBalance,
   earningToken,
@@ -44,7 +46,7 @@ const CollectModal: React.FC<CollectModalProps> = ({
   const { theme } = useTheme()
   const { toastSuccess, toastError } = useToast()
   const { onReward } = useHarvestPool(sousId, isBnbPool)
-  const { onStake } = useStakePool(sousId, isBnbPool)
+  const { onStake } = useStakePool(chainId, sousId, isBnbPool)
   const [pendingTx, setPendingTx] = useState(false)
   const [shouldCompound, setShouldCompound] = useState(isCompoundPool)
   const { targetRef, tooltip, tooltipVisible } = useTooltip(

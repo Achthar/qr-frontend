@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useWeb3React } from '@web3-react/core'
 import poolsConfig from 'config/constants/pools'
 import sousChefABI from 'config/abi/sousChef.json'
 import cakeABI from 'config/abi/cake.json'
@@ -7,24 +8,25 @@ import multicall from 'utils/multicall'
 import { getAddress, getWbnbAddress } from 'utils/addressHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getSouschefV2Contract } from 'utils/contractHelpers'
+import { chain } from 'lodash'
 
-export const fetchPoolsBlockLimits = async () => {
+export const fetchPoolsBlockLimits = async (chainId: number) => {
   const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0)
   const callsStartBlock = poolsWithEnd.map((poolConfig) => {
     return {
-      address: getAddress(poolConfig.contractAddress),
+      address: getAddress(chainId, poolConfig.contractAddress),
       name: 'startBlock',
     }
   })
   const callsEndBlock = poolsWithEnd.map((poolConfig) => {
     return {
-      address: getAddress(poolConfig.contractAddress),
+      address: getAddress(chainId, poolConfig.contractAddress),
       name: 'bonusEndBlock',
     }
   })
 
-  const starts = await multicall(sousChefABI, callsStartBlock)
-  const ends = await multicall(sousChefABI, callsEndBlock)
+  const starts = await multicall(chainId, sousChefABI, callsStartBlock)
+  const ends = await multicall(chainId, sousChefABI, callsEndBlock)
 
   return poolsWithEnd.map((cakePoolConfig, index) => {
     const startBlock = starts[index]
@@ -37,28 +39,28 @@ export const fetchPoolsBlockLimits = async () => {
   })
 }
 
-export const fetchPoolsTotalStaking = async () => {
+export const fetchPoolsTotalStaking = async (chainId) => {
   const nonBnbPools = poolsConfig.filter((p) => p.stakingToken.symbol !== 'BNB')
   const bnbPool = poolsConfig.filter((p) => p.stakingToken.symbol === 'BNB')
 
   const callsNonBnbPools = nonBnbPools.map((poolConfig) => {
     return {
-      address: getAddress(poolConfig.stakingToken.address),
+      address: getAddress(chainId, poolConfig.stakingToken.address),
       name: 'balanceOf',
-      params: [getAddress(poolConfig.contractAddress)],
+      params: [getAddress(chainId, poolConfig.contractAddress)],
     }
   })
 
   const callsBnbPools = bnbPool.map((poolConfig) => {
     return {
-      address: getWbnbAddress(),
+      address: getWbnbAddress(chainId),
       name: 'balanceOf',
-      params: [getAddress(poolConfig.contractAddress)],
+      params: [getAddress(chainId, poolConfig.contractAddress)],
     }
   })
 
-  const nonBnbPoolsTotalStaked = await multicall(cakeABI, callsNonBnbPools)
-  const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools)
+  const nonBnbPoolsTotalStaked = await multicall(chainId, cakeABI, callsNonBnbPools)
+  const bnbPoolsTotalStaked = await multicall(chainId, wbnbABI, callsBnbPools)
 
   return [
     ...nonBnbPools.map((p, index) => ({
@@ -72,9 +74,9 @@ export const fetchPoolsTotalStaking = async () => {
   ]
 }
 
-export const fetchPoolStakingLimit = async (sousId: number): Promise<BigNumber> => {
+export const fetchPoolStakingLimit = async (chainId: number, sousId: number): Promise<BigNumber> => {
   try {
-    const sousContract = getSouschefV2Contract(sousId)
+    const sousContract = getSouschefV2Contract(chainId, sousId)
     const stakingLimit = await sousContract.poolLimitPerUser()
     return new BigNumber(stakingLimit.toString())
   } catch (error: any) {
@@ -83,6 +85,7 @@ export const fetchPoolStakingLimit = async (sousId: number): Promise<BigNumber> 
 }
 
 export const fetchPoolsStakingLimits = async (
+  chainId: number,
   poolsWithStakingLimit: number[],
 ): Promise<{ [key: string]: BigNumber }> => {
   const validPools = poolsConfig
@@ -91,7 +94,7 @@ export const fetchPoolsStakingLimits = async (
 
   // Get the staking limit for each valid pool
   // Note: We cannot batch the calls via multicall because V1 pools do not have "poolLimitPerUser" and will throw an error
-  const stakingLimitPromises = validPools.map((validPool) => fetchPoolStakingLimit(validPool.sousId))
+  const stakingLimitPromises = validPools.map((validPool) => fetchPoolStakingLimit(chainId, validPool.sousId))
   const stakingLimits = await Promise.all(stakingLimitPromises)
 
   return stakingLimits.reduce((accum, stakingLimit, index) => {

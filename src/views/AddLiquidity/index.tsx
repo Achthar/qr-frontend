@@ -45,7 +45,7 @@ export default function AddLiquidity({
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
-  const gasPrice = useGasPrice()
+  const gasPrice = useGasPrice(chainId)
 
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
@@ -82,7 +82,7 @@ export default function AddLiquidity({
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
   // txn values
-  const deadline = useTransactionDeadline() // custom from users settings
+  const deadline = useTransactionDeadline(chainId) // custom from users settings
   const [allowedSlippage] = useUserSlippageTolerance() // custom from users
   const [txHash, setTxHash] = useState<string>('')
 
@@ -114,8 +114,8 @@ export default function AddLiquidity({
   )
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
+  const [approvalA, approveACallback] = useApproveCallback(chainId, parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
+  const [approvalB, approveBCallback] = useApproveCallback(chainId, parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
 
   const addTransaction = useTransactionAdder()
 
@@ -331,6 +331,7 @@ export default function AddLiquidity({
               </ColumnCenter>
             )}
             <CurrencyInputPanel
+              chainId={chainId}
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -346,6 +347,7 @@ export default function AddLiquidity({
               <AddIcon width="16px" />
             </ColumnCenter>
             <CurrencyInputPanel
+              chainId={chainId}
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}

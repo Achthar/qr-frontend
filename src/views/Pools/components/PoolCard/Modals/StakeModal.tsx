@@ -19,7 +19,7 @@ import useToast from 'hooks/useToast'
 import BigNumber from 'bignumber.js'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/formatBalance'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { getAddress } from 'utils/addressHelpers'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import PercentageButton from './PercentageButton'
@@ -27,6 +27,7 @@ import useStakePool from '../../../hooks/useStakePool'
 import useUnstakePool from '../../../hooks/useUnstakePool'
 
 interface StakeModalProps {
+  chainId: number
   isBnbPool: boolean
   pool: Pool
   stakingTokenBalance: BigNumber
@@ -52,6 +53,7 @@ const AnnualRoiDisplay = styled(Text)`
 `
 
 const StakeModal: React.FC<StakeModalProps> = ({
+  chainId,
   isBnbPool,
   pool,
   stakingTokenBalance,
@@ -62,7 +64,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   const { sousId, stakingToken, earningTokenPrice, apr, userData, stakingLimit, earningToken } = pool
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const { onStake } = useStakePool(sousId, isBnbPool)
+  const { onStake } = useStakePool(chainId, sousId, isBnbPool)
   const { onUnstake } = useUnstakePool(sousId, pool.enableEmergencyWithdraw)
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -88,7 +90,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   const annualRoi = interestBreakdown[3] * pool.earningTokenPrice
   const formattedAnnualRoi = formatNumber(annualRoi, annualRoi > 10000 ? 0 : 2, annualRoi > 10000 ? 0 : 2)
 
-  const getTokenLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(stakingToken.address)}` : '/swap'
+  const getTokenLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
 
   useEffect(() => {
     if (stakingLimit.gt(0) && !isRemovingStake) {
@@ -193,7 +195,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">
           <Image
-            src={`/images/tokens/${getAddress(stakingToken.address)}.png`}
+            src={`/images/tokens/${getAddress(54, stakingToken.address)}.png`}
             width={24}
             height={24}
             alt={stakingToken.symbol}

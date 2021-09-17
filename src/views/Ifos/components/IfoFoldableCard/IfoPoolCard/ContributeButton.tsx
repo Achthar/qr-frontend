@@ -13,19 +13,20 @@ import ContributeModal from './ContributeModal'
 import GetLpModal from './GetLpModal'
 
 interface Props {
+  chainId:number,
   poolId: PoolIds
   ifo: Ifo
   publicIfoData: PublicIfoData
   walletIfoData: WalletIfoData
 }
-const ContributeButton: React.FC<Props> = ({ poolId, ifo, publicIfoData, walletIfoData }) => {
+const ContributeButton: React.FC<Props> = ({ chainId, poolId, ifo, publicIfoData, walletIfoData }) => {
   const publicPoolCharacteristics = publicIfoData[poolId]
   const userPoolCharacteristics = walletIfoData[poolId]
   const { isPendingTx, amountTokenCommittedInLP } = userPoolCharacteristics
   const { limitPerUserInLP } = publicPoolCharacteristics
   const { t } = useTranslation()
   const { toastSuccess } = useToast()
-  const { balance: userCurrencyBalance } = useTokenBalance(getAddress(ifo.currency.address))
+  const { balance: userCurrencyBalance } = useTokenBalance(getAddress(chainId, ifo.currency.address))
 
   // Refetch all the data, and display a message when fetching is done
   const handleContributeSuccess = async (amount: BigNumber, txHash: string) => {

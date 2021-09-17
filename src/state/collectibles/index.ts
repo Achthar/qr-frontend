@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { useWeb3React } from '@web3-react/core'
 import { CollectiblesState } from 'state/types'
 import { nftSources } from 'config/constants/nfts'
 import { NftType } from 'config/constants/types'
@@ -22,15 +23,16 @@ export const fetchWalletNfts = createAsyncThunk<NftSourceItem[], string>(
     // For each nft source get nft data
     const nftSourcePromises = Object.keys(nftSources).map(async (nftSourceType) => {
       const { address: addressObj } = nftSources[nftSourceType as NftType]
-      const address = getAddress(addressObj)
-      const contract = getErc721Contract(address)
+      const {chainId} = useWeb3React();
+      const address = getAddress(chainId, addressObj)
+      const contract = getErc721Contract(chainId, address)
 
       const getTokenIdAndData = async (index: number) => {
         try {
           const tokenIdBn: ethers.BigNumber = await contract.tokenOfOwnerByIndex(account, index)
           const tokenId = tokenIdBn.toNumber()
 
-          const walletNft = await getNftByTokenId(address, tokenId)
+          const walletNft = await getNftByTokenId(chainId, address, tokenId)
           return [tokenId, walletNft.identifier]
         } catch (error: any) {
           console.error('getTokenIdAndData', error)

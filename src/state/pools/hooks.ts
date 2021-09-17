@@ -13,32 +13,33 @@ import {
   fetchCakeVaultFees,
   fetchPoolsStakingLimitsAsync,
 } from '.'
-import { State, Pool } from '../types'
+import type { State, Pool } from '../types'
 import { transformPool } from './helpers'
 
-export const useFetchPublicPoolsData = () => {
+export const useFetchPublicPoolsData = (chainId: number) => {
+  // const {chainId} = useWeb3React()
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider.getBlockNumber()
-      dispatch(fetchPoolsPublicDataAsync(blockNumber))
+      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
+      dispatch(fetchPoolsPublicDataAsync(chainId, blockNumber))
     }
 
     fetchPoolsPublicData()
-    dispatch(fetchPoolsStakingLimitsAsync())
-  }, [dispatch, slowRefresh])
+    dispatch(fetchPoolsStakingLimitsAsync(chainId))
+  }, [chainId, dispatch, slowRefresh])
 }
 
-export const usePools = (account): { pools: Pool[]; userDataLoaded: boolean } => {
+export const usePools = (chainId, account): { pools: Pool[]; userDataLoaded: boolean } => {
   const { fastRefresh } = useRefresh()
   const dispatch = useAppDispatch()
   useEffect(() => {
     if (account) {
-      dispatch(fetchPoolsUserDataAsync(account))
+      dispatch(fetchPoolsUserDataAsync(chainId, account))
     }
-  }, [account, dispatch, fastRefresh])
+  }, [chainId, account, dispatch, fastRefresh])
 
   const { pools, userDataLoaded } = useSelector((state: State) => ({
     pools: state.pools.data,

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useWeb3React } from '@web3-react/core'
 import { ifosConfig } from 'config/constants'
 import useGetPublicIfoV2Data from 'views/Ifos/hooks/v2/useGetPublicIfoData'
 import useGetWalletIfoV2Data from 'views/Ifos/hooks/v2/useGetWalletIfoData'
@@ -7,19 +8,21 @@ import IfoLayout from './components/IfoLayout'
 import IfoSteps from './components/IfoSteps'
 import IfoQuestions from './components/IfoQuestions'
 
+
 /**
  * Note: currently there should be only 1 active IFO at a time
  */
 const activeIfo = ifosConfig.find((ifo) => ifo.isActive)
 
 const Ifo = () => {
-  const publicIfoData = useGetPublicIfoV2Data(activeIfo)
-  const walletIfoData = useGetWalletIfoV2Data(activeIfo)
+  const {chainId} = useWeb3React()
+  const publicIfoData = useGetPublicIfoV2Data(chainId, activeIfo)
+  const walletIfoData = useGetWalletIfoV2Data(chainId, activeIfo)
 
   return (
     <IfoLayout>
       <IfoFoldableCard ifo={activeIfo} publicIfoData={publicIfoData} walletIfoData={walletIfoData} isInitiallyVisible />
-      <IfoSteps ifo={activeIfo} walletIfoData={walletIfoData} />
+      <IfoSteps chainId={walletIfoData.chainId} ifo={activeIfo} walletIfoData={walletIfoData} />
       <IfoQuestions />
     </IfoLayout>
   )

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Skeleton, Text, Flex, Box, useModal, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import BigNumber from 'bignumber.js'
 import { PoolCategory } from 'config/constants/types'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -12,6 +12,7 @@ import BaseCell, { CellContent } from './BaseCell'
 import CollectModal from '../../PoolCard/Modals/CollectModal'
 
 interface EarningsCellProps {
+  chainId: number
   pool: Pool
   account: string
   userDataLoaded: boolean
@@ -24,7 +25,7 @@ const StyledCell = styled(BaseCell)`
   }
 `
 
-const EarningsCell: React.FC<EarningsCellProps> = ({ pool, account, userDataLoaded }) => {
+const EarningsCell: React.FC<EarningsCellProps> = ({ chainId, pool, account, userDataLoaded }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const { sousId, earningToken, poolCategory, userData, earningTokenPrice } = pool
@@ -42,6 +43,7 @@ const EarningsCell: React.FC<EarningsCellProps> = ({ pool, account, userDataLoad
 
   const [onPresentCollect] = useModal(
     <CollectModal
+      chainId={chainId}
       formattedBalance={formattedBalance}
       fullBalance={fullBalance}
       earningToken={earningToken}

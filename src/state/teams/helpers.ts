@@ -7,11 +7,11 @@ import { TeamsById } from 'state/types'
 import profileABI from 'config/abi/pancakeProfile.json'
 import { getPancakeProfileAddress } from 'utils/addressHelpers'
 
-const profileContract = getProfileContract()
+// const profileContract = getProfileContract()
 
-export const getTeam = async (teamId: number): Promise<Team> => {
+export const getTeam = async (chainId:number, teamId: number): Promise<Team> => {
   try {
-    const { 0: teamName, 2: numberUsers, 3: numberPoints, 4: isJoinable } = await profileContract.getTeamProfile(teamId)
+    const { 0: teamName, 2: numberUsers, 3: numberPoints, 4: isJoinable } = await getProfileContract(chainId).getTeamProfile(teamId)
     const staticTeamInfo = teamsList.find((staticTeam) => staticTeam.id === teamId)
 
     return merge({}, staticTeamInfo, {
@@ -28,7 +28,7 @@ export const getTeam = async (teamId: number): Promise<Team> => {
 /**
  * Gets on-chain data and merges it with the existing static list of teams
  */
-export const getTeams = async (): Promise<TeamsById> => {
+export const getTeams = async (chainId:number): Promise<TeamsById> => {
   try {
     const teamsById = teamsList.reduce((accum, team) => {
       return {
@@ -36,17 +36,17 @@ export const getTeams = async (): Promise<TeamsById> => {
         [team.id]: team,
       }
     }, {})
-    const nbTeams = await profileContract.numberTeams()
+    const nbTeams = await getProfileContract(chainId).numberTeams()
 
     const calls = []
     for (let i = 1; i <= nbTeams; i++) {
       calls.push({
-        address: getPancakeProfileAddress(),
+        address: getPancakeProfileAddress(chainId),
         name: 'getTeamProfile',
         params: [i],
       })
     }
-    const teamData = await multicallv2(profileABI, calls)
+    const teamData = await multicallv2(chainId,profileABI, calls)
 
     const onChainTeamData = teamData.reduce((accum, team, index) => {
       const { 0: teamName, 2: numberUsers, 3: numberPoints, 4: isJoinable } = team

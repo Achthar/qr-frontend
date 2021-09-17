@@ -20,6 +20,7 @@ const MessageContainer = styled(Message)`
 `
 
 interface SwapWarningModalProps {
+  chainId:number
   swapCurrency: WrappedTokenInfo
   onDismiss?: () => void
 }
@@ -45,17 +46,17 @@ const usePreventModalOverlayClick = () => {
   }, [])
 }
 
-const SwapWarningModal: React.FC<SwapWarningModalProps> = ({ swapCurrency, onDismiss }) => {
+const SwapWarningModal: React.FC<SwapWarningModalProps> = ({chainId, swapCurrency, onDismiss }) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   usePreventModalOverlayClick()
 
   const TOKEN_WARNINGS = {
-    [getAddress(SwapWarningTokensConfig.safemoon.address)]: {
+    [getAddress(chainId, SwapWarningTokensConfig.safemoon.address)]: {
       symbol: SwapWarningTokensConfig.safemoon.symbol,
       component: <SafemoonWarning />,
     },
-    [getAddress(SwapWarningTokensConfig.bondly.address)]: {
+    [getAddress(chainId, SwapWarningTokensConfig.bondly.address)]: {
       symbol: SwapWarningTokensConfig.bondly.symbol,
       component: <BondlyWarning />,
     },

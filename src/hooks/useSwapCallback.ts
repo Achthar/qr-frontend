@@ -47,9 +47,9 @@ function useSwapCallArguments(
 ): SwapCall[] {
   const { account, chainId, library } = useActiveWeb3React()
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName)
+  const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
   const recipient = recipientAddressOrName === null ? account : recipientAddress
-  const deadline = useTransactionDeadline()
+  const deadline = useTransactionDeadline(chainId)
 
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId || !deadline) return []
@@ -93,13 +93,13 @@ export function useSwapCallback(
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapCallbackState; callback: null | (() => Promise<string>); error: string | null } {
   const { account, chainId, library } = useActiveWeb3React()
-  const gasPrice = useGasPrice()
+  const gasPrice = useGasPrice(chainId)
 
   const swapCalls = useSwapCallArguments(trade, allowedSlippage, recipientAddressOrName)
 
   const addTransaction = useTransactionAdder()
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName)
+  const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
   const recipient = recipientAddressOrName === null ? account : recipientAddress
 
   return useMemo(() => {

@@ -17,6 +17,7 @@ import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
 
 export interface RowProps {
+  chainId:number
   apr: AprProps
   farm: FarmProps
   earned: EarnedProps

@@ -10,6 +10,7 @@ import IfoCardActions from './IfoCardActions'
 import IfoCardDetails from './IfoCardDetails'
 
 interface IfoCardProps {
+  chainId:number,
   poolId: PoolIds
   ifo: Ifo
   publicIfoData: PublicIfoData
@@ -39,7 +40,7 @@ const cardConfig: CardConfig = {
   },
 }
 
-const SmallCard: React.FC<IfoCardProps> = ({ poolId, ifo, publicIfoData, walletIfoData, onApprove, enableStatus }) => {
+const SmallCard: React.FC<IfoCardProps> = ({ chainId, poolId, ifo, publicIfoData, walletIfoData, onApprove, enableStatus }) => {
   const { t } = useTranslation()
   const config = cardConfig[poolId]
   const { hasProfile, isLoading: isProfileLoading } = useProfile()
@@ -63,6 +64,7 @@ const SmallCard: React.FC<IfoCardProps> = ({ poolId, ifo, publicIfoData, walletI
         </CardHeader>
         <CardBody>
           <IfoCardTokens
+            chainId={chainId}
             poolId={poolId}
             ifo={ifo}
             publicIfoData={publicIfoData}
@@ -73,6 +75,7 @@ const SmallCard: React.FC<IfoCardProps> = ({ poolId, ifo, publicIfoData, walletI
             enableStatus={enableStatus}
           />
           <IfoCardActions
+            chainId={chainId}
             poolId={poolId}
             ifo={ifo}
             publicIfoData={publicIfoData}

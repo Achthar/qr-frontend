@@ -81,7 +81,7 @@ export default function AddressInputPanel({
 
   const { t } = useTranslation()
 
-  const { address, loading, name } = useENS(value)
+  const { address, loading, name } = useENS(chainId, value)
 
   const handleInput = useCallback(
     (event) => {

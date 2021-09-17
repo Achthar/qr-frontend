@@ -7,9 +7,9 @@ import { getErc721Contract } from './contractHelpers'
  * Gets the identifier key based on the nft address
  * Helpful for looking up the key when all you have is the address
  */
-export const getIdentifierKeyFromAddress = (nftAddress: string) => {
+export const getIdentifierKeyFromAddress = (chainId:number, nftAddress: string) => {
   const nftSource = Object.values(nftSources).find((nftSourceEntry) => {
-    const address = getAddress(nftSourceEntry.address)
+    const address = getAddress(chainId, nftSourceEntry.address)
     return address === nftAddress
   })
 
@@ -27,8 +27,8 @@ export const getTokenUrl = (tokenUri: string) => {
   return tokenUri
 }
 
-export const getAddressByType = (type: NftType) => {
-  return getAddress(nftSources[type].address)
+export const getAddressByType = (chainId:number, type: NftType) => {
+  return getAddress(chainId, nftSources[type].address)
 }
 
 export const fetchCachedUriData = async (tokenUrl: string) => {
@@ -55,9 +55,9 @@ export const fetchCachedUriData = async (tokenUrl: string) => {
   }
 }
 
-export const getTokenUriData = async (nftAddress: string, tokenId: number) => {
+export const getTokenUriData = async (chainId: number, nftAddress: string, tokenId: number) => {
   try {
-    const contract = getErc721Contract(nftAddress)
+    const contract = getErc721Contract(chainId, nftAddress)
     const tokenUri = await contract.tokenURI(tokenId)
     const uriData = await fetchCachedUriData(getTokenUrl(tokenUri))
 
@@ -72,9 +72,9 @@ export const getTokenUriData = async (nftAddress: string, tokenId: number) => {
   }
 }
 
-export const getNftByTokenId = async (nftAddress: string, tokenId: number): Promise<Nft | null> => {
-  const uriData = await getTokenUriData(nftAddress, tokenId)
-  const identifierKey = getIdentifierKeyFromAddress(nftAddress)
+export const getNftByTokenId = async (chainId:number, nftAddress: string, tokenId: number): Promise<Nft | null> => {
+  const uriData = await getTokenUriData(chainId, nftAddress, tokenId)
+  const identifierKey = getIdentifierKeyFromAddress(chainId, nftAddress)
 
   // Bail out early if we have no uriData, identifierKey, or the value does not
   // exist in the object

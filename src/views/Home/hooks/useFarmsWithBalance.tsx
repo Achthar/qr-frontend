@@ -16,18 +16,18 @@ export interface FarmWithBalance extends FarmConfig {
 const useFarmsWithBalance = () => {
   const [farmsWithStakedBalance, setFarmsWithStakedBalance] = useState<FarmWithBalance[]>([])
   const [earningsSum, setEarningsSum] = useState<number>(null)
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { fastRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchBalances = async () => {
       const calls = farmsConfig.map((farm) => ({
-        address: getMasterChefAddress(),
+        address: getMasterChefAddress(chainId),
         name: 'pendingCake',
         params: [farm.pid, account],
       }))
 
-      const rawResults = await multicall(masterChefABI, calls)
+      const rawResults = await multicall(chainId, masterChefABI, calls)
       const results = farmsConfig.map((farm, index) => ({ ...farm, balance: new BigNumber(rawResults[index]) }))
       const farmsWithBalances = results.filter((balanceType) => balanceType.balance.gt(0))
       const totalEarned = farmsWithBalances.reduce((accum, earning) => {
@@ -45,7 +45,7 @@ const useFarmsWithBalance = () => {
     if (account) {
       fetchBalances()
     }
-  }, [account, fastRefresh])
+  }, [chainId, account, fastRefresh])
 
   return { farmsWithStakedBalance, earningsSum }
 }

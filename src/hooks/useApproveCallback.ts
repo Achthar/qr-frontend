@@ -21,13 +21,14 @@ export enum ApprovalState {
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useApproveCallback(
+  chainId: number,
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
   const { account } = useActiveWeb3React()
   const { callWithGasPrice } = useCallWithGasPrice()
   const token = amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined
-  const currentAllowance = useTokenAllowance(token, account ?? undefined, spender)
+  const currentAllowance = useTokenAllowance(chainId, token, account ?? undefined, spender)
   const pendingApproval = useHasPendingApproval(token?.address, spender)
 
   // check the current approval status
@@ -106,11 +107,11 @@ export function useApproveCallback(
 }
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTrade(trade?: Trade, allowedSlippage = 0) {
+export function useApproveCallbackFromTrade(chainId:number, trade?: Trade, allowedSlippage = 0) {
   const amountToApprove = useMemo(
     () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
     [trade, allowedSlippage],
   )
 
-  return useApproveCallback(amountToApprove, ROUTER_ADDRESS)
+  return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS)
 }

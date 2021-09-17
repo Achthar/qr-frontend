@@ -26,7 +26,7 @@ const harvestPoolBnb = async (sousChefContract) => {
   return receipt.status
 }
 
-const useHarvestPool = (sousId, isUsingBnb = false) => {
+const useHarvestPool = (chainId, sousId, isUsingBnb = false) => {
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
   const sousChefContract = useSousChef(sousId)
@@ -40,9 +40,9 @@ const useHarvestPool = (sousId, isUsingBnb = false) => {
     } else {
       await harvestPool(sousChefContract)
     }
-    dispatch(updateUserPendingReward(sousId, account))
-    dispatch(updateUserBalance(sousId, account))
-  }, [account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId])
+    dispatch(updateUserPendingReward(chainId, sousId, account))
+    dispatch(updateUserBalance(chainId, sousId, account))
+  }, [chainId, account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId])
 
   return { onReward: handleHarvest }
 }

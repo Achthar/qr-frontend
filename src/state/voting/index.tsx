@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { useWeb3React } from '@web3-react/core'
 import { merge } from 'lodash'
 import { Proposal, ProposalState, VotingStateLoadingStatus, VotingState, Vote, State } from 'state/types'
 import { getAllVotes, getProposal, getProposals, getVoteVerificationStatuses } from './helpers'
@@ -39,7 +40,8 @@ export const verifyVotes = createAsyncThunk<
 >('voting/verifyVotes', async ({ proposalId, snapshot }, { getState }) => {
   const state = getState()
   const proposalVotes = state.voting.votes[proposalId]
-  const response = await getVoteVerificationStatuses(proposalVotes, Number(snapshot))
+  const {chainId} = useWeb3React()
+  const response = await getVoteVerificationStatuses(proposalVotes, Number(snapshot), chainId)
   return { results: response, proposalId }
 })
 

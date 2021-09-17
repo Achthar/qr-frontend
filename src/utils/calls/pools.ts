@@ -9,21 +9,21 @@ import { getAddress } from '../addressHelpers'
 /**
  * Returns the total number of pools that were active at a given block
  */
-export const getActivePools = async (block?: number) => {
+export const getActivePools = async (chainId?: number, block?: number) => {
   const eligiblePools = pools
     .filter((pool) => pool.sousId !== 0)
     .filter((pool) => pool.isFinished === false || pool.isFinished === undefined)
-  const blockNumber = block || (await simpleRpcProvider.getBlockNumber())
+  const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
   const startBlockCalls = eligiblePools.map(({ contractAddress }) => ({
-    address: getAddress(contractAddress),
+    address: getAddress(chainId, contractAddress),
     name: 'startBlock',
   }))
   const endBlockCalls = eligiblePools.map(({ contractAddress }) => ({
-    address: getAddress(contractAddress),
+    address: getAddress(chainId, contractAddress),
     name: 'bonusEndBlock',
   }))
-  const startBlocks = await multicall(sousChefV2, startBlockCalls)
-  const endBlocks = await multicall(sousChefV2, endBlockCalls)
+  const startBlocks = await multicall(chainId, sousChefV2, startBlockCalls)
+  const endBlocks = await multicall(chainId, sousChefV2, endBlockCalls)
 
   return eligiblePools.reduce((accum, poolCheck, index) => {
     const startBlock = startBlocks[index] ? new BigNumber(startBlocks[index]) : null
