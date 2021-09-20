@@ -20,9 +20,8 @@ import { useTranslation } from 'contexts/Localization'
 const useAuth = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { activate, deactivate } = useWeb3React()
+  const { activate, deactivate, chainId } = useWeb3React()
   const { toastError } = useToast()
-  const {chainId} = useWeb3React();
 
   const login = useCallback(
     (connectorID: ConnectorNames) => {

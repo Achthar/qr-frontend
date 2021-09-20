@@ -19,13 +19,13 @@ export default function useENSAddress(chainId:number, ensName?: string | null): 
     }
   }, [debouncedName])
   const registrarContract = useENSRegistrarContract(false)
-  const resolverAddress = useSingleCallResult(chainId, registrarContract, 'resolver', ensNodeArgument)
+  const resolverAddress = useSingleCallResult( registrarContract, 'resolver', ensNodeArgument)
   const resolverAddressResult = resolverAddress.result?.[0]
   const resolverContract = useENSResolverContract(
     resolverAddressResult && !isZero(resolverAddressResult) ? resolverAddressResult : undefined,
     false,
   )
-  const addr = useSingleCallResult(chainId, resolverContract, 'addr', ensNodeArgument)
+  const addr = useSingleCallResult( resolverContract, 'addr', ensNodeArgument)
 
   const changed = debouncedName !== ensName
   return {

@@ -47,7 +47,6 @@ export default function Pool() {
   )
 
   const v2Pairs = usePairs(
-    chainId,
     liquidityTokensWithBalances.map(({ tokens }) => tokens),
   )
   const v2IsLoading =

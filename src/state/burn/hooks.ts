@@ -33,7 +33,7 @@ export function useDerivedBurnInfo(
   const { independentField, typedValue } = useBurnState()
 
   // pair + totalsupply
-  const [, pair] = usePair(chainId, currencyA, currencyB)
+  const [, pair] = usePair( currencyA, currencyB)
 
   // balances
   const relevantTokenBalances = useTokenBalances(chainId, account ?? undefined, [pair?.liquidityToken])

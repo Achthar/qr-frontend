@@ -8,7 +8,7 @@ function useTokenAllowance(chainId:number, token?: Token, owner?: string, spende
   const contract = useTokenContract(token?.address, false)
 
   const inputs = useMemo(() => [owner, spender], [owner, spender])
-  const allowance = useSingleCallResult(chainId, contract, 'allowance', inputs).result
+  const allowance = useSingleCallResult( contract, 'allowance', inputs).result
 
   return useMemo(
     () => (token && allowance ? new TokenAmount(token, allowance.toString()) : undefined),

@@ -68,8 +68,8 @@ export const useTotalSupply = () => {
   return totalSupply
 }
 
-export const useBurnedBalance = (chainId: number, tokenAddress: string) => {
-  // const {chainId } = useWeb3React()
+export const useBurnedBalance = ( tokenAddress: string) => {
+  const {chainId } = useWeb3React()
   const [balance, setBalance] = useState(BIG_ZERO)
   const { slowRefresh } = useRefresh()
 
@@ -86,12 +86,11 @@ export const useBurnedBalance = (chainId: number, tokenAddress: string) => {
   return balance
 }
 
-export const useGetBnbBalance = (chainId: number) => {
+export const useGetBnbBalance = () => {
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [balance, setBalance] = useState(BIG_ZERO)
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { lastUpdated, setLastUpdated } = useLastUpdated()
-  // const { chainId } = useWeb3React()
   useEffect(() => {
     const fetchBalance = async () => {
       try {

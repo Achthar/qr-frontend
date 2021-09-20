@@ -2747,10 +2747,9 @@
     eslint-plugin-react "^7.21.5"
     eslint-plugin-react-hooks "^4.0.0"
 
-"@pancakeswap/sdk@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/@pancakeswap/sdk/-/sdk-2.3.2.tgz"
-  integrity sha512-ILwO8RsOF9hc/k63WkbUB36uAGPi4QWtPWv/smNAdzIM2F09VdaWL8/NsSdp8bB6cA4ZmqP2DUFsTMvLOodl0A==
+"@pancakeswap/sdk@https://github.com/Achthar/requiem-swap-sdk.git":
+  version "2.4.0"
+  resolved "https://github.com/Achthar/requiem-swap-sdk.git#103c846461e83de6586d3002ef2712121a214dc4"
   dependencies:
     "@pancakeswap-libs/pancake-swap-core" "^0.1.0"
     big.js "^5.2.2"

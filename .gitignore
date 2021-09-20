@@ -37,3 +37,6 @@ debug.log*
 
 # docker 
 build.args
+
+# netlify
+preinstall.sh

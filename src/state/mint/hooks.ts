@@ -74,7 +74,7 @@ export function useDerivedMintInfo(
   )
 
   // pair
-  const [pairState, pair] = usePair(chainId, currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
+  const [pairState, pair] = usePair( currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
 
   const totalSupply = useTotalSupply(chainId, pair?.liquidityToken)
 

@@ -40,10 +40,10 @@ const Tabs = styled.div`
   padding: 16px 24px;
 `
 
-const WalletModal: React.FC<WalletModalProps> = ({chainId, initialView = WalletView.WALLET_INFO, onDismiss }) => {
+const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALLET_INFO, onDismiss }) => {
   const [view, setView] = useState(initialView)
   const { t } = useTranslation()
-  const { balance, fetchStatus } = useGetBnbBalance(chainId)
+  const { balance, fetchStatus } = useGetBnbBalance()
   const hasLowBnbBalance = fetchStatus === FetchStatus.SUCCESS && balance.lte(LOW_BNB_BALANCE)
 
   const handleClick = (newIndex: number) => {

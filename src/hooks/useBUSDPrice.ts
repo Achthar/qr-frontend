@@ -1,19 +1,22 @@
-import { /* ChainId, */ Currency, currencyEquals, JSBI, Price, WETH } from '@pancakeswap/sdk'
+import {ChainId, Currency, currencyEquals, JSBI, Price, WETH } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'
 import { PairState, usePairs } from './usePairs'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import { ChainId } from '../config/index'
+// import { ChainId } from '../config/index'
 
-const BUSD_MAINNET = BUSD[ChainId.MAINNET_BSC]
+const BUSD_MAINNET = BUSD[ChainId.MAINNET]
 
 /**
  * Returns the price in BUSD of the input currency
  * @param currency currency to compute the BUSD price of
  */
-export default function useBUSDPrice(currency?: Currency): Price | undefined {
+export default function useBUSDPrice(currency?: Currency): Price {
   const { chainId } = useActiveWeb3React()
+  console.log("useBUSD:")
+  console.log("cID:")
+  console.log(chainId as unknown as string)
   const wrapped = wrappedCurrency(currency, chainId)
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
@@ -21,13 +24,12 @@ export default function useBUSDPrice(currency?: Currency): Price | undefined {
         chainId && wrapped && currencyEquals(WETH[chainId], wrapped) ? undefined : currency,
         chainId ? WETH[chainId] : undefined,
       ],
-      [wrapped?.equals(BUSD_MAINNET) ? undefined : wrapped, chainId === ChainId.MAINNET_BSC ? BUSD_MAINNET : undefined],
-      [chainId ? WETH[chainId] : undefined, chainId === ChainId.MAINNET_BSC ? BUSD_MAINNET : undefined],
+      [wrapped?.equals(BUSD_MAINNET) ? undefined : wrapped, chainId === ChainId.MAINNET ? BUSD_MAINNET : undefined],
+      [chainId ? WETH[chainId] : undefined, chainId === ChainId.MAINNET ? BUSD_MAINNET : undefined],
     ],
     [chainId, currency, wrapped],
   )
   const [[ethPairState, ethPair], [busdPairState, busdPair], [busdEthPairState, busdEthPair]] = usePairs(
-    chainId,
     tokenPairs,
   )
 
@@ -74,9 +76,9 @@ export default function useBUSDPrice(currency?: Currency): Price | undefined {
   }, [chainId, currency, ethPair, ethPairState, busdEthPair, busdEthPairState, busdPair, busdPairState, wrapped])
 }
 
-export const useCakeBusdPrice = (): Price | undefined => {
+export const useCakeBusdPrice = (): Price=> {
   const { chainId } = useActiveWeb3React()
-  const currentChaindId = chainId || ChainId.MAINNET_BSC
+  const currentChaindId = chainId || ChainId.MAINNET
   const cakeBusdPrice = useBUSDPrice(CAKE[currentChaindId])
   return cakeBusdPrice
 }
