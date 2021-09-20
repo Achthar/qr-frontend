@@ -318,7 +318,6 @@ export default function Swap({ history }: RouteComponentProps) {
         <Wrapper id="swap-page">
           <AutoColumn gap="md">
             <CurrencyInputPanel
-              chainId={chainId}
               label={independentField === Field.OUTPUT && !showWrap && trade ? t('From (estimated)') : t('From')}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
@@ -349,7 +348,6 @@ export default function Swap({ history }: RouteComponentProps) {
               </AutoRow>
             </AutoColumn>
             <CurrencyInputPanel
-              chainId={chainId}
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
               label={independentField === Field.INPUT && !showWrap && trade ? t('To (estimated)') : t('To')}

@@ -6,6 +6,9 @@ export const nodesBSC = [
   process.env.REACT_APP_NODE_BSC_1,
   process.env.REACT_APP_NODE_BSC_2,
   process.env.REACT_APP_NODE_BSC_3,
+  process.env.REACT_APP_NODE_BSC_4,
+  process.env.REACT_APP_NODE_BSC_5,
+  process.env.REACT_APP_NODE_BSC_6,
 ]
 export const nodesBSCT = [
   process.env.REACT_APP_NODE_BSCT_1,
@@ -14,8 +17,8 @@ export const nodesBSCT = [
 ]
 
 export const nodes :{ [chainId: number]: string } ={
-  [ChainId.TESTNET_BSC]: sample(nodesBSCT),
-  [ChainId.MAINNET_BSC]: sample(nodesBSC)
+  [ChainId.BSC_TESTNET]: sample(nodesBSCT),
+  [ChainId.BSC_MAINNET]: sample(nodesBSC)
 }
 
 const getNodeUrl = (chainId) => {

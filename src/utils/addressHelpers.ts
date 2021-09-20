@@ -1,13 +1,12 @@
-// import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@pancakeswap/sdk'
 import {addresses} from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address } from 'config/constants/types'
-import { ChainId } from '../config/index'
 
 
 export const getAddress = (chainId:number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
-  return address[chainId] ? address[chainId] : address[ChainId.MAINNET_BSC]
+  return address[chainId] ? address[chainId] : address[ChainId.BSC_MAINNET]
 }
 
 export const getCakeAddress = (chainId:number) => {

@@ -42,6 +42,7 @@ export const getFarmApr = (
     cakeRewardsAprAsNumber = cakeRewardsApr.toNumber()
   }
   const lpRewardsApr = lpAprs[farmAddress?.toLocaleLowerCase()] ?? 0
+  
   return { cakeRewardsApr: cakeRewardsAprAsNumber, lpRewardsApr }
 }
 

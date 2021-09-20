@@ -27,7 +27,6 @@ const useGetTopFarmsByApr = (chainId:number, isIntersecting: boolean) => {
   useEffect(() => {
     const fetchFarmData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
-      console.log(nonArchivedFarms)
       const activeFarms = nonArchivedFarms.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
       try {
         await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))

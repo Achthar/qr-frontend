@@ -31,7 +31,7 @@
     "dependencies": {
         "@binance-chain/bsc-connector": "^1.0.0",
         "@ethersproject/experimental": "^5.0.1",
-        "@pancakeswap/sdk": "https://github.com/Achthar/requiem-swap-sdk.git",
+        "@pancakeswap/sdk": "Achthar/requiem-swap-sdk.git",
         "@pancakeswap/uikit": "https://gitpkg.now.sh/Achthar/requiem-toolkit/packages/pancake-uikit?master",
         "@reduxjs/toolkit": "^1.5.0",
         "@types/multicodec": "^1.0.0",

@@ -54,8 +54,12 @@ export type TokenAddressMap = Readonly<
  * An empty result, useful as a default.
  */
 const EMPTY_LIST: TokenAddressMap = {
-  [ChainId.MAINNET_BSC]: {},
-  [ChainId.TESTNET_BSC]: {},
+  [ChainId.BSC_MAINNET]: {},
+  [ChainId.BSC_TESTNET]: {},
+  [ChainId.ARBITRUM_MAINNET]:{},
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]:{},
+  [ChainId.AVAX_MAINNET]:{},
+  [ChainId.AVAX_TESTNET]:{},
 }
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =
@@ -106,8 +110,12 @@ export function useAllLists(): {
 
 function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddressMap {
   return {
-    [ChainId.MAINNET_BSC]: { ...map1[ChainId.MAINNET_BSC], ...map2[ChainId.MAINNET_BSC] },
-    [ChainId.TESTNET_BSC]: { ...map1[ChainId.TESTNET_BSC], ...map2[ChainId.TESTNET_BSC] },
+    [ChainId.BSC_MAINNET]: { ...map1[ChainId.BSC_MAINNET], ...map2[ChainId.BSC_MAINNET] },
+    [ChainId.BSC_TESTNET]: { ...map1[ChainId.BSC_TESTNET], ...map2[ChainId.BSC_TESTNET] },
+    [ChainId.ARBITRUM_MAINNET]:{},
+    [ChainId.ARBITRUM_TETSNET_RINKEBY]:{},
+    [ChainId.AVAX_MAINNET]:{},
+    [ChainId.AVAX_TESTNET]:{},
   }
 }
 

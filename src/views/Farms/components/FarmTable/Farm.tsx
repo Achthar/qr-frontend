@@ -8,7 +8,6 @@ import { Token } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
 
 export interface FarmProps {
-  chainId: number
   label: string
   pid: number
   token: Token
@@ -34,7 +33,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, label, pid }) => {
+const Farm: React.FunctionComponent<FarmProps> = ({ token, quoteToken, label, pid }) => {
   const { stakedBalance } = useFarmUser(pid)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
@@ -55,7 +54,7 @@ const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, 
     <Container>
       <TokenWrapper>
         <TokenPairImage
-          chainId={chainId}
+          chainId={54}
           variant="inverted"
           primaryToken={token}
           secondaryToken={quoteToken}

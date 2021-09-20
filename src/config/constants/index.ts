@@ -11,8 +11,12 @@ type ChainTokenList = {
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-  [ChainId.MAINNET]: [WETH[ChainId.MAINNET], CAKE[ChainId.MAINNET], BUSD[ChainId.MAINNET], USDT, BTCB, UST, ETH[ChainId.MAINNET], USDC],
-  [ChainId.TESTNET]: [WETH[ChainId.TESTNET], CAKE[ChainId.TESTNET], BUSD[ChainId.TESTNET], ETH[ChainId.TESTNET]],
+  [ChainId.BSC_MAINNET]: [WETH[ChainId.BSC_MAINNET], CAKE[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT, BTCB, UST, ETH[ChainId.BSC_MAINNET], USDC],
+  [ChainId.BSC_TESTNET]: [WETH[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET], ETH[ChainId.BSC_TESTNET]],
+  [ChainId.ARBITRUM_MAINNET]:[WETH[ChainId.ARBITRUM_MAINNET]],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]:[WETH[ChainId.ARBITRUM_TETSNET_RINKEBY]],
+  [ChainId.AVAX_MAINNET]:[WETH[ChainId.AVAX_MAINNET]],
+  [ChainId.AVAX_TESTNET]:[WETH[ChainId.AVAX_TESTNET]],
 }
 
 /**
@@ -20,39 +24,47 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
  * @example { [WBTC.address]: [renBTC], [renBTC.address]: [WBTC] }
  */
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
-  [ChainId.MAINNET]: {},
+  [ChainId.BSC_MAINNET]: {},
 }
 
 /**
  * Some tokens can only be swapped via certain pairs, so we override the list of bases that are considered for these
  * tokens.
- * @example [AMPL.address]: [DAI, WETH[ChainId.MAINNET]]
+ * @example [AMPL.address]: [DAI, WETH[ChainId.BSC_MAINNET]]
  */
 export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
-  [ChainId.MAINNET]: {},
+  [ChainId.BSC_MAINNET]: {},
 }
 
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
-  [ChainId.MAINNET]: [BUSD[ChainId.MAINNET], CAKE[ChainId.MAINNET], BTCB],
-  [ChainId.TESTNET]: [WETH[ChainId.TESTNET], CAKE[ChainId.TESTNET], BUSD[ChainId.TESTNET]],
+  [ChainId.BSC_MAINNET]: [BUSD[ChainId.BSC_MAINNET], CAKE[ChainId.BSC_MAINNET], BTCB],
+  [ChainId.BSC_TESTNET]: [WETH[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET]],
+  [ChainId.ARBITRUM_MAINNET]:[],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]:[],
+  [ChainId.AVAX_MAINNET]:[],
+  [ChainId.AVAX_TESTNET]:[],
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
-  [ChainId.MAINNET]: [WETH[ChainId.MAINNET], DAI[ChainId.MAINNET], BUSD[ChainId.MAINNET], USDT],
-  [ChainId.TESTNET]: [WETH[ChainId.TESTNET], CAKE[ChainId.TESTNET], BUSD[ChainId.TESTNET], DAI[ChainId.TESTNET]],
+  [ChainId.BSC_MAINNET]: [WETH[ChainId.BSC_MAINNET], DAI[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT],
+  [ChainId.BSC_TESTNET]: [WETH[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET], DAI[ChainId.BSC_TESTNET]],
+  [ChainId.ARBITRUM_MAINNET]:[],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]:[],
+  [ChainId.AVAX_MAINNET]:[],
+  [ChainId.AVAX_TESTNET]:[],
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
-  [ChainId.MAINNET]: [
-    [CAKE[ChainId.MAINNET], WBNB[ChainId.MAINNET]],
-    [BUSD[ChainId.MAINNET], USDT],
-    [DAI[ChainId.MAINNET], USDT],
+  [ChainId.BSC_MAINNET]: [
+    [CAKE[ChainId.BSC_MAINNET], WBNB[ChainId.BSC_MAINNET]],
+    [BUSD[ChainId.BSC_MAINNET], USDT],
+    [DAI[ChainId.BSC_MAINNET], USDT],
   ],
-  [ChainId.TESTNET]: [
-    [CAKE[ChainId.TESTNET], WBNB[ChainId.TESTNET]],
-    [BUSD[ChainId.TESTNET], DAI[ChainId.TESTNET]],
+  [ChainId.BSC_TESTNET]: [
+    [CAKE[ChainId.BSC_TESTNET], WBNB[ChainId.BSC_TESTNET]],
+    [BUSD[ChainId.BSC_TESTNET], DAI[ChainId.BSC_TESTNET]],
   ],
 }
 

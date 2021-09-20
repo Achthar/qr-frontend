@@ -27,7 +27,6 @@ export const fetchPoolsBlockLimits = async (chainId: number) => {
 
   const starts = await multicall(chainId, sousChefABI, callsStartBlock)
   const ends = await multicall(chainId, sousChefABI, callsEndBlock)
-
   return poolsWithEnd.map((cakePoolConfig, index) => {
     const startBlock = starts[index]
     const endBlock = ends[index]
@@ -61,7 +60,6 @@ export const fetchPoolsTotalStaking = async (chainId) => {
 
   const nonBnbPoolsTotalStaked = await multicall(chainId, cakeABI, callsNonBnbPools)
   const bnbPoolsTotalStaked = await multicall(chainId, wbnbABI, callsBnbPools)
-
   return [
     ...nonBnbPools.map((p, index) => ({
       sousId: p.sousId,

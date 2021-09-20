@@ -23,8 +23,6 @@ import Loading from 'components/Loading'
 import PoolCard from './components/PoolCard'
 import CakeVaultCard from './components/CakeVaultCard'
 import PoolTabButtons from './components/PoolTabButtons'
-import BountyCard from './components/BountyCard'
-import HelpButton from './components/HelpButton'
 import PoolsTable from './components/PoolsTable/PoolsTable'
 import { ViewMode } from './components/ToggleView/ToggleView'
 import { getAprData, getCakeVaultEarnings } from './helpers'
@@ -96,9 +94,9 @@ const Pools: React.FC = () => {
     pricePerFullShare,
     totalCakeInVault,
   } = useCakeVault()
+
   const accountHasVaultShares = userShares && userShares.gt(0)
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100
-
   const pools = useMemo(() => {
     const cakePool = poolsWithoutAutoVault.find((pool) => pool.sousId === 0)
     const cakeAutoVault = { ...cakePool, isAutoVault: true }
@@ -131,7 +129,7 @@ const Pools: React.FC = () => {
 
   usePollFarmsPublicData()
   useFetchCakeVault()
-  useFetchPublicPoolsData(chainId)
+  useFetchPublicPoolsData()
 
   useEffect(() => {
     const showMorePools = (entries) => {
@@ -272,10 +270,6 @@ const Pools: React.FC = () => {
             <Heading scale="md" color="text">
               {t('High APR, low risk.')}
             </Heading>
-          </Flex>
-          <Flex flex="1" height="fit-content" justifyContent="center" alignItems="center" mt={['24px', null, '0']}>
-            <HelpButton />
-            <BountyCard />
           </Flex>
         </Flex>
       </PageHeader>

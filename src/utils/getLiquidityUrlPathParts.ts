@@ -1,8 +1,10 @@
 // Constructing the two forward-slash-separated parts of the 'Add Liquidity' URL
 // Each part of the url represents a different side of the LP pair.
+import { useWeb3React } from '@web3-react/core'
 import { getWbnbAddress } from './addressHelpers'
 
-const getLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress }) => {
+const getLiquidityUrlPathParts = ({chainId, quoteTokenAddress, tokenAddress }) => {
+  // const {chainId} = useWeb3React()
   // const chainId = process.env.REACT_APP_CHAIN_ID
   const wBNBAddressString = getWbnbAddress(chainId)
   const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId] : null

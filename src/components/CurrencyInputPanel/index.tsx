@@ -43,7 +43,6 @@ const Container = styled.div<{ hideInput: boolean }>`
   box-shadow: ${({ theme }) => theme.shadows.inset};
 `
 interface CurrencyInputPanelProps {
-  chainId:number
   value: string
   onUserInput: (value: string) => void
   onMax?: () => void
@@ -60,7 +59,6 @@ interface CurrencyInputPanelProps {
   showCommonBases?: boolean
 }
 export default function CurrencyInputPanel({
-  chainId,
   value,
   onUserInput,
   onMax,
@@ -76,8 +74,8 @@ export default function CurrencyInputPanel({
   id,
   showCommonBases,
 }: CurrencyInputPanelProps) {
-  const { account } = useActiveWeb3React()
-  const selectedCurrencyBalance = useCurrencyBalance(chainId, account ?? undefined, currency ?? undefined)
+  const { account, chainId } = useActiveWeb3React()
+  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const { t } = useTranslation()
   const translatedLabel = label || t('Input')
 

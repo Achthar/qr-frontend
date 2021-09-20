@@ -16,8 +16,8 @@ import {
 import type { State, Pool } from '../types'
 import { transformPool } from './helpers'
 
-export const useFetchPublicPoolsData = (chainId: number) => {
-  // const {chainId} = useWeb3React()
+export const useFetchPublicPoolsData = () => {
+  const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 
@@ -71,7 +71,6 @@ export const useCakeVault = () => {
     totalShares: totalSharesAsString,
     pricePerFullShare: pricePerFullShareAsString,
     totalCakeInVault: totalCakeInVaultAsString,
-    estimatedCakeBountyReward: estimatedCakeBountyRewardAsString,
     totalPendingCakeHarvest: totalPendingCakeHarvestAsString,
     fees: { performanceFee, callFee, withdrawalFee, withdrawalFeePeriod },
     userData: {
@@ -83,9 +82,11 @@ export const useCakeVault = () => {
     },
   } = useSelector((state: State) => state.pools.cakeVault)
 
+  /*
   const estimatedCakeBountyReward = useMemo(() => {
-    return new BigNumber(estimatedCakeBountyRewardAsString)
-  }, [estimatedCakeBountyRewardAsString])
+      return new BigNumber(estimatedCakeBountyRewardAsString)
+    }, [estimatedCakeBountyRewardAsString])
+  */
 
   const totalPendingCakeHarvest = useMemo(() => {
     return new BigNumber(totalPendingCakeHarvestAsString)
@@ -115,7 +116,7 @@ export const useCakeVault = () => {
     totalShares,
     pricePerFullShare,
     totalCakeInVault,
-    estimatedCakeBountyReward,
+    // estimatedCakeBountyReward,
     totalPendingCakeHarvest,
     fees: {
       performanceFee,

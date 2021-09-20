@@ -11,9 +11,8 @@ import {
   fetchFarmUserTokenBalances,
   fetchFarmUserStakedBalances,
 } from './fetchFarmUser'
-import { FarmsState, Farm} from '../types'
-import {ChainId} from '../../config/index'
-
+import { FarmsState, Farm } from '../types'
+// import { chain } from 'lodash'
 
 const noAccountFarmConfig = farmsConfig.map((farm) => ({
   ...farm,
@@ -33,13 +32,13 @@ export const nonArchivedFarms = farmsConfig.filter(({ pid }) => !isArchivedPid(p
 export const fetchFarmsPublicDataAsync = createAsyncThunk<Farm[], number[]>(
   'farms/fetchFarmsPublicDataAsync',
   async (pids) => {
-    // const { chainId } = useWeb3React()
+    const {chainId} = useWeb3React()
     const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
 
     // Add price helper farms
-    const farms = farmsToFetch.concat(priceHelperLpsConfig)
+    const farmsWithPriceHelpers = farmsToFetch.concat(priceHelperLpsConfig)
 
-    // const farms = await fetchFarmsNew(chainId, farmsWithPriceHelpersNew)
+    const farms = await fetchFarms(chainId, farmsWithPriceHelpers)
     const farmsWithPrices = await fetchFarmsPrices(farms)
 
     // Filter out price helper LP config farms
@@ -59,12 +58,10 @@ interface FarmUserDataResponse {
   earnings: string
 }
 
-
-
 export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], { account: string; pids: number[] }>(
   'farms/fetchFarmUserDataAsync',
   async ({ account, pids }) => {
-    const { chainId } = useWeb3React()
+    const {chainId} = useWeb3React()
     const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
     const userFarmAllowances = await fetchFarmUserAllowances(chainId, account, farmsToFetch)
     const userFarmTokenBalances = await fetchFarmUserTokenBalances(chainId, account, farmsToFetch)

@@ -3,11 +3,11 @@ import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@pancakeswap/uikit'
-// import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@pancakeswap/sdk'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
 import Page from 'components/Layout/Page'
-import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
+import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd, usePollFarmsPublicData } from 'state/farms/hooks'
 import usePersistState from 'hooks/usePersistState'
 import { Farm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
@@ -21,13 +21,20 @@ import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
+
+import { useAppDispatch } from 'state'
+import useRefresh from 'hooks/useRefresh'
+
 import FarmCard, { FarmWithStakedValue } from './components/FarmCard/FarmCard'
 import Table from './components/FarmTable/FarmTable'
 import FarmTabButtons from './components/FarmTabButtons'
 import { RowProps } from './components/FarmTable/Row'
 import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
-import { ChainId } from '../../config/index'
+
+import fetchPublicFarmData from '../../state/farms/fetchPublicFarmData'
+import { fetchFarmsPublicDataAsync } from '../../state/farms/index'
+
 
 const ControlContainer = styled.div`
   display: flex;
@@ -161,7 +168,7 @@ const Farms: React.FC = () => {
         }
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
         const { cakeRewardsApr, lpRewardsApr } = isActive
-          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[chainId])
+          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[ChainId.BSC_MAINNET])
           : { cakeRewardsApr: 0, lpRewardsApr: 0 }
 
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -175,7 +182,7 @@ const Farms: React.FC = () => {
       }
       return farmsToDisplayWithAPR
     },
-    [chainId, cakePrice, query, isActive],
+    [cakePrice, query, isActive],
   )
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,7 +245,12 @@ const Farms: React.FC = () => {
     stakedOnly,
     stakedOnlyFarms,
     numberOfFarmsVisible,
-  ])
+  ]) // end chosenFarmsMemoized
+
+  const dispatch = useAppDispatch()
+  
+  // workaround useEffect in hooks not working
+  dispatch(fetchFarmsPublicDataAsync(farmsLP.map(farm=>farm.pid)))
 
   chosenFarmsLength.current = chosenFarmsMemoized.length
 
@@ -267,14 +279,12 @@ const Farms: React.FC = () => {
 
   const rowData = chosenFarmsMemoized.map((farm) => {
     const { token, quoteToken } = farm
-    const tokenAddress =  token.address
+    const tokenAddress = token.address
     const quoteTokenAddress = quoteToken.address
     const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
 
     const row: RowProps = {
-      chainId,
       apr: {
-        chainId,
         value: getDisplayApr(farm.apr, farm.lpRewardsApr),
         pid: farm.pid,
         multiplier: farm.multiplier,
@@ -286,7 +296,6 @@ const Farms: React.FC = () => {
         originalValue: farm.apr,
       },
       farm: {
-        chainId,
         label: lpLabel,
         pid: farm.pid,
         token: farm.token,
@@ -304,7 +313,7 @@ const Farms: React.FC = () => {
       },
       details: farm,
     }
-
+    
     return row
   })
 
@@ -343,7 +352,6 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-            // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -356,7 +364,6 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/history`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-              // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}
@@ -369,7 +376,6 @@ const Farms: React.FC = () => {
         <Route exact path={`${path}/archived`}>
           {chosenFarmsMemoized.map((farm) => (
             <FarmCard
-             // chainId={chainId}
               key={farm.pid}
               farm={farm}
               displayApr={getDisplayApr(farm.apr, farm.lpRewardsApr)}

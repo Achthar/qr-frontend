@@ -158,7 +158,7 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
 export function useGasPrice(chainId:number): string {
   // const chainId = process.env.REACT_APP_CHAIN_ID
   const userGas = useSelector<AppState, AppState['user']['gasPrice']>((state) => state.user.gasPrice)
-  return chainId === ChainId.MAINNET_BSC ? userGas : GAS_PRICE_GWEI.testnet
+  return chainId === ChainId.BSC_MAINNET ? userGas : GAS_PRICE_GWEI.testnet
 }
 
 export function useGasPriceManager(chainId:number): [string, (userGasPrice: string) => void] {

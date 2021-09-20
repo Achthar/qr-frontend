@@ -10,7 +10,7 @@ const getGasPrice = (): string => {
   const chainId = process.env.REACT_APP_CHAIN_ID
   const state = store.getState()
   const userGas = state.user.gasPrice || GAS_PRICE_GWEI.default
-  return chainId === ChainId.MAINNET_BSC.toString() ? userGas : GAS_PRICE_GWEI.testnet
+  return chainId === ChainId.BSC_MAINNET.toString() ? userGas : GAS_PRICE_GWEI.testnet
 }
 
 export default getGasPrice

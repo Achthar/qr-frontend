@@ -45,7 +45,7 @@ const initialState: PoolsState = {
 
 // Thunks
 export const fetchPoolsPublicDataAsync = (chainId:number, currentBlock: number) => async (dispatch, getState) => {
-  // const { chainId } = useWeb3React()
+
   const blockLimits = await fetchPoolsBlockLimits(chainId)
   const totalStakings = await fetchPoolsTotalStaking(chainId)
 

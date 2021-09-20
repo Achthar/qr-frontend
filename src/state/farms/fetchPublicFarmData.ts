@@ -18,7 +18,7 @@ type PublicFarmData = {
   multiplier: string
 }
 
-const fetchFarm = async (chainId: number, farm: Farm): Promise<PublicFarmData> => {
+const fetchPublicFarmData = async (chainId: number, farm: Farm): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
   const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
@@ -106,4 +106,4 @@ const fetchFarm = async (chainId: number, farm: Farm): Promise<PublicFarmData> =
   }
 }
 
-export default fetchFarm
+export default fetchPublicFarmData

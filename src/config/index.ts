@@ -1,4 +1,5 @@
 
+import { ChainId } from '@pancakeswap/sdk'
 import BigNumber from 'bignumber.js/bignumber'
 // import { BIG_TEN } from 'utils/bigNumber'
 
@@ -9,14 +10,19 @@ BigNumber.config({
 
 export const BSC_BLOCK_TIME = 3
 
-export enum ChainId {
-  MAINNET_BSC = 56,
-  TESTNET_BSC = 97
-}
+export  {ChainId} from '@pancakeswap/sdk' 
 
 export const BASE_BSC_SCAN_URLS = {
-  [ChainId.MAINNET_BSC]: 'https://bscscan.com',
-  [ChainId.TESTNET_BSC]: 'https://testnet.bscscan.com',
+  [ChainId.BSC_MAINNET]: 'https://bscscan.com',
+  [ChainId.BSC_TESTNET]: 'https://testnet.bscscan.com',
+  [ChainId.ARBITRUM_MAINNET]: '',
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: '',
+  [ChainId.AVAX_MAINNET]: '',
+  [ChainId.AVAX_TESTNET]: '',
+  [ChainId.ARBITRUM_MAINNET]: [],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: [],
+  [ChainId.AVAX_MAINNET]: [],
+  [ChainId.AVAX_TESTNET]: [],
 }
 
 // CAKE_PER_BLOCK details
@@ -32,7 +38,7 @@ export const CAKE_PER_YEAR = CAKE_PER_BLOCK.times(BLOCKS_PER_YEAR)
 export const BASE_URL = 'https://pancakeswap.finance'
 export const BASE_ADD_LIQUIDITY_URL = `${BASE_URL}/add`
 export const BASE_LIQUIDITY_POOL_URL = `${BASE_URL}/pool`
-export const BASE_BSC_SCAN_URL = BASE_BSC_SCAN_URLS[ChainId.MAINNET_BSC]
+export const BASE_BSC_SCAN_URL = BASE_BSC_SCAN_URLS[ChainId.BSC_MAINNET]
 export const DEFAULT_TOKEN_DECIMAL = (new BigNumber(10)).pow(18)
 export const DEFAULT_GAS_LIMIT = 200000
 export const AUCTION_BIDDERS_TO_FETCH = 500

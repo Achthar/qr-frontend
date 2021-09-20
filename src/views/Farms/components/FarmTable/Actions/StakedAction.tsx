@@ -28,14 +28,12 @@ const IconButtonWrapper = styled.div`
 `
 
 interface StackedActionProps extends FarmWithStakedValue {
-  chainId:number,
   userDataReady: boolean
   lpLabel?: string
   displayApr?: string
 }
 
 const Staked: React.FunctionComponent<StackedActionProps> = ({
-  chainId,
   pid,
   apr,
   multiplier,
@@ -48,7 +46,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   displayApr,
 }) => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useFarmUser(pid)
   const { onStake } = useStakeFarms(pid)
@@ -59,9 +57,9 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
-   const lpAddress = getAddress(chainId, lpAddresses)
+  const lpAddress = getAddress(54, lpAddresses)
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
-    chainId:{chainId},
+    chainId:54,
     quoteTokenAddress: quoteToken.address,
     tokenAddress: token.address,
   })

@@ -331,7 +331,6 @@ export default function AddLiquidity({
               </ColumnCenter>
             )}
             <CurrencyInputPanel
-              chainId={chainId}
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -347,7 +346,6 @@ export default function AddLiquidity({
               <AddIcon width="16px" />
             </ColumnCenter>
             <CurrencyInputPanel
-              chainId={chainId}
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}

@@ -163,7 +163,6 @@ function toCallState(
 }
 
 export function useSingleContractMultipleData(
-  chainId: number,
   contract: Contract | null | undefined,
   methodName: string,
   callInputs: OptionalMethodInputs[],
@@ -194,7 +193,6 @@ export function useSingleContractMultipleData(
 }
 
 export function useMultipleContractSingleData(
-  chainId: number,
   addresses: (string | undefined)[],
   contractInterface: Interface,
   methodName: string,

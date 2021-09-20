@@ -12,7 +12,7 @@ export const usePollBlockNumber = () => {
   const timer = useRef(null)
   const dispatch = useAppDispatch()
   const isWindowVisible = useIsWindowVisible()
-  const {chainId} = useWeb3React()
+  const { chainId } = useWeb3React()
   useEffect(() => {
     if (isWindowVisible) {
       timer.current = setInterval(async () => {

@@ -560,7 +560,6 @@ export default function RemoveLiquidity({
           {showDetailed && (
             <Box my="16px">
               <CurrencyInputPanel
-                chainId={chainId}
                 value={formattedAmounts[Field.LIQUIDITY]}
                 onUserInput={onLiquidityInput}
                 onMax={() => {
@@ -577,7 +576,6 @@ export default function RemoveLiquidity({
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
-                chainId={chainId}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_A]}
                 onUserInput={onCurrencyAInput}
@@ -592,7 +590,6 @@ export default function RemoveLiquidity({
                 <AddIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
-                chainId={chainId}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_B]}
                 onUserInput={onCurrencyBInput}

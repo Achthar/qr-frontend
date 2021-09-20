@@ -52,7 +52,6 @@ export const fetchVaultFees = async (chainId:number) => {
     }))
 
     const [[performanceFee], [callFee], [withdrawalFee], [withdrawalFeePeriod]] = await multicallv2(chainId, cakeVaultAbi, calls)
-
     return {
       performanceFee: performanceFee.toNumber(),
       callFee: callFee.toNumber(),

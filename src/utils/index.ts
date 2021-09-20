@@ -21,7 +21,7 @@ export function isAddress(value: any): string | false {
 export function getBscScanLink(
   data: string | number,
   type: 'transaction' | 'token' | 'address' | 'block' | 'countdown',
-  chainId: ChainId = ChainId.MAINNET_BSC,
+  chainId: ChainId = ChainId.BSC_MAINNET,
 ): string {
   switch (type) {
     case 'transaction': {

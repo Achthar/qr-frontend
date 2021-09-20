@@ -17,7 +17,6 @@ export const usePollFarmsPublicData = (includeArchive = false) => {
   useEffect(() => {
     const farmsToFetch = includeArchive ? farmsConfig : nonArchivedFarms
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
-
     dispatch(fetchFarmsPublicDataAsync(pids))
   }, [includeArchive, dispatch, slowRefresh])
 }

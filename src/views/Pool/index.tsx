@@ -32,7 +32,6 @@ export default function Pool() {
     [tokenPairsWithLiquidityTokens],
   )
   const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
-    chainId,
     account ?? undefined,
     liquidityTokens,
   )
