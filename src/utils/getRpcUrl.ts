@@ -23,7 +23,7 @@ export const nodes :{ [chainId: number]: string } ={
 
 const getNodeUrl = (chainId) => {
   let node = ''
-  if (chainId === '54') {
+  if (chainId === '56') {
     node = sample(nodesBSC)
   } else if (chainId === '97') {
     node = sample(nodesBSCT)
