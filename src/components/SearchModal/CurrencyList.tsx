@@ -19,7 +19,7 @@ import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 
 function currencyKey(chainId:number, currency: Currency): string {
-  return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId] ? 'ETHER' : ''
+  return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId] ? NETWORK_CCY[chainId].symbol : ''
 }
 
 const StyledBalanceText = styled(Text)`
@@ -73,7 +73,7 @@ function CurrencyRow({
   const selectedTokenList = useCombinedActiveList()
   const isOnSelectedList = isTokenOnList(selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
-  const balance = useCurrencyBalance(account ?? undefined, currency)
+  const balance = useCurrencyBalance(chainId, account ?? undefined, currency)
 
   // only show add or remove buttons if not on selected list
   return (
@@ -122,7 +122,7 @@ export default function CurrencyList({
   breakIndex: number | undefined
 }) {
   const { chainId } = useActiveWeb3React()
-  
+
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies
     if (breakIndex !== undefined) {

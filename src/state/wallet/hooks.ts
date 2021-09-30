@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, Token, TokenAmount } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import ERC20_INTERFACE from 'config/abi/erc20'
@@ -99,6 +99,7 @@ export function useTokenBalance(chainId: number, account?: string, token?: Token
 }
 
 export function useCurrencyBalances(
+  chainId: number,
   account?: string,
   currencies?: (Currency | undefined)[],
 ): (CurrencyAmount | undefined)[] {
@@ -108,7 +109,7 @@ export function useCurrencyBalances(
   )
 
   const tokenBalances = useTokenBalances(account, tokens)
-  const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === ETHER) ?? false, [currencies])
+  const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
   const ethBalance = useBNBBalances(containsBNB ? [account] : [])
 
   return useMemo(
@@ -116,15 +117,15 @@ export function useCurrencyBalances(
       currencies?.map((currency) => {
         if (!account || !currency) return undefined
         if (currency instanceof Token) return tokenBalances[currency.address]
-        if (currency === ETHER) return ethBalance[account]
+        if (currency === NETWORK_CCY[chainId]) return ethBalance[account]
         return undefined
       }) ?? [],
-    [account, currencies, ethBalance, tokenBalances],
+    [chainId, account, currencies, ethBalance, tokenBalances],
   )
 }
 
-export function useCurrencyBalance(account?: string, currency?: Currency): CurrencyAmount | undefined {
-  return useCurrencyBalances(account, [currency])[0]
+export function useCurrencyBalance(chainId: number, account?: string, currency?: Currency): CurrencyAmount | undefined {
+  return useCurrencyBalances(chainId, account, [currency])[0]
 }
 
 // mimics useAllBalances

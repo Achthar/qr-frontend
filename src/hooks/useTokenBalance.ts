@@ -87,9 +87,9 @@ export const useBurnedBalance = ( tokenAddress: string) => {
 }
 
 export const useGetBnbBalance = () => {
+  const { account, chainId } = useWeb3React()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [balance, setBalance] = useState(BIG_ZERO)
-  const { account, chainId } = useWeb3React()
   const { lastUpdated, setLastUpdated } = useLastUpdated()
   useEffect(() => {
     const fetchBalance = async () => {

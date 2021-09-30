@@ -14,6 +14,6 @@ export function wrappedCurrencyAmount(
 }
 
 export function unwrappedToken(token: Token): Currency {
-  if (token.equals(WRAPPED_NETWORK_TOKENS[token.chainId])) return ETHER
+  if (token.equals(WRAPPED_NETWORK_TOKENS[token.chainId])) return NETWORK_CCY[token.chainId]
   return token
 }

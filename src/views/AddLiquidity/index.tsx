@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, TokenAmount, WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER, NETWORK_CCY, TokenAmount, WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { Button, Text, Flex, AddIcon, CardBody, Message, useModal } from '@pancakeswap/uikit'
 import { RouteComponentProps } from 'react-router-dom'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
@@ -272,7 +272,7 @@ export default function AddLiquidity({
           history.push(`/add/${newCurrencyIdB}`)
         }
       } else {
-        history.push(`/add/${currencyIdA || 'BNB'}/${newCurrencyIdB}`)
+        history.push(`/add/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
       }
     },
     [chainId, currencyIdA, history, currencyIdB],

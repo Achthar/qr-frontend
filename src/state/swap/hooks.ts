@@ -128,7 +128,7 @@ export function useDerivedSwapInfo(chainId: number): {
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
-  const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
+  const relevantTokenBalances = useCurrencyBalances(chainId, account ?? undefined, [
     inputCurrency ?? undefined,
     outputCurrency ?? undefined,
   ])

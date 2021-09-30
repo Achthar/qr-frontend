@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, Percent, WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER, NETWORK_CCY, Percent, WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@pancakeswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -544,8 +544,8 @@ export default function RemoveLiquidity({
                         </StyledInternalLink>
                       ) : oneCurrencyIsWETH ? (
                         <StyledInternalLink
-                          to={`/remove/${currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId]) ? 'BNB' : currencyIdA}/${
-                            currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]) ? 'BNB' : currencyIdB
+                          to={`/remove/${currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdA}/${
+                            currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdB
                           }`}
                         >
                           {t('Receive BNB')}

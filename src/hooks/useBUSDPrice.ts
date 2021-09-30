@@ -4,7 +4,6 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'
 import { PairState, usePairs } from './usePairs'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-// import { ChainId } from '../config/index'
 
 const BUSD_MAINNET = BUSD[ChainId.BSC_MAINNET]
 

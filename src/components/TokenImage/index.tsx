@@ -8,6 +8,7 @@ import {
 import tokens from 'config/constants/tokens'
 import { Token } from 'config/constants/types'
 import { getAddress } from 'utils/addressHelpers'
+import { NETWORK_CCY } from '@pancakeswap/sdk'
 
 interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc' | 'secondarySrc'> {
   chainId:number,
@@ -16,7 +17,7 @@ interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc
 }
 
 const getImageUrlFromToken = (chainId:number, token: Token) => {
-  const address = getAddress(chainId, token.symbol === 'BNB' ? tokens.wbnb.address : token.address)
+  const address = getAddress(chainId, token.symbol === NETWORK_CCY[chainId].symbol ? tokens.wbnb.address : token.address)
   return `/images/tokens/${address}.svg`
 }
 
