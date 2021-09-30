@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, TokenAmount, WETH } from '@pancakeswap/sdk'
+import { Currency, currencyEquals, ETHER, TokenAmount, WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { Button, Text, Flex, AddIcon, CardBody, Message, useModal } from '@pancakeswap/uikit'
 import { RouteComponentProps } from 'react-router-dom'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
@@ -47,13 +47,13 @@ export default function AddLiquidity({
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
 
-  const currencyA = useCurrency(currencyIdA)
-  const currencyB = useCurrency(currencyIdB)
+  const currencyA = useCurrency(chainId, currencyIdA)
+  const currencyB = useCurrency(chainId, currencyIdB)
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
-        (currencyB && currencyEquals(currencyB, WETH[chainId]))),
+    ((currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId])) ||
+      (currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]))),
   )
 
   const expertMode = useIsExpertMode()
@@ -177,9 +177,8 @@ export default function AddLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencies[Field.CURRENCY_A]?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencies[Field.CURRENCY_A]?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
           })
 
           setTxHash(response.hash)
@@ -254,18 +253,18 @@ export default function AddLiquidity({
 
   const handleCurrencyASelect = useCallback(
     (currencyA_: Currency) => {
-      const newCurrencyIdA = currencyId(currencyA_)
+      const newCurrencyIdA = currencyId(chainId, currencyA_)
       if (newCurrencyIdA === currencyIdB) {
         history.push(`/add/${currencyIdB}/${currencyIdA}`)
       } else {
         history.push(`/add/${newCurrencyIdA}/${currencyIdB}`)
       }
     },
-    [currencyIdB, history, currencyIdA],
+    [chainId, currencyIdB, history, currencyIdA],
   )
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {
-      const newCurrencyIdB = currencyId(currencyB_)
+      const newCurrencyIdB = currencyId(chainId, currencyB_)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
           history.push(`/add/${currencyIdB}/${newCurrencyIdB}`)
@@ -276,7 +275,7 @@ export default function AddLiquidity({
         history.push(`/add/${currencyIdA || 'BNB'}/${newCurrencyIdB}`)
       }
     },
-    [currencyIdA, history, currencyIdB],
+    [chainId, currencyIdA, history, currencyIdB],
   )
 
   const handleDismissConfirmation = useCallback(() => {

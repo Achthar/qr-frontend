@@ -9,7 +9,10 @@
     },
     "tags": {},
     "logoURI": "https://pancakeswap.finance/logo.png",
-    "keywords": ["pancake", "default"],
+    "keywords": [
+      "pancake",
+      "default"
+    ],
     "tokens": [
       {
         "name": "WBNB Token",
@@ -133,7 +136,6 @@
       }
     ]
   },
-
   "97": {
     "name": "PancakeSwap Default List",
     "timestamp": "2021-05-06T00:00:00Z",
@@ -144,7 +146,10 @@
     },
     "tags": {},
     "logoURI": "https://pancakeswap.finance/logo.png",
-    "keywords": ["pancake", "default"],
+    "keywords": [
+      "pancake",
+      "default"
+    ],
     "tokens": [
       {
         "name": "WBNB Token",
@@ -175,6 +180,63 @@
         "symbol": "DAI",
         "address": "0x8a9424745056eb399fd19a0ec26a14316684e274",
         "chainId": 97,
+        "decimals": 18,
+        "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059ff775485246999027b3197955.png"
+      }
+    ]
+  },
+  "80001": {
+    "name": "RequiemSwap Default List MATIC",
+    "timestamp": "2021-09-29T00:00:00Z",
+    "version": {
+      "major": 3,
+      "minor": 0,
+      "patch": 0
+    },
+    "tags": {},
+    "logoURI": "https://pancakeswap.finance/logo.png",
+    "keywords": [
+      "pancake",
+      "default"
+    ],
+    "tokens": [
+      {
+        "name": "WMATIC Token",
+        "symbol": "WMATIC",
+        "address": "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
+        "chainId": 80001,
+        "decimals": 18,
+        "logoURI": "https://logosandtypes.com/wp-content/uploads/2020/11/matic-network.svg"
+      },
+      {
+        "name": "Tether USD",
+        "symbol": "USDT",
+        "address": "0xeaBc4b91d9375796AA4F69cC764A4aB509080A58",
+        "chainId": 80001,
+        "decimals": 18,
+        "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059ff775485246999027b3197955.png"
+      },
+      {
+        "name": "USDC",
+        "symbol": "USDC",
+        "address": "0xdA5289fCAAF71d52a80A254da614a192b693e977",
+        "chainId": 80001,
+        "decimals": 18,
+        "logoURI": "https://pancakeswap.finance/images/tokens/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"
+      },
+      {
+        "name": "Wrapped Ethereum Token",
+        "symbol": "WETH",
+        "address": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+        "chainId": 80001,
+        "decimals": 18,
+        "logoURI": "https://pancakeswap.finance/images/tokens/0x2170ed0880ac9a755fd29b2688956bd959f933f8.png"
+      },
+      {
+        "name": "DAI Token",
+        "symbol": "DAI",
+        "address": "0x27a44456bEDb94DbD59D0f0A14fE977c777fC5C3",
+        "chainId": 80001,
         "decimals": 18,
         "logoURI": "https://pancakeswap.finance/images/tokens/0x55d398326f99059ff775485246999027b3197955.png"
       }

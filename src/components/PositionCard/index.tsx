@@ -235,7 +235,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
             <Flex flexDirection="column">
               <Button
                 as={Link}
-                to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
+                to={`/remove/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}
                 variant="primary"
                 width="100%"
                 mb="8px"
@@ -244,7 +244,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
               </Button>
               <Button
                 as={Link}
-                to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
+                to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
                 width="100%"

@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { Currency, ETHER, Token } from '@pancakeswap/sdk'
+import { Currency, ETHER, Token, NETWORK_CCY } from '@pancakeswap/sdk'
 import { Text, Input, Box } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
@@ -101,7 +101,7 @@ function CurrencySearch({
       if (e.key === 'Enter') {
         const s = debouncedQuery.toLowerCase().trim()
         if (s === 'bnb') {
-          handleCurrencySelect(ETHER)
+          handleCurrencySelect(NETWORK_CCY[chainId])
         } else if (filteredSortedTokens.length > 0) {
           if (
             filteredSortedTokens[0].symbol?.toLowerCase() === debouncedQuery.trim().toLowerCase() ||
@@ -112,7 +112,7 @@ function CurrencySearch({
         }
       }
     },
-    [filteredSortedTokens, handleCurrencySelect, debouncedQuery],
+    [chainId, filteredSortedTokens, handleCurrencySelect, debouncedQuery],
   )
 
   // if no results on main list, show option to expand into inactive

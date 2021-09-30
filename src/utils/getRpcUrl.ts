@@ -16,9 +16,16 @@ export const nodesBSCT = [
   process.env.REACT_APP_NODE_BSCT_3,
 ]
 
-export const nodes :{ [chainId: number]: string } ={
+export const nodesMATICT =
+  [
+   // process.env.REACT_APP_NODE_MATICT + process.env.MATIC_INFURA_KEY,
+   process.env.REACT_APP_RPC_URL_MATICT
+  ]
+
+export const nodes: { [chainId: number]: string } = {
   [ChainId.BSC_TESTNET]: sample(nodesBSCT),
-  [ChainId.BSC_MAINNET]: sample(nodesBSC)
+  [ChainId.BSC_MAINNET]: sample(nodesBSC),
+  [ChainId.MATIC_TESTNET]: nodesMATICT[0]
 }
 
 const getNodeUrl = (chainId) => {
@@ -27,7 +34,10 @@ const getNodeUrl = (chainId) => {
     node = sample(nodesBSC)
   } else if (chainId === '97') {
     node = sample(nodesBSCT)
-  } else {
+  } else if (chainId === '80001') {
+    node = nodesMATICT[0]
+  }
+  else {
     node = sample(nodesBSC) // default
   }
   return node

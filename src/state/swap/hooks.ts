@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade, NETWORK_CCY } from '@pancakeswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,18 +22,18 @@ export function useSwapState(): AppState['swap'] {
 }
 
 export function useSwapActionHandlers(): {
-  onCurrencySelection: (field: Field, currency: Currency) => void
+  onCurrencySelection: (chainId: number, field: Field, currency: Currency) => void
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
   onChangeRecipient: (recipient: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
-    (field: Field, currency: Currency) => {
+    (chainId: number, field: Field, currency: Currency) => {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency instanceof Token ? currency.address : currency === ETHER ? 'BNB' : '',
+          currencyId: currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId] ? NETWORK_CCY[chainId].symbol : '',
         }),
       )
     },
@@ -123,8 +123,8 @@ export function useDerivedSwapInfo(chainId: number): {
     recipient,
   } = useSwapState()
 
-  const inputCurrency = useCurrency(inputCurrencyId)
-  const outputCurrency = useCurrency(outputCurrencyId)
+  const inputCurrency = useCurrency(chainId, inputCurrencyId)
+  const outputCurrency = useCurrency(chainId, outputCurrencyId)
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 

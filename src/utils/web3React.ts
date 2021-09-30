@@ -12,7 +12,7 @@ const chainId = parseInt(process.env.REACT_APP_CHAIN_ID, 10)
 
 const rpcUrl = getNodeUrl(chainId)
 
-const injected = new InjectedConnector({ supportedChainIds: [ChainId.BSC_MAINNET, ChainId.BSC_TESTNET] })
+const injected = new InjectedConnector({ supportedChainIds: [ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.MATIC_TESTNET] })
 
 const walletconnect = new WalletConnectConnector({
   rpc: { [chainId]: rpcUrl },
@@ -21,6 +21,8 @@ const walletconnect = new WalletConnectConnector({
 })
 
 const bscConnector = new BscConnector({ supportedChainIds: [chainId] })
+
+const connectorETH = 0
 
 export const connectorsByName: { [connectorName in ConnectorNames]: any } = {
   [ConnectorNames.Injected]: injected,

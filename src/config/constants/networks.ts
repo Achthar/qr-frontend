@@ -7,6 +7,8 @@ const NETWORK_URLS: { [chainId in ChainId]: string } = {
   [ChainId.ARBITRUM_TETSNET_RINKEBY]:'',
   [ChainId.AVAX_MAINNET]:'',
   [ChainId.AVAX_TESTNET]:'',
+  [ChainId.MATIC_MAINNET]:'',
+  [ChainId.MATIC_TESTNET]:'https://rpc-mumbai.matic.today',
 }
 
 export default NETWORK_URLS

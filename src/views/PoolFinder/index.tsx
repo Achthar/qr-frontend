@@ -51,9 +51,9 @@ export default function PoolFinder() {
     pairState === PairState.NOT_EXISTS ||
     Boolean(
       pairState === PairState.EXISTS &&
-        pair &&
-        JSBI.equal(pair.reserve0.raw, JSBI.BigInt(0)) &&
-        JSBI.equal(pair.reserve1.raw, JSBI.BigInt(0)),
+      pair &&
+      JSBI.equal(pair.reserve0.raw, JSBI.BigInt(0)) &&
+      JSBI.equal(pair.reserve1.raw, JSBI.BigInt(0)),
     )
 
   const position: TokenAmount | undefined = useTokenBalance(chainId, account ?? undefined, pair?.liquidityToken)
@@ -151,7 +151,7 @@ export default function PoolFinder() {
                 <LightCard padding="45px 10px">
                   <AutoColumn gap="sm" justify="center">
                     <Text textAlign="center">{t('You don’t have liquidity in this pool yet.')}</Text>
-                    <StyledInternalLink to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                    <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
                       <Text textAlign="center">{t('Add Liquidity')}</Text>
                     </StyledInternalLink>
                   </AutoColumn>
@@ -161,7 +161,7 @@ export default function PoolFinder() {
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
                   <Text textAlign="center">{t('No pool found.')}</Text>
-                  <StyledInternalLink to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                  <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
                     {t('Create pool.')}
                   </StyledInternalLink>
                 </AutoColumn>

@@ -4,11 +4,11 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { DEFAULT_LIST_OF_LISTS } from 'config/constants/lists'
 import { AppState } from '../index'
-import DEFAULT_TOKEN_LIST from '../../config/constants/tokenLists/tokenlist.json'
+import { tokenList as DEFAULT_TOKEN_LIST } from '../../config/constants/tokenLists/tokenlist'
 import DEFAULT_TOKEN_LIST_STANDARD from '../../config/constants/tokenLists/pancake-default.tokenlist.json'
 import { UNSUPPORTED_LIST_URLS } from '../../config/constants/lists'
 import UNSUPPORTED_TOKEN_LIST from '../../config/constants/tokenLists/pancake-unsupported.tokenlist.json'
-import {ChainId} from '../../config/index'
+import { ChainId } from '../../config/index'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 
 type TagDetails = Tags[keyof Tags]
@@ -56,10 +56,12 @@ export type TokenAddressMap = Readonly<
 const EMPTY_LIST: TokenAddressMap = {
   [ChainId.BSC_MAINNET]: {},
   [ChainId.BSC_TESTNET]: {},
-  [ChainId.ARBITRUM_MAINNET]:{},
-  [ChainId.ARBITRUM_TETSNET_RINKEBY]:{},
-  [ChainId.AVAX_MAINNET]:{},
-  [ChainId.AVAX_TESTNET]:{},
+  [ChainId.ARBITRUM_MAINNET]: {},
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: {},
+  [ChainId.AVAX_MAINNET]: {},
+  [ChainId.AVAX_TESTNET]: {},
+  [ChainId.MATIC_MAINNET]: {},
+  [ChainId.MATIC_TESTNET]: {}
 }
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =
@@ -112,10 +114,12 @@ function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddress
   return {
     [ChainId.BSC_MAINNET]: { ...map1[ChainId.BSC_MAINNET], ...map2[ChainId.BSC_MAINNET] },
     [ChainId.BSC_TESTNET]: { ...map1[ChainId.BSC_TESTNET], ...map2[ChainId.BSC_TESTNET] },
-    [ChainId.ARBITRUM_MAINNET]:{},
-    [ChainId.ARBITRUM_TETSNET_RINKEBY]:{},
-    [ChainId.AVAX_MAINNET]:{},
-    [ChainId.AVAX_TESTNET]:{},
+    [ChainId.ARBITRUM_MAINNET]: {},
+    [ChainId.ARBITRUM_TETSNET_RINKEBY]: {},
+    [ChainId.AVAX_MAINNET]: {},
+    [ChainId.AVAX_TESTNET]: {},
+    [ChainId.MATIC_MAINNET]: {},
+    [ChainId.MATIC_TESTNET]: { ...map1[ChainId.MATIC_TESTNET], ...map2[ChainId.MATIC_TESTNET] },
   }
 }
 
@@ -161,10 +165,10 @@ export function useInactiveListUrls(): string[] {
 
 // get all the tokens from active lists, combine with local default tokens
 export function useCombinedActiveList(): TokenAddressMap {
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const activeListUrls = useActiveListUrls()
   const activeTokens = useCombinedTokenMapFromUrls(activeListUrls)
-  const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST_STANDARD) //  DEFAULT_TOKEN_LIST[chainId as unknown as string])
+  const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST[chainId ?? 56]) //  DEFAULT_TOKEN_LIST[chainId as unknown as string])
   return combineMaps(activeTokens, defaultTokenMap)
 }
 
@@ -176,8 +180,8 @@ export function useCombinedInactiveList(): TokenAddressMap {
 
 // used to hide warnings on import for default tokens
 export function useDefaultTokenList(): TokenAddressMap {
-  const {chainId} = useActiveWeb3React();
-  return listToTokenMap(DEFAULT_TOKEN_LIST_STANDARD) // DEFAULT_TOKEN_LIST[chainId as unknown as string])
+  const { chainId } = useActiveWeb3React();
+  return listToTokenMap(DEFAULT_TOKEN_LIST[chainId]) // DEFAULT_TOKEN_LIST[chainId as unknown as string])
 }
 
 // list of tokens not supported on interface, used to show warnings and prevent swaps and adds

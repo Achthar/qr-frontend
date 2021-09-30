@@ -52,12 +52,13 @@ const Label = styled(Text)`
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
 
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
-    useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId),
+    useCurrency(chainId, loadedUrlParams?.inputCurrencyId),
+    useCurrency(chainId, loadedUrlParams?.outputCurrencyId),
   ]
   const urlLoadedTokens: Token[] = useMemo(
     () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
@@ -71,8 +72,6 @@ export default function Swap({ history }: RouteComponentProps) {
     urlLoadedTokens.filter((token: Token) => {
       return !(token.address in defaultTokens)
     })
-
-  const { account, chainId } = useActiveWeb3React()
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -248,7 +247,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency)
+      onCurrencySelection(chainId, Field.INPUT, inputCurrency)
       const showSwapWarning = shouldShowSwapWarning(inputCurrency)
       if (showSwapWarning) {
         setSwapWarningCurrency(inputCurrency)
@@ -268,7 +267,7 @@ export default function Swap({ history }: RouteComponentProps) {
 
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency)
+      onCurrencySelection(chainId, Field.OUTPUT, outputCurrency)
       const showSwapWarning = shouldShowSwapWarning(outputCurrency)
       if (showSwapWarning) {
         setSwapWarningCurrency(outputCurrency)

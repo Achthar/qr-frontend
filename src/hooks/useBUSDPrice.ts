@@ -1,4 +1,4 @@
-import { ChainId, Currency, currencyEquals, JSBI, Price, WETH } from '@pancakeswap/sdk'
+import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'
@@ -18,11 +18,11 @@ export default function useBUSDPrice(currency?: Currency): Price {
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
       [
-        chainId && wrapped && currencyEquals(WETH[chainId], wrapped) ? undefined : currency,
-        chainId ? WETH[chainId] : undefined,
+        chainId && wrapped && currencyEquals(NETWORK_CCY[chainId], wrapped) ? undefined : currency,
+        chainId ? NETWORK_CCY[chainId] : undefined,
       ],
       [wrapped?.equals(BUSD_MAINNET) ? undefined : wrapped, chainId === ChainId.BSC_MAINNET ? BUSD_MAINNET : undefined],
-      [chainId ? WETH[chainId] : undefined, chainId === ChainId.BSC_MAINNET ? BUSD_MAINNET : undefined],
+      [chainId ? NETWORK_CCY[chainId] : undefined, chainId === ChainId.BSC_MAINNET ? BUSD_MAINNET : undefined],
     ],
     [chainId, currency, wrapped],
   )
@@ -34,10 +34,10 @@ export default function useBUSDPrice(currency?: Currency): Price {
     if (!currency || !wrapped || !chainId) {
       return undefined
     }
-    // handle weth/eth
-    if (wrapped.equals(WETH[chainId])) {
+    // handle NETWORK_CCY/eth
+    if (wrapped.equals(NETWORK_CCY[chainId])) {
       if (busdPair) {
-        const price = busdPair.priceOf(WETH[chainId])
+        const price = busdPair.priceOf(NETWORK_CCY[chainId])
         return new Price(currency, BUSD_MAINNET, price.denominator, price.numerator)
       }
       return undefined
@@ -47,9 +47,9 @@ export default function useBUSDPrice(currency?: Currency): Price {
       return new Price(BUSD_MAINNET, BUSD_MAINNET, '1', '1')
     }
 
-    const ethPairETHAmount = ethPair?.reserveOf(WETH[chainId])
+    const ethPairETHAmount = ethPair?.reserveOf(NETWORK_CCY[chainId])
     const ethPairETHBUSDValue: JSBI =
-      ethPairETHAmount && busdEthPair ? busdEthPair.priceOf(WETH[chainId]).quote(ethPairETHAmount).raw : JSBI.BigInt(0)
+      ethPairETHAmount && busdEthPair ? busdEthPair.priceOf(NETWORK_CCY[chainId]).quote(ethPairETHAmount).raw : JSBI.BigInt(0)
 
     // all other tokens
     // first try the busd pair
@@ -62,9 +62,9 @@ export default function useBUSDPrice(currency?: Currency): Price {
       return new Price(currency, BUSD_MAINNET, price.denominator, price.numerator)
     }
     if (ethPairState === PairState.EXISTS && ethPair && busdEthPairState === PairState.EXISTS && busdEthPair) {
-      if (busdEthPair.reserveOf(BUSD_MAINNET).greaterThan('0') && ethPair.reserveOf(WETH[chainId]).greaterThan('0')) {
+      if (busdEthPair.reserveOf(BUSD_MAINNET).greaterThan('0') && ethPair.reserveOf(NETWORK_CCY[chainId]).greaterThan('0')) {
         const ethBusdPrice = busdEthPair.priceOf(BUSD_MAINNET)
-        const currencyEthPrice = ethPair.priceOf(WETH[chainId])
+        const currencyEthPrice = ethPair.priceOf(NETWORK_CCY[chainId])
         const busdPrice = ethBusdPrice.multiply(currencyEthPrice).invert()
         return new Price(currency, BUSD_MAINNET, busdPrice.denominator, busdPrice.numerator)
       }

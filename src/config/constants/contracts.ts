@@ -93,6 +93,8 @@ export const addresses = {
   multiCall: {
     56: '0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B',
     97: '0x8F3273Fb89B075b1645095ABaC6ed17B2d4Bc576',
+    80001: '0x08411ADd0b5AA8ee47563b146743C13b3556c9Cc',
+
   },
   pancakeProfile: {
     56: '0xDf4dBf6536201370F95e06A0F8a7a70fE40E388a',
