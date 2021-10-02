@@ -76,7 +76,6 @@ export default function CurrencyInputPanel({
 }: CurrencyInputPanelProps) {
   const { account, chainId } = useActiveWeb3React()
   const selectedCurrencyBalance = useCurrencyBalance(chainId, account ?? undefined, currency ?? undefined)
-  console.log("selectedCCYBal", selectedCurrencyBalance)
   const { t } = useTranslation()
   const translatedLabel = label || t('Input')
 

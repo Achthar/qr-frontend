@@ -51,7 +51,6 @@ const Label = styled(Text)`
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
-  console.log("loadedUrlParams", loadedUrlParams)
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
@@ -88,8 +87,6 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError,
   } = useDerivedSwapInfo(chainId)
-
-  console.log("derivd swap ccys", currencies)
 
   const {
     wrapType,

@@ -125,8 +125,6 @@ export function useDerivedSwapInfo(chainId: number): {
 
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
-  console.log("inp ccy:", inputCurrency)
-  console.log("outp ccy:", outputCurrency)
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
@@ -134,7 +132,7 @@ export function useDerivedSwapInfo(chainId: number): {
     inputCurrency ?? undefined,
     outputCurrency ?? undefined,
   ])
-  console.log("relevantTokenBalances", relevantTokenBalances)
+
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
@@ -202,7 +200,7 @@ export function useDerivedSwapInfo(chainId: number): {
 
 
 function parseCurrencyFromURLParameter(chainId: number, urlParam: any): string {
-  console.log("urlparam", urlParam)
+
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam)
     if (valid) return valid
@@ -272,7 +270,6 @@ export function useDefaultsFromURLSearch():
   useEffect(() => {
     if (!chainId) return
     const parsed = queryParametersToSwapState(chainId, parsedQs)
-    console.log("parsed", parsed)
 
     dispatch(
       replaceSwapState({

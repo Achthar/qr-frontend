@@ -38,7 +38,6 @@ export default function CurrencyLogo({
   }, [chainId, currency, uriLocations])
 
   if (currency === NETWORK_CCY[chainId]) {
-    console.log("CCY LOGO:", currency, chainId)
     if (chainId === 56 || chainId === 97) {
       return <BinanceIcon width={size} style={style} />
     }
