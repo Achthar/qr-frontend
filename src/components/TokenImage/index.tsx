@@ -17,6 +17,7 @@ interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc
 }
 
 const getImageUrlFromToken = (chainId:number, token: Token) => {
+  console.log("chainId:", chainId)
   const address = getAddress(chainId, token.symbol === NETWORK_CCY[chainId].symbol ? tokens.wbnb.address : token.address)
   return `/images/tokens/${address}.svg`
 }

@@ -97,7 +97,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS[chainId])
 
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
@@ -128,7 +128,7 @@ export default function RemoveLiquidity({
     ]
     const message = {
       owner: account,
-      spender: ROUTER_ADDRESS,
+      spender: ROUTER_ADDRESS[chainId],
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber(),
@@ -194,8 +194,8 @@ export default function RemoveLiquidity({
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
-    const currencyBIsETH = currencyB === ETHER
-    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
+    const currencyBIsETH = currencyB === NETWORK_CCY[chainId]
+    const oneCurrencyIsETH = currencyA === NETWORK_CCY[chainId] || currencyBIsETH
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
 
@@ -397,7 +397,7 @@ export default function RemoveLiquidity({
     [onUserInput],
   )
 
-  const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER
+  const oneCurrencyIsETH = currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]
   const oneCurrencyIsWETH = Boolean(
     chainId &&
       ((currencyA && currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], currencyA)) ||
@@ -536,8 +536,8 @@ export default function RemoveLiquidity({
                     <RowBetween style={{ justifyContent: 'flex-end', fontSize: '14px' }}>
                       {oneCurrencyIsETH ? (
                         <StyledInternalLink
-                          to={`/remove/${currencyA === ETHER ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdA}/${
-                            currencyB === ETHER ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdB
+                          to={`/remove/${currencyA === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdA}/${
+                            currencyB === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdB
                           }`}
                         >
                           {t('Receive WBNB')}

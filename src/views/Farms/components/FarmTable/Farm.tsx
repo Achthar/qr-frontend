@@ -54,7 +54,7 @@ const Farm: React.FunctionComponent<FarmProps> = ({ token, quoteToken, label, pi
     <Container>
       <TokenWrapper>
         <TokenPairImage
-          chainId={54}
+          chainId={56}
           variant="inverted"
           primaryToken={token}
           secondaryToken={quoteToken}

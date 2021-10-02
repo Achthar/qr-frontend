@@ -17,6 +17,23 @@ export const WETH = {
   )
 }
 
+export const REQT: { [chainId: number]: Token } = {
+  [ChainId.BSC_MAINNET]: new Token(
+    ChainId.BSC_MAINNET,
+    '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+    18,
+    'CAKE',
+    'PancakeSwap Token',
+  ),
+  [ChainId.BSC_TESTNET]: new Token(
+    ChainId.BSC_TESTNET,
+    '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
+    18,
+    'REQT',
+    'Requiem Token',
+  ),
+}
+
 export const CAKE: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
     ChainId.BSC_MAINNET,
@@ -108,13 +125,23 @@ export const ETH: { [chainId: number]: Token } = {
   ),
 }
 
-export const USDC = new Token(
+export const USDC : { [chainId: number]: Token } = {
+  [ChainId.BSC_MAINNET]:new Token(
   ChainId.BSC_MAINNET,
   '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
   18,
   'USDC',
   'Binance-Peg USD Coin',
-)
+),
+  [ChainId.MATIC_TESTNET]:new Token(
+  ChainId.MATIC_TESTNET,
+  '0xdA5289fCAAF71d52a80A254da614a192b693e977',
+  18,
+  'USDC',
+  'USD Coin',
+),
+
+}
 
 const tokens = {
   bnb: {

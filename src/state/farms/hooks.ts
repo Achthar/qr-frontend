@@ -84,6 +84,13 @@ export const useBusdPriceFromPid = (pid: number): BigNumber => {
   return farm && new BigNumber(farm.token.busdPrice)
 }
 
+
+// Return the base token price for a farm, from a given pid
+export const useUsdPriceFromPid = (pid: number): BigNumber => {
+  const farm = useFarmFromPid(pid)
+  return farm && new BigNumber(farm.token.busdPrice)
+}
+
 export const useLpTokenPrice = (symbol: string) => {
   const farm = useFarmFromLpSymbol(symbol)
   const farmTokenPriceInUsd = useBusdPriceFromPid(farm.pid)
@@ -117,6 +124,25 @@ export const usePriceCakeBusd = (): BigNumber => {
   const cakePriceBusd = useMemo(() => {
     return new BigNumber(cakePriceBusdAsString)
   }, [cakePriceBusdAsString])
+
+  return cakePriceBusd
+}
+
+
+export const usePriceNetworkDollar = (): BigNumber => {
+  const networkDollarFarm = useFarmFromPid(252)
+  return new BigNumber(networkDollarFarm.quoteToken.busdPrice)
+}
+
+
+export const usePriceRequiemDollar = (): BigNumber => {
+  const requiemDollarFarm = useFarmFromPid(251)
+
+  const requiemPriceDollarAsString = requiemDollarFarm.token.busdPrice
+
+  const cakePriceBusd = useMemo(() => {
+    return new BigNumber(requiemPriceDollarAsString)
+  }, [requiemPriceDollarAsString])
 
   return cakePriceBusd
 }

@@ -1,4 +1,4 @@
-import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY } from '@pancakeswap/sdk'
+import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'
@@ -34,9 +34,9 @@ export default function useBUSDPrice(currency?: Currency): Price {
       return undefined
     }
     // handle NETWORK_CCY/eth
-    if (wrapped.equals(NETWORK_CCY[chainId])) {
+    if (wrapped.equals(WRAPPED_NETWORK_TOKENS[chainId])) {
       if (busdPair) {
-        const price = busdPair.priceOf(NETWORK_CCY[chainId])
+        const price = busdPair.priceOf(WRAPPED_NETWORK_TOKENS[chainId])
         return new Price(currency, BUSD_MAINNET, price.denominator, price.numerator)
       }
       return undefined
@@ -46,9 +46,9 @@ export default function useBUSDPrice(currency?: Currency): Price {
       return new Price(BUSD_MAINNET, BUSD_MAINNET, '1', '1')
     }
 
-    const ethPairETHAmount = ethPair?.reserveOf(NETWORK_CCY[chainId])
+    const ethPairETHAmount = ethPair?.reserveOf(WRAPPED_NETWORK_TOKENS[chainId])
     const ethPairETHBUSDValue: JSBI =
-      ethPairETHAmount && busdEthPair ? busdEthPair.priceOf(NETWORK_CCY[chainId]).quote(ethPairETHAmount).raw : JSBI.BigInt(0)
+      ethPairETHAmount && busdEthPair ? busdEthPair.priceOf(WRAPPED_NETWORK_TOKENS[chainId]).quote(ethPairETHAmount).raw : JSBI.BigInt(0)
 
     // all other tokens
     // first try the busd pair
@@ -61,9 +61,9 @@ export default function useBUSDPrice(currency?: Currency): Price {
       return new Price(currency, BUSD_MAINNET, price.denominator, price.numerator)
     }
     if (ethPairState === PairState.EXISTS && ethPair && busdEthPairState === PairState.EXISTS && busdEthPair) {
-      if (busdEthPair.reserveOf(BUSD_MAINNET).greaterThan('0') && ethPair.reserveOf(NETWORK_CCY[chainId]).greaterThan('0')) {
+      if (busdEthPair.reserveOf(BUSD_MAINNET).greaterThan('0') && ethPair.reserveOf(WRAPPED_NETWORK_TOKENS[chainId]).greaterThan('0')) {
         const ethBusdPrice = busdEthPair.priceOf(BUSD_MAINNET)
-        const currencyEthPrice = ethPair.priceOf(NETWORK_CCY[chainId])
+        const currencyEthPrice = ethPair.priceOf(WRAPPED_NETWORK_TOKENS[chainId])
         const busdPrice = ethBusdPrice.multiply(currencyEthPrice).invert()
         return new Price(currency, BUSD_MAINNET, busdPrice.denominator, busdPrice.numerator)
       }

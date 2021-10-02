@@ -8,6 +8,7 @@ const getLiquidityUrlPathParts = ({chainId, quoteTokenAddress, tokenAddress }) =
   // const {chainId} = useWeb3React()
   // const chainId = process.env.REACT_APP_CHAIN_ID
   const wBNBAddressString = getWbnbAddress(chainId)
+  console.log("WBNB",wBNBAddressString)
   const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId] : null
   const tokenAddressString: string = tokenAddress ? tokenAddress[chainId] : null
   const firstPart =

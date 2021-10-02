@@ -1,7 +1,7 @@
-import { Currency, ETHER, Token } from '@pancakeswap/sdk'
+import { Currency, ETHER, Token, NETWORK_CCY } from '@pancakeswap/sdk'
 
 export function currencyId(chainId: number, currency: Currency): string {
-  if (currency === ETHER) {
+  if (currency === NETWORK_CCY[chainId]) {
     if (chainId === 56 || chainId === 97) { return 'BNB' }
     if (chainId === 137 || chainId === 80001) { return 'MATIC' }
   }

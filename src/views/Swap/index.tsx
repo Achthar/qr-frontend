@@ -51,7 +51,7 @@ const Label = styled(Text)`
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
-
+  console.log("loadedUrlParams", loadedUrlParams)
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
@@ -89,6 +89,8 @@ export default function Swap({ history }: RouteComponentProps) {
     inputError: swapInputError,
   } = useDerivedSwapInfo(chainId)
 
+  console.log("derivd swap ccys", currencies)
+
   const {
     wrapType,
     execute: onWrap,
@@ -99,13 +101,13 @@ export default function Swap({ history }: RouteComponentProps) {
 
   const parsedAmounts = showWrap
     ? {
-        [Field.INPUT]: parsedAmount,
-        [Field.OUTPUT]: parsedAmount,
-      }
+      [Field.INPUT]: parsedAmount,
+      [Field.OUTPUT]: parsedAmount,
+    }
     : {
-        [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
-        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
-      }
+      [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+      [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
+    }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
   const isValid = !swapInputError
@@ -163,7 +165,7 @@ export default function Swap({ history }: RouteComponentProps) {
     }
   }, [approval, approvalSubmitted])
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(chainId, currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
@@ -459,8 +461,8 @@ export default function Swap({ history }: RouteComponentProps) {
                   {priceImpactSeverity > 3 && !isExpertMode
                     ? t('Price Impact High')
                     : priceImpactSeverity > 2
-                    ? t('Swap Anyway')
-                    : t('Swap')}
+                      ? t('Swap Anyway')
+                      : t('Swap')}
                 </Button>
               </RowBetween>
             ) : (
@@ -487,8 +489,8 @@ export default function Swap({ history }: RouteComponentProps) {
                   (priceImpactSeverity > 3 && !isExpertMode
                     ? `Price Impact Too High`
                     : priceImpactSeverity > 2
-                    ? t('Swap Anyway')
-                    : t('Swap'))}
+                      ? t('Swap Anyway')
+                      : t('Swap'))}
               </Button>
             )}
             {showApproveFlow && (

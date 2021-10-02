@@ -125,6 +125,8 @@ export function useDerivedSwapInfo(chainId: number): {
 
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
+  console.log("inp ccy:", inputCurrency)
+  console.log("outp ccy:", outputCurrency)
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
@@ -132,7 +134,7 @@ export function useDerivedSwapInfo(chainId: number): {
     inputCurrency ?? undefined,
     outputCurrency ?? undefined,
   ])
-
+  console.log("relevantTokenBalances", relevantTokenBalances)
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
@@ -198,14 +200,16 @@ export function useDerivedSwapInfo(chainId: number): {
   }
 }
 
-function parseCurrencyFromURLParameter(urlParam: any): string {
+
+function parseCurrencyFromURLParameter(chainId: number, urlParam: any): string {
+  console.log("urlparam", urlParam)
   if (typeof urlParam === 'string') {
     const valid = isAddress(urlParam)
     if (valid) return valid
-    if (urlParam.toUpperCase() === 'BNB') return 'BNB'
-    if (valid === false) return 'BNB'
+    if (urlParam.toUpperCase() === NETWORK_CCY[chainId].symbol) return NETWORK_CCY[chainId].symbol
+    if (valid === false) return NETWORK_CCY[chainId].symbol
   }
-  return 'BNB' ?? ''
+  return NETWORK_CCY[chainId].symbol ?? ''
 }
 
 function parseTokenAmountURLParameter(urlParam: any): string {
@@ -228,9 +232,9 @@ function validatedRecipient(recipient: any): string | null {
   return null
 }
 
-export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
-  let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
-  let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
+export function queryParametersToSwapState(chainId: number, parsedQs: ParsedQs): SwapState {
+  let inputCurrency = parseCurrencyFromURLParameter(chainId, parsedQs.inputCurrency)
+  let outputCurrency = parseCurrencyFromURLParameter(chainId, parsedQs.outputCurrency)
   if (inputCurrency === outputCurrency) {
     if (typeof parsedQs.outputCurrency === 'string') {
       inputCurrency = ''
@@ -267,7 +271,8 @@ export function useDefaultsFromURLSearch():
 
   useEffect(() => {
     if (!chainId) return
-    const parsed = queryParametersToSwapState(parsedQs)
+    const parsed = queryParametersToSwapState(chainId, parsedQs)
+    console.log("parsed", parsed)
 
     dispatch(
       replaceSwapState({

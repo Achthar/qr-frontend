@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
-import getTokenLogoURL from '../../utils/getTokenLogoURL'
+import {getTokenLogoURL, getTokenLogoURLFromSymbol} from '../../utils/getTokenLogoURL'
 import Logo from './Logo'
 
 const StyledLogo = styled(Logo) <{ size: string }>`
@@ -30,14 +30,15 @@ export default function CurrencyLogo({
 
     if (currency instanceof Token) {
       if (currency instanceof WrappedTokenInfo) {
-        return [...uriLocations, getTokenLogoURL(currency.address)]
+        return [...uriLocations, getTokenLogoURLFromSymbol(currency.symbol)]
       }
-      return [getTokenLogoURL(currency.address)]
+      return [getTokenLogoURLFromSymbol(currency.symbol)]
     }
     return []
   }, [chainId, currency, uriLocations])
 
   if (currency === NETWORK_CCY[chainId]) {
+    console.log("CCY LOGO:", currency, chainId)
     if (chainId === 56 || chainId === 97) {
       return <BinanceIcon width={size} style={style} />
     }

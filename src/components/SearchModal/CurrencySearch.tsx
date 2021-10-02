@@ -57,8 +57,10 @@ function CurrencySearch({
 
   const showETH: boolean = useMemo(() => {
     const s = debouncedQuery.toLowerCase().trim()
-    return s === '' || s === 'b' || s === 'bn' || s === 'bnb'
-  }, [debouncedQuery])
+    return (chainId === 56 || chainId === 97)
+      ? (s === '' || s === 'b' || s === 'bn' || s === 'bnb') : ((chainId === 137 || chainId === 80001)
+        ? (s === '' || s === 'm' || s === 'ma' || s === 'mat' || s === 'mati' || s === 'matic') : (s === '' || s === 'e' || s === 'et' || s === 'eth'))
+  }, [debouncedQuery, chainId])
 
   const tokenComparator = useTokenComparator(chainId, invertSearchOrder)
 
@@ -100,7 +102,7 @@ function CurrencySearch({
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
         const s = debouncedQuery.toLowerCase().trim()
-        if (s === 'bnb') {
+        if (s === NETWORK_CCY[chainId].symbol.toLowerCase()) {
           handleCurrencySelect(NETWORK_CCY[chainId])
         } else if (filteredSortedTokens.length > 0) {
           if (

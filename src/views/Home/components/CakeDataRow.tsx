@@ -46,7 +46,7 @@ const emissionsPerBlock = 15
 const CakeDataRow = () => {
   const { t } = useTranslation()
   const totalSupply = useTotalSupply()
-  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(54)))
+  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(56)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0
   const cakePriceBusd = useCakeBusdPriceNumber(10)
   const mcap = cakePriceBusd * cakeSupply

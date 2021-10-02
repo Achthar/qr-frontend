@@ -109,6 +109,7 @@ export function useCurrencyBalances(
   )
 
   const tokenBalances = useTokenBalances(account, tokens)
+  console.log("currencies",currencies)
   const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
   const ethBalance = useBNBBalances(containsBNB ? [account] : [])
 

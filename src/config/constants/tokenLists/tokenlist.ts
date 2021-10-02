@@ -209,6 +209,14 @@ export const tokenList = {
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WMATIC.svg"
             },
             {
+                "name": "Requiem Token",
+                "symbol": "REQT",
+                "address": "0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8",
+                "chainId": 80001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
+            },
+            {
                 "name": "Tether USD",
                 "symbol": "USDT",
                 "address": "0xeaBc4b91d9375796AA4F69cC764A4aB509080A58",

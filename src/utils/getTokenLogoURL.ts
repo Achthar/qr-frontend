@@ -1,4 +1,7 @@
-const getTokenLogoURL = (address: string) =>
+export const getTokenLogoURL = (address: string) =>
   `https://assets.trustwalletapp.com/blockchains/smartchain/assets/${address}/logo.png`
 
-export default getTokenLogoURL
+
+
+export const getTokenLogoURLFromSymbol = (symbol:string) =>
+  `https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/${symbol}.png`

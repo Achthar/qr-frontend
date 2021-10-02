@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { parseBytes32String } from '@ethersproject/strings'
-import { Currency, ETHER, Token, currencyEquals, NETWORK_CCY } from '@pancakeswap/sdk'
+import { Currency, ETHER, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { useMemo } from 'react'
 import { arrayify } from 'ethers/lib/utils'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -188,7 +188,7 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 }
 
 export function useCurrency(chainId:number, currencyId: string | undefined): Currency | null | undefined {
-  const isBNB = currencyId?.toUpperCase() === 'BNB'
+  const isBNB = currencyId?.toUpperCase() === NETWORK_CCY[chainId].symbol
   const token = useToken(isBNB ? undefined : currencyId)
   return isBNB ? NETWORK_CCY[chainId] : token
 }

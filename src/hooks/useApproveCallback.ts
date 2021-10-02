@@ -113,5 +113,5 @@ export function useApproveCallbackFromTrade(chainId:number, trade?: Trade, allow
     [trade, allowedSlippage],
   )
 
-  return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS)
+  return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS[chainId])
 }
