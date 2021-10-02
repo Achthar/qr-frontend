@@ -58,7 +58,7 @@ export default function RemoveLiquidity({
   )
 
   const { t } = useTranslation()
-  const gasPrice = useGasPrice()
+  const gasPrice = useGasPrice(chainId)
 
   // burn state
   const { independentField, typedValue } = useBurnState()
@@ -72,7 +72,7 @@ export default function RemoveLiquidity({
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
-  const deadline = useTransactionDeadline()
+  const deadline = useTransactionDeadline(chainId)
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const formattedAmounts = {
@@ -96,7 +96,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')

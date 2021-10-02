@@ -4,12 +4,13 @@ import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import BigNumber from 'bignumber.js'
 import Balance from 'components/Balance'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { useCakeVault } from 'state/pools/hooks'
 import { getBalanceNumber } from 'utils/formatBalance'
 import BaseCell, { CellContent } from './BaseCell'
 
 interface TotalStakedCellProps {
+  chainId: number
   pool: Pool
 }
 
@@ -21,7 +22,6 @@ const TotalStakedCell: React.FC<TotalStakedCellProps> = ({ pool }) => {
   const { t } = useTranslation()
   const { sousId, stakingToken, totalStaked, isAutoVault } = pool
   const { totalCakeInVault } = useCakeVault()
-
   const isManualCakePool = sousId === 0
 
   const totalStakedBalance = useMemo(() => {

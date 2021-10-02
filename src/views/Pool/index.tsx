@@ -19,7 +19,7 @@ const Body = styled(CardBody)`
 `
 
 export default function Pool() {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
 
@@ -47,7 +47,9 @@ export default function Pool() {
     [tokenPairsWithLiquidityTokens, v2PairsBalances],
   )
 
-  const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
+  const v2Pairs = usePairs(
+    liquidityTokensWithBalances.map(({ tokens }) => tokens),
+  )
   const v2IsLoading =
     fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some((V2Pair) => !V2Pair)
 
@@ -71,6 +73,7 @@ export default function Pool() {
     if (allV2PairsWithLiquidity?.length > 0) {
       return allV2PairsWithLiquidity.map((v2Pair, index) => (
         <FullPositionCard
+          // chainId={chainId}
           key={v2Pair.liquidityToken.address}
           pair={v2Pair}
           mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}

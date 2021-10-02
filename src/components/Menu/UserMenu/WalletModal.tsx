@@ -24,6 +24,7 @@ export enum WalletView {
 }
 
 interface WalletModalProps extends InjectedModalProps {
+  chainId:number
   initialView?: WalletView
 }
 

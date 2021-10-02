@@ -33,7 +33,7 @@ const sousStakeBnb = async (sousChefContract, amount) => {
   return receipt.status
 }
 
-const useStakePool = (sousId: number, isUsingBnb = false) => {
+const useStakePool = (chainId:number,sousId: number, isUsingBnb = false) => {
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
   const masterChefContract = useMasterchef()
@@ -48,10 +48,10 @@ const useStakePool = (sousId: number, isUsingBnb = false) => {
       } else {
         await sousStake(sousChefContract, amount, decimals)
       }
-      dispatch(updateUserStakedBalance(sousId, account))
-      dispatch(updateUserBalance(sousId, account))
+      dispatch(updateUserStakedBalance(chainId, sousId, account))
+      dispatch(updateUserBalance(chainId, sousId, account))
     },
-    [account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId],
+    [chainId, account, dispatch, isUsingBnb, masterChefContract, sousChefContract, sousId],
   )
 
   return { onStake: handleStake }

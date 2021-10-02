@@ -38,8 +38,8 @@ interface PositionCardProps extends CardProps {
   showUnwrapped?: boolean
 }
 
-export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCardProps) {
-  const { account } = useActiveWeb3React()
+export function MinimalPositionCard({pair, showUnwrapped = false }: PositionCardProps) {
+  const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
 
@@ -48,8 +48,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(chainId, pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
@@ -144,15 +144,15 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
 }
 
 export default function FullPositionCard({ pair, ...props }: PositionCardProps) {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pair.token0)
   const currency1 = unwrappedToken(pair.token1)
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(chainId, pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)

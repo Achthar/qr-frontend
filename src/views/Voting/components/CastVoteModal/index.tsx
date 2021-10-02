@@ -20,7 +20,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { toastError } = useToast()
-  const { library } = useWeb3Provider()
+  const { library, chainId } = useWeb3Provider()
   const { theme } = useTheme()
   const {
     isLoading,
@@ -31,7 +31,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
     poolsBalance,
     cakeBnbLpBalance,
     verificationHash,
-  } = useGetVotingPower(block, modalIsOpen)
+  } = useGetVotingPower(chainId, block, modalIsOpen)
 
   const isStartView = view === ConfirmVoteView.MAIN
   const handleBack = isStartView ? null : () => setView(ConfirmVoteView.MAIN)

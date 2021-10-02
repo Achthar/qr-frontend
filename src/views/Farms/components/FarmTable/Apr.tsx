@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { Skeleton } from '@pancakeswap/uikit'
+import { useWeb3React } from '@web3-react/core'
 
 export interface AprProps {
   value: string
@@ -54,7 +55,8 @@ const Apr: React.FC<AprProps> = ({
   originalValue,
   hideButton = false,
 }) => {
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({ quoteTokenAddress, tokenAddress })
+  const {chainId} = useWeb3React()
+  const liquidityUrlPathParts = getLiquidityUrlPathParts({chainId, quoteTokenAddress, tokenAddress })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   return originalValue !== 0 ? (

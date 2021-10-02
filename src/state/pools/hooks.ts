@@ -13,32 +13,33 @@ import {
   fetchCakeVaultFees,
   fetchPoolsStakingLimitsAsync,
 } from '.'
-import { State, Pool } from '../types'
+import type { State, Pool } from '../types'
 import { transformPool } from './helpers'
 
 export const useFetchPublicPoolsData = () => {
+  const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider.getBlockNumber()
-      dispatch(fetchPoolsPublicDataAsync(blockNumber))
+      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
+      dispatch(fetchPoolsPublicDataAsync(chainId, blockNumber))
     }
 
     fetchPoolsPublicData()
-    dispatch(fetchPoolsStakingLimitsAsync())
-  }, [dispatch, slowRefresh])
+    dispatch(fetchPoolsStakingLimitsAsync(chainId))
+  }, [chainId, dispatch, slowRefresh])
 }
 
-export const usePools = (account): { pools: Pool[]; userDataLoaded: boolean } => {
+export const usePools = (chainId, account): { pools: Pool[]; userDataLoaded: boolean } => {
   const { fastRefresh } = useRefresh()
   const dispatch = useAppDispatch()
   useEffect(() => {
     if (account) {
-      dispatch(fetchPoolsUserDataAsync(account))
+      dispatch(fetchPoolsUserDataAsync(chainId, account))
     }
-  }, [account, dispatch, fastRefresh])
+  }, [chainId, account, dispatch, fastRefresh])
 
   const { pools, userDataLoaded } = useSelector((state: State) => ({
     pools: state.pools.data,
@@ -70,7 +71,6 @@ export const useCakeVault = () => {
     totalShares: totalSharesAsString,
     pricePerFullShare: pricePerFullShareAsString,
     totalCakeInVault: totalCakeInVaultAsString,
-    estimatedCakeBountyReward: estimatedCakeBountyRewardAsString,
     totalPendingCakeHarvest: totalPendingCakeHarvestAsString,
     fees: { performanceFee, callFee, withdrawalFee, withdrawalFeePeriod },
     userData: {
@@ -82,9 +82,11 @@ export const useCakeVault = () => {
     },
   } = useSelector((state: State) => state.pools.cakeVault)
 
+  /*
   const estimatedCakeBountyReward = useMemo(() => {
-    return new BigNumber(estimatedCakeBountyRewardAsString)
-  }, [estimatedCakeBountyRewardAsString])
+      return new BigNumber(estimatedCakeBountyRewardAsString)
+    }, [estimatedCakeBountyRewardAsString])
+  */
 
   const totalPendingCakeHarvest = useMemo(() => {
     return new BigNumber(totalPendingCakeHarvestAsString)
@@ -114,7 +116,7 @@ export const useCakeVault = () => {
     totalShares,
     pricePerFullShare,
     totalCakeInVault,
-    estimatedCakeBountyReward,
+    // estimatedCakeBountyReward,
     totalPendingCakeHarvest,
     fees: {
       performanceFee,

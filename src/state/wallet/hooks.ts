@@ -10,7 +10,9 @@ import { useSingleContractMultipleData, useMultipleContractSingleData } from '..
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
  */
-export function useBNBBalances(uncheckedAddresses?: (string | undefined)[]): {
+export function useBNBBalances(
+  uncheckedAddresses?: (string | undefined)[],
+): {
   [address: string]: CurrencyAmount | undefined
 } {
   const multicallContract = useMulticallContract()
@@ -19,9 +21,9 @@ export function useBNBBalances(uncheckedAddresses?: (string | undefined)[]): {
     () =>
       uncheckedAddresses
         ? uncheckedAddresses
-            .map(isAddress)
-            .filter((a): a is string => a !== false)
-            .sort()
+          .map(isAddress)
+          .filter((a): a is string => a !== false)
+          .sort()
         : [],
     [uncheckedAddresses],
   )
@@ -57,7 +59,9 @@ export function useTokenBalancesWithLoadingIndicator(
 
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens])
 
-  const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [address])
+  const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [
+    address,
+  ])
 
   const anyLoading: boolean = useMemo(() => balances.some((callState) => callState.loading), [balances])
 
@@ -66,13 +70,13 @@ export function useTokenBalancesWithLoadingIndicator(
       () =>
         address && validatedTokens.length > 0
           ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
-              const value = balances?.[i]?.result?.[0]
-              const amount = value ? JSBI.BigInt(value.toString()) : undefined
-              if (amount) {
-                memo[token.address] = new TokenAmount(token, amount)
-              }
-              return memo
-            }, {})
+            const value = balances?.[i]?.result?.[0]
+            const amount = value ? JSBI.BigInt(value.toString()) : undefined
+            if (amount) {
+              memo[token.address] = new TokenAmount(token, amount)
+            }
+            return memo
+          }, {})
           : {},
       [address, validatedTokens, balances],
     ),
@@ -88,7 +92,7 @@ export function useTokenBalances(
 }
 
 // get the balance for a single token/account combo
-export function useTokenBalance(account?: string, token?: Token): TokenAmount | undefined {
+export function useTokenBalance(chainId: number, account?: string, token?: Token): TokenAmount | undefined {
   const tokenBalances = useTokenBalances(account, [token])
   if (!token) return undefined
   return tokenBalances[token.address]
@@ -125,7 +129,7 @@ export function useCurrencyBalance(account?: string, currency?: Currency): Curre
 
 // mimics useAllBalances
 export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const allTokens = useAllTokens()
   const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [allTokens])
   const balances = useTokenBalances(account ?? undefined, allTokensArray)

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import styled from 'styled-components'
 import { Flex, Box, SwapVertIcon, IconButton } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import useGetTopFarmsByApr from 'views/Home/hooks/useGetTopFarmsByApr'
 import useGetTopPoolsByApr from 'views/Home/hooks/useGetTopPoolsByApr'
@@ -23,12 +23,12 @@ const Grid = styled.div`
   }
 `
 
-const FarmsPoolsRow = () => {
+const FarmsPoolsRow = (chainId:number) => {
   const [showFarms, setShowFarms] = useState(false)
   const { t } = useTranslation()
   const { observerRef, isIntersecting } = useIntersectionObserver()
-  const { topFarms } = useGetTopFarmsByApr(isIntersecting)
-  const { topPools } = useGetTopPoolsByApr(isIntersecting)
+  const { topFarms } = useGetTopFarmsByApr(chainId, isIntersecting)
+  const { topPools } = useGetTopPoolsByApr(chainId, isIntersecting)
 
   const timer = useRef<ReturnType<typeof setTimeout>>(null)
   const isLoaded = topFarms[0] && topPools[0]

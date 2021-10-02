@@ -11,7 +11,7 @@ import useLastUpdated from 'hooks/useLastUpdated'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 import { ToastDescriptionWithTx } from 'components/Toast'
 
-export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol) => {
+export const useApprovePool = (chainId:number, lpContract: Contract, sousId, earningTokenSymbol) => {
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { toastSuccess, toastError } = useToast()
   const { callWithGasPrice } = useCallWithGasPrice()
@@ -26,7 +26,7 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
       const tx = await callWithGasPrice(lpContract, 'approve', [sousChefContract.address, ethers.constants.MaxUint256])
       const receipt = await tx.wait()
 
-      dispatch(updateUserAllowance(sousId, account))
+      dispatch(updateUserAllowance(chainId, sousId, account))
       if (receipt.status) {
         toastSuccess(
           t('Contract Enabled'),
@@ -45,6 +45,7 @@ export const useApprovePool = (lpContract: Contract, sousId, earningTokenSymbol)
       toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
     }
   }, [
+    chainId,
     account,
     dispatch,
     lpContract,

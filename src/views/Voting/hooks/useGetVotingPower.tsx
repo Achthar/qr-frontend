@@ -27,7 +27,7 @@ const initialState: State = {
   total: BIG_ZERO,
 }
 
-const useGetVotingPower = (block?: number, isActive = true): State & { isLoading: boolean } => {
+const useGetVotingPower = (chainId?: number, block?: number, isActive = true): State & { isLoading: boolean } => {
   const { account } = useWeb3React()
   const [votingPower, setVotingPower] = useState(initialState)
   const [isLoading, setIsLoading] = useState(!!account)
@@ -37,9 +37,9 @@ const useGetVotingPower = (block?: number, isActive = true): State & { isLoading
       setIsLoading(true)
 
       try {
-        const blockNumber = block || (await simpleRpcProvider.getBlockNumber())
+        const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
         const eligiblePools = await getActivePools(blockNumber)
-        const poolAddresses = eligiblePools.map(({ contractAddress }) => getAddress(contractAddress))
+        const poolAddresses = eligiblePools.map(({ contractAddress }) => getAddress(chainId, contractAddress))
         const {
           cakeBalance,
           cakeBnbLpBalance,
@@ -48,7 +48,7 @@ const useGetVotingPower = (block?: number, isActive = true): State & { isLoading
           poolsBalance,
           cakeVaultBalance,
           verificationHash,
-        } = await getVotingPower(account, poolAddresses, blockNumber)
+        } = await getVotingPower(chainId, account, poolAddresses, blockNumber)
 
         if (isActive) {
           setVotingPower((prevVotingPower) => ({
@@ -70,7 +70,7 @@ const useGetVotingPower = (block?: number, isActive = true): State & { isLoading
     if (account && isActive) {
       fetchVotingPower()
     }
-  }, [account, block, setVotingPower, isActive, setIsLoading])
+  }, [chainId, account, block, setVotingPower, isActive, setIsLoading])
 
   return { ...votingPower, isLoading }
 }

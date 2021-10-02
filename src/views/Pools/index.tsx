@@ -18,13 +18,11 @@ import Page from 'components/Layout/Page'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import Loading from 'components/Loading'
 import PoolCard from './components/PoolCard'
 import CakeVaultCard from './components/CakeVaultCard'
 import PoolTabButtons from './components/PoolTabButtons'
-import BountyCard from './components/BountyCard'
-import HelpButton from './components/HelpButton'
 import PoolsTable from './components/PoolsTable/PoolsTable'
 import { ViewMode } from './components/ToggleView/ToggleView'
 import { getAprData, getCakeVaultEarnings } from './helpers'
@@ -80,8 +78,8 @@ const NUMBER_OF_POOLS_VISIBLE = 12
 const Pools: React.FC = () => {
   const location = useLocation()
   const { t } = useTranslation()
-  const { account } = useWeb3React()
-  const { pools: poolsWithoutAutoVault, userDataLoaded } = usePools(account)
+  const { account, chainId } = useWeb3React()
+  const { pools: poolsWithoutAutoVault, userDataLoaded } = usePools(chainId, account)
   const [stakedOnly, setStakedOnly] = usePersistState(false, { localStorageKey: 'pancake_pool_staked' })
   const [numberOfPoolsVisible, setNumberOfPoolsVisible] = useState(NUMBER_OF_POOLS_VISIBLE)
   const [observerIsSet, setObserverIsSet] = useState(false)
@@ -96,9 +94,9 @@ const Pools: React.FC = () => {
     pricePerFullShare,
     totalCakeInVault,
   } = useCakeVault()
+
   const accountHasVaultShares = userShares && userShares.gt(0)
   const performanceFeeAsDecimal = performanceFee && performanceFee / 100
-
   const pools = useMemo(() => {
     const cakePool = poolsWithoutAutoVault.find((pool) => pool.sousId === 0)
     const cakeAutoVault = { ...cakePool, isAutoVault: true }
@@ -248,13 +246,15 @@ const Pools: React.FC = () => {
         pool.isAutoVault ? (
           <CakeVaultCard key="auto-cake" pool={pool} showStakedOnly={stakedOnly} />
         ) : (
-          <PoolCard key={pool.sousId} pool={pool} account={account} />
+          <PoolCard chainId={chainId} key={pool.sousId} pool={pool} account={account} />
         ),
       )}
     </CardLayout>
   )
 
-  const tableLayout = <PoolsTable pools={chosenPools} account={account} userDataLoaded={userDataLoaded} />
+  const tableLayout = (
+    <PoolsTable chainId={chainId} pools={chosenPools} account={account} userDataLoaded={userDataLoaded} />
+  )
 
   return (
     <>
@@ -270,10 +270,6 @@ const Pools: React.FC = () => {
             <Heading scale="md" color="text">
               {t('High APR, low risk.')}
             </Heading>
-          </Flex>
-          <Flex flex="1" height="fit-content" justifyContent="center" alignItems="center" mt={['24px', null, '0']}>
-            <HelpButton />
-            <BountyCard />
           </Flex>
         </Flex>
       </PageHeader> */}

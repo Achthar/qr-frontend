@@ -10,13 +10,13 @@ import { Text } from '@pancakeswap/uikit'
 // import SalesSection from './components/SalesSection'
 // import FarmsPoolsRow from './components/FarmsPoolsRow'
 // import Footer from './components/Footer'
-// import CakeDataRow from './components/CakeDataRow'
+import CakeDataRow from './components/CakeDataRow'
 // import { WedgeTopLeft, InnerWedgeWrapper, OuterWedgeWrapper, WedgeTopRight } from './components/WedgeSvgs'
 // import Hero from 'views/Ifos/components/Hero'
 
 const Home: React.FC = () => {
   const { theme } = useTheme()
-  // const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
   // const HomeSectionContainerStyles = { margin: '0', width: '100%', maxWidth: '968px' }
 
@@ -24,8 +24,8 @@ const Home: React.FC = () => {
     <>
       <PageSection innerProps={{ style: { margin: '0', width: '100%' } }} index={2} hasCurvedDivider={false}>
         <Text>Requium Finance</Text>
-      </PageSection>
-      {/*
+
+        {/*
       <PageSection
         innerProps={{ style: HomeSectionContainerStyles }}
         background={theme.colors.background}
@@ -50,7 +50,7 @@ const Home: React.FC = () => {
           </InnerWedgeWrapper>
         </OuterWedgeWrapper>
         <SalesSection {...earnSectionData} />
-        <FarmsPoolsRow />
+        <FarmsPoolsRow {...chainId} />
       </PageSection>
       <PageSection
         innerProps={{ style: HomeSectionContainerStyles }}
@@ -61,6 +61,7 @@ const Home: React.FC = () => {
         <SalesSection {...cakeSectionData} />
         <CakeDataRow />
       </PageSection> */}
+      </PageSection>
     </>
   )
 }

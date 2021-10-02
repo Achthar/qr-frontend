@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ethers } from 'ethers'
+import { useWeb3React } from '@web3-react/core'
 import { formatUnits } from 'ethers/lib/utils'
 import maxBy from 'lodash/maxBy'
 import merge from 'lodash/merge'
@@ -30,6 +31,7 @@ import {
   getClaimStatuses,
   fetchLatestUserRounds,
 } from './helpers'
+
 
 const initialState: PredictionsState = {
   status: PredictionStatus.INITIAL,
@@ -64,15 +66,16 @@ type PredictionInitialization = Pick<
 export const initializePredictions = createAsyncThunk<PredictionInitialization, string>(
   'predictions/intialize',
   async (account = null) => {
+    const{chainId} = useWeb3React()
     // Static values
-    const marketData = await getPredictionData()
+    const marketData = await getPredictionData(chainId)
     const epochs =
       marketData.currentEpoch > PAST_ROUND_COUNT
         ? range(marketData.currentEpoch, marketData.currentEpoch - PAST_ROUND_COUNT)
         : [marketData.currentEpoch]
 
     // Round data
-    const roundsResponse = await getRoundsData(epochs)
+    const roundsResponse = await getRoundsData(chainId, epochs)
     const initialRoundData: { [key: string]: ReduxNodeRound } = roundsResponse.reduce((accum, roundResponse) => {
       const reduxNodeRound = serializePredictionsRoundsResponse(roundResponse)
 
@@ -94,10 +97,10 @@ export const initializePredictions = createAsyncThunk<PredictionInitialization, 
     }
 
     // Bet data
-    const ledgerResponses = await getLedgerData(account, epochs)
+    const ledgerResponses = await getLedgerData(chainId, account, epochs)
 
     // Claim statuses
-    const claimableStatuses = await getClaimStatuses(account, epochs)
+    const claimableStatuses = await getClaimStatuses(chainId, account, epochs)
 
     return merge({}, initializedData, {
       ledgers: makeLedgerData(account, ledgerResponses, epochs),
@@ -107,7 +110,8 @@ export const initializePredictions = createAsyncThunk<PredictionInitialization, 
 )
 
 export const fetchRound = createAsyncThunk<ReduxNodeRound, number>('predictions/fetchRound', async (epoch) => {
-  const predictionContract = getPredictionsContract()
+  const{chainId} = useWeb3React()
+  const predictionContract = getPredictionsContract(chainId)
   const response = await predictionContract.rounds(epoch)
   return serializePredictionsRoundsResponse(response)
 })
@@ -115,7 +119,8 @@ export const fetchRound = createAsyncThunk<ReduxNodeRound, number>('predictions/
 export const fetchRounds = createAsyncThunk<{ [key: string]: ReduxNodeRound }, number[]>(
   'predictions/fetchRounds',
   async (epochs) => {
-    const rounds = await getRoundsData(epochs)
+    const{chainId} = useWeb3React()
+    const rounds = await getRoundsData(chainId, epochs)
     return rounds.reduce((accum, round) => {
       if (!round) {
         return accum
@@ -132,14 +137,16 @@ export const fetchRounds = createAsyncThunk<{ [key: string]: ReduxNodeRound }, n
 )
 
 export const fetchMarketData = createAsyncThunk<MarketData>('predictions/fetchMarketData', async () => {
-  const marketData = await getPredictionData()
+  const{chainId} = useWeb3React()
+  const marketData = await getPredictionData(chainId)
   return marketData
 })
 
 export const fetchLedgerData = createAsyncThunk<LedgerData, { account: string; epochs: number[] }>(
   'predictions/fetchLedgerData',
   async ({ account, epochs }) => {
-    const ledgers = await getLedgerData(account, epochs)
+    const{chainId} = useWeb3React()
+    const ledgers = await getLedgerData(chainId, account, epochs)
     return makeLedgerData(account, ledgers, epochs)
   },
 )
@@ -148,7 +155,8 @@ export const fetchClaimableStatuses = createAsyncThunk<
   PredictionsState['claimableStatuses'],
   { account: string; epochs: number[] }
 >('predictions/fetchClaimableStatuses', async ({ account, epochs }) => {
-  const ledgers = await getClaimStatuses(account, epochs)
+  const{chainId} = useWeb3React()
+  const ledgers = await getClaimStatuses(chainId, account, epochs)
   return ledgers
 })
 
@@ -169,15 +177,16 @@ export const fetchNodeHistory = createAsyncThunk<
   { account: string; bets: Bet[]; claimableStatuses: PredictionsState['claimableStatuses'] },
   string
 >('predictions/fetchNodeHistory', async (account) => {
-  const userRounds = await fetchLatestUserRounds(account)
+  const{chainId} = useWeb3React()
+  const userRounds = await fetchLatestUserRounds(chainId, account)
 
   if (!userRounds) {
     return { account, bets: [], claimableStatuses: {} }
   }
 
   const epochs = Object.keys(userRounds).map((epochStr) => Number(epochStr))
-  const roundData = await getRoundsData(epochs)
-  const claimableStatuses = await getClaimStatuses(account, epochs)
+  const roundData = await getRoundsData(chainId, epochs)
+  const claimableStatuses = await getClaimStatuses(chainId, account, epochs)
 
   // Turn the data from the node into an Bet object that comes from the graph
   const bets: Bet[] = roundData.reduce((accum, round) => {

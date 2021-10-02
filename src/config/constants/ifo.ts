@@ -1,5 +1,5 @@
 import tokens from './tokens'
-import farms from './farms'
+import {farms} from './farms'
 import { Ifo, Token } from './types'
 
 const cakeBnbLpToken: Token = {

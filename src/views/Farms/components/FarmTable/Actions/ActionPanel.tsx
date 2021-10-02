@@ -7,12 +7,13 @@ import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getBscScanLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
-
+import { useWeb3React } from '@web3-react/core'
 import HarvestAction from './HarvestAction'
 import StakedAction from './StakedAction'
 import Apr, { AprProps } from '../Apr'
 import Multiplier, { MultiplierProps } from '../Multiplier'
 import Liquidity, { LiquidityProps } from '../Liquidity'
+
 
 export interface ActionPanelProps {
   apr: AprProps
@@ -139,16 +140,17 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   expanded,
 }) => {
   const farm = details
-
+  const { chainId } = useWeb3React()
   const { t } = useTranslation()
   const isActive = farm.multiplier !== '0X'
   const { quoteToken, token, dual } = farm
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
+    chainId,
     quoteTokenAddress: quoteToken.address,
     tokenAddress: token.address,
   })
-  const lpAddress = getAddress(farm.lpAddresses)
+  const lpAddress = getAddress(chainId, farm.lpAddresses)
   const bsc = getBscScanLink(lpAddress, 'address')
   const info = `https://pancakeswap.info/pool/${lpAddress}`
 

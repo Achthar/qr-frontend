@@ -183,7 +183,7 @@ export function useSingleContractMultipleData(
     [callInputs, contract, fragment],
   )
 
-  const results = useCallsData(calls, options)
+  const results = useCallsData( calls, options)
 
   const { currentBlock } = useBlock()
 
@@ -223,7 +223,7 @@ export function useMultipleContractSingleData(
     [addresses, callData, fragment],
   )
 
-  const results = useCallsData(calls, options)
+  const results = useCallsData( calls, options)
 
   const { currentBlock } = useBlock()
 

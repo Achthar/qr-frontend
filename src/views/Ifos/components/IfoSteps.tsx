@@ -12,6 +12,7 @@ import { useProfile } from 'state/profile/hooks'
 import { getAddress } from 'utils/addressHelpers'
 
 interface Props {
+  chainId:number,
   ifo: Ifo
   walletIfoData: WalletIfoData
 }
@@ -28,11 +29,11 @@ const Wrapper = styled(Container)`
   }
 `
 
-const IfoSteps: React.FC<Props> = ({ ifo, walletIfoData }) => {
+const IfoSteps: React.FC<Props> = ({chainId, ifo, walletIfoData }) => {
   const { poolBasic, poolUnlimited } = walletIfoData
   const { hasProfile } = useProfile()
   const { t } = useTranslation()
-  const { balance } = useTokenBalance(getAddress(ifo.currency.address))
+  const { balance } = useTokenBalance(getAddress(chainId, ifo.currency.address))
   const stepsValidationStatus = [
     hasProfile,
     balance.isGreaterThan(0),

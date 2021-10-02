@@ -60,7 +60,7 @@ function CurrencySearch({
     return s === '' || s === 'b' || s === 'bn' || s === 'bnb'
   }, [debouncedQuery])
 
-  const tokenComparator = useTokenComparator(invertSearchOrder)
+  const tokenComparator = useTokenComparator(chainId, invertSearchOrder)
 
   const filteredTokens: Token[] = useMemo(() => {
     return filterTokens(Object.values(allTokens), debouncedQuery)

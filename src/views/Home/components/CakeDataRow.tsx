@@ -3,12 +3,12 @@ import styled from 'styled-components'
 import { useTotalSupply, useBurnedBalance } from 'hooks/useTokenBalance'
 import { getCakeAddress } from 'utils/addressHelpers'
 import { getBalanceNumber, formatLocalisedCompactNumber } from 'utils/formatBalance'
-import { usePriceCakeBusd } from 'state/farms/hooks'
 import { Flex, Text, Heading, Skeleton } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
+import { useCakeBusdPriceNumber } from '../../../hooks/useBUSDPrice'
 
-const StyledColumn = styled(Flex)<{ noMobileBorder?: boolean }>`
+const StyledColumn = styled(Flex) <{ noMobileBorder?: boolean }>`
   flex-direction: column;
   ${({ noMobileBorder, theme }) =>
     noMobileBorder
@@ -46,11 +46,11 @@ const emissionsPerBlock = 15
 const CakeDataRow = () => {
   const { t } = useTranslation()
   const totalSupply = useTotalSupply()
-  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress()))
+  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(54)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0
-  const cakePriceBusd = usePriceCakeBusd()
-  const mcap = cakePriceBusd.times(cakeSupply)
-  const mcapString = formatLocalisedCompactNumber(mcap.toNumber())
+  const cakePriceBusd = useCakeBusdPriceNumber(10)
+  const mcap = cakePriceBusd * cakeSupply
+  const mcapString = formatLocalisedCompactNumber(mcap)
 
   return (
     <Grid>
@@ -72,7 +72,7 @@ const CakeDataRow = () => {
       </StyledColumn>
       <StyledColumn noMobileBorder>
         <Text color="textSubtle">{t('Market cap')}</Text>
-        {mcap?.gt(0) && mcapString ? (
+        {mcap > 0 && mcapString ? (
           <Heading scale="lg">{t('$%marketCap%', { marketCap: mcapString })}</Heading>
         ) : (
           <Skeleton height={24} width={126} my="4px" />

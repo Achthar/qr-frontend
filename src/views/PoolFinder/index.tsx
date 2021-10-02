@@ -32,7 +32,7 @@ const StyledButton = styled(Button)`
 `
 
 export default function PoolFinder() {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
   const [activeField, setActiveField] = useState<number>(Fields.TOKEN1)
@@ -56,7 +56,7 @@ export default function PoolFinder() {
         JSBI.equal(pair.reserve1.raw, JSBI.BigInt(0)),
     )
 
-  const position: TokenAmount | undefined = useTokenBalance(account ?? undefined, pair?.liquidityToken)
+  const position: TokenAmount | undefined = useTokenBalance(chainId, account ?? undefined, pair?.liquidityToken)
   const hasPosition = Boolean(position && JSBI.greaterThan(position.raw, JSBI.BigInt(0)))
 
   const handleCurrencySelect = useCallback(

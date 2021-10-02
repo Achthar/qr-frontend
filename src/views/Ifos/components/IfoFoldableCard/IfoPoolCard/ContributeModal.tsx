@@ -47,9 +47,9 @@ const ContributeModal: React.FC<Props> = ({
   const { amountTokenCommittedInLP } = userPoolCharacteristics
   const { contract } = walletIfoData
   const [value, setValue] = useState('')
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { callWithGasPrice } = useCallWithGasPrice()
-  const raisingTokenContract = useERC20(getAddress(currency.address))
+  const raisingTokenContract = useERC20(getAddress(chainId, currency.address))
   const { t } = useTranslation()
   const valueWithTokenDecimals = new BigNumber(value).times(DEFAULT_TOKEN_DECIMAL)
 

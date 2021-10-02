@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { save, load } from 'redux-localstorage-simple'
 import { useDispatch } from 'react-redux'
 import farmsReducer from './farms'
@@ -43,7 +43,7 @@ const store = configureStore({
     multicall,
     lists,
   },
-  middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
+  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
   preloadedState: load({ states: PERSISTED_KEYS }),
 })
 

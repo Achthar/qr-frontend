@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Skeleton, Text, useTooltip, HelpIcon, Flex, Box, useMatchBreakpoints } from '@pancakeswap/uikit'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import Balance from 'components/Balance'
 import { useCakeVault } from 'state/pools/hooks'
 import { useTranslation } from 'contexts/Localization'
@@ -9,6 +9,7 @@ import { getCakeVaultEarnings } from 'views/Pools/helpers'
 import BaseCell, { CellContent } from './BaseCell'
 
 interface AutoEarningsCellProps {
+  chainId:number
   pool: Pool
   account: string
   userDataLoaded: boolean
@@ -25,7 +26,7 @@ const HelpIconWrapper = styled.div`
   align-self: center;
 `
 
-const AutoEarningsCell: React.FC<AutoEarningsCellProps> = ({ pool, account, userDataLoaded }) => {
+const AutoEarningsCell: React.FC<AutoEarningsCellProps> = ({chainId, pool, account, userDataLoaded }) => {
   const { t } = useTranslation()
   const { isMobile } = useMatchBreakpoints()
   const { earningTokenPrice } = pool

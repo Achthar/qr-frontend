@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import tokens from 'config/constants/tokens'
 import { useCakeVault } from 'state/pools/hooks'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import { convertSharesToCake } from 'views/Pools/helpers'
 import AprRow from '../PoolCard/AprRow'
 import { StyledCard } from '../PoolCard/StyledCard'
@@ -27,7 +27,7 @@ interface CakeVaultProps {
 
 const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const {
     userData: { userShares, isLoading: isVaultUserDataLoading },
     fees: { performanceFee },
@@ -47,13 +47,19 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
   return (
     <StyledCard isActive>
       <StyledCardHeader
+        chainId={chainId}
         isStaking={accountHasSharesStaked}
         isAutoVault
         earningToken={tokens.cake}
         stakingToken={tokens.cake}
       />
       <StyledCardBody isLoading={isLoading}>
-        <AprRow pool={pool} stakedBalance={cakeAsBigNumber} performanceFee={performanceFeeAsDecimal} />
+        <AprRow
+          chainId={chainId}
+          pool={pool}
+          stakedBalance={cakeAsBigNumber}
+          performanceFee={performanceFeeAsDecimal}
+        />
         <Box mt="24px">
           <RecentCakeProfitRow />
         </Box>
@@ -78,7 +84,7 @@ const CakeVaultCard: React.FC<CakeVaultProps> = ({ pool, showStakedOnly }) => {
           )}
         </Flex>
       </StyledCardBody>
-      <CardFooter pool={pool} account={account} />
+      <CardFooter chainId={chainId} pool={pool} account={account} />
     </StyledCard>
   )
 }

@@ -23,11 +23,12 @@ import PercentageOfTotal from './PercentageOfTotal'
 import { SkeletonCardTokens } from './Skeletons'
 
 interface TokenSectionProps extends FlexProps {
+  chainId: number
   primaryToken?: Token
   secondaryToken?: Token
 }
 
-const TokenSection: React.FC<TokenSectionProps> = ({ primaryToken, secondaryToken, children, ...props }) => {
+const TokenSection: React.FC<TokenSectionProps> = ({ chainId, primaryToken, secondaryToken, children, ...props }) => {
   const renderTokenComponent = () => {
     if (!primaryToken) {
       return <BunnyPlaceholderIcon width={32} mr="16px" />
@@ -36,6 +37,7 @@ const TokenSection: React.FC<TokenSectionProps> = ({ primaryToken, secondaryToke
     if (primaryToken && secondaryToken) {
       return (
         <TokenPairImage
+          chainId={chainId}
           variant="inverted"
           primaryToken={primaryToken}
           height={32}
@@ -46,7 +48,7 @@ const TokenSection: React.FC<TokenSectionProps> = ({ primaryToken, secondaryToke
       )
     }
 
-    return <TokenImage token={primaryToken} height={32} width={32} mr="16px" />
+    return <TokenImage chainId={chainId} token={primaryToken} height={32} width={32} mr="16px" />
   }
 
   return (
@@ -66,6 +68,7 @@ const Label = (props) => <Text bold fontSize="12px" color="secondary" textTransf
 const Value = (props) => <Text bold fontSize="20px" style={{ wordBreak: 'break-all' }} {...props} />
 
 interface IfoCardTokensProps {
+  chainId: number
   poolId: PoolIds
   ifo: Ifo
   publicIfoData: PublicIfoData
@@ -77,6 +80,7 @@ interface IfoCardTokensProps {
 }
 
 const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
+  chainId,
   poolId,
   ifo,
   publicIfoData,
@@ -115,7 +119,7 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
     if (publicIfoData.status === 'coming_soon') {
       return (
         <>
-          <TokenSection>
+          <TokenSection chainId={chainId}>
             <Label>{t('On sale')}</Label>
             <Value>{ifo[poolId].saleAmount}</Value>
           </TokenSection>
@@ -139,7 +143,7 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
     if (publicIfoData.status === 'live') {
       return (
         <>
-          <CakeBnbTokenSection mb="24px">
+          <CakeBnbTokenSection chainId={chainId} mb="24px">
             <Label>{t('Your %symbol% committed', { symbol: currency.symbol })}</Label>
             <Value>{getBalanceNumber(userPoolCharacteristics.amountTokenCommittedInLP, currency.decimals)}</Value>
             <PercentageOfTotal
@@ -147,7 +151,7 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
               totalAmount={publicPoolCharacteristics.totalAmountPool}
             />
           </CakeBnbTokenSection>
-          <TokenSection primaryToken={ifo.token}>
+          <TokenSection chainId={chainId} primaryToken={ifo.token}>
             <Label>{t('%symbol% to receive', { symbol: token.symbol })}</Label>
             <Value>{getBalanceNumber(userPoolCharacteristics.offeringAmountInToken, token.decimals)}</Value>
           </TokenSection>
@@ -162,7 +166,7 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
         </Flex>
       ) : (
         <>
-          <CakeBnbTokenSection mb="24px">
+          <CakeBnbTokenSection chainId={chainId} mb="24px">
             <Label>
               {t(hasClaimed ? 'Your %symbol% RECLAIMED' : 'Your %symbol% TO RECLAIM', { symbol: currency.symbol })}
             </Label>
@@ -175,7 +179,7 @@ const IfoCardTokens: React.FC<IfoCardTokensProps> = ({
               totalAmount={publicPoolCharacteristics.totalAmountPool}
             />
           </CakeBnbTokenSection>
-          <TokenSection primaryToken={ifo.token}>
+          <TokenSection chainId={chainId} primaryToken={ifo.token}>
             <Label> {t(hasClaimed ? '%symbol% received' : '%symbol% to receive', { symbol: token.symbol })}</Label>
             <Flex alignItems="center">
               <Value>{getBalanceNumber(userPoolCharacteristics.offeringAmountInToken, token.decimals)}</Value>

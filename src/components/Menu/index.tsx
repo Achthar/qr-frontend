@@ -8,10 +8,12 @@ import { useProfile } from 'state/profile/hooks'
 import config from './config'
 import UserMenu from './UserMenu'
 import GlobalSettings from './GlobalSettings'
+import { useCakeBusdPriceNumber } from '../../hooks/useBUSDPrice'
+
 
 const Menu = (props) => {
   const { isDark, toggleTheme } = useTheme()
-  const cakePriceUsd = usePriceCakeBusd()
+  const cakePriceUsd = useCakeBusdPriceNumber(5)
   const { profile } = useProfile()
   const { currentLanguage, setLanguage, t } = useTranslation()
 
@@ -24,7 +26,7 @@ const Menu = (props) => {
       currentLang={currentLanguage.code}
       langs={[]}
       setLang={undefined}
-      cakePriceUsd={cakePriceUsd.toNumber()}
+      cakePriceUsd={cakePriceUsd}
       links={config(t)}
       profile={{
         username: profile?.username,

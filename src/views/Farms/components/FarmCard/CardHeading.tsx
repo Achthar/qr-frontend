@@ -6,6 +6,7 @@ import { Token } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
 
 export interface ExpandableSectionProps {
+  chainId:number,
   lpLabel?: string
   multiplier?: string
   isCommunityFarm?: boolean
@@ -23,10 +24,10 @@ const MultiplierTag = styled(Tag)`
   margin-left: 4px;
 `
 
-const CardHeading: React.FC<ExpandableSectionProps> = ({ lpLabel, multiplier, isCommunityFarm, token, quoteToken }) => {
+const CardHeading: React.FC<ExpandableSectionProps> = ({chainId, lpLabel, multiplier, isCommunityFarm, token, quoteToken }) => {
   return (
     <Wrapper justifyContent="space-between" alignItems="center" mb="12px">
-      <TokenPairImage variant="inverted" primaryToken={token} secondaryToken={quoteToken} width={64} height={64} />
+      <TokenPairImage variant="inverted" chainId={chainId} primaryToken={token} secondaryToken={quoteToken} width={64} height={64} />
       <Flex flexDirection="column" alignItems="flex-end">
         <Heading mb="4px">{lpLabel.split(' ')[0]}</Heading>
         <Flex justifyContent="center">

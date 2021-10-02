@@ -9,6 +9,7 @@ import ExpandableSectionButton from 'components/ExpandableSectionButton'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import { useWeb3React } from '@web3-react/core'
 import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
 import CardActionsContainer from './CardActionsContainer'
@@ -46,7 +47,7 @@ interface FarmCardProps {
 
 const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePrice, account }) => {
   const { t } = useTranslation()
-
+  const { chainId } = useWeb3React()
   const [showExpandableSection, setShowExpandableSection] = useState(false)
 
   const totalValueFormatted =
@@ -58,17 +59,19 @@ const FarmCard: React.FC<FarmCardProps> = ({ farm, displayApr, removed, cakePric
   const earnLabel = farm.dual ? farm.dual.earnLabel : t('CAKE + Fees')
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
+    chainId: { chainId },
     quoteTokenAddress: farm.quoteToken.address,
     tokenAddress: farm.token.address,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-  const lpAddress = getAddress(farm.lpAddresses)
+  const lpAddress = getAddress(chainId, farm.lpAddresses)
   const isPromotedFarm = farm.token.symbol === 'CAKE'
 
   return (
     <StyledCard isActive={isPromotedFarm}>
       <FarmCardInnerContainer>
         <CardHeading
+          chainId={chainId}
           lpLabel={lpLabel}
           multiplier={farm.multiplier}
           isCommunityFarm={farm.isCommunity}

@@ -5,7 +5,7 @@ import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, useTooltip,
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useWeb3React } from '@web3-react/core'
 import { useCakeVault } from 'state/pools/hooks'
-import { Pool } from 'state/types'
+import type { Pool } from 'state/types'
 import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceNumber } from 'utils/formatBalance'
@@ -42,10 +42,11 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({ pool, userDataLoa
     isAutoVault,
   } = pool
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
-  const stakingTokenContract = useERC20(stakingToken.address ? getAddress(stakingToken.address) : '')
+  const stakingTokenContract = useERC20(stakingToken.address ? getAddress(chainId, stakingToken.address) : '')
   const { handleApprove: handlePoolApprove, requestedApproval: requestedPoolApproval } = useApprovePool(
+    chainId,
     stakingTokenContract,
     sousId,
     earningToken.symbol,
@@ -87,6 +88,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({ pool, userDataLoa
 
   const [onPresentStake] = useModal(
     <StakeModal
+      chainId={chainId}
       isBnbPool={isBnbPool}
       pool={pool}
       stakingTokenBalance={stakingTokenBalance}
@@ -98,6 +100,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({ pool, userDataLoa
 
   const [onPresentUnstake] = useModal(
     <StakeModal
+      chainId={chainId}
       stakingTokenBalance={stakingTokenBalance}
       isBnbPool={isBnbPool}
       pool={pool}

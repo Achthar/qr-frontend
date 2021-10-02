@@ -5,13 +5,14 @@ import { Ifo } from 'config/constants/types'
 import IfoFoldableCard from './IfoFoldableCard'
 
 interface Props {
+  chainId: number
   ifo: Ifo
   isInitiallyVisible: boolean
 }
 
-const IfoCardV2Data: React.FC<Props> = ({ ifo, isInitiallyVisible }) => {
-  const publicIfoData = useGetPublicIfoV2Data(ifo)
-  const walletIfoData = useGetWalletIfoV2Data(ifo)
+const IfoCardV2Data: React.FC<Props> = ({ chainId, ifo, isInitiallyVisible }) => {
+  const publicIfoData = useGetPublicIfoV2Data(chainId, ifo)
+  const walletIfoData = useGetWalletIfoV2Data(chainId, ifo)
 
   return (
     <IfoFoldableCard

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { useWeb3React } from '@web3-react/core'
 import farmsConfig from 'config/constants/farms'
 import isArchivedPid from 'utils/farmHelpers'
 import priceHelperLpsConfig from 'config/constants/priceHelperLps'
@@ -11,6 +12,7 @@ import {
   fetchFarmUserStakedBalances,
 } from './fetchFarmUser'
 import { FarmsState, Farm } from '../types'
+// import { chain } from 'lodash'
 
 const noAccountFarmConfig = farmsConfig.map((farm) => ({
   ...farm,
@@ -30,12 +32,13 @@ export const nonArchivedFarms = farmsConfig.filter(({ pid }) => !isArchivedPid(p
 export const fetchFarmsPublicDataAsync = createAsyncThunk<Farm[], number[]>(
   'farms/fetchFarmsPublicDataAsync',
   async (pids) => {
+    const {chainId} = useWeb3React()
     const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
 
     // Add price helper farms
     const farmsWithPriceHelpers = farmsToFetch.concat(priceHelperLpsConfig)
 
-    const farms = await fetchFarms(farmsWithPriceHelpers)
+    const farms = await fetchFarms(chainId, farmsWithPriceHelpers)
     const farmsWithPrices = await fetchFarmsPrices(farms)
 
     // Filter out price helper LP config farms
@@ -58,11 +61,12 @@ interface FarmUserDataResponse {
 export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], { account: string; pids: number[] }>(
   'farms/fetchFarmUserDataAsync',
   async ({ account, pids }) => {
+    const {chainId} = useWeb3React()
     const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid))
-    const userFarmAllowances = await fetchFarmUserAllowances(account, farmsToFetch)
-    const userFarmTokenBalances = await fetchFarmUserTokenBalances(account, farmsToFetch)
-    const userStakedBalances = await fetchFarmUserStakedBalances(account, farmsToFetch)
-    const userFarmEarnings = await fetchFarmUserEarnings(account, farmsToFetch)
+    const userFarmAllowances = await fetchFarmUserAllowances(chainId, account, farmsToFetch)
+    const userFarmTokenBalances = await fetchFarmUserTokenBalances(chainId, account, farmsToFetch)
+    const userStakedBalances = await fetchFarmUserStakedBalances(chainId, account, farmsToFetch)
+    const userFarmEarnings = await fetchFarmUserEarnings(chainId, account, farmsToFetch)
 
     return userFarmAllowances.map((farmAllowance, index) => {
       return {

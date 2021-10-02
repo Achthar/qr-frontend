@@ -1,4 +1,4 @@
-import { Profile } from 'state/types'
+import type { Profile } from 'state/types'
 
 export type ProfileResponse = {
   0: string
