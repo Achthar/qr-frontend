@@ -235,11 +235,7 @@ const VaultStakeModal: React.FC<VaultStakeModalProps> = ({
   }
 
   return (
-    <Modal
-      title={isRemovingStake ? t('Unstake') : t('Stake in Pool')}
-      onDismiss={onDismiss}
-      headerBackground={theme.colors.gradients.cardHeader}
-    >
+    <Modal title={isRemovingStake ? t('Unstake') : t('Stake in Pool')} onDismiss={onDismiss}>
       <Flex alignItems="center" justifyContent="space-between" mb="8px">
         <Text bold>{isRemovingStake ? t('Unstake') : t('Stake')}:</Text>
         <Flex alignItems="center" minWidth="70px">

@@ -71,7 +71,6 @@ const Header = styled(CardHeader)<{ ifoId: string }>`
 
 const FoldableContent = styled.div<{ isVisible: boolean; isActive: boolean }>`
   display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
-  background: ${({ isActive, theme }) => (isActive ? theme.colors.gradients.bubblegum : theme.colors.dropdown)};
 `
 
 const CardsWrapper = styled.div<{ singleCard: boolean }>`

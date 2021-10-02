@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import useTheme from 'hooks/useTheme'
 import { Pair } from '@pancakeswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@pancakeswap/uikit'
 import { Link } from 'react-router-dom'
@@ -20,6 +21,7 @@ const Body = styled(CardBody)`
 export default function Pool() {
   const { account } = useActiveWeb3React()
   const { t } = useTranslation()
+  const { theme } = useTheme()
 
   // fetch the user's balances of all tracked V2 LP tokens
   const trackedTokenPairs = useTrackedTokenPairs()
@@ -100,7 +102,13 @@ export default function Pool() {
           )}
         </Body>
         <CardFooter style={{ textAlign: 'center' }}>
-          <Button id="join-pool-button" as={Link} to="/add" width="100%" startIcon={<AddIcon color="white" />}>
+          <Button
+            id="join-pool-button"
+            as={Link}
+            to="/add"
+            width="100%"
+            startIcon={<AddIcon color={theme.colors.backgroundAlt} />}
+          >
             {t('Add Liquidity')}
           </Button>
         </CardFooter>

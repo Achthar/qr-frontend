@@ -29,9 +29,7 @@ interface WalletModalProps extends InjectedModalProps {
 
 export const LOW_BNB_BALANCE = new BigNumber('2000000000') // 2 Gwei
 
-const ModalHeader = styled(UIKitModalHeader)`
-  background: ${({ theme }) => theme.colors.gradients.bubblegum};
-`
+const ModalHeader = styled(UIKitModalHeader)``
 
 const Tabs = styled.div`
   background-color: ${({ theme }) => theme.colors.dropdown};

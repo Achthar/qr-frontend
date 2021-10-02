@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { Flex } from '@pancakeswap/uikit'
 import Footer from 'components/Menu/Footer'
-import SubNav from 'components/Menu/SubNav'
 
 const StyledPage = styled.div`
   display: flex;
@@ -11,28 +10,24 @@ const StyledPage = styled.div`
   width: 100%;
   padding: 16px;
   padding-bottom: 0;
-  min-height: calc(100vh - 64px);
-  background: ${({ theme }) => theme.colors.gradients.bubblegum};
-
+  margin-bottom: 100px;
+  background: transparent;
+  padding-top: 100px;
   ${({ theme }) => theme.mediaQueries.xs} {
+    padding-top: 80px;
     background-size: auto;
   }
 
   ${({ theme }) => theme.mediaQueries.sm} {
     padding: 24px;
     padding-bottom: 0;
-  }
-
-  ${({ theme }) => theme.mediaQueries.lg} {
-    padding-top: 32px;
-    min-height: calc(100vh - 64px);
+    padding-top: 100px;
   }
 `
 
 const Page: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => {
   return (
     <StyledPage {...props}>
-      <SubNav />
       {children}
       <Flex flexGrow={1} />
       <Footer />

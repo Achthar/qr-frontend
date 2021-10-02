@@ -36,7 +36,7 @@ export function useAudioModeManager(): [boolean, () => void] {
     }
   }, [audioPlay, dispatch])
 
-  return [audioPlay, toggleSetAudioMode]
+  return [false, toggleSetAudioMode]
 }
 
 export function useIsExpertMode(): boolean {

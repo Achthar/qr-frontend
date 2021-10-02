@@ -138,12 +138,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
   const onUserInput = editingCurrency === EditingCurrency.TOKEN ? setPrincipalFromTokenValue : setPrincipalFromUSDValue
 
   return (
-    <StyledModal
-      title={t('ROI Calculator')}
-      onDismiss={onBack || onDismiss}
-      onBack={onBack ?? null}
-      headerBackground="gradients.cardHeader"
-    >
+    <StyledModal title={t('ROI Calculator')} onDismiss={onBack || onDismiss} onBack={onBack ?? null}>
       <ScrollableContainer>
         <Flex flexDirection="column" mb="8px">
           <Text color="secondary" bold fontSize="12px" textTransform="uppercase">
