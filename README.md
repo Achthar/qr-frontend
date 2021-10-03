@@ -1,4 +1,4 @@
-![QR](https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png)
+![REQT](https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png)
 
 # Requiem Finance Frontend
 
