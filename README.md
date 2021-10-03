@@ -1,5 +1,5 @@
-![QR](https://quantresurgencemhy2069p5074.s3.eu-west-2.amazonaws.com/logos/QRLogo_small.png)
+![QR](https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png)
 
-# Quant Resurgence Frontend
+# Requiem Finance Frontend
 
-This project contains the main features of the pancake/goose application.
+A DeFi project combining a DEX with lending and liquidity collateralization.
