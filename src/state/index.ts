@@ -28,10 +28,6 @@ const store = configureStore({
     block: blockReducer,
     farms: farmsReducer,
     pools: poolsReducer,
-    predictions: predictionsReducer,
-    profile: profileReducer,
-    teams: teamsReducer,
-    collectibles: collectiblesReducer,
     voting: votingReducer,
 
     // Exchange

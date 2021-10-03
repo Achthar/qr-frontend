@@ -3,8 +3,17 @@ import config from 'components/Menu/config'
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'
 import { useHistory, useLocation } from 'react-router'
+import styled from 'styled-components'
+import Logo from './components/Logo/Logo'
+
+const StyledLogo = styled(Logo) <{ size: string }>`
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
+`
 
 const LIQUIDITY_ROUTES = ['/add', '/find']
+
+
 const CustomNav: React.FC = () => {
   const { t } = useTranslation()
   const history = useHistory()
@@ -38,7 +47,9 @@ const CustomNav: React.FC = () => {
       <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md" variant="subtle">
         {menuItems.map((menuItem) =>
           isMobile ? (
-            <ButtonMenuItem key={menuItem.label}>{menuItem.label.charAt(0)}</ButtonMenuItem>
+            <ButtonMenuItem key={menuItem.label}>
+              <StyledLogo size='24px' srcs={[menuItem.icon]} alt={menuItem.label.charAt(0)} />
+            </ButtonMenuItem>
           ) : (
             <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>
           ),

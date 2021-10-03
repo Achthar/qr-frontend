@@ -4,7 +4,6 @@ import { languageList } from 'config/localization/languages'
 import { useTranslation } from 'contexts/Localization'
 import useTheme from 'hooks/useTheme'
 import { usePriceCakeBusd } from 'state/farms/hooks'
-import { useProfile } from 'state/profile/hooks'
 import config from './config'
 import UserMenu from './UserMenu'
 import GlobalSettings from './GlobalSettings'
@@ -14,7 +13,7 @@ import { useCakeBusdPriceNumber } from '../../hooks/useBUSDPrice'
 const Menu = (props) => {
   const { isDark, toggleTheme } = useTheme()
   const cakePriceUsd = useCakeBusdPriceNumber(5)
-  const { profile } = useProfile()
+  const  profile  = null
   const { currentLanguage, setLanguage, t } = useTranslation()
 
   return (

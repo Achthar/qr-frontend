@@ -43,7 +43,9 @@ const cardConfig: CardConfig = {
 const SmallCard: React.FC<IfoCardProps> = ({ chainId, poolId, ifo, publicIfoData, walletIfoData, onApprove, enableStatus }) => {
   const { t } = useTranslation()
   const config = cardConfig[poolId]
-  const { hasProfile, isLoading: isProfileLoading } = useProfile()
+  // const { hasProfile, isLoading: isProfileLoading } = useProfile()
+  const  hasProfile = null
+  const isProfileLoading  = false
   const { targetRef, tooltip, tooltipVisible } = useTooltip(t(config.tooltip), { placement: 'bottom' })
 
   const isLoading = isProfileLoading || publicIfoData.status === 'idle'

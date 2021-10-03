@@ -3,7 +3,7 @@ import { request, gql } from 'graphql-request'
 import BigNumber from 'bignumber.js'
 import chunk from 'lodash/chunk'
 import { sub, getUnixTime } from 'date-fns'
-import farmsConfig from '../src/config/constants/farms'
+import {farmList as farmsConfig} from '../src/config/constants/farms'
 import { ChainId } from '../src/config/index'
 
 const BLOCK_SUBGRAPH_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/pancakeswap/blocks'
@@ -102,7 +102,7 @@ const getAprsForFarmGroup = async (addresses: string[], blockWeekAgo: number): P
 
 const fetchAndUpdateLPsAPR = async () => {
   // pids before 250 are inactive farms from v1 and failed v2 migration
-  const lowerCaseAddresses = farmsConfig
+  const lowerCaseAddresses = farmsConfig[ChainId.BSC_MAINNET]
     .filter((farm) => farm.pid > 250)
     .map((farm) => farm.lpAddresses[ChainId.BSC_MAINNET].toLowerCase())
   console.info(`Fetching farm data for ${lowerCaseAddresses.length} addresses`)

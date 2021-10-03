@@ -53,7 +53,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
-  
+
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(chainId, loadedUrlParams?.inputCurrencyId),
@@ -87,15 +87,21 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError,
   } = useDerivedSwapInfo(chainId)
-  
+
+  console.log("v2Trade", v2Trade)
+  console.log("CCYS", currencies)
+  console.log("CCY Balances", currencyBalances)
+
   const {
     wrapType,
     execute: onWrap,
     inputError: wrapInputError,
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
+  console.log("WT", wrapType)
+
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
-  
+
   const parsedAmounts = showWrap
     ? {
       [Field.INPUT]: parsedAmount,
@@ -105,8 +111,8 @@ export default function Swap({ history }: RouteComponentProps) {
       [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
       [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
     }
-
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
+  console.log("Parsed amounts", parsedAmounts)
+  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(chainId)
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -144,7 +150,7 @@ export default function Swap({ history }: RouteComponentProps) {
   }
 
   const route = trade?.route
-  
+
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0)),
   )
@@ -247,7 +253,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
-      onCurrencySelection(chainId, Field.INPUT, inputCurrency)
+      onCurrencySelection(Field.INPUT, inputCurrency)
       const showSwapWarning = shouldShowSwapWarning(inputCurrency)
       if (showSwapWarning) {
         setSwapWarningCurrency(inputCurrency)
@@ -267,7 +273,7 @@ export default function Swap({ history }: RouteComponentProps) {
 
   const handleOutputSelect = useCallback(
     (outputCurrency) => {
-      onCurrencySelection(chainId, Field.OUTPUT, outputCurrency)
+      onCurrencySelection(Field.OUTPUT, outputCurrency)
       const showSwapWarning = shouldShowSwapWarning(outputCurrency)
       if (showSwapWarning) {
         setSwapWarningCurrency(outputCurrency)

@@ -5,7 +5,7 @@ export const DEFAULT_META: PageMeta = {
   title: 'Requiem Finance',
   description:
     'A DeFi platform that combines lening, a DEX, liquidity farming and collateraliztion.',
-  image: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png',
+  image: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png',
 }
 
 export const getCustomMeta = (path: string, t: ContextApi['t']): PageMeta => {

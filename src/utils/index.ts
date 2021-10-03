@@ -4,7 +4,8 @@ import { AddressZero } from '@ethersproject/constants'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
-import { /* ChainId, */ JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY } from '@pancakeswap/sdk'
+import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
+import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY } from '@pancakeswap/sdk'
 import { ROUTER_ADDRESS } from '../config/constants'
 import { BASE_BSC_SCAN_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -92,14 +93,14 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
 
 // account is optional
 export function getRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  return getContract(ROUTER_ADDRESS[chainId], IUniswapV2Router02ABI, library, account)
+  return getContract(ROUTER_ADDRESS[chainId], chainId === 8001 ? IRequiemRouter02 : IUniswapV2Router02ABI, library, account)
 }
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
-export function isTokenOnList(chainId:number, defaultTokens: TokenAddressMap, currency?: Currency): boolean {
+export function isTokenOnList(chainId: number, defaultTokens: TokenAddressMap, currency?: Currency): boolean {
   if (currency === NETWORK_CCY[chainId]) return true
   return Boolean(currency instanceof Token && defaultTokens[currency.chainId]?.[currency.address])
 }

@@ -22,7 +22,12 @@ const UserMenu = () => {
   const { account, chainId } = useWeb3React()
   const { logout } = useAuth()
   const { balance, fetchStatus } = useGetBnbBalance()
-  const { isInitialized, isLoading, profile } = useProfile()
+  // const { isInitialized, isLoading, profile } = useProfile()
+
+  const isInitialized = false
+  const isLoading = false
+  const profile = null
+
   const [onPresentWalletModal] = useModal(<WalletModal chainId={chainId} initialView={WalletView.WALLET_INFO} />)
   const [onPresentTransactionModal] = useModal(<WalletModal chainId={chainId} initialView={WalletView.TRANSACTIONS} />)
   const hasProfile = isInitialized && !!profile

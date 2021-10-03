@@ -31,7 +31,7 @@ const Wrapper = styled(Container)`
 
 const IfoSteps: React.FC<Props> = ({chainId, ifo, walletIfoData }) => {
   const { poolBasic, poolUnlimited } = walletIfoData
-  const { hasProfile } = useProfile()
+  const  hasProfile = false
   const { t } = useTranslation()
   const { balance } = useTokenBalance(getAddress(chainId, ifo.currency.address))
   const stepsValidationStatus = [
