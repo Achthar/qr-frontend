@@ -2740,9 +2740,9 @@
     eslint-plugin-react "^7.21.5"
     eslint-plugin-react-hooks "^4.0.0"
 
-"@pancakeswap/sdk@Achthar/requiem-swap-sdk.git":
+"@pancakeswap/sdk@https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master":
   version "2.4.0"
-  resolved "https://codeload.github.com/Achthar/requiem-swap-sdk/tar.gz/dc1d2d1da32b264bd5bc771300a0d7ab1203a41d"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#dea8f7356092a6c603a8e5d5301991e925eb393c"
   dependencies:
     "@pancakeswap-libs/pancake-swap-core" "^0.1.0"
     big.js "^5.2.2"
