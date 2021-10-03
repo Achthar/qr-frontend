@@ -54,7 +54,7 @@ export default function useWrapCallback(
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient BNB balance',
+        inputError: sufficientBalance ? undefined : `Insufficient ${NETWORK_CCY[chainId].symbol} balance`,
       }
     }
     if (currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], inputCurrency) && outputCurrency === NETWORK_CCY[chainId]) {
@@ -73,7 +73,7 @@ export default function useWrapCallback(
                 }
               }
             : undefined,
-        inputError: sufficientBalance ? undefined : 'Insufficient WBNB balance',
+        inputError: sufficientBalance ? undefined : `Insufficient ${WRAPPED_NETWORK_TOKENS[chainId].symbol} balance`,
       }
     }
     return NOT_APPLICABLE

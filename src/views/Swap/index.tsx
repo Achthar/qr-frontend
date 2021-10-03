@@ -53,7 +53,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
-  console.log("loadedUrlParams", loadedUrlParams)
+  
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(chainId, loadedUrlParams?.inputCurrencyId),
@@ -87,7 +87,7 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError,
   } = useDerivedSwapInfo(chainId)
-console.log("CB", currencyBalances)
+  
   const {
     wrapType,
     execute: onWrap,
@@ -95,8 +95,7 @@ console.log("CB", currencyBalances)
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
-console.log("trade",trade)
-console.log("showWrap", showWrap)
+  
   const parsedAmounts = showWrap
     ? {
       [Field.INPUT]: parsedAmount,
@@ -145,7 +144,7 @@ console.log("showWrap", showWrap)
   }
 
   const route = trade?.route
-  console.log("route:", route)
+  
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0)),
   )

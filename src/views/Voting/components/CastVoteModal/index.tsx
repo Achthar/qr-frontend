@@ -81,13 +81,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
   }
 
   return (
-    <Modal
-      title={title[view]}
-      onBack={handleBack}
-      onDismiss={onDismiss}
-      hideCloseButton={!isStartView}
-      headerBackground={theme.colors.gradients.cardHeader}
-    >
+    <Modal title={title[view]} onBack={handleBack} onDismiss={onDismiss} hideCloseButton={!isStartView}>
       <Box mb="24px" width="320px">
         {view === ConfirmVoteView.MAIN && (
           <MainView

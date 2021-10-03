@@ -116,7 +116,7 @@ export default function CurrencySearchModal({
         ) : (
           ''
         )}
-        {modalView === CurrencyModalView.search && (
+        {/* {modalView === CurrencyModalView.search && (
           <Footer>
             <Button
               scale="sm"
@@ -127,7 +127,7 @@ export default function CurrencySearchModal({
               {t('Manage Tokens')}
             </Button>
           </Footer>
-        )}
+        )} */}
       </StyledModalBody>
     </StyledModalContainer>
   )

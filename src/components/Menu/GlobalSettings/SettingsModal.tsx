@@ -56,7 +56,7 @@ const SettingsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
   return (
     <Modal
       title={t('Settings')}
-      headerBackground="gradients.cardHeader"
+      //
       onDismiss={onDismiss}
       style={{ maxWidth: '420px', overflowY: 'auto' }}
     >
@@ -72,44 +72,6 @@ const SettingsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
             {t('Swaps & Liquidity')}
           </Text>
           <TransactionSettings />
-        </Flex>
-        <Flex justifyContent="space-between" alignItems="center" mb="24px">
-          <Flex alignItems="center">
-            <Text>{t('Expert Mode')}</Text>
-            <QuestionHelper
-              text={t('Bypasses confirmation modals and allows high slippage trades. Use at your own risk.')}
-              placement="top-start"
-              ml="4px"
-            />
-          </Flex>
-          <Toggle id="toggle-expert-mode-button" scale="md" checked={expertMode} onChange={handleExpertModeToggle} />
-        </Flex>
-        <Flex justifyContent="space-between" alignItems="center" mb="24px">
-          <Flex alignItems="center">
-            <Text>{t('Disable Multihops')}</Text>
-            <QuestionHelper text={t('Restricts swaps to direct pairs only.')} placement="top-start" ml="4px" />
-          </Flex>
-          <Toggle
-            id="toggle-disable-multihop-button"
-            checked={singleHopOnly}
-            scale="md"
-            onChange={() => {
-              setSingleHopOnly(!singleHopOnly)
-            }}
-          />
-        </Flex>
-        <Flex justifyContent="space-between" alignItems="center">
-          <Flex alignItems="center">
-            <Text>{t('Flippy sounds')}</Text>
-            <QuestionHelper
-              text={t('Fun sounds to make a truly immersive pancake-flipping trading experience')}
-              placement="top-start"
-              ml="4px"
-            />
-          </Flex>
-          <PancakeToggleWrapper>
-            <PancakeToggle checked={audioPlay} onChange={toggleSetAudioMode} scale="md" />
-          </PancakeToggleWrapper>
         </Flex>
       </Flex>
     </Modal>
