@@ -211,7 +211,6 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
   // pinned pairs
   const pinnedPairs = useMemo(() => (chainId ? PINNED_PAIRS[chainId] ?? [] : []), [chainId])
-
   // pairs for every token against every base
   const generatedPairs: [Token, Token][] = useMemo(
     () =>

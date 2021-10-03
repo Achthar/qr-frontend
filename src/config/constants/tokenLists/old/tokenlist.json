@@ -219,7 +219,7 @@
       {
         "name": "USDC",
         "symbol": "USDC",
-        "address": "0xdA5289fCAAF71d52a80A254da614a192b693e977",
+        "address": "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
         "chainId": 80001,
         "decimals": 18,
         "logoURI": "https://pancakeswap.finance/images/tokens/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"

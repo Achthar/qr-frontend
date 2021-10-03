@@ -1,6 +1,5 @@
 import merge from 'lodash/merge'
 import teamsList from 'config/constants/teams'
-import { getProfileContract } from 'utils/contractHelpers'
 import { Team } from 'config/constants/types'
 import { multicallv2 } from 'utils/multicall'
 import { TeamsById } from 'state/types'
@@ -11,14 +10,10 @@ import { getPancakeProfileAddress } from 'utils/addressHelpers'
 
 export const getTeam = async (chainId:number, teamId: number): Promise<Team> => {
   try {
-    const { 0: teamName, 2: numberUsers, 3: numberPoints, 4: isJoinable } = await getProfileContract(chainId).getTeamProfile(teamId)
     const staticTeamInfo = teamsList.find((staticTeam) => staticTeam.id === teamId)
 
     return merge({}, staticTeamInfo, {
-      isJoinable,
-      name: teamName,
-      users: numberUsers.toNumber(),
-      points: numberPoints.toNumber(),
+
     })
   } catch (error: any) {
     return null
@@ -36,7 +31,7 @@ export const getTeams = async (chainId:number): Promise<TeamsById> => {
         [team.id]: team,
       }
     }, {})
-    const nbTeams = await getProfileContract(chainId).numberTeams()
+    const nbTeams = null
 
     const calls = []
     for (let i = 1; i <= nbTeams; i++) {

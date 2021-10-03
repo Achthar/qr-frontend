@@ -4,15 +4,13 @@ import { NETWORK_CCY } from '@pancakeswap/sdk'
 import { useWeb3React } from '@web3-react/core'
 import { getWbnbAddress } from './addressHelpers'
 
-const getLiquidityUrlPathParts = ({chainId, quoteTokenAddress, tokenAddress }) => {
-  // const {chainId} = useWeb3React()
-  // const chainId = process.env.REACT_APP_CHAIN_ID
-  const wBNBAddressString = getWbnbAddress(chainId)
-  const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId] : null
+const getLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress }) => {
+  const wBNBAddressString = getWbnbAddress(chainId ?? process.env.REACT_APP_CHAIN_ID)
+  const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId ?? process.env.REACT_APP_CHAIN_ID] : null
   const tokenAddressString: string = tokenAddress ? tokenAddress[chainId] : null
   const firstPart =
-    !quoteTokenAddressString || quoteTokenAddressString === wBNBAddressString ? NETWORK_CCY[chainId].symbol : quoteTokenAddressString
-  const secondPart = !tokenAddressString || tokenAddressString === wBNBAddressString ? NETWORK_CCY[chainId].symbol : tokenAddressString
+    !quoteTokenAddressString || quoteTokenAddressString === wBNBAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : quoteTokenAddressString
+  const secondPart = !tokenAddressString || tokenAddressString === wBNBAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : tokenAddressString
   return `${firstPart}/${secondPart}`
 }
 

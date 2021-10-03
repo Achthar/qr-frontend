@@ -12,6 +12,9 @@ export const getAddress = (chainId:number, address: Address): string => {
 export const getCakeAddress = (chainId:number) => {
   return getAddress(chainId, tokens.cake.address)
 }
+export const getRequiemAddress = (chainId:number) => {
+  return getAddress(chainId, tokens.reqt.address)
+}
 export const getMasterChefAddress = (chainId:number) => {
   return getAddress(chainId, addresses.masterChef)
 }

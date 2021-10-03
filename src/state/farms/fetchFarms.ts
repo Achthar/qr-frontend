@@ -1,9 +1,9 @@
-import { FarmConfig } from 'config/constants/types'
+import { FarmConfig, ChainGroup } from 'config/constants/types'
 import fetchFarm from './fetchFarm'
 
-const fetchFarms = async (chainId:number, farmsToFetch: FarmConfig[]) => {
+const fetchFarms = async (chainId:number, farmsToFetch: {[chainGroup in ChainGroup]:FarmConfig[]}) => {
   const data = await Promise.all(
-    farmsToFetch.map(async (farmConfig) => {
+    farmsToFetch[chainId].map(async (farmConfig) => {
       const farm = await fetchFarm(chainId, farmConfig)
       return farm
     }),

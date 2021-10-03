@@ -1,5 +1,5 @@
 import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@pancakeswap/sdk'
-import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC } from './tokens'
+import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC, REQT } from './tokens'
 // import { ChainId } from '../index'
 
 
@@ -31,7 +31,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
   [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
-  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET]]
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
 }
 
 /**
@@ -86,8 +86,8 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
     [BUSD[ChainId.BSC_TESTNET], DAI[ChainId.BSC_TESTNET]],
   ],
   [ChainId.MATIC_TESTNET]: [
-    [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDT[ChainId.MATIC_TESTNET]],
-    [USDT[ChainId.MATIC_TESTNET], USDC[ChainId.BSC_TESTNET]],
+    [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]],
+    [REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]],
   ],
 }
 
@@ -128,6 +128,6 @@ export const BLOCKED_ADDRESSES: string[] = [
   '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C',
 ]
 
-export { farms as farmsConfig } from './farms'
+export { farmList as farmsConfig } from './farms'
 export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'

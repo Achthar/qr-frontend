@@ -4,34 +4,24 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import {
   getBep20Contract,
   getCakeContract,
-  // getBunnyFactoryContract,
-  // getBunnySpecialContract,
-  getPancakeRabbitContract,
-  getProfileContract,
-  // getIfoV1Contract,
   getIfoV2Contract,
   getMasterchefContract,
   getPointCenterIfoContract,
   getSouschefContract,
   getClaimRefundContract,
-  // getTradingCompetitionContract,
-  // getEasterNftContract,
   getErc721Contract,
   getCakeVaultContract,
   getPredictionsContract,
   getChainlinkOracleContract,
   getSouschefV2Contract,
   getLotteryV2Contract,
-  // getBunnySpecialCakeVaultContract,
-  // getBunnySpecialPredictionContract,
   getFarmAuctionContract,
-  // getBunnySpecialLotteryContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
-import { /* ChainId, */  WETH, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../config/abi/ens-public-resolver.json'
 import ENS_ABI from '../config/abi/ens-registrar.json'
@@ -46,11 +36,6 @@ import {ChainId} from '../config/index'
 /**
  * Helper hooks to get specific contracts (by ABI)
  */
-
-// export const useIfoV1Contract = (address: string) => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getIfoV1Contract(address, library.getSigner()), [address, library])
-// }
 
 export const useIfoV2Contract = (address: string) => {
   const { library, chainId } = useActiveWeb3React()
@@ -73,21 +58,6 @@ export const useERC721 = (address: string) => {
 export const useCake = () => {
   const { library, chainId } = useActiveWeb3React()
   return useMemo(() => getCakeContract(chainId, library.getSigner()), [chainId, library])
-}
-
-// export const useBunnyFactory = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getBunnyFactoryContract(library.getSigner()), [library])
-// }
-
-export const usePancakeRabbits = () => {
-  const { library, chainId } = useActiveWeb3React()
-  return useMemo(() => getPancakeRabbitContract(chainId, library.getSigner()), [chainId, library])
-}
-
-export const useProfile = () => {
-  const { library, chainId } = useActiveWeb3React()
-  return useMemo(() => getProfileContract(chainId, library.getSigner()), [chainId, library])
 }
 
 export const useLotteryV2Contract = () => {
@@ -115,25 +85,10 @@ export const usePointCenterIfoContract = () => {
   return useMemo(() => getPointCenterIfoContract(chainId, library.getSigner()), [chainId, library])
 }
 
-// export const useBunnySpecialContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getBunnySpecialContract(library.getSigner()), [library])
-// }
-
 export const useClaimRefundContract = () => {
   const { library, chainId } = useActiveWeb3React()
   return useMemo(() => getClaimRefundContract(chainId, library.getSigner()), [chainId, library])
 }
-
-// export const useTradingCompetitionContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getTradingCompetitionContract(library.getSigner()), [library])
-// }
-
-// export const useEasterNftContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getEasterNftContract(library.getSigner()), [library])
-// }
 
 export const useCakeVaultContract = () => {
   const { library, chainId } = useActiveWeb3React()
@@ -149,21 +104,6 @@ export const useChainlinkOracleContract = () => {
   const { library, chainId } = useActiveWeb3React()
   return useMemo(() => getChainlinkOracleContract(chainId, library.getSigner()), [chainId, library])
 }
-
-// export const useSpecialBunnyCakeVaultContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getBunnySpecialCakeVaultContract(library.getSigner()), [library])
-// }
-
-// export const useSpecialBunnyPredictionContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getBunnySpecialPredictionContract(library.getSigner()), [library])
-// }
-
-// export const useBunnySpecialLotteryContract = () => {
-//   const { library } = useActiveWeb3React()
-//   return useMemo(() => getBunnySpecialLotteryContract(library.getSigner()), [library])
-// }
 
 export const useFarmAuctionContract = () => {
   const { account, library, chainId } = useActiveWeb3React()

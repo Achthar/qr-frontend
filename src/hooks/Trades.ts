@@ -23,57 +23,58 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const [tokenA, tokenB] = chainId
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
     : [undefined, undefined]
-
+console.log("WA", wrappedCurrency(currencyA, chainId),"WB", wrappedCurrency(currencyB, chainId))
   const bases: Token[] = useMemo(() => {
     if (!chainId) return []
 
     const common = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? []
+    console.log("COMMON:", common)
     const additionalA = tokenA ? ADDITIONAL_BASES[chainId]?.[tokenA.address] ?? [] : []
     const additionalB = tokenB ? ADDITIONAL_BASES[chainId]?.[tokenB.address] ?? [] : []
 
     return [...common, ...additionalA, ...additionalB]
   }, [chainId, tokenA, tokenB])
-
+  console.log("BASES:", bases)
   const basePairs: [Token, Token][] = useMemo(
     () => flatMap(bases, (base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])),
     [bases],
   )
-
+    console.log("A",tokenA, "B", tokenB)
   const allPairCombinations: [Token, Token][] = useMemo(
     () =>
       tokenA && tokenB
         ? [
-            // the direct pair
-            [tokenA, tokenB],
-            // token A against all bases
-            ...bases.map((base): [Token, Token] => [tokenA, base]),
-            // token B against all bases
-            ...bases.map((base): [Token, Token] => [tokenB, base]),
-            // each base against all bases
-            ...basePairs,
-          ]
-            .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
-            .filter(([t0, t1]) => t0.address !== t1.address)
-            .filter(([tokenA_, tokenB_]) => {
-              if (!chainId) return true
-              const customBases = CUSTOM_BASES[chainId]
+          // the direct pair
+          [tokenA, tokenB],
+          // token A against all bases
+          ...bases.map((base): [Token, Token] => [tokenA, base]),
+          // token B against all bases
+          ...bases.map((base): [Token, Token] => [tokenB, base]),
+          // each base against all bases
+          ...basePairs,
+        ]
+          .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
+          .filter(([t0, t1]) => t0.address !== t1.address)
+          .filter(([tokenA_, tokenB_]) => {
+            if (!chainId) return true
+            const customBases = CUSTOM_BASES[chainId]
 
-              const customBasesA: Token[] | undefined = customBases?.[tokenA_.address]
-              const customBasesB: Token[] | undefined = customBases?.[tokenB_.address]
+            const customBasesA: Token[] | undefined = customBases?.[tokenA_.address]
+            const customBasesB: Token[] | undefined = customBases?.[tokenB_.address]
 
-              if (!customBasesA && !customBasesB) return true
+            if (!customBasesA && !customBasesB) return true
 
-              if (customBasesA && !customBasesA.find((base) => tokenB_.equals(base))) return false
-              if (customBasesB && !customBasesB.find((base) => tokenA_.equals(base))) return false
+            if (customBasesA && !customBasesA.find((base) => tokenB_.equals(base))) return false
+            if (customBasesB && !customBasesB.find((base) => tokenA_.equals(base))) return false
 
-              return true
-            })
+            return true
+          })
         : [],
     [tokenA, tokenB, bases, basePairs, chainId],
   )
 
-  const allPairs = usePairs( allPairCombinations)
-
+  const allPairs = usePairs(allPairCombinations)
+  console.log("AP:", allPairs)
   // only pass along valid pairs, non-duplicated pairs
   return useMemo(
     () =>
@@ -98,7 +99,7 @@ const MAX_HOPS = 3
  */
 export function useTradeExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
   const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
-
+  console.log("allowed Pairs:", allowedPairs)
   const [singleHopOnly] = useUserSingleHopOnly()
 
   return useMemo(() => {

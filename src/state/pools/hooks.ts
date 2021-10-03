@@ -82,12 +82,6 @@ export const useCakeVault = () => {
     },
   } = useSelector((state: State) => state.pools.cakeVault)
 
-  /*
-  const estimatedCakeBountyReward = useMemo(() => {
-      return new BigNumber(estimatedCakeBountyRewardAsString)
-    }, [estimatedCakeBountyRewardAsString])
-  */
-
   const totalPendingCakeHarvest = useMemo(() => {
     return new BigNumber(totalPendingCakeHarvestAsString)
   }, [totalPendingCakeHarvestAsString])

@@ -117,6 +117,7 @@ export default function AddLiquidity({
   const [approvalA, approveACallback] = useApproveCallback(chainId, parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS[chainId])
   const [approvalB, approveBCallback] = useApproveCallback(chainId, parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS[chainId])
 
+
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {

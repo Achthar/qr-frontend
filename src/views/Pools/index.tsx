@@ -127,7 +127,7 @@ const Pools: React.FC = () => {
   )
   const hasStakeInFinishedPools = stakedOnlyFinishedPools.length > 0
 
-  usePollFarmsPublicData()
+  usePollFarmsPublicData(chainId)
   useFetchCakeVault()
   useFetchPublicPoolsData()
 

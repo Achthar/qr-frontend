@@ -16,7 +16,6 @@ if (typeof INFURA_KEY === 'undefined') {
 }
 
 const NETWORK_URLS: { [key in ChainId]: string } = {
-  // [ChainId.MAINNET]: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
   [ChainId.BSC_MAINNET]: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
   [ChainId.BSC_TESTNET]: `https://ropsten.infura.io/v3/${INFURA_KEY}`,
   [ChainId.MATIC_MAINNET]: `https://goerli.infura.io/v3/${INFURA_KEY}`,

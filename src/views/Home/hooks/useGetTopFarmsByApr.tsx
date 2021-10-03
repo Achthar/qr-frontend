@@ -8,7 +8,6 @@ import BigNumber from 'bignumber.js'
 import { orderBy } from 'lodash'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import { Farm } from 'state/types'
-// import { ChainId } from '../../../config/index'
 
 enum FetchStatus {
   NOT_FETCHED = 'not-fetched',
@@ -27,7 +26,7 @@ const useGetTopFarmsByApr = (chainId:number, isIntersecting: boolean) => {
   useEffect(() => {
     const fetchFarmData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
-      const activeFarms = nonArchivedFarms.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
+      const activeFarms = nonArchivedFarms(chainId).filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X')
       try {
         await dispatch(fetchFarmsPublicDataAsync(activeFarms.map((farm) => farm.pid)))
         setFetchStatus(FetchStatus.SUCCESS)

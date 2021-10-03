@@ -194,7 +194,7 @@ export const tokenList = {
             "patch": 0
         },
         "tags": {},
-        "logoURI": "https://pancakeswap.finance/logo.png",
+        "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png",
         "keywords": [
             "pancake",
             "default"
@@ -227,9 +227,9 @@ export const tokenList = {
             {
                 "name": "USDC",
                 "symbol": "USDC",
-                "address": "0xdA5289fCAAF71d52a80A254da614a192b693e977",
+                "address": "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
                 "chainId": 80001,
-                "decimals": 18,
+                "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
             },
             {
@@ -243,7 +243,7 @@ export const tokenList = {
             {
                 "name": "DAI Token",
                 "symbol": "DAI",
-                "address": "0x27a44456bEDb94DbD59D0f0A14fE977c777fC5C3",
+                "address": "0x001b3b4d0f3714ca98ba10f6042daebf0b1b7b6f",
                 "chainId": 80001,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"

@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie'
-import { getProfileContract } from 'utils/contractHelpers'
 import { Nft } from 'config/constants/types'
 import { getNftByTokenId } from 'utils/collectibles'
 import type { Profile } from 'state/types'
@@ -32,13 +31,13 @@ const getUsername = async (address: string): Promise<string> => {
 
 const getProfile = async (chainId: number, address: string): Promise<GetProfileResponse> => {
   try {
-    const hasRegistered = (await getProfileContract(chainId).hasRegistered(address)) as boolean
+    const hasRegistered = false
 
     if (!hasRegistered) {
       return { hasRegistered, profile: null }
     }
 
-    const profileResponse = await getProfileContract(chainId).getUserProfile(address)
+    const profileResponse = null
     const { userId, points, teamId, tokenId, nftAddress, isActive } = transformProfileResponse(profileResponse)
     const team = await getTeam(chainId, teamId)
     const username = await getUsername(address)

@@ -25,8 +25,8 @@ export const REQT: { [chainId: number]: Token } = {
     'CAKE',
     'PancakeSwap Token',
   ),
-  [ChainId.BSC_TESTNET]: new Token(
-    ChainId.BSC_TESTNET,
+  [ChainId.MATIC_TESTNET]: new Token(
+    ChainId.MATIC_TESTNET,
     '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
     18,
     'REQT',
@@ -98,6 +98,13 @@ export const DAI: { [chainId: number]: Token } = {
     'DAI',
     'Dai Stablecoin',
   ),
+  [ChainId.MATIC_TESTNET]: new Token(
+    ChainId.MATIC_TESTNET,
+    '0x001b3b4d0f3714ca98ba10f6042daebf0b1b7b6f',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
 }
 export const USDT = new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD')
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
@@ -125,21 +132,21 @@ export const ETH: { [chainId: number]: Token } = {
   ),
 }
 
-export const USDC : { [chainId: number]: Token } = {
-  [ChainId.BSC_MAINNET]:new Token(
-  ChainId.BSC_MAINNET,
-  '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  18,
-  'USDC',
-  'Binance-Peg USD Coin',
-),
-  [ChainId.MATIC_TESTNET]:new Token(
-  ChainId.MATIC_TESTNET,
-  '0xdA5289fCAAF71d52a80A254da614a192b693e977',
-  18,
-  'USDC',
-  'USD Coin',
-),
+export const USDC: { [chainId: number]: Token } = {
+  [ChainId.BSC_MAINNET]: new Token(
+    ChainId.BSC_MAINNET,
+    '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+    18,
+    'USDC',
+    'Binance-Peg USD Coin',
+  ),
+  [ChainId.MATIC_TESTNET]: new Token(
+    ChainId.MATIC_TESTNET,
+    '0x2058a9d7613eee744279e3856ef0eada5fcbaa7e',
+    18,
+    'USDC',
+    'USD Coin',
+  ),
 
 }
 
@@ -153,6 +160,16 @@ const tokens = {
     address: {
       56: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
       97: '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
+    },
+    decimals: 18,
+    projectLink: 'https://pancakeswap.finance/',
+  },
+  reqt: {
+    symbol: 'REQT',
+    address: {
+      56: '',
+      97: '',
+      80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8'
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',
@@ -2011,6 +2028,14 @@ const tokens = {
     decimals: 18,
     projectLink: 'https://naos.finance/',
   },
+  wmatic: {
+    symbol: 'WMATIC',
+    address: {
+      80001: '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
+    },
+    decimals: 18,
+    projectLink: ''
+  }
 }
 
 export default tokens
