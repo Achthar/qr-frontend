@@ -14,45 +14,21 @@ export const getCustomMeta = (path: string, t: ContextApi['t']): PageMeta => {
       return {
         title: `${t('Home')} | ${t('Requiem Finance')}`,
       }
-    case '/competition':
-      return {
-        title: `${t('Trading Battle')} | ${t('Requiem Finance')}`,
-      }
     case '/prediction':
       return {
         title: `${t('Prediction')} | ${t('Requiem Finance')}`,
       }
-    case '/farms':
+    case '/liquidity':
       return {
-        title: `${t('Farms')} | ${t('Requiem Finance')}`,
+        title: `${t('Liquidity')} | ${t('Requiem Finance')}`,
+      }
+    case '/exchange':
+      return {
+        title: `${t('Exchange')} | ${t('Requiem Finance')}`,
       }
     case '/pools':
       return {
         title: `${t('Pools')} | ${t('Requiem Finance')}`,
-      }
-    case '/lottery':
-      return {
-        title: `${t('Lottery')} | ${t('Requiem Finance')}`,
-      }
-    case '/collectibles':
-      return {
-        title: `${t('Collectibles')} | ${t('Requiem Finance')}`,
-      }
-    case '/ifo':
-      return {
-        title: `${t('Initial Farm Offering')} | ${t('Requiem Finance')}`,
-      }
-    case '/teams':
-      return {
-        title: `${t('Leaderboard')} | ${t('Requiem Finance')}`,
-      }
-    case '/profile/tasks':
-      return {
-        title: `${t('Task Center')} | ${t('Requiem Finance')}`,
-      }
-    case '/profile':
-      return {
-        title: `${t('Your Profile')} | ${t('Requiem Finance')}`,
       }
     default:
       return null

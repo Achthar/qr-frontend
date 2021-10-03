@@ -72,8 +72,8 @@ const App: React.FC = () => {
               <Ifos />
             </Route> */}
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-          <Route exact strict path="/swap" component={Swap} />
-          <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
+          <Route exact strict path="/exchange" component={Swap} />
+          <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
           <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
           <Route exact strict path="/find" component={PoolFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />

@@ -90,7 +90,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
   const annualRoi = interestBreakdown[3] * pool.earningTokenPrice
   const formattedAnnualRoi = formatNumber(annualRoi, annualRoi > 10000 ? 0 : 2, annualRoi > 10000 ? 0 : 2)
 
-  const getTokenLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
+  const getTokenLink = stakingToken.address ? `/exchange?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/exchange'
 
   useEffect(() => {
     if (stakingLimit.gt(0) && !isRemovingStake) {

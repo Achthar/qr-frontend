@@ -32,7 +32,7 @@ const Apr: React.FC<AprProps> = ({chainId, pool, showIcon, stakedBalance, perfor
 
   const stakingTokenBalance = userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO
 
-  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
+  const apyModalLink = stakingToken.address ? `/exchange?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/exchange'
 
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal

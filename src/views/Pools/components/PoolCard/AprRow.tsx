@@ -40,7 +40,7 @@ const AprRow: React.FC<AprRowProps> = ({chainId,  pool, stakedBalance, performan
 
   const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(pool, performanceFee)
 
-  const apyModalLink = stakingToken.address ? `/swap?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/swap'
+  const apyModalLink = stakingToken.address ? `/exchange?outputCurrency=${getAddress(chainId, stakingToken.address)}` : '/exchange'
 
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal

@@ -5,7 +5,7 @@ export const swapSectionData: SalesSectionProps = {
   bodyText: 'Trade any token on Binance Smart Chain in seconds, just by connecting your wallet.',
   reverse: false,
   primaryButton: {
-    to: '/swap',
+    to: '/exchange',
     text: 'Trade Now',
     external: false,
   },
@@ -29,7 +29,7 @@ export const earnSectionData: SalesSectionProps = {
   bodyText: 'PancakeSwap makes it easy to make your crypto work for you.',
   reverse: true,
   primaryButton: {
-    to: '/farms',
+    to: '/exchange',
     text: 'Explore',
     external: false,
   },
@@ -54,7 +54,7 @@ export const cakeSectionData: SalesSectionProps = {
     'CAKE token is at the heart of the PancakeSwap ecosystem. Buy it, win it, farm it, spend it, stake it... heck, you can even vote with it!',
   reverse: false,
   primaryButton: {
-    to: '/swap?outputCurrency=0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
+    to: '/exchange?outputCurrency=0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
     text: 'Buy CAKE',
     external: false,
   },
