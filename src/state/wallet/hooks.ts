@@ -11,6 +11,7 @@ import { useSingleContractMultipleData, useMultipleContractSingleData } from '..
  * Returns a map of the given addresses to their eventually consistent BNB balances.
  */
 export function useBNBBalances(
+  chainId: number,
   uncheckedAddresses?: (string | undefined)[],
 ): {
   [address: string]: CurrencyAmount | undefined
@@ -38,10 +39,10 @@ export function useBNBBalances(
     () =>
       addresses.reduce<{ [address: string]: CurrencyAmount }>((memo, address, i) => {
         const value = results?.[i]?.result?.[0]
-        if (value) memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()))
+        if (value) memo[address] = CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(value.toString()))
         return memo
       }, {}),
-    [addresses, results],
+    [chainId, addresses, results],
   )
 }
 
@@ -110,7 +111,7 @@ export function useCurrencyBalances(
 
   const tokenBalances = useTokenBalances(account, tokens)
   const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
-  const ethBalance = useBNBBalances(containsBNB ? [account] : [])
+  const ethBalance = useBNBBalances(chainId, containsBNB ? [account] : [])
 
   return useMemo(
     () =>

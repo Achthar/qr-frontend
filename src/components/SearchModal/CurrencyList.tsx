@@ -84,7 +84,7 @@ function CurrencyRow({
       disabled={isSelected}
       selected={otherSelected}
     >
-      <CurrencyLogo currency={currency} size="24px" />
+      <CurrencyLogo chainId={chainId} currency={currency} size="24px" />
       <Column>
         <Text bold>{currency.symbol}</Text>
         <Text color="textSubtle" small ellipsis maxWidth="200px">

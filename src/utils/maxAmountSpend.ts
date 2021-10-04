@@ -9,9 +9,9 @@ export function maxAmountSpend(chainId:number, currencyAmount?: CurrencyAmount):
   if (!currencyAmount) return undefined
   if (currencyAmount.currency === NETWORK_CCY[chainId]) {
     if (JSBI.greaterThan(currencyAmount.raw, MIN_BNB)) {
-      return CurrencyAmount.ether(JSBI.subtract(currencyAmount.raw, MIN_BNB))
+      return CurrencyAmount.networkCCYAmount(chainId, JSBI.subtract(currencyAmount.raw, MIN_BNB))
     }
-    return CurrencyAmount.ether(JSBI.BigInt(0))
+    return CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(0))
   }
   return currencyAmount
 }

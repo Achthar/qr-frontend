@@ -165,6 +165,15 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
       quoteToken: tokens.wmatic,
     },
     {
+      pid: 16,
+      lpSymbol: 'USDC-DAI LP',
+      lpAddresses: {
+        80001: '0x8aaff7c48c0cc77b27aeab7cd74ae10b638e8972',
+      },
+      token: tokens.busd,
+      quoteToken: tokens.wmatic,
+    },
+    {
       pid: 11,
       lpSymbol: 'USDT-BUSD LP',
       lpAddresses: {
