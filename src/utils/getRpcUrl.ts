@@ -3,12 +3,15 @@ import { ChainId } from '../config/index'
 
 // Array of available nodes to connect to
 export const nodesBSC = [
+  
   process.env.REACT_APP_NODE_BSC_1,
   process.env.REACT_APP_NODE_BSC_2,
   process.env.REACT_APP_NODE_BSC_3,
+  /*
   process.env.REACT_APP_NODE_BSC_4,
   process.env.REACT_APP_NODE_BSC_5,
   process.env.REACT_APP_NODE_BSC_6,
+  */
 ]
 export const nodesBSCT = [
   process.env.REACT_APP_NODE_BSCT_1,

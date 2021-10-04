@@ -22,6 +22,7 @@
     "react/no-unused-prop-types": 0,
     "react/jsx-no-bind":  0,
     "react/default-props-match-prop-types": 0,
+    "no-case-declarations" :0,
     // Start temporary rules
     // These rules are here just to keep the lint error to 0 during the migration to the new rule set
     // They need to be removed and fixed as soon as possible
@@ -33,7 +34,7 @@
     "import/no-extraneous-dependencies": 0,
     "jsx-a11y/media-has-caption": 0,
     // Exchange
-    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "memo"] }],
+    "no-param-reassign": 0,
     "react/require-default-props": 0,
     "no-nested-ternary": 0,
     "max-classes-per-file": 0

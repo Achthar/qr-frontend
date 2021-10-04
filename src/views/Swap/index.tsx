@@ -87,17 +87,11 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError,
   } = useDerivedSwapInfo(chainId)
-
-  console.log("v2Trade", v2Trade)
-  console.log("CCYS", currencies)
-  console.log("CCY Balances", currencyBalances)
-
   const {
     wrapType,
     execute: onWrap,
     inputError: wrapInputError,
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
-  console.log("WT", wrapType)
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
@@ -111,7 +105,7 @@ export default function Swap({ history }: RouteComponentProps) {
       [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
       [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
     }
-  console.log("Parsed amounts", parsedAmounts)
+    
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(chainId)
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT

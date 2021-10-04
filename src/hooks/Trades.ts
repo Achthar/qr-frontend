@@ -23,7 +23,6 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const [tokenA, tokenB] = chainId
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
     : [undefined, undefined]
-console.log("AACCY PAIRS:", tokenA, "B", tokenB)
 
   const bases: Token[] = useMemo(() => {
     if (!chainId) return []
@@ -34,13 +33,12 @@ console.log("AACCY PAIRS:", tokenA, "B", tokenB)
 
     return [...common, ...additionalA, ...additionalB]
   }, [chainId, tokenA, tokenB])
-  console.log("BASES", bases)
 
   const basePairs: [Token, Token][] = useMemo(
     () => flatMap(bases, (base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])),
     [bases],
   )
-  console.log("BASE PAIRS", basePairs)
+
   const allPairCombinations: [Token, Token][] = useMemo(
     () =>
       tokenA && tokenB
@@ -98,9 +96,9 @@ const MAX_HOPS = 3
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
 export function useTradeExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
-  console.log("CCYIN",currencyAmountIn)
+
   const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
-  console.log('aollowed pairs', allowedPairs)
+
   const [singleHopOnly] = useUserSingleHopOnly()
 
   return useMemo(() => {

@@ -7,6 +7,7 @@ import { Flex, Text, Heading, Skeleton } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
 import { useCakeBusdPriceNumber } from '../../../hooks/useBUSDPrice'
+import { useWeb3React } from '@web3-react/core'
 
 const StyledColumn = styled(Flex) <{ noMobileBorder?: boolean }>`
   flex-direction: column;
@@ -45,8 +46,9 @@ const emissionsPerBlock = 15
 
 const CakeDataRow = () => {
   const { t } = useTranslation()
+  const {chainId} = useWeb3React()
   const totalSupply = useTotalSupply()
-  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(56)))
+  const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(chainId)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0
   const cakePriceBusd = useCakeBusdPriceNumber(10)
   const mcap = cakePriceBusd * cakeSupply

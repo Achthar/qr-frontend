@@ -123,12 +123,9 @@ export function useDerivedSwapInfo(chainId: number): {
     recipient,
   } = useSwapState()
 
-  console.log("recipient", recipient)
-
-  console.log("inputId", inputCurrencyId, "outID:", outputCurrencyId)
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
-  console.log("OUT CCY", outputCurrency)
+
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
@@ -141,10 +138,8 @@ export function useDerivedSwapInfo(chainId: number): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  console.log("PA IN SWAP HOOK", parsedAmount, isExactIn)
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
   const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
-  console.log("EXACT OUT:", bestTradeExactOut)
 
 
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
@@ -271,7 +266,6 @@ export function useDefaultsFromURLSearch():
   const { chainId } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()
-  console.log("pQs", parsedQs)
   const [result, setResult] = useState<
     { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined } | undefined
   >()
@@ -291,7 +285,6 @@ export function useDefaultsFromURLSearch():
     )
 
     setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId, outputCurrencyId: parsed[Field.OUTPUT].currencyId })
-    console.log("URL-Output:", parsed[Field.OUTPUT])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, chainId])
 

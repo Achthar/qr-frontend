@@ -4,7 +4,7 @@ import { farmList as farmsConfig } from 'config/constants/farms'
 import isArchivedPid from 'utils/farmHelpers'
 import priceHelperLpsConfig from 'config/constants/priceHelperLps'
 import {FarmConfig} from 'config/constants/types'
-import { chainIdToChainGroup } from 'config/index'
+import { ChainId, chainIdToChainGroup } from 'config/index'
 import fetchFarms from './fetchFarms'
 import fetchFarmsPrices from './fetchFarmsPrices'
 import {
@@ -29,7 +29,7 @@ function noAccountFarmConfig(chainId: number) {
   }))
 }
 
-const initialState: FarmsState = { data: noAccountFarmConfig(56), loadArchivedFarmsData: false, userDataLoaded: false }
+const initialState: FarmsState = { data: noAccountFarmConfig(80001), loadArchivedFarmsData: false, userDataLoaded: false }
 
 export function nonArchivedFarms(chainId: number):FarmConfig[] { return farmsConfig[chainIdToChainGroup(chainId)].filter(({ pid }) => !isArchivedPid(pid)) }
 

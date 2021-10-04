@@ -1,6 +1,7 @@
 import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@pancakeswap/sdk'
+import ms from 'ms.macro'
 import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC, REQT } from './tokens'
-// import { ChainId } from '../index'
+
 
 
 export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
@@ -14,10 +15,131 @@ export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
   [ChainId.MATIC_TESTNET]: '0x4e8848da06E40E866b82f6b52417494936c9509b'
 }
 
+export const L1_CHAIN_IDS = [
+  ChainId.BSC_MAINNET,
+  ChainId.BSC_TESTNET,
+  ChainId.AVAX_MAINNET,
+  ChainId.AVAX_TESTNET
+] as const
+
+export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number]
+
+export const L2_CHAIN_IDS = [
+  ChainId.ARBITRUM_MAINNET,
+  ChainId.ARBITRUM_TETSNET_RINKEBY,
+  ChainId.MATIC_MAINNET,
+  ChainId.MATIC_TESTNET,
+] as const
+
+export type SupportedL2ChainId = typeof L2_CHAIN_IDS[number]
 
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
+}
+
+export interface L1ChainInfo {
+  readonly blockWaitMsBeforeWarning?: number
+  readonly docs: string
+  readonly explorer: string
+  readonly infoLink: string
+  readonly label: string
+  readonly logoUrl?: string
+  readonly rpcUrls?: string[]
+  readonly nativeCurrency: {
+    name: string // 'Goerli ETH',
+    symbol: string // 'gorETH',
+    decimals: number // 18,
+  }
+}
+export interface L2ChainInfo extends L1ChainInfo {
+  readonly bridge: string
+  readonly logoUrl: string
+  readonly statusPage?: string
+}
+
+export type ChainInfo = { readonly [chainId: number]: L1ChainInfo | L2ChainInfo } & {
+  readonly [chainId in SupportedL2ChainId]: L2ChainInfo
+} &
+  { readonly [chainId in SupportedL1ChainId]: L1ChainInfo }
+
+export const CHAIN_INFO: ChainInfo = {
+  [ChainId.ARBITRUM_MAINNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    bridge: 'https://bridge.arbitrum.io/',
+    docs: 'https://offchainlabs.com/',
+    explorer: 'https://arbiscan.io/',
+    infoLink: 'https://info.uniswap.org/#/arbitrum',
+    label: 'Arbitrum',
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png',
+    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+    rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+  },
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    bridge: 'https://bridge.arbitrum.io/',
+    docs: 'https://offchainlabs.com/',
+    explorer: 'https://rinkeby-explorer.arbitrum.io/',
+    infoLink: 'https://info.uniswap.org/#/arbitrum/',
+    label: 'Arbitrum Rinkeby',
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png',
+    nativeCurrency: { name: 'Rinkeby ArbETH', symbol: 'rinkArbETH', decimals: 18 },
+    rpcUrls: ['https://rinkeby.arbitrum.io/rpc'],
+  },
+  [ChainId.BSC_MAINNET]: {
+    docs: 'https://docs.uniswap.org/',
+    explorer: 'https://etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/',
+    label: 'Binance',
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png',
+    nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+  },
+  [ChainId.BSC_TESTNET]: {
+    docs: 'https://docs.uniswap.org/',
+    explorer: 'https://rinkeby.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/',
+    label: 'Binance Testnet',
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png',
+    nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+  },
+  [ChainId.AVAX_MAINNET]: {
+    docs: 'https://docs.uniswap.org/',
+    explorer: 'https://goerli.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/',
+    label: 'Avalance Mainnet',
+    nativeCurrency: { name: 'Avalance', symbol: 'AVAX', decimals: 18 },
+  },
+  [ChainId.AVAX_TESTNET]: {
+    docs: 'https://docs.uniswap.org/',
+    explorer: 'https://goerli.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/',
+    label: 'Avalanve Testnet',
+    nativeCurrency: { name: 'Avalance', symbol: 'AVAX', decimals: 18 },
+  },
+  [ChainId.MATIC_MAINNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    bridge: 'https://gateway.optimism.io/',
+    docs: 'https://optimism.io/',
+    explorer: 'https://optimistic.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/optimism',
+    label: 'Polygon',
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WMATIC.svg',
+    nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
+    rpcUrls: ['https://mainnet.optimism.io'],
+    statusPage: 'https://optimism.io/status',
+  },
+  [ChainId.MATIC_TESTNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    bridge: 'https://gateway.optimism.io/',
+    docs: 'https://optimism.io/',
+    explorer: 'https://optimistic.etherscan.io/',
+    infoLink: 'https://info.uniswap.org/#/optimism',
+    label: 'Polygon Mumbai',
+    rpcUrls: ['https://kovan.optimism.io'],
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WMATIC.svg',
+    nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
+    statusPage: 'https://optimism.io/status',
+  },
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS = [ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.MATIC_TESTNET]
