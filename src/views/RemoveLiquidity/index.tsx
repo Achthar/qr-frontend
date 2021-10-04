@@ -50,7 +50,7 @@ export default function RemoveLiquidity({
     params: { currencyIdA, currencyIdB },
   },
 }: RouteComponentProps<{ currencyIdA: string; currencyIdB: string }>) {
-  
+
   const { account, chainId, library } = useActiveWeb3React()
   const [currencyA, currencyB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]
   const [tokenA, tokenB] = useMemo(
@@ -80,8 +80,8 @@ export default function RemoveLiquidity({
     [Field.LIQUIDITY_PERCENT]: parsedAmounts[Field.LIQUIDITY_PERCENT].equalTo('0')
       ? '0'
       : parsedAmounts[Field.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
-      ? '<1'
-      : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
+        ? '<1'
+        : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
     [Field.LIQUIDITY]:
       independentField === Field.LIQUIDITY ? typedValue : parsedAmounts[Field.LIQUIDITY]?.toSignificant(6) ?? '',
     [Field.CURRENCY_A]:
@@ -299,9 +299,8 @@ export default function RemoveLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencyA?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencyA?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
           })
 
           setTxHash(response.hash)
@@ -320,7 +319,7 @@ export default function RemoveLiquidity({
         <RowBetween align="flex-end">
           <Text fontSize="24px">{parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
-            <CurrencyLogo currency={currencyA} size="24px" />
+            <CurrencyLogo chainId={chainId} currency={currencyA} size="24px" />
             <Text fontSize="24px" ml="10px">
               {currencyA?.symbol}
             </Text>
@@ -332,7 +331,7 @@ export default function RemoveLiquidity({
         <RowBetween align="flex-end">
           <Text fontSize="24px">{parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
-            <CurrencyLogo currency={currencyB} size="24px" />
+            <CurrencyLogo chainId={chainId} currency={currencyB} size="24px" />
             <Text fontSize="24px" ml="10px">
               {currencyB?.symbol}
             </Text>
@@ -356,7 +355,7 @@ export default function RemoveLiquidity({
             {t('%assetA%/%assetB% Burned', { assetA: currencyA?.symbol ?? '', assetB: currencyB?.symbol ?? '' })}
           </Text>
           <RowFixed>
-            <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} margin />
+            <DoubleCurrencyLogo chainId={chainId} currency0={currencyA} currency1={currencyB} margin />
             <Text>{parsedAmounts[Field.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
         </RowBetween>
@@ -400,8 +399,8 @@ export default function RemoveLiquidity({
   const oneCurrencyIsETH = currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], currencyA)) ||
-        (currencyB && currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], currencyB))),
+    ((currencyA && currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], currencyA)) ||
+      (currencyB && currencyEquals(WRAPPED_NETWORK_TOKENS[chainId], currencyB))),
   )
 
   const handleSelectCurrencyA = useCallback(
@@ -516,7 +515,7 @@ export default function RemoveLiquidity({
                 <LightGreyCard>
                   <Flex justifyContent="space-between" mb="8px">
                     <Flex>
-                      <CurrencyLogo currency={currencyA} />
+                      <CurrencyLogo chainId={chainId} currency={currencyA} />
                       <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
                         {currencyA?.symbol}
                       </Text>
@@ -525,7 +524,7 @@ export default function RemoveLiquidity({
                   </Flex>
                   <Flex justifyContent="space-between">
                     <Flex>
-                      <CurrencyLogo currency={currencyB} />
+                      <CurrencyLogo chainId={chainId} currency={currencyB} />
                       <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
                         {currencyB?.symbol}
                       </Text>
@@ -536,17 +535,15 @@ export default function RemoveLiquidity({
                     <RowBetween style={{ justifyContent: 'flex-end', fontSize: '14px' }}>
                       {oneCurrencyIsETH ? (
                         <StyledInternalLink
-                          to={`/remove/${currencyA === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdA}/${
-                            currencyB === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdB
-                          }`}
+                          to={`/remove/${currencyA === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdA}/${currencyB === NETWORK_CCY[chainId] ? WRAPPED_NETWORK_TOKENS[chainId].address : currencyIdB
+                            }`}
                         >
                           {t('Receive WBNB')}
                         </StyledInternalLink>
                       ) : oneCurrencyIsWETH ? (
                         <StyledInternalLink
-                          to={`/remove/${currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdA}/${
-                            currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdB
-                          }`}
+                          to={`/remove/${currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdA}/${currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]) ? NETWORK_CCY[chainId].symbol : currencyIdB
+                            }`}
                         >
                           {t('Receive BNB')}
                         </StyledInternalLink>

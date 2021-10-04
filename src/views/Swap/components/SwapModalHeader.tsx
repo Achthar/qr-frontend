@@ -33,7 +33,7 @@ export default function SwapModalHeader({
     <AutoColumn gap="md">
       <RowBetween align="flex-end">
         <RowFixed gap="0px">
-          <CurrencyLogo currency={trade.inputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
+          <CurrencyLogo chainId={trade.route.chainId} currency={trade.inputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
           <TruncatedText
             fontSize="24px"
             color={showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'primary' : 'text'}
@@ -52,15 +52,15 @@ export default function SwapModalHeader({
       </RowFixed>
       <RowBetween align="flex-end">
         <RowFixed gap="0px">
-          <CurrencyLogo currency={trade.outputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
+          <CurrencyLogo chainId={trade.route.chainId} currency={trade.outputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
           <TruncatedText
             fontSize="24px"
             color={
               priceImpactSeverity > 2
                 ? 'failure'
                 : showAcceptChanges && trade.tradeType === TradeType.EXACT_INPUT
-                ? 'primary'
-                : 'text'
+                  ? 'primary'
+                  : 'text'
             }
           >
             {trade.outputAmount.toSignificant(6)}

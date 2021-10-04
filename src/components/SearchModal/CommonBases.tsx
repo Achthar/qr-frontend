@@ -9,7 +9,7 @@ import { AutoColumn } from '../Layout/Column'
 import QuestionHelper from '../QuestionHelper'
 import { AutoRow } from '../Layout/Row'
 import { CurrencyLogo } from '../Logo'
-import {ChainId} from '../../config/index'
+import { ChainId } from '../../config/index'
 
 const BaseWrapper = styled.div<{ disable?: boolean }>`
   border: 1px solid ${({ theme, disable }) => (disable ? 'transparent' : theme.colors.dropdown)};
@@ -52,14 +52,14 @@ export default function CommonBases({
           }}
           disable={selectedCurrency === NETWORK_CCY[chainId]}
         >
-          <CurrencyLogo currency={NETWORK_CCY[chainId]} style={{ marginRight: 8 }} />
+          <CurrencyLogo chainId={chainId} currency={NETWORK_CCY[chainId]} style={{ marginRight: 8 }} />
           <Text>BNB</Text>
         </BaseWrapper>
         {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
             <BaseWrapper onClick={() => !selected && onSelect(token)} disable={selected} key={token.address}>
-              <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
+              <CurrencyLogo chainId={chainId} currency={token} style={{ marginRight: 8 }} />
               <Text>{token.symbol}</Text>
             </BaseWrapper>
           )

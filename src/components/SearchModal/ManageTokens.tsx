@@ -72,7 +72,7 @@ export default function ManageTokens({
       userAddedTokens.map((token) => (
         <RowBetween key={token.address} width="100%">
           <RowFixed>
-            <CurrencyLogo currency={token} size="20px" />
+            <CurrencyLogo chainId={chainId} currency={token} size="20px" />
             <Link external href={getBscScanLink(token.address, 'address', chainId)} color="textSubtle" ml="10px">
               {token.symbol}
             </Link>

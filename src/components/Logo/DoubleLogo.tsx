@@ -12,11 +12,13 @@ const Wrapper = styled.div<{ margin: boolean }>`
 interface DoubleCurrencyLogoProps {
   margin?: boolean
   size?: number
+  chainId?: number
   currency0?: Currency
   currency1?: Currency
 }
 
 export default function DoubleCurrencyLogo({
+  chainId = 56,
   currency0,
   currency1,
   size = 20,
@@ -24,8 +26,8 @@ export default function DoubleCurrencyLogo({
 }: DoubleCurrencyLogoProps) {
   return (
     <Wrapper margin={margin}>
-      {currency0 && <CurrencyLogo currency={currency0} size={`${size.toString()}px`} style={{ marginRight: '4px' }} />}
-      {currency1 && <CurrencyLogo currency={currency1} size={`${size.toString()}px`} />}
+      {currency0 && <CurrencyLogo chainId={chainId} currency={currency0} size={`${size.toString()}px`} style={{ marginRight: '4px' }} />}
+      {currency1 && <CurrencyLogo chainId={chainId} currency={currency1} size={`${size.toString()}px`} />}
     </Wrapper>
   )
 }

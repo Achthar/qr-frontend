@@ -132,7 +132,7 @@ export default function CurrencyInputPanel({
           >
             <Flex alignItems="center" justifyContent="space-between">
               {pair ? (
-                <DoubleCurrencyLogo currency0={pair.token0} currency1={pair.token1} size={16} margin />
+                <DoubleCurrencyLogo chainId={chainId} currency0={pair.token0} currency1={pair.token1} size={16} margin />
               ) : currency ? (
                 <CurrencyLogo chainId={chainId} currency={currency} size="24px" style={{ marginRight: '8px' }} />
               ) : null}
@@ -144,9 +144,9 @@ export default function CurrencyInputPanel({
                 <Text id="pair">
                   {(currency && currency.symbol && currency.symbol.length > 20
                     ? `${currency.symbol.slice(0, 4)}...${currency.symbol.slice(
-                        currency.symbol.length - 5,
-                        currency.symbol.length,
-                      )}`
+                      currency.symbol.length - 5,
+                      currency.symbol.length,
+                    )}`
                     : currency?.symbol) || t('Select a currency')}
                 </Text>
               )}

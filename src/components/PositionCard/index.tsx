@@ -38,7 +38,7 @@ interface PositionCardProps extends CardProps {
   showUnwrapped?: boolean
 }
 
-export function MinimalPositionCard({pair, showUnwrapped = false }: PositionCardProps) {
+export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
@@ -58,14 +58,14 @@ export function MinimalPositionCard({pair, showUnwrapped = false }: PositionCard
 
   const [token0Deposited, token1Deposited] =
     !!pair &&
-    !!totalPoolTokens &&
-    !!userPoolBalance &&
-    // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+      !!totalPoolTokens &&
+      !!userPoolBalance &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
-        ]
+        pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
+        pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
+      ]
       : [undefined, undefined]
 
   return (
@@ -83,7 +83,7 @@ export function MinimalPositionCard({pair, showUnwrapped = false }: PositionCard
               </FixedHeightRow>
               <FixedHeightRow onClick={() => setShowMore(!showMore)}>
                 <RowFixed>
-                  <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin size={20} />
+                  <DoubleCurrencyLogo chainId={chainId} currency0={currency0} currency1={currency1} margin size={20} />
                   <Text small color="textSubtle">
                     {currency0.symbol}-{currency1.symbol} LP
                   </Text>
@@ -161,14 +161,14 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
 
   const [token0Deposited, token1Deposited] =
     !!pair &&
-    !!totalPoolTokens &&
-    !!userPoolBalance &&
-    // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+      !!totalPoolTokens &&
+      !!userPoolBalance &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
-        ]
+        pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
+        pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
+      ]
       : [undefined, undefined]
 
   return (
@@ -176,7 +176,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
       <Flex justifyContent="space-between" role="button" onClick={() => setShowMore(!showMore)} p="16px">
         <Flex flexDirection="column">
           <Flex alignItems="center" mb="4px">
-            <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={20} />
+            <DoubleCurrencyLogo chainId={chainId} currency0={currency0} currency1={currency1} size={20} />
             <Text bold ml="8px">
               {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
             </Text>
@@ -192,7 +192,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
         <AutoColumn gap="8px" style={{ padding: '16px' }}>
           <FixedHeightRow>
             <RowFixed>
-              <CurrencyLogo size="20px" currency={currency0} />
+              <CurrencyLogo chainId={chainId} size="20px" currency={currency0} />
               <Text color="textSubtle" ml="4px">
                 Pooled {currency0.symbol}
               </Text>
@@ -208,7 +208,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
 
           <FixedHeightRow>
             <RowFixed>
-              <CurrencyLogo size="20px" currency={currency1} />
+              <CurrencyLogo chainId={chainId} size="20px" currency={currency1} />
               <Text color="textSubtle" ml="4px">
                 Pooled {currency1.symbol}
               </Text>

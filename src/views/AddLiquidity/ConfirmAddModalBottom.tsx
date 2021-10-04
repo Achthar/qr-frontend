@@ -7,6 +7,7 @@ import { CurrencyLogo } from '../../components/Logo'
 import { Field } from '../../state/mint/actions'
 
 function ConfirmAddModalBottom({
+  chainId,
   noLiquidity,
   price,
   currencies,
@@ -14,6 +15,7 @@ function ConfirmAddModalBottom({
   poolTokenPercentage,
   onAdd,
 }: {
+  chainId: number,
   noLiquidity?: boolean
   price?: Fraction
   currencies: { [field in Field]?: Currency }
@@ -27,30 +29,28 @@ function ConfirmAddModalBottom({
       <RowBetween>
         <Text>{t('%asset% Deposited', { asset: currencies[Field.CURRENCY_A]?.symbol })}</Text>
         <RowFixed>
-          <CurrencyLogo currency={currencies[Field.CURRENCY_A]} style={{ marginRight: '8px' }} />
+          <CurrencyLogo chainId={chainId} currency={currencies[Field.CURRENCY_A]} style={{ marginRight: '8px' }} />
           <Text>{parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}</Text>
         </RowFixed>
       </RowBetween>
       <RowBetween>
         <Text>{t('%asset% Deposited', { asset: currencies[Field.CURRENCY_B]?.symbol })}</Text>
         <RowFixed>
-          <CurrencyLogo currency={currencies[Field.CURRENCY_B]} style={{ marginRight: '8px' }} />
+          <CurrencyLogo chainId={chainId} currency={currencies[Field.CURRENCY_B]} style={{ marginRight: '8px' }} />
           <Text>{parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}</Text>
         </RowFixed>
       </RowBetween>
       <RowBetween>
         <Text>{t('Rates')}</Text>
         <Text>
-          {`1 ${currencies[Field.CURRENCY_A]?.symbol} = ${price?.toSignificant(4)} ${
-            currencies[Field.CURRENCY_B]?.symbol
-          }`}
+          {`1 ${currencies[Field.CURRENCY_A]?.symbol} = ${price?.toSignificant(4)} ${currencies[Field.CURRENCY_B]?.symbol
+            }`}
         </Text>
       </RowBetween>
       <RowBetween style={{ justifyContent: 'flex-end' }}>
         <Text>
-          {`1 ${currencies[Field.CURRENCY_B]?.symbol} = ${price?.invert().toSignificant(4)} ${
-            currencies[Field.CURRENCY_A]?.symbol
-          }`}
+          {`1 ${currencies[Field.CURRENCY_B]?.symbol} = ${price?.invert().toSignificant(4)} ${currencies[Field.CURRENCY_A]?.symbol
+            }`}
         </Text>
       </RowBetween>
       <RowBetween>

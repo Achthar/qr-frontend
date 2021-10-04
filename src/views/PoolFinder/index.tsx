@@ -103,7 +103,7 @@ export default function PoolFinder() {
           >
             {currency0 ? (
               <Row>
-                <CurrencyLogo currency={currency0} />
+                <CurrencyLogo chainId={chainId} currency={currency0} />
                 <Text ml="8px">{currency0.symbol}</Text>
               </Row>
             ) : (
@@ -124,7 +124,7 @@ export default function PoolFinder() {
           >
             {currency1 ? (
               <Row>
-                <CurrencyLogo currency={currency1} />
+                <CurrencyLogo chainId={chainId} currency={currency1} />
                 <Text ml="8px">{currency1.symbol}</Text>
               </Row>
             ) : (

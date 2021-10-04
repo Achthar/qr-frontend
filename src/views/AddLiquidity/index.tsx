@@ -201,6 +201,7 @@ export default function AddLiquidity({
           {`${currencies[Field.CURRENCY_A]?.symbol}/${currencies[Field.CURRENCY_B]?.symbol}`}
         </Text>
         <DoubleCurrencyLogo
+          chainId={chainId}
           currency0={currencies[Field.CURRENCY_A]}
           currency1={currencies[Field.CURRENCY_B]}
           size={30}
@@ -213,6 +214,7 @@ export default function AddLiquidity({
             {liquidityMinted?.toSignificant(6)}
           </Text>
           <DoubleCurrencyLogo
+            chainId={chainId}
             currency0={currencies[Field.CURRENCY_A]}
             currency1={currencies[Field.CURRENCY_B]}
             size={30}
@@ -235,6 +237,7 @@ export default function AddLiquidity({
   const modalBottom = () => {
     return (
       <ConfirmAddModalBottom
+        chainId={chainId}
         price={price}
         currencies={currencies}
         parsedAmounts={parsedAmounts}

@@ -136,14 +136,14 @@ export const USDC: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
     ChainId.BSC_MAINNET,
     '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    18,
+    6,
     'USDC',
     'Binance-Peg USD Coin',
   ),
   [ChainId.MATIC_TESTNET]: new Token(
     ChainId.MATIC_TESTNET,
     '0x2058a9d7613eee744279e3856ef0eada5fcbaa7e',
-    18,
+    6,
     'USDC',
     'USD Coin',
   ),
