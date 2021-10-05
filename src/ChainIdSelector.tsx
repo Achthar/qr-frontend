@@ -10,7 +10,7 @@ import { ChainId } from '@pancakeswap/sdk'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button } from '@pancakeswap/uikit'
 
 export const Wrapper = styled.div`
   position: relative;
@@ -24,8 +24,7 @@ const SelectorWrapper = styled.div`
 
 export const ActivatorButton = styled.button`
   height: 33px;
-  width: 100px;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.primary};
   border: none;
   border-radius: 12px;
   padding:  6px 8px;
@@ -68,6 +67,7 @@ const FlyoutRow = styled.div<{ active: boolean }>`
 `;
 const NetworkLabel = styled.div`
   flex: 1 1 auto;
+  color: #c7c7c7;
 `;
 
 const FlyoutRowActiveIndicator = styled.div`
@@ -159,7 +159,7 @@ const FlyoutMenu = styled.div`
   overflow: auto;
   padding: 16px;
   position: absolute;
-  top: 64px;
+  top: 1px;
   width: 272px;
   z-index: 99;
   & > *:not(:last-child) {
@@ -173,6 +173,9 @@ const FlyoutMenu = styled.div`
 const FlyoutHeader = styled.div`
   color: white;
   font-weight: 400;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
 `
 
 interface IDropdownItem {
@@ -211,13 +214,14 @@ const ExplorerText = ({ chainId }: { chainId: SupportedL2ChainId }) => {
   }
 }
 
-const ChainIdSelector = ({
-  activatorText = "Select Chain",
-}: IProps) => {
+const ChainIdSelector = () => {
 
   const { chainId, library } = useActiveWeb3React()
 
   const node = useRef<HTMLDivElement>()
+
+  const { isMobile } = useMatchBreakpoints()
+
   const info = chainId ? CHAIN_INFO[chainId] : undefined
 
   const isOnL2 = chainId ? L2_CHAIN_IDS.includes(chainId) : false
@@ -276,32 +280,22 @@ const ChainIdSelector = ({
     }
   }, [isOpen]);
 
-
+  const buttonText = chainId === 56 ? 'Binance' :
+    chainId === 97 ? 'Binance Testnet' :
+      chainId === 80001 ? 'Polygon Mumbai' : '-'
   return (
-    <SelectorWrapper ref={node as any}>
-      <ActivatorButton
-        aria-haspopup="true"
-        aria-controls="dropdown1"
-        onClick={handleClick}
-        ref={activatorRef}
-        onFocus={() => setActiveIndex(-1)}
-      >
-        {activatorText}
-      </ActivatorButton>
-      {isOpen && (
-        <FlyoutMenu>
-          <FlyoutHeader>
-            <div>Select a network</div>
-          </FlyoutHeader>
-          <Row targetChain={ChainId.MATIC_TESTNET} />
-          <Row targetChain={ChainId.BSC_MAINNET} />
-          <Row targetChain={ChainId.BSC_TESTNET} />
-          {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} />
-          <Row targetChain={ChainId.AVAX_TESTNET} />
-          <Row targetChain={ChainId.AVAX_MAINNET} /> */}
-        </FlyoutMenu>
-      )}
-    </SelectorWrapper>
+    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId].logoUrl}>
+      <FlyoutHeader>
+        Select a network
+      </FlyoutHeader>
+      <Row targetChain={ChainId.AVAX_MAINNET} />
+      <Row targetChain={ChainId.BSC_MAINNET} />
+      <Row targetChain={ChainId.BSC_TESTNET} />
+      <Row targetChain={ChainId.MATIC_TESTNET} />
+      {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
+      <Row targetChain={ChainId.AVAX_TESTNET} />
+
+    </UIKitUserMenu>
   );
 };
 
