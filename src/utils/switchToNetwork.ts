@@ -18,13 +18,15 @@ export async function switchToNetwork({ library, chainId }: SwitchNetworkArgumen
   console.log("switch triggered")
   if (!library?.provider?.request) {
     console.log("failed")
+    console.log("lib", library)
     return
   }
   if (!chainId && library?.getNetwork) {
     ({ chainId } = await library.getNetwork())
   }
   const formattedChainId = hexStripZeros(BigNumber.from(chainId).toHexString())
-  console.log(formattedChainId)
+  console.log("switch CID", chainId)
+  console.log("formattedCID", formattedChainId)
   try {
     console.log(library)
     await library?.provider.request({
@@ -36,7 +38,7 @@ export async function switchToNetwork({ library, chainId }: SwitchNetworkArgumen
     // 4902 is the error code for attempting to switch to an unrecognized chainId
     if (error.code === 4902 && chainId !== undefined) {
       const info = CHAIN_INFO[chainId]
-
+      console.log(info)
       // metamask (only known implementer) automatically switches after a network is added
       // the second call is done here because that behavior is not a part of the spec and cannot be relied upon in the future
       // metamask's behavior when switching to the current network is just to return null (a no-op)

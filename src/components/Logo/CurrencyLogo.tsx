@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
-import {getTokenLogoURL, getTokenLogoURLFromSymbol} from '../../utils/getTokenLogoURL'
+import { getTokenLogoURL, getTokenLogoURLFromSymbol } from '../../utils/getTokenLogoURL'
 import Logo from './Logo'
 
 const StyledLogo = styled(Logo) <{ size: string }>`
@@ -44,7 +44,9 @@ export default function CurrencyLogo({
     if (chainId === 137 || chainId === 80001) {
       return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WMATIC.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
     }
-
+    if (chainId === 43114 || chainId === 43113) {
+      return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
+    }
     return <BinanceIcon width={size} style={style} />
 
   }

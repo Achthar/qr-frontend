@@ -3,7 +3,7 @@ import { ChainId } from '../config/index'
 
 // Array of available nodes to connect to
 export const nodesBSC = [
-  
+
   process.env.REACT_APP_NODE_BSC_1,
   process.env.REACT_APP_NODE_BSC_2,
   process.env.REACT_APP_NODE_BSC_3,
@@ -21,24 +21,34 @@ export const nodesBSCT = [
 
 export const nodesMATICT =
   [
-   // process.env.REACT_APP_NODE_MATICT + process.env.MATIC_INFURA_KEY,
-   process.env.REACT_APP_RPC_URL_MATICT
+    process.env.REACT_APP_RPC_URL_MATICT
+  ]
+
+export const nodesAVAXT =
+  [
+    process.env.REACT_APP_RPC_URL_AVAXT
   ]
 
 export const nodes: { [chainId: number]: string } = {
   [ChainId.BSC_TESTNET]: sample(nodesBSCT),
   [ChainId.BSC_MAINNET]: sample(nodesBSC),
-  [ChainId.MATIC_TESTNET]: nodesMATICT[0]
+  [ChainId.MATIC_TESTNET]: nodesMATICT[0],
+  [ChainId.AVAX_TESTNET]: nodesAVAXT[0]
 }
 
 const getNodeUrl = (chainId) => {
   let node = ''
   if (chainId === '56') {
     node = sample(nodesBSC)
-  } else if (chainId === '97') {
+  }
+  else if (chainId === '97') {
     node = sample(nodesBSCT)
-  } else if (chainId === '80001') {
+  }
+  else if (chainId === '80001') {
     node = nodesMATICT[0]
+  }
+  else if (chainId === '43113') {
+    node = nodesAVAXT[0]
   }
   else {
     node = sample(nodesBSC) // default

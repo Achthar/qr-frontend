@@ -87,6 +87,7 @@ export const CHAIN_INFO: ChainInfo = {
     rpcUrls: ['https://rinkeby.arbitrum.io/rpc'],
   },
   [ChainId.BSC_MAINNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
     explorer: 'https://etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/',
@@ -95,6 +96,7 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
   },
   [ChainId.BSC_TESTNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
     explorer: 'https://rinkeby.etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/',
@@ -103,20 +105,24 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
   },
   [ChainId.AVAX_MAINNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
     explorer: 'https://goerli.etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/',
-    label: 'Avalance',
+    label: 'Avalanche',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/AVAX.svg',
-    nativeCurrency: { name: 'Avalance', symbol: 'AVAX', decimals: 18 },
+    rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+    nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
   },
   [ChainId.AVAX_TESTNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
     explorer: 'https://goerli.etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/',
-    label: 'Avalanve Testnet',
+    label: 'Avalanche Testnet',
+    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/AVAX.svg',
-    nativeCurrency: { name: 'Avalance', symbol: 'AVAX', decimals: 18 },
+    nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
   },
   [ChainId.MATIC_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
@@ -127,7 +133,7 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'Polygon',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/MATIC.svg',
     nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
-    rpcUrls: ['https://mainnet.optimism.io'],
+    rpcUrls: ['https://rpc-mainnet.maticvigil.com'],
     statusPage: 'https://optimism.io/status',
   },
   [ChainId.MATIC_TESTNET]: {
@@ -137,23 +143,28 @@ export const CHAIN_INFO: ChainInfo = {
     explorer: 'https://optimistic.etherscan.io/',
     infoLink: 'https://info.uniswap.org/#/optimism',
     label: 'Polygon Mumbai',
-    rpcUrls: ['https://kovan.optimism.io'],
+    rpcUrls: ['https://rpc-mumbai.matic.today'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/MATIC.svg',
     nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
     statusPage: 'https://optimism.io/status',
   },
 }
 
-export const ALL_SUPPORTED_CHAIN_IDS = [ChainId.BSC_MAINNET, ChainId.BSC_TESTNET, ChainId.MATIC_TESTNET]
+export const ALL_SUPPORTED_CHAIN_IDS = [
+  ChainId.BSC_MAINNET, ChainId.BSC_TESTNET,
+  ChainId.MATIC_TESTNET,
+  ChainId.AVAX_MAINNET, ChainId.AVAX_TESTNET,
+  ChainId.ARBITRUM_TETSNET_RINKEBY
+]
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-  [ChainId.BSC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET], CAKE[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT, BTCB, UST, ETH[ChainId.BSC_MAINNET], USDC[ChainId.BSC_MAINNET]],
+  [ChainId.BSC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET], CAKE[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT[ChainId.BSC_MAINNET], BTCB, UST, ETH[ChainId.BSC_MAINNET], USDC[ChainId.BSC_MAINNET]],
   [ChainId.BSC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET], ETH[ChainId.BSC_TESTNET]],
   [ChainId.ARBITRUM_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.ARBITRUM_MAINNET]],
   [ChainId.ARBITRUM_TETSNET_RINKEBY]: [WRAPPED_NETWORK_TOKENS[ChainId.ARBITRUM_TETSNET_RINKEBY]],
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
-  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET]],
+  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
 }
@@ -181,20 +192,20 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.BSC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET]],
   [ChainId.ARBITRUM_MAINNET]: [],
   [ChainId.ARBITRUM_TETSNET_RINKEBY]: [],
-  [ChainId.AVAX_MAINNET]: [],
-  [ChainId.AVAX_TESTNET]: [],
+  [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
+  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET], USDC[ChainId.MATIC_MAINNET]],
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]]
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
-  [ChainId.BSC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET], DAI[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT],
+  [ChainId.BSC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET], DAI[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT[ChainId.BSC_MAINNET]],
   [ChainId.BSC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET], DAI[ChainId.BSC_TESTNET]],
   [ChainId.ARBITRUM_MAINNET]: [],
   [ChainId.ARBITRUM_TETSNET_RINKEBY]: [],
   [ChainId.AVAX_MAINNET]: [],
-  [ChainId.AVAX_TESTNET]: [],
+  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [],
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]]
 }
@@ -202,8 +213,8 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
   [ChainId.BSC_MAINNET]: [
     [CAKE[ChainId.BSC_MAINNET], WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET]],
-    [BUSD[ChainId.BSC_MAINNET], USDT],
-    [DAI[ChainId.BSC_MAINNET], USDT],
+    [BUSD[ChainId.BSC_MAINNET], USDT[ChainId.BSC_MAINNET]],
+    [DAI[ChainId.BSC_MAINNET], USDT[ChainId.BSC_MAINNET]],
   ],
   [ChainId.BSC_TESTNET]: [
     [CAKE[ChainId.BSC_TESTNET], WRAPPED_NETWORK_TOKENS[ChainId.BSC_TESTNET]],

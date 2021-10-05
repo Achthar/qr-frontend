@@ -7,10 +7,10 @@ import {
   SupportedL2ChainId,
 } from 'config/constants/index'
 import { ChainId } from '@pancakeswap/sdk'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button } from '@pancakeswap/uikit'
+import { useWeb3React } from "@web3-react/core";
 
 export const Wrapper = styled.div`
   position: relative;
@@ -216,7 +216,7 @@ const ExplorerText = ({ chainId }: { chainId: SupportedL2ChainId }) => {
 
 const ChainIdSelector = () => {
 
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, library } = useWeb3React()
 
   const node = useRef<HTMLDivElement>()
 
@@ -234,6 +234,7 @@ const ChainIdSelector = () => {
       // toggle()
     }
     const active = chainId === targetChain
+    console.log("ChainID", chainId)
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
     const rowText = `${CHAIN_INFO[targetChain].label}`
     const RowContent = () => (
@@ -282,9 +283,14 @@ const ChainIdSelector = () => {
 
   const buttonText = chainId === 56 ? 'Binance' :
     chainId === 97 ? 'Binance Testnet' :
-      chainId === 80001 ? 'Polygon Mumbai' : '-'
+      chainId === 80001 ? 'Polygon Mumbai' :
+        chainId === 43114 ? 'Avalanche' :
+          chainId === 43113 ? 'Avalanche Testnet' : '-'
+          console.log("CID", chainId)
+          console.log("CI", CHAIN_INFO)
+          console.log("CL", CHAIN_INFO[chainId ?? 80001])
   return (
-    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId].logoUrl}>
+    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 80001].logoUrl}>
       <FlyoutHeader>
         Select a network
       </FlyoutHeader>
@@ -292,8 +298,8 @@ const ChainIdSelector = () => {
       <Row targetChain={ChainId.BSC_MAINNET} />
       <Row targetChain={ChainId.BSC_TESTNET} />
       <Row targetChain={ChainId.MATIC_TESTNET} />
-      {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
       <Row targetChain={ChainId.AVAX_TESTNET} />
+      <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} />
 
     </UIKitUserMenu>
   );

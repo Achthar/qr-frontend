@@ -20,7 +20,7 @@ import { useTranslation } from 'contexts/Localization'
 const useAuth = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { activate, deactivate, chainId } = useWeb3React()
+  const { activate, deactivate, chainId, library } = useWeb3React()
   const { toastError } = useToast()
 
   const login = useCallback(
@@ -30,7 +30,7 @@ const useAuth = () => {
         activate(connector, async (error: Error) => {
           if (error instanceof UnsupportedChainIdError) {
             
-            const hasSetup = await setupNetwork(chainId)
+            const hasSetup = await setupNetwork(chainId, library)
             if (hasSetup) {
               activate(connector)
             }
@@ -56,7 +56,7 @@ const useAuth = () => {
         toastError(t('Unable to find connector'), t('The connector config is wrong'))
       }
     },
-    [chainId, t, activate, toastError],
+    [library, chainId, t, activate, toastError],
   )
 
   const logout = useCallback(() => {

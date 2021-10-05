@@ -95,6 +95,7 @@ export const useGetBnbBalance = () => {
     const fetchBalance = async () => {
       try {
         const walletBalance = await simpleRpcProvider(chainId).getBalance(account)
+        console.log("WALLETB", walletBalance)
         setBalance(new BigNumber(walletBalance.toString()))
         setFetchStatus(FetchStatus.SUCCESS)
       } catch {

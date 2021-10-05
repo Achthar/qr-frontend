@@ -28,6 +28,7 @@ import ENS_ABI from '../config/abi/ens-registrar.json'
 import { ERC20_BYTES32_ABI } from '../config/abi/erc20'
 import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
+import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import { getContract } from '../utils'
 import {ChainId} from '../config/index'
@@ -147,7 +148,8 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WETH_ABI, withSignerIfPossible)
+  const WRAPPED_NETWORK_TOKEN_ABI = chainId === 43114 ? WAVAX_ABI : WETH_ABI
+  return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WRAPPED_NETWORK_TOKEN_ABI, withSignerIfPossible)
 }
 
 export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {

@@ -106,7 +106,10 @@ export const DAI: { [chainId: number]: Token } = {
     'Dai Stablecoin',
   ),
 }
-export const USDT = new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD')
+export const USDT: { [chainId: number]: Token } = {
+  [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD'),
+  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x08a978a0399465621e667c49cd54cc874dc064eb', 18, 'USDT', 'Tether USD')
+}
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 export const UST = new Token(
   ChainId.BSC_MAINNET,
@@ -2032,6 +2035,14 @@ const tokens = {
     symbol: 'WMATIC',
     address: {
       80001: '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
+    },
+    decimals: 18,
+    projectLink: ''
+  },
+  wavax: {
+    symbol: 'WAVAX',
+    address: {
+      80001: '0xd00ae08403B9bbb9124bB305C09058E32C39A48c'
     },
     decimals: 18,
     projectLink: ''
