@@ -21,7 +21,7 @@ const walletconnect = new WalletConnectConnector({
   pollingInterval: POLLING_INTERVAL,
 })
 
-const bscConnector = new BscConnector({ supportedChainIds: [chainId] })
+const bscConnector = new BscConnector({ supportedChainIds: [ChainId.BSC_MAINNET, ChainId.BSC_TESTNET] })
 
 const connectorETH = 0
 

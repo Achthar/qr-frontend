@@ -1,3 +1,5 @@
+
+/* eslint-disable camelcase */
 import { useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -30,8 +32,9 @@ import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
 import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import multiCallAbi from '../config/abi/Multicall.json'
+import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 import { getContract } from '../utils'
-import {ChainId} from '../config/index'
+import { ChainId } from '../config/index'
 
 
 /**
@@ -180,6 +183,6 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 }
 
 export function useMulticallContract(): Contract | null {
-  const{chainId} = useWeb3React()
-  return useContract(getMulticallAddress(chainId), multiCallAbi, false)
+  const { chainId } = useWeb3React()
+  return useContract(getMulticallAddress(chainId), chainId === 43113 ? multiCallAbi_AVAX : multiCallAbi, false)
 }

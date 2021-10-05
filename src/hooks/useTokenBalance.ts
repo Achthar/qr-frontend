@@ -18,7 +18,7 @@ export enum FetchStatus {
   FAILED = 'failed',
 }
 
-const useTokenBalance = ( tokenAddress: string) => {
+const useTokenBalance = (tokenAddress: string) => {
   const { NOT_FETCHED, SUCCESS, FAILED } = FetchStatus
   const [balanceState, setBalanceState] = useState<UseTokenBalanceState>({
     balance: BIG_ZERO,
@@ -52,7 +52,7 @@ const useTokenBalance = ( tokenAddress: string) => {
 
 export const useTotalSupply = () => {
   const { slowRefresh } = useRefresh()
-   const {chainId } = useWeb3React()
+  const { chainId } = useWeb3React()
   const [totalSupply, setTotalSupply] = useState<BigNumber>()
 
   useEffect(() => {
@@ -68,8 +68,8 @@ export const useTotalSupply = () => {
   return totalSupply
 }
 
-export const useBurnedBalance = ( tokenAddress: string) => {
-  const {chainId } = useWeb3React()
+export const useBurnedBalance = (tokenAddress: string) => {
+  const { chainId } = useWeb3React()
   const [balance, setBalance] = useState(BIG_ZERO)
   const { slowRefresh } = useRefresh()
 
@@ -87,7 +87,7 @@ export const useBurnedBalance = ( tokenAddress: string) => {
 }
 
 export const useGetBnbBalance = () => {
-  const { account, chainId } = useWeb3React()
+  const { account, chainId, library } = useWeb3React()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [balance, setBalance] = useState(BIG_ZERO)
   const { lastUpdated, setLastUpdated } = useLastUpdated()
@@ -95,7 +95,6 @@ export const useGetBnbBalance = () => {
     const fetchBalance = async () => {
       try {
         const walletBalance = await simpleRpcProvider(chainId).getBalance(account)
-        console.log("WALLETB", walletBalance)
         setBalance(new BigNumber(walletBalance.toString()))
         setFetchStatus(FetchStatus.SUCCESS)
       } catch {

@@ -274,44 +274,45 @@ export const tokenList = {
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"
             },
             {
-                "name": "Requiem Token",
-                "symbol": "REQT",
-                "address": "0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8",
-                "chainId": 43113,
-                "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
-            },
-            {
                 "name": "Tether USD",
                 "symbol": "USDT",
                 "address": "0x08a978a0399465621e667c49cd54cc874dc064eb",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
-            },
+            }
+        ]
+    },
+    43114: {
+        "name": "RequiemSwap Default List MATIC",
+        "timestamp": "2021-09-29T00:00:00Z",
+        "version": {
+            "major": 3,
+            "minor": 0,
+            "patch": 0
+        },
+        "tags": {},
+        "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png",
+        "keywords": [
+            "pancake",
+            "default"
+        ],
+        "tokens": [
             {
-                "name": "USDC",
-                "symbol": "USDC",
-                "address": "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
-                "chainId": 43113,
-                "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
-            },
-            {
-                "name": "Wrapped Ethereum Token",
-                "symbol": "WETH",
-                "address": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
-                "chainId": 43113,
+                "name": "WAVAX Token",
+                "symbol": "WAVAX",
+                "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+                "chainId": 43114,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"
             },
             {
-                "name": "DAI Token",
-                "symbol": "DAI",
-                "address": "0x001b3b4d0f3714ca98ba10f6042daebf0b1b7b6f",
-                "chainId": 43113,
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "address": "0xde3A24028580884448a5397872046a019649b084",
+                "chainId": 43114,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
             }
         ]
     },

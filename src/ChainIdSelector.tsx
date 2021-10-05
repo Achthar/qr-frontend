@@ -234,7 +234,6 @@ const ChainIdSelector = () => {
       // toggle()
     }
     const active = chainId === targetChain
-    console.log("ChainID", chainId)
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
     const rowText = `${CHAIN_INFO[targetChain].label}`
     const RowContent = () => (
@@ -286,9 +285,6 @@ const ChainIdSelector = () => {
       chainId === 80001 ? 'Polygon Mumbai' :
         chainId === 43114 ? 'Avalanche' :
           chainId === 43113 ? 'Avalanche Testnet' : '-'
-          console.log("CID", chainId)
-          console.log("CI", CHAIN_INFO)
-          console.log("CL", CHAIN_INFO[chainId ?? 80001])
   return (
     <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 80001].logoUrl}>
       <FlyoutHeader>

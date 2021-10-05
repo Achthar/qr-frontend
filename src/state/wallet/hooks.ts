@@ -7,6 +7,7 @@ import { useMulticallContract } from 'hooks/useContract'
 import { isAddress } from 'utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 
+
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
  */
@@ -34,7 +35,7 @@ export function useBNBBalances(
     'getEthBalance',
     addresses.map((address) => [address]),
   )
-  console.log("RES MULTICALL", results)
+
   return useMemo(
     () =>
       addresses.reduce<{ [address: string]: CurrencyAmount }>((memo, address, i) => {
@@ -110,8 +111,9 @@ export function useCurrencyBalances(
   )
 
   const tokenBalances = useTokenBalances(account, tokens)
+
   const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
-  console.log("BNB?", containsBNB)
+
   const ethBalance = useBNBBalances(chainId, containsBNB ? [account] : [])
 
   return useMemo(

@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useBlock } from 'state/block/hooks'
+import { simpleRpcProvider } from 'utils/providers'
 import { AppDispatch, AppState } from '../index'
 import {
   addMulticallListeners,
@@ -14,6 +15,7 @@ import {
   toCallKey,
   ListenerOptions,
 } from './actions'
+
 
 export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any
@@ -66,7 +68,6 @@ function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): C
       ),
     [calls],
   )
-
   // update listeners when there is an actual change that persists for at least 100ms
   useEffect(() => {
     const callKeys: string[] = JSON.parse(serializedCallKeys)
@@ -102,6 +103,7 @@ function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): C
         if (result?.data && result?.data !== '0x') {
           // eslint-disable-next-line prefer-destructuring
           data = result.data
+
         }
 
         return { valid: true, data, blockNumber: result?.blockNumber }
@@ -174,19 +176,19 @@ export function useSingleContractMultipleData(
     () =>
       contract && fragment && callInputs && callInputs.length > 0
         ? callInputs.map<Call>((inputs) => {
-            return {
-              address: contract.address,
-              callData: contract.interface.encodeFunctionData(fragment, inputs),
-            }
-          })
+          return {
+            address: contract.address,
+            callData: contract.interface.encodeFunctionData(fragment, inputs),
+          }
+        })
         : [],
     [callInputs, contract, fragment],
   )
 
-  const results = useCallsData( calls, options)
+  const results = useCallsData(calls, options)
 
   const { currentBlock } = useBlock()
-
+  
   return useMemo(() => {
     return results.map((result) => toCallState(result, contract?.interface, fragment, currentBlock))
   }, [fragment, contract, results, currentBlock])
@@ -212,18 +214,18 @@ export function useMultipleContractSingleData(
     () =>
       fragment && addresses && addresses.length > 0 && callData
         ? addresses.map<Call | undefined>((address) => {
-            return address && callData
-              ? {
-                  address,
-                  callData,
-                }
-              : undefined
-          })
+          return address && callData
+            ? {
+              address,
+              callData,
+            }
+            : undefined
+        })
         : [],
     [addresses, callData, fragment],
   )
 
-  const results = useCallsData( calls, options)
+  const results = useCallsData(calls, options)
 
   const { currentBlock } = useBlock()
 
@@ -243,11 +245,11 @@ export function useSingleCallResult(
   const calls = useMemo<Call[]>(() => {
     return contract && fragment && isValidMethodArgs(inputs)
       ? [
-          {
-            address: contract.address,
-            callData: contract.interface.encodeFunctionData(fragment, inputs),
-          },
-        ]
+        {
+          address: contract.address,
+          callData: contract.interface.encodeFunctionData(fragment, inputs),
+        },
+      ]
       : []
   }, [contract, fragment, inputs])
 

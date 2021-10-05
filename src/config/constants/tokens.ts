@@ -108,7 +108,8 @@ export const DAI: { [chainId: number]: Token } = {
 }
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD'),
-  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x08a978a0399465621e667c49cd54cc874dc064eb', 18, 'USDT', 'Tether USD')
+  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x08a978a0399465621e667c49cd54cc874dc064eb', 18, 'USDT', 'Tether USD'),
+  [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 18, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 export const UST = new Token(

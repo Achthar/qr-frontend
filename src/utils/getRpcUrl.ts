@@ -29,6 +29,12 @@ export const nodesAVAXT =
     process.env.REACT_APP_RPC_URL_AVAXT
   ]
 
+export const nodesAVAX =
+  [
+    process.env.REACT_APP_RPC_URL_AVAX
+  ]
+
+
 export const nodes: { [chainId: number]: string } = {
   [ChainId.BSC_TESTNET]: sample(nodesBSCT),
   [ChainId.BSC_MAINNET]: sample(nodesBSC),
@@ -38,17 +44,20 @@ export const nodes: { [chainId: number]: string } = {
 
 const getNodeUrl = (chainId) => {
   let node = ''
-  if (chainId === '56') {
+  if (chainId === '56' || chainId === 56) {
     node = sample(nodesBSC)
   }
-  else if (chainId === '97') {
+  else if (chainId === '97' || chainId === 97) {
     node = sample(nodesBSCT)
   }
-  else if (chainId === '80001') {
+  else if (chainId === '80001' || chainId === 80001) {
     node = nodesMATICT[0]
   }
-  else if (chainId === '43113') {
+  else if (chainId === '43113' || chainId === 43113) {
     node = nodesAVAXT[0]
+  }
+  else if (chainId === '43114' || chainId === 43114) {
+    node = nodesAVAX[0]
   }
   else {
     node = sample(nodesBSC) // default

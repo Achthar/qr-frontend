@@ -21,7 +21,6 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
       if (!chainId && library?.getNetwork) {
         ({ chainId } = await library.getNetwork())
       }
-      console.log("CHID", chainId)
       if (chainId === 56 || chainId === 97) {
         await provider.request({
           method: 'wallet_addEthereumChain',

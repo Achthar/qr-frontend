@@ -115,8 +115,8 @@ function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddress
     [ChainId.BSC_TESTNET]: { ...map1[ChainId.BSC_TESTNET], ...map2[ChainId.BSC_TESTNET] },
     [ChainId.ARBITRUM_MAINNET]: {},
     [ChainId.ARBITRUM_TETSNET_RINKEBY]: {},
-    [ChainId.AVAX_MAINNET]: {},
-    [ChainId.AVAX_TESTNET]: { ...map1[ChainId.AVAX_TESTNET], ...map2[ChainId.AVAX_TESTNET]},
+    [ChainId.AVAX_MAINNET]: { ...map1[ChainId.AVAX_MAINNET], ...map2[ChainId.AVAX_MAINNET] },
+    [ChainId.AVAX_TESTNET]: { ...map1[ChainId.AVAX_TESTNET], ...map2[ChainId.AVAX_TESTNET] },
     [ChainId.MATIC_MAINNET]: {},
     [ChainId.MATIC_TESTNET]: { ...map1[ChainId.MATIC_TESTNET], ...map2[ChainId.MATIC_TESTNET] },
   }
