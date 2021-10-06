@@ -7,7 +7,7 @@ const options = {
 }
 
 export const stakeFarm = async (masterChefContract, pid, amount) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
   if (pid === 0) {
     const tx = await masterChefContract.enterStaking(value, { ...options, gasPrice })
@@ -21,7 +21,7 @@ export const stakeFarm = async (masterChefContract, pid, amount) => {
 }
 
 export const unstakeFarm = async (masterChefContract, pid, amount) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
   if (pid === 0) {
     const tx = await masterChefContract.leaveStaking(value, { ...options, gasPrice })
@@ -35,7 +35,7 @@ export const unstakeFarm = async (masterChefContract, pid, amount) => {
 }
 
 export const harvestFarm = async (masterChefContract, pid) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   if (pid === 0) {
     const tx = await masterChefContract.leaveStaking('0', { ...options, gasPrice })
     const receipt = await tx.wait()

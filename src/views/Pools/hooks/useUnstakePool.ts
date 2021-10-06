@@ -9,7 +9,7 @@ import { BIG_TEN } from 'utils/bigNumber'
 import getGasPrice from 'utils/getGasPrice'
 
 const sousUnstake = async (sousChefContract, amount, decimals) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const tx = await sousChefContract.withdraw(new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(), {
     gasPrice,
   })
@@ -18,7 +18,7 @@ const sousUnstake = async (sousChefContract, amount, decimals) => {
 }
 
 const sousEmergencyUnstake = async (sousChefContract) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const tx = await sousChefContract.emergencyWithdraw({ gasPrice })
   const receipt = await tx.wait()
   return receipt.status

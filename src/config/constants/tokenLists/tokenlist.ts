@@ -271,7 +271,7 @@ export const tokenList = {
                 "address": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WAVAX.png"
             },
             {
                 "name": "Tether USD",
@@ -304,7 +304,7 @@ export const tokenList = {
                 "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
                 "chainId": 43114,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WAVAX.png"
             },
             {
                 "name": "Tether USD",

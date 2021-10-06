@@ -73,7 +73,7 @@ export const initialState: UserState = {
   audioPlay: true,
   isDark: false,
   userFarmStakedOnly: FarmStakedOnly.ON_FINISHED,
-  gasPrice: GAS_PRICE_GWEI.default,
+  gasPrice: GAS_PRICE_GWEI[99999].default,
 }
 
 export default createReducer(initialState, (builder) =>

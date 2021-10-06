@@ -6,11 +6,11 @@ import { ChainId } from '../config/index'
 /**
  * Function to return gasPrice outwith a react component
  */
-const getGasPrice = (): string => {
-  const chainId = process.env.REACT_APP_CHAIN_ID
+const getGasPrice = (chainId:number): string => {
+  // const chainId = process.env.REACT_APP_CHAIN_ID
   const state = store.getState()
-  const userGas = state.user.gasPrice || GAS_PRICE_GWEI.default
-  return chainId === ChainId.BSC_MAINNET.toString() ? userGas : GAS_PRICE_GWEI.testnet
+  const userGas = state.user.gasPrice || GAS_PRICE_GWEI[chainId].default
+  return chainId === ChainId.BSC_MAINNET ? userGas : GAS_PRICE_GWEI[chainId].testnet
 }
 
 export default getGasPrice

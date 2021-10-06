@@ -14,7 +14,7 @@ const options = {
 }
 
 const sousStake = async (sousChefContract, amount, decimals = 18) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const tx = await sousChefContract.deposit(new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString(), {
     ...options,
     gasPrice,
@@ -24,7 +24,7 @@ const sousStake = async (sousChefContract, amount, decimals = 18) => {
 }
 
 const sousStakeBnb = async (sousChefContract, amount) => {
-  const gasPrice = getGasPrice()
+  const gasPrice = getGasPrice(56)
   const tx = await sousChefContract.deposit(new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString(), {
     ...options,
     gasPrice,

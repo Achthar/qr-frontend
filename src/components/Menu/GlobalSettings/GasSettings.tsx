@@ -29,9 +29,9 @@ const GasSettings = () => {
           mr="4px"
           scale="sm"
           onClick={() => {
-            setGasPrice(GAS_PRICE_GWEI.default)
+            setGasPrice(GAS_PRICE_GWEI[chainId].default)
           }}
-          variant={gasPrice === GAS_PRICE_GWEI.default ? 'primary' : 'tertiary'}
+          variant={gasPrice === GAS_PRICE_GWEI[chainId].default ? 'primary' : 'tertiary'}
         >
           {t('Standard (%gasPrice%)', { gasPrice: GAS_PRICE.default })}
         </Button>
@@ -40,9 +40,9 @@ const GasSettings = () => {
           mr="4px"
           scale="sm"
           onClick={() => {
-            setGasPrice(GAS_PRICE_GWEI.fast)
+            setGasPrice(GAS_PRICE_GWEI[chainId].fast)
           }}
-          variant={gasPrice === GAS_PRICE_GWEI.fast ? 'primary' : 'tertiary'}
+          variant={gasPrice === GAS_PRICE_GWEI[chainId].fast ? 'primary' : 'tertiary'}
         >
           {t('Fast (%gasPrice%)', { gasPrice: GAS_PRICE.fast })}
         </Button>
@@ -51,9 +51,9 @@ const GasSettings = () => {
           mt="4px"
           scale="sm"
           onClick={() => {
-            setGasPrice(GAS_PRICE_GWEI.instant)
+            setGasPrice(GAS_PRICE_GWEI[chainId].instant)
           }}
-          variant={gasPrice === GAS_PRICE_GWEI.instant ? 'primary' : 'tertiary'}
+          variant={gasPrice === GAS_PRICE_GWEI[chainId].instant ? 'primary' : 'tertiary'}
         >
           {t('Instant (%gasPrice%)', { gasPrice: GAS_PRICE.instant })}
         </Button>
