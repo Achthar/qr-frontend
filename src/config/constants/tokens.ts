@@ -2043,11 +2043,12 @@ const tokens = {
   wavax: {
     symbol: 'WAVAX',
     address: {
-      80001: '0xd00ae08403B9bbb9124bB305C09058E32C39A48c'
+      43113: '0xd00ae08403B9bbb9124bB305C09058E32C39A48c',
+      43314: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
     },
     decimals: 18,
     projectLink: ''
-  }
+  },
 }
 
 export default tokens

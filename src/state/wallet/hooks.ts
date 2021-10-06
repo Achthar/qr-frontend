@@ -18,7 +18,6 @@ export function useBNBBalances(
   [address: string]: CurrencyAmount | undefined
 } {
   const multicallContract = useMulticallContract()
-
   const addresses: string[] = useMemo(
     () =>
       uncheckedAddresses

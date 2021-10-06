@@ -21,6 +21,7 @@ export const nodesBSCT = [
 
 export const nodesMATICT =
   [
+    // process.env.REACT_APP_NODE_MATICT + process.env.MATIC_INFURA_KEY,
     process.env.REACT_APP_RPC_URL_MATICT
   ]
 

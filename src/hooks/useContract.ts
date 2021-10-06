@@ -151,8 +151,7 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()
-  const WRAPPED_NETWORK_TOKEN_ABI = chainId === 43114 ? WAVAX_ABI : WETH_ABI
-  return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WRAPPED_NETWORK_TOKEN_ABI, withSignerIfPossible)
+  return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WAVAX_ABI, withSignerIfPossible)
 }
 
 export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {
@@ -184,5 +183,5 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 
 export function useMulticallContract(): Contract | null {
   const { chainId } = useWeb3React()
-  return useContract(getMulticallAddress(chainId), chainId === 43113 ? multiCallAbi_AVAX : multiCallAbi, false)
+  return useContract(getMulticallAddress(chainId), multiCallAbi, false)
 }
