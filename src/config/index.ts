@@ -62,6 +62,7 @@ export const AUCTION_WHITELISTED_BIDDERS_TO_FETCH = 500
 export function chainIdToChainGroup(chainId: number): ChainGroup {
   if (chainId === 56 || chainId === 97) { return ChainGroup.BSC }
   if (chainId === 137 || chainId === 80001) { return ChainGroup.MATIC }
+  if (chainId === 43113 || chainId === 43114) { return ChainGroup.MATIC }
   return  ChainGroup.ETH
 }
 

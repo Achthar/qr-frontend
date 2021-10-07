@@ -203,5 +203,43 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
       token: tokens.btcb,
       quoteToken: tokens.wmatic,
     }],
+  [ChainGroup.AVAX]: [
+    {
+      pid: 0,
+      lpSymbol: 'REQT',
+      lpAddresses: {
+        43113: '0x78e418385153177cB1c49e58eAB5997192998bf7',
+      },
+      token: tokens.syrup,
+      quoteToken: tokens.wavax,
+    },
+    {
+      pid: 251,
+      lpSymbol: 'REQT-USDT LP',
+      lpAddresses: {
+        43113: '',
+      },
+      token: tokens.cake,
+      quoteToken: tokens.wavax,
+    },
+    {
+      pid: 252,
+      lpSymbol: 'WAVAX-USDT LP',
+      lpAddresses: {
+        43113: '0x310962879d5B341Dd1C98096AD13a3C48f2A27d0',
+      },
+      token: tokens.usdt,
+      quoteToken: tokens.wmatic,
+    },
+    {
+      pid: 16,
+      lpSymbol: 'USDT-DAI LP',
+      lpAddresses: {
+        43113: '0x23303b1b69d5f62fde2ccee26835fd646850b2c8',
+      },
+      token: tokens.usdt,
+      quoteToken: tokens.dai,
+    },
+  ],
   [ChainGroup.ETH]: []
 }

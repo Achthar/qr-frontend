@@ -6,6 +6,7 @@ export const enum ChainGroup {
   BSC = 'BSC',
   ETH = 'ETH',
   MATIC = 'MATIC',
+  AVAX  = 'AVAX'
 }
 
 export interface Address {

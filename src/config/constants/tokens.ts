@@ -32,6 +32,13 @@ export const REQT: { [chainId: number]: Token } = {
     'REQT',
     'Requiem Token',
   ),
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x78e418385153177cB1c49e58eAB5997192998bf7',
+    18,
+    'REQT',
+    'Requiem Token',
+  ),
 }
 
 export const CAKE: { [chainId: number]: Token } = {
@@ -105,10 +112,17 @@ export const DAI: { [chainId: number]: Token } = {
     'DAI',
     'Dai Stablecoin',
   ),
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x66960440491bCc68BD30B2b0B08fF9e7aB3F9078',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
 }
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD'),
-  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x08a978a0399465621e667c49cd54cc874dc064eb', 18, 'USDT', 'Tether USD'),
+  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x0bE04001Ad4725c697b6c6bD8Bc23d9848992CA0', 18, 'USDT', 'Tether USD'),
   [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 18, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
@@ -173,7 +187,9 @@ const tokens = {
     address: {
       56: '',
       97: '',
-      80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8'
+      80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8',
+      43113: '0x78e418385153177cB1c49e58eAB5997192998bf7',
+      43114: '0x78e418385153177cB1c49e58eAB5997192998bf7'
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',

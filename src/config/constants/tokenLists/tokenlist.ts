@@ -274,13 +274,30 @@ export const tokenList = {
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WAVAX.png"
             },
             {
+                "name": "Requiem Token",
+                "symbol": "REQT",
+                "address": "0x78e418385153177cB1c49e58eAB5997192998bf7",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
+            },
+            {
                 "name": "Tether USD",
                 "symbol": "USDT",
-                "address": "0x08a978a0399465621e667c49cd54cc874dc064eb",
+                "address": "0x0bE04001Ad4725c697b6c6bD8Bc23d9848992CA0",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
-            }
+            },
+            {
+                "name": "Dai Stablecoin",
+                "symbol": "DAI",
+                "address": "0x66960440491bCc68BD30B2b0B08fF9e7aB3F9078",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+            },
+
         ]
     },
     43114: {
