@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { SerializedBigNumber, TranslatableText } from 'state/types'
 
 
-export const enum ChainGroup{
+export const enum ChainGroup {
   BSC = 'BSC',
   ETH = 'ETH',
   MATIC = 'MATIC',
@@ -13,6 +13,8 @@ export interface Address {
   56?: string
   137?: string
   80001?: string
+  43114?: string
+  43113?: string
 }
 
 export interface Token {

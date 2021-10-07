@@ -8,6 +8,8 @@ const NETWORK_POLLING_INTERVALS: { [chainId: number]: number } = {
   [ChainId.BSC_TESTNET]: ms`1s`,
   [ChainId.MATIC_TESTNET]: ms`1s`,
   [ChainId.MATIC_MAINNET]: ms`1s`,
+  [ChainId.AVAX_TESTNET]: ms`1s`,
+  [ChainId.AVAX_MAINNET]: ms`1s`,
 }
 
 export default function getLibrary(provider: any): Web3Provider {
