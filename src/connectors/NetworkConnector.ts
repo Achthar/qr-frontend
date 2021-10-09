@@ -1,3 +1,7 @@
+/* eslint lines-between-class-members: 0 */
+/* eslint no-useless-return: 0 */
+/* eslint no-restricted-syntax: 0 */
+/* eslint  class-methods-use-this: 0 */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
 import invariant from 'tiny-invariant'

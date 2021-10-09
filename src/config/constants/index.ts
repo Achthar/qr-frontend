@@ -88,21 +88,26 @@ export const CHAIN_INFO: ChainInfo = {
   },
   [ChainId.BSC_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
-    docs: 'https://docs.uniswap.org/',
-    explorer: 'https://etherscan.io/',
+    docs: 'https://docs.binance.org/',
+    explorer: 'https://bscscan.com/',
     infoLink: 'https://info.uniswap.org/#/',
     label: 'Binance',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/BNB.svg',
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+    rpcUrls: ['https://bsc-dataseed1.ninicoin.io', 'https://bsc-dataseed1.defibit.io',
+      'https://bsc-dataseed.binance.org', 'https://bsc-dataseed2.binance.org/',
+      'https://bsc-dataseed3.binance.org/', 'https://bsc-dataseed4.binance.org/'],
   },
   [ChainId.BSC_TESTNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
-    docs: 'https://docs.uniswap.org/',
-    explorer: 'https://rinkeby.etherscan.io/',
+    docs: 'https://docs.binance.org/',
+    explorer: 'https://testnet.bscscan.com/',
     infoLink: 'https://info.uniswap.org/#/',
     label: 'Binance Testnet',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/BNB.svg',
     nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/', 'https://data-seed-prebsc-2-s1.binance.org:8545/',
+      'https://data-seed-prebsc-1-s2.binance.org:8545/'],
   },
   [ChainId.AVAX_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
@@ -128,7 +133,7 @@ export const CHAIN_INFO: ChainInfo = {
     blockWaitMsBeforeWarning: ms`10m`,
     bridge: 'https://gateway.optimism.io/',
     docs: 'https://optimism.io/',
-    explorer: 'https://optimistic.etherscan.io/',
+    explorer: 'https://polygonscan.com/',
     infoLink: 'https://info.uniswap.org/#/optimism',
     label: 'Polygon',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/MATIC.svg',
@@ -140,7 +145,7 @@ export const CHAIN_INFO: ChainInfo = {
     blockWaitMsBeforeWarning: ms`10m`,
     bridge: 'https://gateway.optimism.io/',
     docs: 'https://optimism.io/',
-    explorer: 'https://optimistic.etherscan.io/',
+    explorer: 'https://mumbai.polygonscan.com/',
     infoLink: 'https://info.uniswap.org/#/optimism',
     label: 'Polygon Mumbai',
     rpcUrls: ['https://rpc-mumbai.matic.today'],
@@ -249,6 +254,10 @@ export const BIG_INT_ZERO = JSBI.BigInt(0)
 // one basis point
 export const ONE_BIPS = new Percent(JSBI.BigInt(1), JSBI.BigInt(10000))
 export const BIPS_BASE = JSBI.BigInt(10000)
+
+// transaction popup dismisal amounts
+export const DEFAULT_TXN_DISMISS_MS = 25000
+
 // used for warning states
 export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE) // 1%
 export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE) // 3%

@@ -12,6 +12,9 @@ import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@pancakeswap/uikit'
 import { useWeb3React } from "@web3-react/core";
 
+import { ApplicationModal } from 'state/application/actions'
+import { useModalOpen, useToggleModal } from 'state/application/hooks'
+
 export const Wrapper = styled.div`
   position: relative;
 `;
@@ -218,6 +221,9 @@ const ChainIdSelector = () => {
 
   const { chainId, library } = useWeb3React()
 
+  const open = useModalOpen(ApplicationModal.NETWORK_SELECTOR)
+  const toggle = useToggleModal(ApplicationModal.NETWORK_SELECTOR)
+
   const node = useRef<HTMLDivElement>()
 
   // const { isMobile } = useMatchBreakpoints()
@@ -231,7 +237,8 @@ const ChainIdSelector = () => {
     const handleRowClick = () => {
       switchToNetwork({ library, chainId: targetChain })
       // useToggleModal()
-      // toggle()
+     toggle()
+     //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)
     }
     const active = chainId === targetChain
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)

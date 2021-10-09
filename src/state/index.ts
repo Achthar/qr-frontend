@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { save, load } from 'redux-localstorage-simple'
-import { useDispatch } from 'react-redux'
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import application from './application/reducer'
 import farmsReducer from './farms'
 import poolsReducer from './pools'
 import achievementsReducer from './achievements'
@@ -20,6 +21,7 @@ const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
   reducer: {
+    application,
     achievements: achievementsReducer,
     block: blockReducer,
     farms: farmsReducer,
@@ -47,5 +49,7 @@ store.dispatch(updateVersion())
 export type AppDispatch = typeof store.dispatch
 export type AppState = ReturnType<typeof store.getState>
 export const useAppDispatch = () => useDispatch()
+export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
+
 
 export default store

@@ -1,12 +1,20 @@
 import BigNumber from 'bignumber.js'
-import { SerializedBigNumber, TranslatableText } from 'state/types'
 
+export type TranslatableText =
+  | string
+  | {
+    key: string
+    data?: {
+      [key: string]: string | number
+    }
+  }
+export type SerializedBigNumber = string
 
 export const enum ChainGroup {
   BSC = 'BSC',
   ETH = 'ETH',
   MATIC = 'MATIC',
-  AVAX  = 'AVAX'
+  AVAX = 'AVAX'
 }
 
 export interface Address {

@@ -1,11 +1,13 @@
+/* eslint no-return-assign: 0 */
+
 import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 
 import { ChainId } from '@pancakeswap/sdk'
-import { ALL_SUPPORTED_CHAIN_IDS } from '../config/constants/index'
-import { NetworkConnector } from './NetworkConnector'
 import getLibrary from 'utils/getLibrary'
+import { NetworkConnector } from './NetworkConnector'
+import { ALL_SUPPORTED_CHAIN_IDS } from '../config/constants/index'
 
 const INFURA_KEY = process.env.REACT_APP_INFURA_KEY
 // const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY

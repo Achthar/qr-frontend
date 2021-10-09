@@ -5,6 +5,7 @@ import isArchivedPid from 'utils/farmHelpers'
 import priceHelperLpsConfig from 'config/constants/priceHelperLps'
 import { FarmConfig } from 'config/constants/types'
 import { ChainId, chainIdToChainGroup } from 'config/index'
+// import { useAppDispatch, useAppSelector } from 'state'
 import fetchFarms from './fetchFarms'
 import fetchFarmsPrices from './fetchFarmsPrices'
 import {
@@ -16,6 +17,8 @@ import {
 import { FarmsState, Farm } from '../types'
 
 // import { chain } from 'lodash'
+
+const chainIdFromState =  43113 // useAppSelector((state) => state.application.chainId)
 
 function noAccountFarmConfig(chainId: number) {
   return farmsDict[chainId].map((farm) => ({
@@ -87,7 +90,7 @@ export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], {
 
 export const farmsSlice = createSlice({
   name: 'Farms',
-  initialState: initialState(43113), // TODO: make that more flexible
+  initialState: initialState(chainIdFromState), // TODO: make that more flexible
   reducers: {
     setLoadArchivedFarmsData: (state, action) => {
       const loadArchivedFarmsData = action.payload
