@@ -8,7 +8,7 @@ import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY } from '@pancakeswap/sdk'
 import { ROUTER_ADDRESS } from '../config/constants'
-import { BASE_BSC_SCAN_URLS, ChainId } from '../config'
+import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -20,26 +20,26 @@ export function isAddress(value: any): string | false {
   }
 }
 
-export function getBscScanLink(
+export function getNetworkExplorerLink(
   data: string | number,
   type: 'transaction' | 'token' | 'address' | 'block' | 'countdown',
   chainId: ChainId = ChainId.BSC_MAINNET,
 ): string {
   switch (type) {
     case 'transaction': {
-      return `${BASE_BSC_SCAN_URLS[chainId]}/tx/${data}`
+      return `${BASE_EXPLORER_URLS[chainId]}/tx/${data}`
     }
     case 'token': {
-      return `${BASE_BSC_SCAN_URLS[chainId]}/token/${data}`
+      return `${BASE_EXPLORER_URLS[chainId]}/token/${data}`
     }
     case 'block': {
-      return `${BASE_BSC_SCAN_URLS[chainId]}/block/${data}`
+      return `${BASE_EXPLORER_URLS[chainId]}/block/${data}`
     }
     case 'countdown': {
-      return `${BASE_BSC_SCAN_URLS[chainId]}/block/countdown/${data}`
+      return `${BASE_EXPLORER_URLS[chainId]}/block/countdown/${data}`
     }
     default: {
-      return `${BASE_BSC_SCAN_URLS[chainId]}/address/${data}`
+      return `${BASE_EXPLORER_URLS[chainId]}/address/${data}`
     }
   }
 }

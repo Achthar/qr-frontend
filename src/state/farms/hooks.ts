@@ -5,31 +5,32 @@ import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
-import { farmsConfig } from 'config/constants'
+import { farmsConfig as farmsDict } from 'config/constants'
 import useRefresh from 'hooks/useRefresh'
 import { chainIdToChainGroup } from 'config'
 import { fetchFarmsPublicDataAsync, fetchFarmUserDataAsync, nonArchivedFarms } from '.'
 import { State, Farm, FarmsState } from '../types'
 
 
-export const usePollFarmsPublicData = (chainId:number, includeArchive = false) => {
+export const usePollFarmsPublicData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
-    const farmsToFetch = includeArchive ? farmsConfig[chainId] : nonArchivedFarms(chainId)
-    const pids = farmsToFetch[chainId].map((farmToFetch) => farmToFetch.pid)
+    const farmsToFetch = includeArchive ? farmsDict[chainId ?? 56] : nonArchivedFarms(chainId ?? 56)
+    console.log(farmsToFetch)
+    const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
     dispatch(fetchFarmsPublicDataAsync(pids))
   }, [includeArchive, dispatch, slowRefresh, chainId])
 }
 
-export const usePollFarmsWithUserData = (chainId:number, includeArchive = false) => {
+export const usePollFarmsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
   const { account } = useWeb3React()
 
   useEffect(() => {
-    const farmsToFetch = includeArchive ? farmsConfig[chainIdToChainGroup(chainId)] : nonArchivedFarms(chainId)
+    const farmsToFetch = includeArchive ? farmsDict[chainId] : nonArchivedFarms(chainId)
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
 
     dispatch(fetchFarmsPublicDataAsync(pids))

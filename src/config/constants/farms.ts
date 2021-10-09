@@ -1,5 +1,6 @@
+import {ChainId} from '@pancakeswap/sdk'
 import tokens from './tokens'
-import { FarmConfig, ChainGroup } from './types'
+import { FarmConfig } from './types'
 
 export const farms: FarmConfig[] = [
   /**
@@ -68,11 +69,11 @@ export const farms: FarmConfig[] = [
 ]
 
 
-export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
+export const farmList: { [chainId in ChainId]: FarmConfig[] } = {
   /**
    * These 3 farms (PID 0, 251, 252) should always be at the top of the file.
    */
-  [ChainGroup.BSC]:
+  [ChainId.BSC_MAINNET]:
     [
       {
         pid: 0,
@@ -135,7 +136,7 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
         token: tokens.btcb,
         quoteToken: tokens.wbnb,
       }],
-  [ChainGroup.MATIC]: [
+  [ChainId.MATIC_TESTNET]: [
     {
       pid: 0,
       lpSymbol: 'REQT',
@@ -203,23 +204,23 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
       token: tokens.btcb,
       quoteToken: tokens.wmatic,
     }],
-  [ChainGroup.AVAX]: [
+  [ChainId.AVAX_TESTNET]: [
     {
       pid: 0,
       lpSymbol: 'REQT',
       lpAddresses: {
         43113: '0x78e418385153177cB1c49e58eAB5997192998bf7',
       },
-      token: tokens.syrup,
+      token: tokens.reqt,
       quoteToken: tokens.wavax,
     },
     {
       pid: 251,
       lpSymbol: 'REQT-USDT LP',
       lpAddresses: {
-        43113: '',
+        43113: '0x8b569eA1A20e7437C900FA672a610300460f8C71',
       },
-      token: tokens.cake,
+      token: tokens.reqt,
       quoteToken: tokens.wavax,
     },
     {
@@ -229,7 +230,7 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
         43113: '0x310962879d5B341Dd1C98096AD13a3C48f2A27d0',
       },
       token: tokens.usdt,
-      quoteToken: tokens.wmatic,
+      quoteToken: tokens.wavax,
     },
     {
       pid: 16,
@@ -241,5 +242,9 @@ export const farmList: { [chain in ChainGroup]: FarmConfig[] } = {
       quoteToken: tokens.dai,
     },
   ],
-  [ChainGroup.ETH]: []
+  [ChainId.BSC_TESTNET]: [],
+  [ChainId.MATIC_MAINNET]: [],
+  [ChainId.AVAX_MAINNET]: [],
+  [ChainId.ARBITRUM_MAINNET]: [],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: []
 }

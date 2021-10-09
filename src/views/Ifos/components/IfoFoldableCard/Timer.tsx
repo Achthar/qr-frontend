@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'contexts/Localization'
-import { getBscScanLink } from 'utils'
+import { getNetworkExplorerLink } from 'utils'
 import { Flex, Link, PocketWatchIcon, Text, Skeleton } from '@pancakeswap/uikit'
 import getTimePeriods from 'utils/getTimePeriods'
 import { PublicIfoData } from 'views/Ifos/types'
@@ -34,7 +34,7 @@ const Timer: React.FC<Props> = ({ publicIfoData }) => {
               })}
             </Text>
             <Link
-              href={getBscScanLink(startBlockNum, 'countdown')}
+              href={getNetworkExplorerLink(startBlockNum, 'countdown')}
               target="blank"
               rel="noopener noreferrer"
               ml="8px"

@@ -31,12 +31,10 @@ export const BASE_EXPLORER_URLS = {
   [ChainId.BSC_TESTNET]: 'https://testnet.bscscan.com',
   [ChainId.ARBITRUM_MAINNET]: '',
   [ChainId.ARBITRUM_TETSNET_RINKEBY]: '',
-  [ChainId.AVAX_MAINNET]: '',
-  [ChainId.AVAX_TESTNET]: '',
-  [ChainId.ARBITRUM_MAINNET]: [],
-  [ChainId.ARBITRUM_TETSNET_RINKEBY]: [],
+  [ChainId.MATIC_MAINNET]: 'https://polygonscan.com/',
+  [ChainId.MATIC_TESTNET]: 'https://mumbai.polygonscan.com/',
   [ChainId.AVAX_MAINNET]: [],
-  [ChainId.AVAX_TESTNET]: [],
+  [ChainId.AVAX_TESTNET]: 'https://testnet.avascan.info/blockchain/c',
 }
 
 // CAKE_PER_BLOCK details
@@ -62,7 +60,6 @@ export const AUCTION_WHITELISTED_BIDDERS_TO_FETCH = 500
 export function chainIdToChainGroup(chainId: number): ChainGroup {
   if (chainId === 56 || chainId === 97) { return ChainGroup.BSC }
   if (chainId === 137 || chainId === 80001) { return ChainGroup.MATIC }
-  if (chainId === 43113 || chainId === 43114) { return ChainGroup.MATIC }
+  if (chainId === 43113 || chainId === 43114) { return ChainGroup.AVAX }
   return  ChainGroup.ETH
 }
-

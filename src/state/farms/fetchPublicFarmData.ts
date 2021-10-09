@@ -78,16 +78,16 @@ const fetchPublicFarmData = async (chainId: number, farm: Farm): Promise<PublicF
   const [info, totalAllocPoint] =
     pid || pid === 0
       ? await multicall(chainId, masterchefABI, [
-          {
-            address: getMasterChefAddress(chainId),
-            name: 'poolInfo',
-            params: [pid],
-          },
-          {
-            address: getMasterChefAddress(chainId),
-            name: 'totalAllocPoint',
-          },
-        ])
+        {
+          address: getMasterChefAddress(chainId),
+          name: 'poolInfo',
+          params: [pid],
+        },
+        {
+          address: getMasterChefAddress(chainId),
+          name: 'totalAllocPoint',
+        },
+      ])
       : [null, null]
 
   const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO

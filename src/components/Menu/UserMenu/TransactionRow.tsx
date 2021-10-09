@@ -3,7 +3,7 @@ import { BlockIcon, CheckmarkCircleIcon, Flex, Link, OpenNewIcon, RefreshIcon } 
 import styled from 'styled-components'
 import { TransactionDetails } from 'state/transactions/reducer'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { getBscScanLink } from 'utils'
+import { getNetworkExplorerLink } from 'utils'
 
 interface TransactionRowProps {
   txn: TransactionDetails
@@ -52,7 +52,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ txn }) => {
   }
 
   return (
-    <TxnLink href={getBscScanLink(txn.hash, 'transaction', chainId)} external>
+    <TxnLink href={getNetworkExplorerLink(txn.hash, 'transaction', chainId)} external>
       <TxnIcon>{renderIcon(txn)}</TxnIcon>
       <Summary>{txn.summary ?? txn.hash}</Summary>
       <TxnIcon>

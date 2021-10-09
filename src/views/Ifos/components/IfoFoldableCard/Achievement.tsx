@@ -5,7 +5,7 @@ import { useTranslation } from 'contexts/Localization'
 import { PublicIfoData } from 'views/Ifos/types'
 import { Ifo } from 'config/constants/types'
 import { BIG_TEN } from 'utils/bigNumber'
-import { getBscScanLink } from 'utils'
+import { getNetworkExplorerLink } from 'utils'
 
 const MIN_DOLLAR_FOR_ACHIEVEMENT = BIG_TEN
 
@@ -71,7 +71,7 @@ const Achievement: React.FC<Props> = ({ ifo, publicIfoData }) => {
         <StyledLinkExternal href={ifo.articleUrl} mb="8px">
           {t('Learn more about %title%', { title: campaignTitle })}
         </StyledLinkExternal>
-        <StyledLinkExternal href={getBscScanLink(ifo.address, 'address')}>{t('View Contract')}</StyledLinkExternal>
+        <StyledLinkExternal href={getNetworkExplorerLink(ifo.address, 'address')}>{t('View Contract')}</StyledLinkExternal>
       </Flex>
     </Container>
   )

@@ -3,7 +3,7 @@ import { AddressZero } from '@ethersproject/constants'
 import { TokenAmount, Token, ChainId, Percent, JSBI } from '@pancakeswap/sdk'
 
 import {
-  getBscScanLink,
+  getNetworkExplorerLink,
   calculateSlippageAmount,
   isAddress,
   shortenAddress,
@@ -12,18 +12,18 @@ import {
 } from 'utils'
 
 describe('utils', () => {
-  describe('#getBscScanLink', () => {
+  describe('#getNetworkExplorerLink', () => {
     it('correct for tx', () => {
-      expect(getBscScanLink('abc', 'transaction', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/tx/abc')
+      expect(getNetworkExplorerLink('abc', 'transaction', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/tx/abc')
     })
     it('correct for token', () => {
-      expect(getBscScanLink('abc', 'token', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/token/abc')
+      expect(getNetworkExplorerLink('abc', 'token', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/token/abc')
     })
     it('correct for address', () => {
-      expect(getBscScanLink('abc', 'address', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/address/abc')
+      expect(getNetworkExplorerLink('abc', 'address', ChainId.BSC_MAINNET)).toEqual('https://bscscan.com/address/abc')
     })
     it('enum', () => {
-      expect(getBscScanLink('abc', 'address', ChainId.BSC_TESTNET)).toEqual('https://testnet.bscscan.com/address/abc')
+      expect(getNetworkExplorerLink('abc', 'address', ChainId.BSC_TESTNET)).toEqual('https://testnet.bscscan.com/address/abc')
     })
   })
 

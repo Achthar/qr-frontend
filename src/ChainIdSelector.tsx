@@ -9,7 +9,7 @@ import {
 import { ChainId } from '@pancakeswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button } from '@pancakeswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@pancakeswap/uikit'
 import { useWeb3React } from "@web3-react/core";
 
 export const Wrapper = styled.div`
@@ -220,7 +220,7 @@ const ChainIdSelector = () => {
 
   const node = useRef<HTMLDivElement>()
 
-  const { isMobile } = useMatchBreakpoints()
+  // const { isMobile } = useMatchBreakpoints()
 
   const info = chainId ? CHAIN_INFO[chainId] : undefined
 
@@ -237,11 +237,17 @@ const ChainIdSelector = () => {
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
     const rowText = `${CHAIN_INFO[targetChain].label}`
     const RowContent = () => (
-      <FlyoutRow onClick={handleRowClick} active={active}>
+      <UserMenuItem as="button" onClick={handleRowClick}>
         <Logo src={CHAIN_INFO[targetChain].logoUrl} />
         <NetworkLabel>{rowText}</NetworkLabel>
         {chainId === targetChain && <FlyoutRowActiveIndicator />}
-      </FlyoutRow>
+      </UserMenuItem>
+
+      /*  <FlyoutRow onClick={handleRowClick} active={active}>
+         <Logo src={CHAIN_INFO[targetChain].logoUrl} />
+         <NetworkLabel>{rowText}</NetworkLabel>
+         {chainId === targetChain && <FlyoutRowActiveIndicator />}
+       </FlyoutRow> */
     )
     const helpCenterLink = "https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum"
     if (active && hasExtendedInfo) {
@@ -265,28 +271,28 @@ const ChainIdSelector = () => {
     return <RowContent />
   }
 
-  const activatorRef = React.useRef<HTMLButtonElement | null>(null);
-  const listRef = React.useRef<HTMLUListElement | null>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [activeIndex, setActiveIndex] = React.useState(-1);
+  // const activatorRef = React.useRef<HTMLButtonElement | null>(null);
+  // const listRef = React.useRef<HTMLUListElement | null>(null);
+  // // const [isOpen, setIsOpen] = React.useState(false);
+  // const [activeIndex, setActiveIndex] = React.useState(-1);
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
+  // const handleClick = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
-  React.useEffect(() => {
-    if (!isOpen) {
-      setActiveIndex(-1);
-    }
-  }, [isOpen]);
+  // React.useEffect(() => {
+  //   if (!isOpen) {
+  //     setActiveIndex(-1);
+  //   }
+  // }, [isOpen]);
 
   const buttonText = chainId === 56 ? 'Binance' :
     chainId === 97 ? 'Binance Testnet' :
       chainId === 80001 ? 'Polygon Mumbai' :
         chainId === 43114 ? 'Avalanche' :
-          chainId === 43113 ? 'Avalanche Testnet' : '-'
+          chainId === 43113 ? 'Avalanche Testnet' : 'no Network'
   return (
-    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 80001].logoUrl}>
+    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
       <FlyoutHeader>
         Select a network
       </FlyoutHeader>

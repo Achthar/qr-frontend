@@ -188,7 +188,7 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 }
 
 export function useCurrency(chainId:number, currencyId: string | undefined): Currency | null | undefined {
-  const isBNB = currencyId?.toUpperCase() === NETWORK_CCY[chainId].symbol
-  const token = useToken(isBNB ? undefined : currencyId)
-  return isBNB ? NETWORK_CCY[chainId] : token
+  const insNetworkCCY = currencyId?.toUpperCase() === NETWORK_CCY[chainId].symbol
+  const token = useToken(insNetworkCCY ? undefined : currencyId)
+  return insNetworkCCY ? NETWORK_CCY[chainId] : token
 }

@@ -1,7 +1,8 @@
-import { FarmConfig, ChainGroup } from 'config/constants/types'
+import { FarmConfig } from 'config/constants/types'
+import { ChainId } from '@pancakeswap/sdk'
 import fetchFarm from './fetchFarm'
 
-const fetchFarms = async (chainId:number, farmsToFetch: {[chainGroup in ChainGroup]:FarmConfig[]}) => {
+const fetchFarms = async (chainId: number, farmsToFetch: { [chainId in ChainId]: FarmConfig[] }) => {
   const data = await Promise.all(
     farmsToFetch[chainId].map(async (farmConfig) => {
       const farm = await fetchFarm(chainId, farmConfig)

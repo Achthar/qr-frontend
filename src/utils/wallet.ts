@@ -1,6 +1,6 @@
 // Set of helper functions to facilitate wallet setup
 
-import { BASE_BSC_SCAN_URL, BASE_URL } from 'config'
+import { BASE_URL, BASE_EXPLORER_URLS } from 'config'
 import { BigNumber } from '@ethersproject/bignumber'
 import { hexStripZeros } from '@ethersproject/bytes'
 import { CHAIN_INFO } from 'config/constants/index'
@@ -34,7 +34,7 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
                 decimals: 18,
               },
               rpcUrls: nodes[chainId],
-              blockExplorerUrls: [`${BASE_BSC_SCAN_URL}/`],
+              blockExplorerUrls: [`${BASE_EXPLORER_URLS[chainId]}/`],
             },
           ],
         })

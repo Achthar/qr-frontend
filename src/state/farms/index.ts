@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useWeb3React } from '@web3-react/core'
-import { farmList as farmsConfig } from 'config/constants/farms'
+import { farmList as farmsDict } from 'config/constants/farms'
 import isArchivedPid from 'utils/farmHelpers'
 import priceHelperLpsConfig from 'config/constants/priceHelperLps'
-import {FarmConfig} from 'config/constants/types'
+import { FarmConfig } from 'config/constants/types'
 import { ChainId, chainIdToChainGroup } from 'config/index'
 import fetchFarms from './fetchFarms'
 import fetchFarmsPrices from './fetchFarmsPrices'
@@ -18,7 +18,7 @@ import { FarmsState, Farm } from '../types'
 // import { chain } from 'lodash'
 
 function noAccountFarmConfig(chainId: number) {
-  return farmsConfig[chainIdToChainGroup(chainId)].map((farm) => ({
+  return farmsDict[chainId].map((farm) => ({
     ...farm,
     userData: {
       allowance: '0',
@@ -29,22 +29,22 @@ function noAccountFarmConfig(chainId: number) {
   }))
 }
 
-const initialState: FarmsState = { data: noAccountFarmConfig(80001), loadArchivedFarmsData: false, userDataLoaded: false }
+function initialState(chainId: number): FarmsState { return { data: noAccountFarmConfig(chainId), loadArchivedFarmsData: false, userDataLoaded: false } }
 
-export function nonArchivedFarms(chainId: number):FarmConfig[] { return farmsConfig[chainIdToChainGroup(chainId)].filter(({ pid }) => !isArchivedPid(pid)) }
+export function nonArchivedFarms(chainId: number): FarmConfig[] { return farmsDict[chainId ?? 56].filter(({ pid }) => !isArchivedPid(pid)) }
 
 // Async thunks
 export const fetchFarmsPublicDataAsync = createAsyncThunk<Farm[], number[]>(
   'farms/fetchFarmsPublicDataAsync',
   async (pids) => {
     const { chainId } = useWeb3React()
-    const farmsToFetch = farmsConfig[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
+    const farmsToFetch = farmsDict[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
 
     // Add price helper farms
     const farmsWithPriceHelpers = farmsToFetch.concat(priceHelperLpsConfig)
 
     const farms = await fetchFarms(chainId, farmsWithPriceHelpers)
-    const farmsWithPrices = await fetchFarmsPrices(farms)
+    const farmsWithPrices = await fetchFarmsPrices(chainId, farms)
 
     // Filter out price helper LP config farms
     const farmsWithoutHelperLps = farmsWithPrices.filter((farm: Farm) => {
@@ -67,7 +67,7 @@ export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], {
   'farms/fetchFarmUserDataAsync',
   async ({ account, pids }) => {
     const { chainId } = useWeb3React()
-    const farmsToFetch = farmsConfig[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
+    const farmsToFetch = farmsDict[chainId].filter((farmConfig) => pids.includes(farmConfig.pid))
     const userFarmAllowances = await fetchFarmUserAllowances(chainId, account, farmsToFetch)
     const userFarmTokenBalances = await fetchFarmUserTokenBalances(chainId, account, farmsToFetch)
     const userStakedBalances = await fetchFarmUserStakedBalances(chainId, account, farmsToFetch)
@@ -87,7 +87,7 @@ export const fetchFarmUserDataAsync = createAsyncThunk<FarmUserDataResponse[], {
 
 export const farmsSlice = createSlice({
   name: 'Farms',
-  initialState,
+  initialState: initialState(43113), // TODO: make that more flexible
   reducers: {
     setLoadArchivedFarmsData: (state, action) => {
       const loadArchivedFarmsData = action.payload

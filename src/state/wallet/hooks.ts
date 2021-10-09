@@ -11,7 +11,7 @@ import { useSingleContractMultipleData, useMultipleContractSingleData } from '..
 /**
  * Returns a map of the given addresses to their eventually consistent BNB balances.
  */
-export function useBNBBalances(
+export function useNetworkCCYBalances(
   chainId: number,
   uncheckedAddresses?: (string | undefined)[],
 ): {
@@ -113,7 +113,7 @@ export function useCurrencyBalances(
 
   const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
 
-  const ethBalance = useBNBBalances(chainId, containsBNB ? [account] : [])
+  const ethBalance = useNetworkCCYBalances(chainId, containsBNB ? [account] : [])
 
   return useMemo(
     () =>

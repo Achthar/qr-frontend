@@ -42,6 +42,10 @@ import farmAuctionAbi from 'config/abi/farmAuction.json'
 // ABI polygon
 import lpTokenAbiPolygon from 'config/abi/polygon/IRequiemPair.json'
 
+// ABI AVAX
+
+
+
 import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract } from './types'
 
 
