@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-
-import { network } from '../../connectors'
-import { useEagerConnect, useInactiveListener } from '../../hooks'
-import { NetworkContextName } from '../../config/constants'
+import ConnectWalletButton from 'components/ConnectWalletButton'
+import { network } from 'connectors'
+import { useEagerConnect, useInactiveListener } from 'hooks'
+import { NetworkContextName } from 'config/constants'
+import WalletModal from 'components/WalletModal'
 import Loader from '../Loader/index'
 
 const MessageWrapper = styled.div`
@@ -27,7 +28,7 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
   // try to eagerly connect to an injected provider, if it exists and has granted access already
   const triedEager = useEagerConnect()
 
-  // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate itd
+  // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate it
   useEffect(() => {
     if (triedEager && !networkActive && !networkError && !active) {
       activateNetwork(network)
@@ -57,9 +58,12 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
   // if the account context isn't active, and there's an error on the network context, it's an irrecoverable error
   if (!active && networkError) {
     return (
-      <MessageWrapper>
-        <Message>{t('web3ReactManager.unknownError')}</Message>
-      </MessageWrapper>
+      <div>
+        <MessageWrapper>
+        <ConnectWalletButton />
+          <Message>{t('web3ReactManager.unknownError')}</Message>
+        </MessageWrapper>
+      </div>
     )
   }
 

@@ -237,8 +237,8 @@ const ChainIdSelector = () => {
     const handleRowClick = () => {
       switchToNetwork({ library, chainId: targetChain })
       // useToggleModal()
-     toggle()
-     //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)
+      toggle()
+      //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)
     }
     const active = chainId === targetChain
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
@@ -304,11 +304,11 @@ const ChainIdSelector = () => {
         Select a network
       </FlyoutHeader>
       <Row targetChain={ChainId.AVAX_MAINNET} />
+      <Row targetChain={ChainId.AVAX_TESTNET} />
       <Row targetChain={ChainId.BSC_MAINNET} />
       <Row targetChain={ChainId.BSC_TESTNET} />
       <Row targetChain={ChainId.MATIC_TESTNET} />
-      <Row targetChain={ChainId.AVAX_TESTNET} />
-      <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} />
+      {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
 
     </UIKitUserMenu>
   );

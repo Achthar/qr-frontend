@@ -1,8 +1,21 @@
 import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@pancakeswap/sdk'
 import ms from 'ms.macro'
+
 import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC, REQT } from './tokens'
 
+export const LANDING_PAGE = 'https://requiem.finance/'
 
+export const AVALANCHE_CHAIN_PARAMS = {
+  chainId: '0xa86a', // A 0x-prefixed hexadecimal chainId
+  chainName: 'Avalanche Mainnet C-Chain',
+  nativeCurrency: {
+    name: 'Avalanche',
+    symbol: 'AVAX',
+    decimals: 18
+  },
+  rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+  blockExplorerUrls: ['https://cchain.explorer.avax.network/']
+}
 
 export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
   [ChainId.BSC_MAINNET]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
@@ -112,8 +125,8 @@ export const CHAIN_INFO: ChainInfo = {
   [ChainId.AVAX_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
-    explorer: 'https://goerli.etherscan.io/',
-    infoLink: 'https://info.uniswap.org/#/',
+    explorer: 'https://explorer.avax.network/',
+    infoLink: 'https://www.avax.network/',
     label: 'Avalanche',
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/AVAX.svg',
     rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
@@ -122,8 +135,8 @@ export const CHAIN_INFO: ChainInfo = {
   [ChainId.AVAX_TESTNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
     docs: 'https://docs.uniswap.org/',
-    explorer: 'https://goerli.etherscan.io/',
-    infoLink: 'https://info.uniswap.org/#/',
+    explorer: 'https://cchain.explorer.avax-test.network/',
+    infoLink: 'https://www.avax.network/',
     label: 'Avalanche Testnet',
     rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/AVAX.svg',
@@ -131,7 +144,7 @@ export const CHAIN_INFO: ChainInfo = {
   },
   [ChainId.MATIC_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
-    bridge: 'https://gateway.optimism.io/',
+    bridge: 'https://wallet.polygon.technology/',
     docs: 'https://optimism.io/',
     explorer: 'https://polygonscan.com/',
     infoLink: 'https://info.uniswap.org/#/optimism',

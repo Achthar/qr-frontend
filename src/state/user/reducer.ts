@@ -18,6 +18,7 @@ import {
   toggleTheme,
   updateUserFarmStakedOnly,
   FarmStakedOnly,
+  toggleURLWarning,
 } from './actions'
 import { GAS_PRICE_GWEI } from './hooks/helpers'
 
@@ -56,6 +57,7 @@ export interface UserState {
   isDark: boolean
   userFarmStakedOnly: FarmStakedOnly
   gasPrice: string
+  URLWarningVisible: boolean
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -74,6 +76,7 @@ export const initialState: UserState = {
   isDark: false,
   userFarmStakedOnly: FarmStakedOnly.ON_FINISHED,
   gasPrice: GAS_PRICE_GWEI[99999].default,
+  URLWarningVisible: true
 }
 
 export default createReducer(initialState, (builder) =>
@@ -157,5 +160,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateGasPrice, (state, action) => {
       state.gasPrice = action.payload.gasPrice
+    })
+    .addCase(toggleURLWarning, state => {
+      state.URLWarningVisible = !state.URLWarningVisible
     }),
 )

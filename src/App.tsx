@@ -9,7 +9,8 @@ import { usePollBlockNumber } from 'state/block/hooks'
 import { usePollCoreFarmData } from 'state/farms/hooks'
 import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
-import Web3ReactManager from './components/Web3ReactManager'
+import Web3ReactManager from 'components/Web3ReactManager'
+import Popups from 'components/Popups'
 // import Menu from './components/Menu'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
 import { ToastListener } from './contexts/ToastsContext'
@@ -59,6 +60,7 @@ const App: React.FC = () => {
       <GlobalStyle />
       <CustomMenu />
       <SuspenseWithChunkError fallback={<PageLoader />}>
+        <Popups/>
         <Web3ReactManager>
           <Switch>
             <Route path="/" exact>

@@ -16,7 +16,7 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
   const provider = window.ethereum
   if (provider) {
     // const chainId = parseInt(process.env.REACT_APP_CHAIN_ID, 10)
-    const formattedChainId = hexStripZeros(BigNumber.from(chainId).toHexString()) // chainId === 43113 ? chainId : hexStripZeros(BigNumber.from(chainId).toHexString())
+    const formattedChainId = hexStripZeros(BigNumber.from(chainId ?? 43114).toHexString()) // chainId === 43113 ? chainId : hexStripZeros(BigNumber.from(chainId).toHexString())
     try {
       if (!chainId && library?.getNetwork) {
         ({ chainId } = await library.getNetwork())
@@ -44,10 +44,10 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
           params: [
             {
               chainId: formattedChainId,
-              chainName: CHAIN_INFO[chainId].label,
-              rpcUrls: CHAIN_INFO[chainId].rpcUrls,
-              nativeCurrency: CHAIN_INFO[chainId].nativeCurrency,
-              blockExplorerUrls: [CHAIN_INFO[chainId].explorer],
+              chainName: CHAIN_INFO[chainId ?? 43114].label,
+              rpcUrls: CHAIN_INFO[chainId ?? 43114].rpcUrls,
+              nativeCurrency: CHAIN_INFO[chainId ?? 43114].nativeCurrency,
+              blockExplorerUrls: [CHAIN_INFO[chainId ?? 43114].explorer],
             },
           ],
         })

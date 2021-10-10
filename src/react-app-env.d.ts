@@ -10,6 +10,7 @@ interface Window {
   BinanceChain?: {
     bnbSign?: (address: string, message: string) => Promise<{ publicKey: string; signature: string }>
   }
+  web3?: {}
 }
 
 declare module 'content-hash' {

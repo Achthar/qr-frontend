@@ -55,6 +55,10 @@ export function useExpertModeManager(): [boolean, () => void] {
   return [expertMode, toggleSetExpertMode]
 }
 
+export function useURLWarningVisible(): boolean {
+  return useSelector((state: AppState) => state.user.URLWarningVisible)
+}
+
 export function useThemeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
   // const isDark = useSelector<AppState, AppState['user']['isDark']>((state) => state.user.isDark)
