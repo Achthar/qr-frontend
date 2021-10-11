@@ -1,4 +1,5 @@
 import { ChainId, Token } from '@pancakeswap/sdk'
+import { chain } from 'lodash'
 
 export const WETH = {
   [ChainId.BSC_MAINNET]: new Token(
@@ -165,8 +166,37 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
 
 }
+export const TUSD: { [chainId: number]: Token } = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1',
+    6,
+    'TUSD',
+    'True USD',
+  ),
+
+}
+
+export const STABLES = {
+  [ChainId.AVAX_TESTNET]:
+    [
+      USDT[ChainId.AVAX_TESTNET],
+      USDC[ChainId.AVAX_TESTNET],
+      DAI[ChainId.AVAX_TESTNET],
+      TUSD[ChainId.AVAX_TESTNET]
+    ],
+
+}
+
 
 const tokens = {
   bnb: {

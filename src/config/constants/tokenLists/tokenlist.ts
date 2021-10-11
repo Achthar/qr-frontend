@@ -297,7 +297,22 @@ export const tokenList = {
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
             },
-
+            {
+                "name": "USD coin",
+                "symbol": "USDC",
+                "address": "0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+            },
+            {
+                "name": "True USD",
+                "symbol": "TUSD",
+                "address": "0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+            },
         ]
     },
     43114: {
