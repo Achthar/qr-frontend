@@ -80,7 +80,7 @@ export function useDerivedMintStablesInfo(
 
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
   const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
-
+  console.log("TV", typedValues)
   // tokens
   const stableCurrencies: { [field in StablesField]?: Currency } = useMemo(
     () => ({
@@ -121,27 +121,39 @@ export function useDerivedMintStablesInfo(
   }
 
   // amounts
-  const parsedStablesAmounts: { [field in StablesField]?: CurrencyAmount } | undefined =  useMemo(()=>
-   ({
-    [StablesField.CURRENCY_1]: tryParseAmount(chainId, typedValue1, stableCurrencies[0]),
-    [StablesField.CURRENCY_2]: tryParseAmount(chainId, typedValue2, stableCurrencies[1]),
-    [StablesField.CURRENCY_3]: tryParseAmount(chainId, typedValue3, stableCurrencies[2]),
-    [StablesField.CURRENCY_4]: tryParseAmount(chainId, typedValue4, stableCurrencies[3])
-  }),[typedValue1, typedValue2, typedValue3, typedValue4, chainId, stableCurrencies]
-  )
+  // const parsedStablesAmounts: { [field in StablesField]?: CurrencyAmount } | undefined = useMemo(() =>
+  // ({
+  //   [StablesField.CURRENCY_1]: tryParseAmount(chainId, typedValue1, stableCurrencies[0]),
+  //   [StablesField.CURRENCY_2]: tryParseAmount(chainId, typedValue2, stableCurrencies[1]),
+  //   [StablesField.CURRENCY_3]: tryParseAmount(chainId, typedValue3, stableCurrencies[2]),
+  //   [StablesField.CURRENCY_4]: tryParseAmount(chainId, typedValue4, stableCurrencies[3])
+  // }), [typedValue1, typedValue2, typedValue3, typedValue4, chainId, stableCurrencies]
+  // )
+
+  const parsedStablesAmount1: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue1, stableCurrencies[0])
+
+
+  const parsedStablesAmount2: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue2, stableCurrencies[1])
+
+  const parsedStablesAmount3: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue3, stableCurrencies[2])
+
+  const parsedStablesAmount4: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue4, stableCurrencies[3])
+
+
   /* Object.assign({},
     ...fieldList.map((_, index) => ({ [fieldList[index]]: tryParseAmount(chainId, typedValues[index], stableCurrencies[index]) }))); */
 
 
   // liquidity minted
   const stablesLiquidityMinted = useMemo(() => {
-    const tokenAmounts = Object.values(parsedStablesAmounts).map(amount => wrappedCurrencyAmount(amount, chainId))
-
+    // const tokenAmounts = Object.values(parsedStablesAmounts).map(amount => wrappedCurrencyAmount(amount, chainId))
+    const tokenAmounts = [parsedStablesAmount1, parsedStablesAmount2,
+      parsedStablesAmount3, parsedStablesAmount4].map(amount => wrappedCurrencyAmount(amount, chainId))
     if (stablesPair && totalSupply && tokenAmounts) {
       return stablesPair.getLiquidityMinted(totalSupply, tokenAmounts[0], tokenAmounts[1])
     }
     return undefined
-  }, [parsedStablesAmounts, chainId, stablesPair, totalSupply])
+  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, chainId, stablesPair, totalSupply])
 
   const stablesPoolTokenPercentage = useMemo(() => {
     if (stablesLiquidityMinted && totalSupply) {
@@ -159,28 +171,36 @@ export function useDerivedMintStablesInfo(
     stablesError = stablesError ?? 'Invalid stablesPair'
   }
 
-  if (!parsedStablesAmounts[StablesField.CURRENCY_1] || !parsedStablesAmounts[StablesField.CURRENCY_2]
-    || !parsedStablesAmounts[StablesField.CURRENCY_3] || !parsedStablesAmounts[StablesField.CURRENCY_4]) {
+  if (!parsedStablesAmount1 || !parsedStablesAmount2
+    || !parsedStablesAmount3 || !parsedStablesAmount4) {
     stablesError = stablesError ?? 'Enter an amount'
   }
 
 
 
-  const { [StablesField.CURRENCY_1]: currency1Amount, [StablesField.CURRENCY_2]: currency2Amount,
-    [StablesField.CURRENCY_3]: currency3Amount, [StablesField.CURRENCY_4]: currency4Amount } = parsedStablesAmounts
+  // const { [StablesField.CURRENCY_1]: currency1Amount, [StablesField.CURRENCY_2]: currency2Amount,
+  //   [StablesField.CURRENCY_3]: currency3Amount, [StablesField.CURRENCY_4]: currency4Amount } = parsedStablesAmounts
 
-  if (currency1Amount && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(currency1Amount)) {
+  if (parsedStablesAmount1 && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(parsedStablesAmount1)) {
     stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_1]?.symbol} balance`
   }
 
-  if (currency2Amount && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(currency2Amount)) {
+  if (parsedStablesAmount2 && stablesCurrencyBalances?.[StablesField.CURRENCY_2]?.lessThan(parsedStablesAmount2)) {
     stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_2]?.symbol} balance`
   }
-  if (currency3Amount && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(currency3Amount)) {
+  if (parsedStablesAmount3 && stablesCurrencyBalances?.[StablesField.CURRENCY_3]?.lessThan(parsedStablesAmount3)) {
     stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_3]?.symbol} balance`
   }
-  if (currency4Amount && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(currency4Amount)) {
+  if (parsedStablesAmount4 && stablesCurrencyBalances?.[StablesField.CURRENCY_4]?.lessThan(parsedStablesAmount4)) {
     stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_4]?.symbol} balance`
+  }
+
+  const parsedStablesAmounts =
+  {
+    [StablesField.CURRENCY_1]: parsedStablesAmount1,
+    [StablesField.CURRENCY_2]: parsedStablesAmount2,
+    [StablesField.CURRENCY_3]: parsedStablesAmount3,
+    [StablesField.CURRENCY_4]: parsedStablesAmount4
   }
 
   return {

@@ -10,30 +10,30 @@ export interface MintStablesState {
 
 const initialState: MintStablesState = {
   typedValue1: '',
-  typedValue2:'',
-  typedValue3:'',
-  typedValue4:''
+  typedValue2: '',
+  typedValue3: '',
+  typedValue4: '',
 }
 
 export default createReducer<MintStablesState>(initialState, (builder) =>
   builder
     .addCase(resetMintState, () => initialState)
-    .addCase(typeInput1, (state, { payload: {  typedValue1 } }) => {
+    .addCase(typeInput1, (state, { payload: { typedValue1 } }) => {
       return {
         ...state,
         typedValue1,
       }
-    }).addCase(typeInput2, (state, { payload: {  typedValue2 } }) => {
+    }).addCase(typeInput2, (state, { payload: { typedValue2 } }) => {
       return {
         ...state,
         typedValue2,
       }
-    }).addCase(typeInput3, (state, { payload: {  typedValue3 } }) => {
+    }).addCase(typeInput3, (state, { payload: { typedValue3 } }) => {
       return {
         ...state,
         typedValue3,
       }
-    }).addCase(typeInput4, (state, { payload: {  typedValue4 } }) => {
+    }).addCase(typeInput4, (state, { payload: { typedValue4 } }) => {
       return {
         ...state,
         typedValue4,

@@ -321,13 +321,6 @@ export default function AddLiquidity({
     STABLE
   }
 
-  interface StablesFieldInput {
-    currencyies: Currency[]
-    fieldInputs: StablesField
-
-
-  }
-
   const [liquidityState, setLiquidityState] = useState<LiquidityState>(LiquidityState.STANDARD)
   const handleClick = (newIndex: LiquidityState) => setLiquidityState(newIndex);
 
@@ -340,8 +333,6 @@ export default function AddLiquidity({
 
   // mint state
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
-  const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
-
   const {
     stableCurrencies,
     stablesPair,
@@ -363,11 +354,22 @@ export default function AddLiquidity({
   const { onField1Input, onField2Input, onField3Input, onField4Input } = useMintStablesActionHandlers()
 
   // get the max amounts user can add
-  const maxAmountsStables: { [field in StablesField]?: TokenAmount } = [StablesField.CURRENCY_1, StablesField.CURRENCY_2, StablesField.CURRENCY_3, StablesField.CURRENCY_4].reduce(
+  const maxAmountsStables: { [field in StablesField]?: TokenAmount } = [StablesField.CURRENCY_1, StablesField.CURRENCY_2, 
+    StablesField.CURRENCY_3, StablesField.CURRENCY_4].reduce(
     (accumulator, field) => {
       return {
         ...accumulator,
         [field]: maxAmountSpend(chainId, stablesCurrencyBalances[field]),
+      }
+    },
+    {},
+  )
+  const atMaxAmountsStables: { [field in Field]?: StablesField } = [StablesField.CURRENCY_1, StablesField.CURRENCY_2, 
+  StablesField.CURRENCY_3, StablesField.CURRENCY_4].reduce(
+    (accumulator, field) => {
+      return {
+        ...accumulator,
+        [field]: maxAmounts[field]?.equalTo(parsedStablesAmounts[field] ?? '0'),
       }
     },
     {},
@@ -517,51 +519,47 @@ export default function AddLiquidity({
                 </AutoColumn>
               )}
             </AutoColumn>) : // stableSwap Liquidity here
-            (<AutoColumn gap="20px">
+            (<AutoColumn gap="5px">
 
               <CurrencyInputPanelStable
-                value={formattedStablesAmounts[StablesField.CURRENCY_1]}
+                value={typedValue1}
                 onUserInput={onField1Input}
                 onMax={() => {
                   onField1Input(maxAmountsStables[StablesField.CURRENCY_1]?.toExact() ?? '')
                 }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_1]}
                 stableCurrency={stables[0]}
                 id="add-liquidity-input-token1"
-                showCommonBases
               />
               <CurrencyInputPanelStable
-                value={formattedStablesAmounts[StablesField.CURRENCY_2]}
+                value={typedValue2}
                 onUserInput={onField2Input}
                 onMax={() => {
                   onField2Input(maxAmountsStables[StablesField.CURRENCY_2]?.toExact() ?? '')
                 }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_2]}
                 stableCurrency={stables[1]}
                 id="add-liquidity-input-token2"
-                showCommonBases
               />
               <CurrencyInputPanelStable
-                value={formattedStablesAmounts[StablesField.CURRENCY_3]}
+                value={typedValue3}
                 onUserInput={onField3Input}
                 onMax={() => {
                   onField3Input(maxAmountsStables[StablesField.CURRENCY_3]?.toExact() ?? '')
                 }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_3]}
                 stableCurrency={stables[2]}
                 id="add-liquidity-input-token3"
-                showCommonBases
               />
               <CurrencyInputPanelStable
-                value={formattedStablesAmounts[StablesField.CURRENCY_4]}
+                value={typedValue4}
                 onUserInput={onField4Input}
                 onMax={() => {
                   onField4Input(maxAmountsStables[StablesField.CURRENCY_4]?.toExact() ?? '')
                 }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_4]}
                 stableCurrency={stables[3]}
                 id="add-liquidity-input-token4"
-                showCommonBases
               />
               {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
                 <>
