@@ -61,7 +61,8 @@ const App: React.FC = () => {
       <CustomMenu />
       <SuspenseWithChunkError fallback={<PageLoader />}>
         <Popups/>
-        <Web3ReactManager>
+        {/* <Web3ReactManager> */}
+          
           <Switch>
             <Route path="/" exact>
               <Home />
@@ -98,7 +99,7 @@ const App: React.FC = () => {
             {/* 404 */}
             <Route component={NotFound} />
           </Switch>
-        </Web3ReactManager>
+        {/* </Web3ReactManager> */}
         <CustomNav />
       </SuspenseWithChunkError>
       <ToastListener />
