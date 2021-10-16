@@ -6,7 +6,7 @@ import { Address } from 'config/constants/types'
 
 export const getAddress = (chainId:number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
-  return address[chainId] ? address[chainId] : address[ChainId.BSC_MAINNET]
+  return address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID]
 }
 
 export const getCakeAddress = (chainId:number) => {

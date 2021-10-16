@@ -17,7 +17,7 @@ export const usePollFarmsPublicData = (chainId: number, includeArchive = false) 
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
-    const farmsToFetch = includeArchive ? farmsDict[chainId ?? 56] : nonArchivedFarms(chainId ?? 56)
+    const farmsToFetch = includeArchive ? farmsDict[chainId ?? 43113] : nonArchivedFarms(chainId ?? 43113)
     console.log(farmsToFetch)
     const pids = farmsToFetch.map((farmToFetch) => farmToFetch.pid)
     dispatch(fetchFarmsPublicDataAsync(pids))

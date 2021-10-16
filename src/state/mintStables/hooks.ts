@@ -80,7 +80,6 @@ export function useDerivedMintStablesInfo(
 
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
   const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
-  console.log("TV", typedValues)
   // tokens
   const stableCurrencies: { [field in StablesField]?: Currency } = useMemo(
     () => ({

@@ -375,8 +375,6 @@ export default function AddLiquidity({
     {},
   )
 
-  console.log(stables)
-
   return (
     <Page>
       <LiquidityStateButtonWrapper>
