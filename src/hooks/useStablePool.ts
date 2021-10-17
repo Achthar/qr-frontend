@@ -1,17 +1,26 @@
-import { TokenAmount, Pair, Currency } from '@pancakeswap/sdk'
-import { useMemo } from 'react'
+/** eslint @typescript-eslint/no-shadow:0 */
+import { TokenAmount, Pair, Currency, StablePool, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, SwapStorage } from '@pancakeswap/sdk'
+import React, { useMemo, useCallback, useEffect, useState } from 'react'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
-import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
-import { Interface } from '@ethersproject/abi'
+import IERC20 from 'config/abi/avax/IERC20.json'
+import { serializeError } from 'eth-rpc-errors'
+// import { Interface } from '@ethersproject/abi'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-
-import { useMultipleContractSingleData } from '../state/multicall/hooks'
+import { BigNumber } from 'ethers'
+import { getStableLpContract, getStableSwapContract } from 'utils/contractHelpers'
+import { swapStorageData } from 'config/constants/stableSwapData'
+import { simpleRpcProvider } from 'utils/providers'
+import useRefresh from './useRefresh'
+import { useTotalSupply } from './useTokenBalance'
+import { useStableLPContract, useTokenContract } from './useContract'
+import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
-const PAIR_INTERFACE = new Interface(IUniswapV2PairABI)
 
-const PAIR_INTERFACE_POLYGON = new Interface(IRequiemRouter02)
+// export interface StableSwapData {
 
+
+// }
 
 export enum StablePoolState {
   LOADING,
@@ -20,49 +29,174 @@ export enum StablePoolState {
   INVALID,
 }
 
-export function usePairs(currencies: [Currency | undefined, Currency | undefined][]): [StablePoolState, Pair | null][] {
-  const { chainId } = useActiveWeb3React()
+export function useStablePool(): [StablePoolState, StablePool | null] {
+  const chainId = 43113
+  // const { slowRefresh } = useRefresh()
 
-  const tokens = useMemo(
-    () =>
-      currencies.map(([currencyA, currencyB]) => [
-        wrappedCurrency(currencyA, chainId),
-        wrappedCurrency(currencyB, chainId),
-      ]),
-    [chainId, currencies],
-  )
+  // for now we only load the supply once on thos 
+  // const supplyResult = useSingleCallResult(
+  //   getStableLpContract(chainId ?? 43113),
+  //   'totalSupply', undefined, NEVER_RELOAD)
 
-  const pairAddresses = useMemo(
-    () =>
-      tokens.map(([tokenA, tokenB]) => {
-        return tokenA && tokenB && !tokenA.equals(tokenB) ? Pair.getAddress(tokenA, tokenB) : undefined
-      }),
-    [tokens],
-  )
+  // const [totalSupply, setLpSupply,] = useState<BigNumber>()
+  // useEffect(() => {
+  //   async function fetchTotalSupply() {
+  //     const lpContract = getStableLpContract(chainId ?? 43113)
+  //     const supply = await lpContract.totalSupply()
+  //     setLpSupply(supply)
+  //   }
 
-  // const results = useMultipleContractSingleData(pairAddresses, chainId === 56 ? PAIR_INTERFACE : PAIR_INTERFACE_POLYGON, 'getReserves')
+  //   fetchTotalSupply()
+  // }, [chainId, slowRefresh])
 
-  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
+  // static data, only loaded once
+  // const aResult = useSingleCallResult(
+  //   getStableSwapContract(chainId ?? 43113),
+  //   'getA', undefined, NEVER_RELOAD)
 
-  return useMemo(() => {
-    return results.map((result, i) => {
-      const { result: reserves, loading } = result
-      const tokenA = tokens[i][0]
-      const tokenB = tokens[i][1]
+  // const [a, setA] = useState<BigNumber>()
+  // useEffect(() => {
+  //   async function fetchA() {
+  //     const stableSwapContract = getStableSwapContract(chainId ?? 43113)
+  //     const _A = await stableSwapContract.getA()
+  //     setA(_A)
+  //   }
 
-      if (loading) return [StablePoolState.LOADING, null]
-      if (!tokenA || !tokenB || tokenA.equals(tokenB)) return [StablePoolState.INVALID, null]
-      if (!reserves) return [StablePoolState.NOT_EXISTS, null]
-      const { reserve0, reserve1 } = reserves
-      const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
+  //   fetchA()
+  // }, [chainId, slowRefresh])
+
+
+  // token reserves only reload them in shorter cycles
+  // const tokenReservesResult = useSingleCallResult(
+  //   getStableSwapContract(chainId ?? 43113),
+  //   'getTokenBalances', undefined, NEVER_RELOAD)
+
+
+  // const [tokenBalances, setTokenBalances] = useState<BigNumber[]>()
+  // useEffect(() => {
+  //   async function fetchTokenBalances() {
+  //     const stableSwapContract = getStableSwapContract(chainId ?? 43113)
+  //     const balances = await stableSwapContract.getTokenBalances()
+  //     setTokenBalances(balances)
+  //   }
+
+  //   fetchTokenBalances()
+  // }, [chainId, slowRefresh])
+
+
+
+
+  // console.log("reserves", tokenReservesResult)
+
+  // const fetchLpSupply = useCallback(async () => {
+  //   const response = await getStableLpContract(chainId ?? 43113).totalSupply()
+  //   return response
+  // }, [chainId])
+
+  // useEffect(() => {
+  //   fetchLpSupply()
+  // }, [fetchLpSupply])
+
+  // fetchLpSupply()
+
+  // const callWithGasPrice = await getStableLpContract(chainId ?? 43113).totalSupply()
+
+
+  // const { A } = useMemo(() => {
+  //   const { result, loading } = aResult
+  //   return result?.[0] ?? BigNumber.from(0)
+  // }, [aResult])
+  /*
+    return useMemo(() => {
+  
+      // when loading return signal
+      if (tokenReservesResult.loading) {
+        return [
+          StablePoolState.LOADING,
+          null
+        ]
+      }
+  
+      const swapStorage = new SwapStorage(
+        Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
+        swapStorageData[chainId].fee,
+        swapStorageData[chainId].adminFee,
+        swapStorageData[chainId].initialA,
+        swapStorageData[chainId].futureA,
+        swapStorageData[chainId].initialATime,
+        swapStorageData[chainId].futureATime,
+        swapStorageData[chainId].lpToken)
+  
+      const stablePool = new StablePool(
+        STABLES_INDEX_MAP[chainId ?? 43113],
+        tokenReservesResult.result as BigNumber[],
+        A, // we add the value of A later
+        swapStorage,
+        0, // block timestamp to be set later
+        supplyResult.result[0],
+        BigNumber.from(0) // the fee is calculated later since its individual
+      )
+  
+      console.log(stablePool)
+  
       return [
         StablePoolState.EXISTS,
-        new Pair(new TokenAmount(token0, reserve0.toString()), new TokenAmount(token1, reserve1.toString())),
+        stablePool,
       ]
-    })
-  }, [results, tokens])
+    }, [
+      chainId,
+      A,
+      tokenReservesResult.result,
+      tokenReservesResult.loading,
+      supplyResult.loading
+  
+    ]) */
+
+
+  return useMemo(() => {
+
+    const tokenBalances = [BigNumber.from(0)]
+    const a = BigNumber.from(0)
+    const totalSupply = BigNumber.from(0)
+    // if (tokenReservesResult.loading) {
+    //   return [
+    //     StablePoolState.LOADING,
+    //     null
+    //   ]
+    // }
+    const swapStorage = new SwapStorage(
+      Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
+      swapStorageData[chainId].fee,
+      swapStorageData[chainId].adminFee,
+      swapStorageData[chainId].initialA,
+      swapStorageData[chainId].futureA,
+      swapStorageData[chainId].initialATime,
+      swapStorageData[chainId].futureATime,
+      swapStorageData[chainId].lpToken)
+
+
+    // const stablePool = new StablePool(
+    //   STABLES_INDEX_MAP[chainId ?? 43113],
+    //   tokenBalances,
+    //   a, // we add the value of A later
+    //   swapStorage,
+    //   0, // block timestamp to be set later
+    //   totalSupply,
+    //   BigNumber.from(0) // the fee is calculated later since its individual
+    // )
+
+    // console.log(stablePool)
+
+    return [
+      StablePoolState.EXISTS,
+      null,
+    ]
+  }, [
+    chainId,
+    // a,
+    // tokenBalances,
+    // totalSupply
+  ])
 }
 
-export function usePair(tokenA?: Currency, tokenB?: Currency): [StablePoolState, Pair | null] {
-  return usePairs([[tokenA, tokenB]])[0]
-}
+

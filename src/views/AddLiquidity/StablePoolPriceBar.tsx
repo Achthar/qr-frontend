@@ -1,4 +1,4 @@
-import { Currency, Percent, Price } from '@pancakeswap/sdk'
+import { Currency, Percent, Price, StablePool } from '@pancakeswap/sdk'
 import React from 'react'
 import { Text } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
@@ -8,22 +8,18 @@ import { ONE_BIPS } from '../../config/constants'
 import { StablesField } from '../../state/mintStables/actions'
 
 function StablePoolPriceBar({
-  currencies,
-  noLiquidity,
+  stablePool,
   poolTokenPercentage,
-  price,
 }: {
-  currencies: { [stablesField in StablesField]?: Currency }
-  noLiquidity?: boolean
+  stablePool: StablePool
   poolTokenPercentage?: Percent
-  price?: Price
 }) {
   const { t } = useTranslation()
   return (
     <AutoColumn gap="md">
       <AutoRow justify="space-around" gap="4px">
         <AutoColumn justify="center">
-          <Text>{price?.toSignificant(6) ?? '-'}</Text>
+          {/* <Text>{price?.toSignificant(6) ?? '-'}</Text> */}
           {/* <Text fontSize="14px" pt={1}>
             {t('%assetA% per %assetB%', {
               assetA: currencies[StablesField.CURRENCY_B]?.symbol ?? '',
@@ -32,7 +28,7 @@ function StablePoolPriceBar({
           </Text> */}
         </AutoColumn>
         <AutoColumn justify="center">
-          <Text>{price?.invert()?.toSignificant(6) ?? '-'}</Text>
+          {/* <Text>{price?.invert()?.toSignificant(6) ?? '-'}</Text> */}
           {/* <Text fontSize="14px" pt={1}>
             {t('%assetA% per %assetB%', {
               assetA: currencies[StablesField.CURRENCY_A]?.symbol ?? '',
@@ -42,9 +38,7 @@ function StablePoolPriceBar({
         </AutoColumn>
         <AutoColumn justify="center">
           <Text>
-            {noLiquidity && price
-              ? '100'
-              : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ?? '0'}
+            {(poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ?? '0'}
             %
           </Text>
           <Text fontSize="14px" pt={1}>

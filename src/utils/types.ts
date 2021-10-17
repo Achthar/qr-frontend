@@ -105,3 +105,16 @@ export interface FarmAuctionContract extends Contract {
   getWhitelistedAddresses: ContractFunction<GetWhitelistedAddressesResponse>
   auctionsHistory: ContractFunction<AuctionsHistoryResponse>
 }
+
+
+export interface StableSwapContract extends Contract {
+  swapStorage: ContractFunction<any>
+  getTokens: ContractFunction<string[]>
+  getTokenBalances: ContractFunction<ethers.BigNumber[]>
+  getA: ContractFunction<ethers.BigNumber>
+}
+
+
+export interface StableLpContract extends Contract {
+  totalSupply: ContractFunction<ethers.BigNumber>
+}

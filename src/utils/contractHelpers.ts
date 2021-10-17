@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import { Interface } from '@ethersproject/abi'
 import { simpleRpcProvider } from 'utils/providers'
 import { poolsConfig } from 'config/constants'
 import { PoolCategory } from 'config/constants/types'
@@ -17,7 +18,9 @@ import {
   getChainlinkOracleAddress,
   getMulticallAddress,
   getFarmAuctionAddress,
-  getRequiemAddress
+  getRequiemAddress,
+  getStableSwapAddress,
+  getStableLpAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -43,10 +46,10 @@ import farmAuctionAbi from 'config/abi/farmAuction.json'
 import lpTokenAbiPolygon from 'config/abi/polygon/IRequiemPair.json'
 
 // ABI AVAX
+import stableSwapAVAX from 'config/abi/avax/RequiemStableSwap.json'
+import IERC20 from 'config/abi/avax/IERC20.json'
 
-
-
-import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract } from './types'
+import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract, StableSwapContract, StableLpContract } from './types'
 
 
 
@@ -140,4 +143,12 @@ export const getMulticallContract = (chainId: number, signer?: ethers.Signer | e
 }
 export const getFarmAuctionContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, farmAuctionAbi, getFarmAuctionAddress(chainId), signer) as FarmAuctionContract
+}
+export const getStableSwapContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, new Interface(stableSwapAVAX), getStableSwapAddress(chainId), signer) as StableSwapContract
+  // return getContract(chainId, stableSwapAVAX, getStableSwapAddress(chainId), signer) as StableSwapContract
+}
+export const getStableLpContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, new Interface(IERC20), getStableLpAddress(chainId), signer) as StableLpContract
+  // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
 }

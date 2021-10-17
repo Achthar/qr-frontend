@@ -33,8 +33,10 @@ import WETH_ABI from '../config/abi/weth.json'
 import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
+import stableLp_AVAX from '../config/abi/avax/IERC20.json'
 import { getContract } from '../utils'
 import { ChainId } from '../config/index'
+
 
 
 /**
@@ -184,4 +186,8 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 export function useMulticallContract(): Contract | null {
   const { chainId } = useWeb3React()
   return useContract(getMulticallAddress(chainId), multiCallAbi, false)
+}
+
+export function useStableLPContract(stableLpAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(stableLpAddress, stableLp_AVAX, withSignerIfPossible)
 }

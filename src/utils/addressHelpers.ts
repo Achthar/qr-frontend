@@ -72,7 +72,13 @@ export const getBunnySpecialLotteryAddress = (chainId:number) => {
 export const getFarmAuctionAddress = (chainId:number) => {
   return getAddress(chainId, addresses.farmAuction)
 } 
+export const getStableSwapAddress = (chainId:number) => {
+  return getAddress(chainId, addresses.stableSwap)
+} 
 
+export const getStableLpAddress = (chainId:number) => {
+  return getAddress(chainId, addresses.stableLp)
+} 
 
 /*
 export const getCakeAddress = () => {

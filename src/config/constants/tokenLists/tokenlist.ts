@@ -311,7 +311,7 @@ export const tokenList = {
                 "address": "0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
             },
         ]
     },

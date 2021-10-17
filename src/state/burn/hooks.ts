@@ -47,7 +47,7 @@ export function useDerivedBurnInfo(
   }
 
   // liquidity values
-  const totalSupply = useTotalSupply(chainId, pair?.liquidityToken)
+  const totalSupply = useTotalSupply(pair?.liquidityToken)
   const liquidityValueA =
     pair &&
       totalSupply &&

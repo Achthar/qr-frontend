@@ -1,16 +1,18 @@
 /* eslint object-shorthand: 0 */
-import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, Pair, Percent, Price, TokenAmount } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, StablePool, Percent, Price, TokenAmount } from '@pancakeswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { PairState, usePair } from 'hooks/usePairs'
+import { StablePoolState, useStablePool } from 'hooks/useStablePool'
+import {BigNumber} from 'ethers'
 import useTotalSupply from 'hooks/useTotalSupply'
-
+import { simpleRpcProvider } from 'utils/providers'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputs } from './actions'
+
 
 const ZERO = JSBI.BigInt(0)
 
@@ -68,8 +70,8 @@ export function useDerivedMintStablesInfo(
   currency4: Currency | undefined,
 ): {
   stableCurrencies: { [field in StablesField]?: Currency }
-  stablesPair?: Pair | null
-  stablesPairState: PairState
+  stablePool?: StablePool | null
+  stablePoolState: StablePoolState
   stablesCurrencyBalances: { [field in StablesField]?: CurrencyAmount }
   parsedStablesAmounts: { [field in StablesField]?: CurrencyAmount }
   stablesLiquidityMinted?: TokenAmount
@@ -92,9 +94,11 @@ export function useDerivedMintStablesInfo(
   )
 
   // stablesPair
-  const [stablesPairState, stablesPair] = usePair(stableCurrencies[StablesField.CURRENCY_1], stableCurrencies[StablesField.CURRENCY_2])
+  const [stablePoolState, stablePool] = useStablePool()
 
-  const totalSupply = useTotalSupply(chainId, stablesPair?.liquidityToken)
+  stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
+  
+  const totalSupply = useTotalSupply(stablePool?.liquidityToken)
 
   // balances
   const balances = useCurrencyBalances(chainId, account ?? undefined, [
@@ -138,25 +142,35 @@ export function useDerivedMintStablesInfo(
 
   const parsedStablesAmount4: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue4, stableCurrencies[3])
 
-
+  console.log("parsedAmount", parsedStablesAmount1)
   /* Object.assign({},
     ...fieldList.map((_, index) => ({ [fieldList[index]]: tryParseAmount(chainId, typedValues[index], stableCurrencies[index]) }))); */
 
-
+  console.log("stablePool", stablePool)
   // liquidity minted
   const stablesLiquidityMinted = useMemo(() => {
-    // const tokenAmounts = Object.values(parsedStablesAmounts).map(amount => wrappedCurrencyAmount(amount, chainId))
     const tokenAmounts = [parsedStablesAmount1, parsedStablesAmount2,
       parsedStablesAmount3, parsedStablesAmount4].map(amount => wrappedCurrencyAmount(amount, chainId))
-    if (stablesPair && totalSupply && tokenAmounts) {
-      return stablesPair.getLiquidityMinted(totalSupply, tokenAmounts[0], tokenAmounts[1])
+    console.log(tokenAmounts)
+    if (stablePool && totalSupply && tokenAmounts) {
+      return stablePool.getLiquidityMinted(
+        [
+          parsedStablesAmount1.toBigNumber(),
+          parsedStablesAmount2.toBigNumber(),
+          parsedStablesAmount3.toBigNumber(),
+          parsedStablesAmount4.toBigNumber()
+        ], true)
     }
     return undefined
-  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, chainId, stablesPair, totalSupply])
+  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, chainId, stablePool, totalSupply])
+
+  console.log("mintedRaw", stablesLiquidityMinted)
+
+
 
   const stablesPoolTokenPercentage = useMemo(() => {
     if (stablesLiquidityMinted && totalSupply) {
-      return new Percent(stablesLiquidityMinted.raw, totalSupply.add(stablesLiquidityMinted).raw)
+      return new Percent(stablesLiquidityMinted.toBigInt(), (totalSupply.toBigNumber().add(stablesLiquidityMinted)).toBigInt())
     }
     return undefined
   }, [stablesLiquidityMinted, totalSupply])
@@ -166,7 +180,7 @@ export function useDerivedMintStablesInfo(
     stablesError = 'Connect Wallet'
   }
 
-  if (stablesPairState === PairState.INVALID) {
+  if (stablePoolState === StablePoolState.INVALID) {
     stablesError = stablesError ?? 'Invalid stablesPair'
   }
 
@@ -204,11 +218,11 @@ export function useDerivedMintStablesInfo(
 
   return {
     stableCurrencies,
-    stablesPair,
-    stablesPairState,
+    stablePool,
+    stablePoolState,
     stablesCurrencyBalances,
     parsedStablesAmounts,
-    stablesLiquidityMinted,
+    stablesLiquidityMinted: stablePool === null ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
     stablesPoolTokenPercentage,
     stablesError,
   }

@@ -329,14 +329,16 @@ export default function AddLiquidity({
   `
 
   //  stuff for stable swap starts here
+
+  // get the correctly arranged stablecoins 
   const stables = stableCCYs(chainId ?? 43113)
 
   // mint state
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
   const {
     stableCurrencies,
-    stablesPair,
-    stablesPairState,
+    stablePool,
+    stablePoolState,
     stablesCurrencyBalances,
     parsedStablesAmounts,
     stablesLiquidityMinted,

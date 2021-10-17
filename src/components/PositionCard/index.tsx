@@ -49,7 +49,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
   const [showMore, setShowMore] = useState(false)
 
   const userPoolBalance = useTokenBalance(chainId, account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(chainId, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
@@ -130,9 +130,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
       ) : (
         <LightCard>
           <Text fontSize="14px" style={{ textAlign: 'center' }}>
-            <span role="img" aria-label="pancake-icon">
-              🥞
-            </span>{' '}
+            <span role="img" aria-label="pancake-icon"/>
             {t(
               "By adding liquidity you'll earn 0.17% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.",
             )}
@@ -152,7 +150,7 @@ export default function FullPositionCard({ pair, ...props }: PositionCardProps) 
   const [showMore, setShowMore] = useState(false)
 
   const userPoolBalance = useTokenBalance(chainId, account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(chainId, pair.liquidityToken)
+  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
