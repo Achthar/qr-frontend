@@ -28,13 +28,14 @@ const LabelRow = styled.div`
   line-height: 1rem;
   padding: 0.75rem 1rem 0 1rem;
 `
-const InputPanel = styled.div<{ hideInput?: boolean }>`
+const InputPanel = styled.div<{ width: string }>`
   display: flex;
-  flex-flow: column nowrap;
+  flex-flow: column wrap;
   position: relative;
   border-radius: 20px;
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1;
+  width: ${(props) => props.width}
 `
 const Container = styled.div<{ hideInput: boolean }>`
   border-radius: 16px;
@@ -42,6 +43,7 @@ const Container = styled.div<{ hideInput: boolean }>`
   box-shadow: ${({ theme }) => theme.shadows.inset};
 `
 interface CurrencyInputPanelStable {
+  width: string
   value: string
   onUserInput: (value: string) => void
   onMax?: () => void
@@ -55,7 +57,9 @@ interface CurrencyInputPanelStable {
   id: string
   showCommonBases?: boolean
 }
+
 export default function CurrencyInputPanelStable({
+  width,
   value,
   onUserInput,
   onMax,
@@ -71,7 +75,7 @@ export default function CurrencyInputPanelStable({
   const { t } = useTranslation()
 
   return (
-    <InputPanel id={id}>
+    <InputPanel id={id} width={width}>
       <Container hideInput={false}>
 
         <LabelRow>
@@ -86,6 +90,7 @@ export default function CurrencyInputPanelStable({
         <InputRow style={{ padding: '0px', borderRadius: '8px' }} selected={true}>
           <>
             <NumericalInput
+              style={{ paddingLeft: 25 }}
               className="token-amount-input"
               value={value}
               onUserInput={(val) => {

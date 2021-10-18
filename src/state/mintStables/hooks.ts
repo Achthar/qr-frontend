@@ -1,10 +1,12 @@
 /* eslint object-shorthand: 0 */
-import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, StablePool, Percent, Price, TokenAmount } from '@pancakeswap/sdk'
+import { parseUnits } from '@ethersproject/units'
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, StablePool, Percent, Price, TokenAmount, STABLES_INDEX_MAP, Token } from '@pancakeswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
-import {BigNumber} from 'ethers'
+import { BigNumber } from 'ethers'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { simpleRpcProvider } from 'utils/providers'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
@@ -15,6 +17,25 @@ import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInput
 
 
 const ZERO = JSBI.BigInt(0)
+
+
+// try to parse a user entered amount for a given token
+export function tryParseStablesAmount(value?: string, currency?: Currency): BigNumber | undefined {
+  if (!value || !currency) {
+    return undefined
+  }
+  try {
+    const typedValueParsed = parseUnits(value, currency.decimals).toString()
+    if (typedValueParsed !== '0') {
+      return BigNumber.from(typedValueParsed)
+    }
+  } catch (error: any) {
+    // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
+    console.debug(`Failed to parse input amount: "${value}"`, error)
+  }
+  // necessary for all paths to return a value
+  return undefined
+}
 
 export function useMintStablesState(): AppState['mintStables'] {
   return useSelector<AppState, AppState['mintStables']>((state) => state.mintStables)
@@ -81,7 +102,7 @@ export function useDerivedMintStablesInfo(
   const { account, chainId } = useActiveWeb3React()
 
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
-  const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
+  // const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
   // tokens
   const stableCurrencies: { [field in StablesField]?: Currency } = useMemo(
     () => ({
@@ -96,9 +117,9 @@ export function useDerivedMintStablesInfo(
   // stablesPair
   const [stablePoolState, stablePool] = useStablePool()
 
-  stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
-  
-  const totalSupply = useTotalSupply(stablePool?.liquidityToken)
+  // stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
+
+  const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
   // balances
   const balances = useCurrencyBalances(chainId, account ?? undefined, [
@@ -132,45 +153,45 @@ export function useDerivedMintStablesInfo(
   //   [StablesField.CURRENCY_4]: tryParseAmount(chainId, typedValue4, stableCurrencies[3])
   // }), [typedValue1, typedValue2, typedValue3, typedValue4, chainId, stableCurrencies]
   // )
+  // console.log("typed", typedValues)
 
-  const parsedStablesAmount1: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue1, stableCurrencies[0])
+  const parsedStablesAmount1: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, STABLES_INDEX_MAP[chainId][0])
 
+  const parsedStablesAmount2: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, STABLES_INDEX_MAP[chainId][1])
 
-  const parsedStablesAmount2: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue2, stableCurrencies[1])
+  const parsedStablesAmount3: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, STABLES_INDEX_MAP[chainId][2])
 
-  const parsedStablesAmount3: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue3, stableCurrencies[2])
+  const parsedStablesAmount4: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, STABLES_INDEX_MAP[chainId][3])
 
-  const parsedStablesAmount4: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue4, stableCurrencies[3])
+  console.log("parsedAmount1", parsedStablesAmount1)
 
-  console.log("parsedAmount", parsedStablesAmount1)
   /* Object.assign({},
     ...fieldList.map((_, index) => ({ [fieldList[index]]: tryParseAmount(chainId, typedValues[index], stableCurrencies[index]) }))); */
 
-  console.log("stablePool", stablePool)
+
   // liquidity minted
   const stablesLiquidityMinted = useMemo(() => {
-    const tokenAmounts = [parsedStablesAmount1, parsedStablesAmount2,
-      parsedStablesAmount3, parsedStablesAmount4].map(amount => wrappedCurrencyAmount(amount, chainId))
-    console.log(tokenAmounts)
-    if (stablePool && totalSupply && tokenAmounts) {
-      return stablePool.getLiquidityMinted(
-        [
-          parsedStablesAmount1.toBigNumber(),
-          parsedStablesAmount2.toBigNumber(),
-          parsedStablesAmount3.toBigNumber(),
-          parsedStablesAmount4.toBigNumber()
-        ], true)
+    const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
+    const input = Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((_, index) => BigNumber.from(typedValues[index] === '' ? '0' : typedValues[index]))
+    // const tokenAmounts = [parsedStablesAmount1, parsedStablesAmount2,
+    //   parsedStablesAmount3, parsedStablesAmount4].map(amount => wrappedCurrencyAmount(amount, chainId))
+    // console.log("parsed Amounts:", tokenAmounts)
+    if (stablePool && totalSupply) {
+      return stablePool.getLiquidityMinted( // BigNumber.from(0)
+        input,
+        true)
     }
     return undefined
-  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, chainId, stablePool, totalSupply])
-
-  console.log("mintedRaw", stablesLiquidityMinted)
-
+  }, [typedValue1, typedValue2, typedValue3, typedValue4, stablePool, totalSupply, chainId])
 
 
   const stablesPoolTokenPercentage = useMemo(() => {
     if (stablesLiquidityMinted && totalSupply) {
-      return new Percent(stablesLiquidityMinted.toBigInt(), (totalSupply.toBigNumber().add(stablesLiquidityMinted)).toBigInt())
+      if (stablesLiquidityMinted.eq(0)) {
+        return new Percent(BigInt(0), BigInt(1))
+      }
+
+      return new Percent(stablesLiquidityMinted.toBigInt(), (totalSupply.add(stablesLiquidityMinted)).toBigInt())
     }
     return undefined
   }, [stablesLiquidityMinted, totalSupply])
@@ -178,10 +199,6 @@ export function useDerivedMintStablesInfo(
   let stablesError: string | undefined
   if (!account) {
     stablesError = 'Connect Wallet'
-  }
-
-  if (stablePoolState === StablePoolState.INVALID) {
-    stablesError = stablesError ?? 'Invalid stablesPair'
   }
 
   if (!parsedStablesAmount1 || !parsedStablesAmount2

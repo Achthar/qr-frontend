@@ -225,6 +225,29 @@ export const ButtonWhite = styled(Base)`
   }
 `
 
+
+export const ButtonStableApprove = styled(Base) <{ width: string }>`
+  border: 1px solid #edeef2;
+  background-color: ${({ theme }) => theme.bg1};
+  color: black;
+  width: ${(props) => props.width};
+
+  &:focus {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    box-shadow: 0 0 0 1pt ${darken(0.05, '#edeef2')};
+  }
+  &:hover {
+    box-shadow: 0 0 0 1pt ${darken(0.1, '#edeef2')};
+  }
+  &:active {
+    box-shadow: 0 0 0 1pt ${darken(0.1, '#edeef2')};
+  }
+  &:disabled {
+    opacity: 10%;
+    cursor: auto;
+  }
+`
+
 const ButtonConfirmedStyle = styled(Base)`
   background-color: ${({ theme }) => lighten(0.5, theme.green1)};
   color: ${({ theme }) => theme.green1};

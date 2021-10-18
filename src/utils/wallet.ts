@@ -58,7 +58,7 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
       return false
     }
   } else {
-    console.error("Can't setup the BSC network on metamask because window.ethereum is undefined")
+    console.error(`Can't setup the ${CHAIN_INFO[chainId].nativeCurrency} network on metamask because window.ethereum is undefined`)
     return false
   }
 }

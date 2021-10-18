@@ -6,7 +6,8 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
-import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY } from '@pancakeswap/sdk'
+import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
+import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@pancakeswap/sdk'
 import { ROUTER_ADDRESS } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -97,6 +98,12 @@ export function getRouterContract(chainId: number, library: Web3Provider, accoun
   const ABI = chainId === 43113 ? IRequiemRouter02AVAX : chainId === 8001 ? IRequiemRouter02 : IUniswapV2Router02ABI
   return getContract(ROUTER_ADDRESS[chainId], ABI, library, account)
 }
+
+export function getStableRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
+  const ABI = StablesRouter
+  return getContract(STABLE_POOL_ADDRESS[chainId], ABI, library, account)
+}
+
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
