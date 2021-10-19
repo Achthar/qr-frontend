@@ -49,7 +49,6 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
 
   const { currentBlock } = useBlock()
 
-
   return useMemo(() => {
 
     // when loading return signal
@@ -62,21 +61,21 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
 
     const swapStorage = new SwapStorage(
       Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
-      swapStorageData[chainId].fee,
-      swapStorageData[chainId].adminFee,
-      swapStorageData[chainId].initialA,
-      swapStorageData[chainId].futureA,
-      swapStorageData[chainId].initialATime,
-      swapStorageData[chainId].futureATime,
-      swapStorageData[chainId].lpToken)
+      swapStorageData[chainId ?? 43113].fee,
+      swapStorageData[chainId ?? 43113].adminFee,
+      swapStorageData[chainId ?? 43113].initialA,
+      swapStorageData[chainId ?? 43113].futureA,
+      swapStorageData[chainId ?? 43113].initialATime,
+      swapStorageData[chainId ?? 43113].futureATime,
+      swapStorageData[chainId ?? 43113].lpToken)
 
     const stablePool = new StablePool(
       STABLES_INDEX_MAP[chainId ?? 43113],
-      tokenReservesResult.result[0],
-      aResult.result[0], // we add the value of A later
+      tokenReservesResult.result?.[0],
+      aResult.result?.[0], // we add the value of A later
       swapStorage,
       currentBlock, // block timestamp to be set later
-      supplyResult.result[0],
+      supplyResult.result?.[0],
       BigNumber.from(0) // the fee is calculated later since its individual
     )
 
