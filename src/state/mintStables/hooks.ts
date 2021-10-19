@@ -12,7 +12,7 @@ import { simpleRpcProvider } from 'utils/providers'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
-import { useCurrencyBalances } from '../wallet/hooks'
+import { useTokenBalances } from '../wallet/hooks'
 import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputs } from './actions'
 
 
@@ -85,10 +85,10 @@ export function useMintStablesActionHandlers(): {
 }
 
 export function useDerivedMintStablesInfo(
-  currency1: Currency,
-  currency2: Currency,
-  currency3: Currency | undefined,
-  currency4: Currency | undefined,
+  currency1: Token,
+  currency2: Token,
+  currency3: Token | undefined,
+  currency4: Token | undefined,
 ): {
   stableCurrencies: { [field in StablesField]?: Currency }
   stablePool?: StablePool | null
@@ -104,7 +104,7 @@ export function useDerivedMintStablesInfo(
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
   // const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
   // tokens
-  const stableCurrencies: { [field in StablesField]?: Currency } = useMemo(
+  const stableCurrencies: { [field in StablesField]?: Token } = useMemo(
     () => ({
       [StablesField.CURRENCY_1]: currency1,
       [StablesField.CURRENCY_2]: currency2,
@@ -122,7 +122,7 @@ export function useDerivedMintStablesInfo(
   const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
   // balances
-  const balances = useCurrencyBalances(chainId, account ?? undefined, [
+  const balances = useTokenBalances(account ?? undefined, [
     stableCurrencies[StablesField.CURRENCY_1],
     stableCurrencies[StablesField.CURRENCY_2],
     stableCurrencies[StablesField.CURRENCY_3],
@@ -138,22 +138,12 @@ export function useDerivedMintStablesInfo(
 
 
   const stablesCurrencyBalances: { [field in StablesField]?: CurrencyAmount } = {
-    [StablesField.CURRENCY_1]: balances[0],
-    [StablesField.CURRENCY_2]: balances[1],
-    [StablesField.CURRENCY_3]: balances[2],
-    [StablesField.CURRENCY_4]: balances[3]
+    [StablesField.CURRENCY_1]: balances[stableCurrencies[StablesField.CURRENCY_1].address],
+    [StablesField.CURRENCY_2]: balances[stableCurrencies[StablesField.CURRENCY_2].address],
+    [StablesField.CURRENCY_3]: balances[stableCurrencies[StablesField.CURRENCY_3].address],
+    [StablesField.CURRENCY_4]: balances[stableCurrencies[StablesField.CURRENCY_4].address]
   }
 
-  // amounts
-  // const parsedStablesAmounts: { [field in StablesField]?: CurrencyAmount } | undefined = useMemo(() =>
-  // ({
-  //   [StablesField.CURRENCY_1]: tryParseAmount(chainId, typedValue1, stableCurrencies[0]),
-  //   [StablesField.CURRENCY_2]: tryParseAmount(chainId, typedValue2, stableCurrencies[1]),
-  //   [StablesField.CURRENCY_3]: tryParseAmount(chainId, typedValue3, stableCurrencies[2]),
-  //   [StablesField.CURRENCY_4]: tryParseAmount(chainId, typedValue4, stableCurrencies[3])
-  // }), [typedValue1, typedValue2, typedValue3, typedValue4, chainId, stableCurrencies]
-  // )
-  // console.log("typed", typedValues)
 
   const parsedStablesAmount1: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, STABLES_INDEX_MAP[chainId][0])
 
@@ -163,27 +153,25 @@ export function useDerivedMintStablesInfo(
 
   const parsedStablesAmount4: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, STABLES_INDEX_MAP[chainId][3])
 
-  console.log("parsedAmount1", parsedStablesAmount1)
-
   /* Object.assign({},
     ...fieldList.map((_, index) => ({ [fieldList[index]]: tryParseAmount(chainId, typedValues[index], stableCurrencies[index]) }))); */
 
-
   // liquidity minted
   const stablesLiquidityMinted = useMemo(() => {
-    const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
-    const input = Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((_, index) => BigNumber.from(typedValues[index] === '' ? '0' : typedValues[index]))
-    // const tokenAmounts = [parsedStablesAmount1, parsedStablesAmount2,
-    //   parsedStablesAmount3, parsedStablesAmount4].map(amount => wrappedCurrencyAmount(amount, chainId))
-    // console.log("parsed Amounts:", tokenAmounts)
+
     if (stablePool && totalSupply) {
       return stablePool.getLiquidityMinted( // BigNumber.from(0)
-        input,
+        [
+          parsedStablesAmount1 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount1, chainId).toBigNumber(),
+          parsedStablesAmount2 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount2, chainId).toBigNumber(),
+          parsedStablesAmount3 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount3, chainId).toBigNumber(),
+          parsedStablesAmount4 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount4, chainId).toBigNumber()
+
+        ],
         true)
     }
     return undefined
-  }, [typedValue1, typedValue2, typedValue3, typedValue4, stablePool, totalSupply, chainId])
-
+  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, stablePool, totalSupply, chainId])
 
   const stablesPoolTokenPercentage = useMemo(() => {
     if (stablesLiquidityMinted && totalSupply) {

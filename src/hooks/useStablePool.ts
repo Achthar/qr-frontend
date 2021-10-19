@@ -3,7 +3,7 @@ import { TokenAmount, Pair, Currency, StablePool, STABLES_INDEX_MAP, STABLE_POOL
 import React, { useMemo, useCallback, useEffect, useState } from 'react'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import IERC20 from 'config/abi/avax/IERC20.json'
-import { serializeError } from 'eth-rpc-errors'
+// import { serializeError } from 'eth-rpc-errors'
 // import { Interface } from '@ethersproject/abi'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BigNumber } from 'ethers'
@@ -17,11 +17,6 @@ import { useStableLPContract, useTokenContract } from './useContract'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
-
-// export interface StableSwapData {
-
-
-// }
 
 export enum StablePoolState {
   LOADING,
@@ -40,36 +35,11 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
     'totalSupply',
   )
 
-  //   const [totalSupply134, setLpSupply,] = useState<BigNumber>()
-  //   useEffect(() => {
-  //     async function fetchTotalSupply() {
-  //       const lpContract = getStableLpContract(chainId ?? 43113)
-  //       const supply = await lpContract.totalSupply()
-  //       setLpSupply(supply)
-  //     }
-
-  //     fetchTotalSupply()
-  //   }, [chainId, slowRefresh])
-
-  // console.log("TS", totalSupply134)
-
   // static data, only loaded once
   const aResult = useSingleCallResult(
     getStableSwapContract(chainId ?? 43113),
     'getA', undefined, NEVER_RELOAD
   )
-
-  // const [a, setA] = useState<BigNumber>()
-  // useEffect(() => {
-  //   async function fetchA() {
-  //     const stableSwapContract = getStableSwapContract(chainId ?? 43113)
-  //     const _A = await stableSwapContract.getA()
-  //     setA(_A)
-  //   }
-
-  //   fetchA()
-  // }, [chainId, slowRefresh])
-
 
   // token reserves only reload them in shorter cycles
   const tokenReservesResult = useSingleCallResult(
@@ -77,41 +47,8 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
     'getTokenBalances'
   )
 
+  const { currentBlock } = useBlock()
 
-  // const [tokenBalances, setTokenBalances] = useState<BigNumber[]>()
-  // useEffect(() => {
-  //   async function fetchTokenBalances() {
-  //     const stableSwapContract = getStableSwapContract(chainId ?? 43113)
-  //     const balances = await stableSwapContract.getTokenBalances()
-  //     setTokenBalances(balances)
-  //   }
-
-  //   fetchTokenBalances()
-  // }, [chainId, slowRefresh])
-
-
-
-
-  // console.log("reserves", tokenReservesResult)
-
-  // const fetchLpSupply = useCallback(async () => {
-  //   const response = await getStableLpContract(chainId ?? 43113).totalSupply()
-  //   return response
-  // }, [chainId])
-
-  // useEffect(() => {
-  //   fetchLpSupply()
-  // }, [fetchLpSupply])
-
-  // fetchLpSupply()
-
-  // const callWithGasPrice = await getStableLpContract(chainId ?? 43113).totalSupply()
-
-const {currentBlock} = useBlock()
-  // const { A } = useMemo(() => {
-  //   const { result, loading } = aResult
-  //   return result?.[0] ?? BigNumber.from(0)
-  // }, [aResult])
 
   return useMemo(() => {
 
@@ -142,8 +79,6 @@ const {currentBlock} = useBlock()
       supplyResult.result[0],
       BigNumber.from(0) // the fee is calculated later since its individual
     )
-
-    console.log(stablePool)
 
     return [
       StablePoolState.EXISTS,

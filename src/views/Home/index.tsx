@@ -5,7 +5,7 @@ import PageSection from 'components/PageSection'
 import { useWeb3React } from '@web3-react/core'
 import useTheme from 'hooks/useTheme'
 import Container from 'components/Layout/Container'
-import { Text, Step, Stepper, Card, CardBody } from '@pancakeswap/uikit'
+import { Text, Step, Stepper, Card, CardBody, Image } from '@pancakeswap/uikit'
 import { Status } from '@pancakeswap/uikit/src/components/Stepper/types'
 import ReactDom from 'react-dom'
 
@@ -17,10 +17,12 @@ import ReactMarkdown from 'react-markdown'
 // import SalesSection from './components/SalesSection'
 // import FarmsPoolsRow from './components/FarmsPoolsRow'
 // import Footer from './components/Footer'
-import CakeDataRow from './components/CakeDataRow'
-
+// import CakeDataRow from './components/CakeDataRow'
+import Row from 'components/Row'
+import Column from 'components/Column'
 
 import { WedgeTopLeft, InnerWedgeWrapper, OuterWedgeWrapper, WedgeTopRight, WedgeBottomRight } from './components/WedgeSvgs'
+// import { AlignCenter } from 'react-feather'
 // import Hero from 'views/Ifos/components/Hero'
 
 
@@ -29,29 +31,16 @@ const Home: React.FC = () => {
   const { theme } = useTheme()
   const { account, chainId } = useWeb3React()
 
-  // useMemo(() => {
-  //   const request = new XMLHttpRequest();
-  //   request.open('GET', 'https://requiem-finance.s3.eu-west-2.amazonaws.com/home/landing.md', true);
-  //   request.send(null);
-  //   request.onreadystatechange = function () {
-  //     if (request.readyState === 4 && request.status === 200) {
-  //       const type = request.getResponseHeader('Content-Type');
-  //       if (type.indexOf("text") !== 1) {
-  //         console.log(request.responseText)
-  //         return request.responseText;
-  //       }
-  //     }
-  //     return ''
-  //   }
-  // }, [])
-  const HomeSectionContainerStyles = { margin: '0', width: '100%', maxWidth: '968px' }
+
+  const HomeSectionContainerStyles = { margin: '5px', width: '100%', maxWidth: '1000px' }
   const StyledBackIcon = styled.div`
-  background-image: url(${'https://requiem-finance.s3.eu-west-2.amazonaws.com/home/landing.md'});
+  background-image: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png';
   width: 500px;
   zindex: 5;
   opacity: 1;
 
 `;
+
 
   const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading']
   const steps = ['Regular product based swap structure is implemented',
@@ -59,14 +48,13 @@ const Home: React.FC = () => {
     'Lending and collateralizable liquidity', 'Leveraged trading - trade loan and collateral positions directly on Requiem DEX'];
   const status: Status[] = ["past", "current", "future", "future"];
 
-  // const fileUrl = new URL('https://requiem-finance.s3.eu-west-2.amazonaws.com/home/landing.md')
   return (
 
 
     <>
 
       <PageSection innerProps={{ style: { margin: '0', width: '100%' } }} index={2} hasCurvedDivider={false}>
-        <Container width='600px'>
+        <Container width='100%' maxWidth='1000px'>
 
           <PageSection
             innerProps={{ style: HomeSectionContainerStyles }}
@@ -75,13 +63,22 @@ const Home: React.FC = () => {
             hasCurvedDivider
           >
             <OuterWedgeWrapper>
-              <InnerWedgeWrapper top fill='#D8CBED'>
-                <WedgeTopLeft height='20px' />
+              <InnerWedgeWrapper top fill='#FFFAF0'>
+                <WedgeTopLeft height='30px' />
 
               </InnerWedgeWrapper>
 
             </OuterWedgeWrapper>
-            <Text fontSize="30px" bold>Requiem Finance</Text>
+            <Row align='space-between'>
+              <Column>
+                <Text fontSize="70px" bold >
+                  Requiem</Text>
+                <Text fontSize="70px" bold>
+                  Finance</Text>
+              </Column>
+              <Image src='https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png' width={300} height={240} alt="REQT" />
+
+            </Row>
           </PageSection>
 
           <Stepper>
@@ -97,8 +94,6 @@ const Home: React.FC = () => {
             ))}
           </Stepper>
 
-          <StyledBackIcon />
-
           <PageSection
             innerProps={{ style: HomeSectionContainerStyles }}
             background={theme.colors.background}
@@ -106,8 +101,8 @@ const Home: React.FC = () => {
             hasCurvedDivider
           >
             <OuterWedgeWrapper>
-              <InnerWedgeWrapper top fill='#D8CBED'>
-                <WedgeBottomRight height='20px' />
+              <InnerWedgeWrapper top fill='#FFFAF0'>
+                <WedgeBottomRight height='30px' />
 
               </InnerWedgeWrapper>
 

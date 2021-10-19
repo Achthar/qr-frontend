@@ -159,8 +159,7 @@ const Farms: React.FC = () => {
   const stakedArchivedFarms = archivedFarms.filter(
     (farm) => farm.userData && new BigNumber(farm.userData.stakedBalance).isGreaterThan(0),
   )
-  console.log("activeFarms",activeFarms)
-    console.log("archivedFarms",archivedFarms)
+
   const farmsList = useCallback(
     (farmsToDisplay: Farm[]): FarmWithStakedValue[] => {
       let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
@@ -220,7 +219,7 @@ const Farms: React.FC = () => {
           return farms
       }
     }
-    console.log("FARMLIST", farmsList(activeFarms))
+
     if (isActive) {
       chosenFarms = stakedOnly ? farmsList(stakedOnlyFarms) : farmsList(activeFarms)
     }

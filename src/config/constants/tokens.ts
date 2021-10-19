@@ -115,7 +115,7 @@ export const DAI: { [chainId: number]: Token } = {
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x66960440491bCc68BD30B2b0B08fF9e7aB3F9078',
+    '0xaea51e4fee50a980928b4353e852797b54deacd8',
     18,
     'DAI',
     'Dai Stablecoin',
@@ -123,8 +123,8 @@ export const DAI: { [chainId: number]: Token } = {
 }
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD'),
-  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0x0bE04001Ad4725c697b6c6bD8Bc23d9848992CA0', 18, 'USDT', 'Tether USD'),
-  [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 18, 'USDT', 'Tether USD'),
+  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e', 6, 'USDT', 'Tether USD'),
+  [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 6, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 export const UST = new Token(
@@ -168,7 +168,7 @@ export const USDC: { [chainId: number]: Token } = {
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA',
+    '0xca9ec7085ed564154a9233e1e7d8fef460438eea',
     6,
     'USDC',
     'USD Coin',
@@ -178,7 +178,7 @@ export const USDC: { [chainId: number]: Token } = {
 export const TUSD: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1',
+    '0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1',
     6,
     'TUSD',
     'True USD',

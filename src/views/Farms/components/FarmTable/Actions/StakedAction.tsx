@@ -104,7 +104,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const [onPresentWithdraw] = useModal(
     <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={lpSymbol} />,
   )
-  console.log(lpAddress)
+
   const lpContract = useERC20(lpAddress)
   const dispatch = useAppDispatch()
   const { onApprove } = useApproveFarm(lpContract)

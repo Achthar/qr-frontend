@@ -284,15 +284,15 @@ export const tokenList = {
             {
                 "name": "Tether USD",
                 "symbol": "USDT",
-                "address": "0x0bE04001Ad4725c697b6c6bD8Bc23d9848992CA0",
+                "address": "0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e",
                 "chainId": 43113,
-                "decimals": 18,
+                "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
             },
             {
                 "name": "Dai Stablecoin",
                 "symbol": "DAI",
-                "address": "0x66960440491bCc68BD30B2b0B08fF9e7aB3F9078",
+                "address": "0xaea51e4fee50a980928b4353e852797b54deacd8",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
@@ -300,18 +300,18 @@ export const tokenList = {
             {
                 "name": "USD coin",
                 "symbol": "USDC",
-                "address": "0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA",
+                "address": "0xca9ec7085ed564154a9233e1e7d8fef460438eea",
                 "chainId": 43113,
-                "decimals": 18,
+                "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
             },
             {
                 "name": "True USD",
                 "symbol": "TUSD",
-                "address": "0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1",
+                "address": "0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.svg"
             },
         ]
     },
@@ -343,7 +343,7 @@ export const tokenList = {
                 "symbol": "USDT",
                 "address": "0xde3A24028580884448a5397872046a019649b084",
                 "chainId": 43114,
-                "decimals": 18,
+                "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
             }
         ]
