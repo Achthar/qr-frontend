@@ -1,18 +1,17 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
-import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@pancakeswap/sdk'
+import { Pair } from '@pancakeswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@pancakeswap/uikit'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
-import { BigNumber } from 'ethers'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import FullPositionCard from '../../components/PositionCard'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator, useTokenBalance } from '../../state/wallet/hooks'
 import { usePairs } from '../../hooks/usePairs'
-import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
+import { useStablePool } from '../../hooks/useStablePool'
 import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
@@ -61,20 +60,8 @@ export default function Pool() {
 
   // stable pool starting here
   const [stablePoolState, stablePool] = useStablePool()
+  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, stablePool?.liquidityToken)
 
-  // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
-  const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
-  )
-
-  // useTokenBalance(
-  //   chainId,
-  //   account ?? undefined,
-  //   new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
-  // )
-  console.log("SP", stablePool)
-  console.log("PB", userPoolBalance)
   const renderBody = () => {
     if (!account) {
       return (
@@ -90,11 +77,11 @@ export default function Pool() {
         </Text>
       )
     }
-    if (userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) || allV2PairsWithLiquidity?.length > 0) {
+    if (userPoolBalance?.toBigNumber().gt(0) || allV2PairsWithLiquidity?.length > 0) {
       return (<Column>
-        {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+        {userPoolBalance?.toBigNumber().gt(0) && (
           <FullStablesPositionCard
-            userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
+            userLpPoolBalance={userPoolBalance}
             stablePool={stablePool}
           />)}
         {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (

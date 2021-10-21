@@ -48,7 +48,7 @@ export default function useWrapCallback(
                 const txReceipt = await callWithGasPrice(wethContract, 'deposit', undefined, {
                   value: `0x${inputAmount.raw.toString(16)}`,
                 })
-                addTransaction(txReceipt, { summary: `Wrap ${inputAmount.toSignificant(6)} BNB to WBNB` })
+                addTransaction(txReceipt, { summary: `Wrap ${inputAmount.toSignificant(6)} ${NETWORK_CCY[chainId].symbol} to ${WRAPPED_NETWORK_TOKENS[chainId].symbol}` })
               } catch (error: any) {
                 console.error('Could not deposit', error)
               }
@@ -67,7 +67,7 @@ export default function useWrapCallback(
                 const txReceipt = await callWithGasPrice(wethContract, 'withdraw', [
                   `0x${inputAmount.raw.toString(16)}`,
                 ])
-                addTransaction(txReceipt, { summary: `Unwrap ${inputAmount.toSignificant(6)} WBNB to BNB` })
+                addTransaction(txReceipt, { summary: `Unwrap ${inputAmount.toSignificant(6)} ${WRAPPED_NETWORK_TOKENS[chainId].symbol} to ${NETWORK_CCY[chainId].symbol}` })
               } catch (error: any) {
                 console.error('Could not withdraw', error)
               }

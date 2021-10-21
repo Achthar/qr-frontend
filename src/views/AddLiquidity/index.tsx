@@ -353,7 +353,7 @@ export default function AddLiquidity({
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
     stablesError,
-  } = useDerivedMintStablesInfo(STABLES_INDEX_MAP[chainId][0], STABLES_INDEX_MAP[chainId][1], STABLES_INDEX_MAP[chainId][2], STABLES_INDEX_MAP[chainId][3])
+  } = useDerivedMintStablesInfo()
 
   const formattedStablesAmounts = {
     [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],

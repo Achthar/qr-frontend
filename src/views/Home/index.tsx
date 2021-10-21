@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   const { account, chainId } = useWeb3React()
 
 
-  const HomeSectionContainerStyles = { margin: '5px', width: '100%', maxWidth: '1000px' }
+  const HomeSectionContainerStyles = { padding: '5px', width: '100%', maxWidth: '2000px' }
   const StyledBackIcon = styled.div`
   background-image: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png';
   width: 500px;
@@ -52,70 +52,61 @@ const Home: React.FC = () => {
 
 
     <>
+ <PageSection innerProps={{ style: { margin: '0', width: '100%', maxWidth: '1000px' } }} index={2} hasCurvedDivider={false}>
+      <PageSection
+        innerProps={{ style: HomeSectionContainerStyles }}
+        background={theme.colors.background}
+        index={4}
+        hasCurvedDivider
+      >
+        <OuterWedgeWrapper>
+          <InnerWedgeWrapper top fill='#FFFAF0' width='100%'>
+            <WedgeTopLeft height='30px' />
 
-      <PageSection innerProps={{ style: { margin: '0', width: '100%' } }} index={2} hasCurvedDivider={false}>
-        <Container width='100%' maxWidth='1000px'>
+          </InnerWedgeWrapper>
 
-          <PageSection
-            innerProps={{ style: HomeSectionContainerStyles }}
-            background={theme.colors.background}
-            index={2}
-            hasCurvedDivider
-          >
-            <OuterWedgeWrapper>
-              <InnerWedgeWrapper top fill='#FFFAF0'>
-                <WedgeTopLeft height='30px' />
+        </OuterWedgeWrapper>
+        </PageSection>
+       
 
-              </InnerWedgeWrapper>
 
-            </OuterWedgeWrapper>
+          <Container width='100%' maxWidth='25000px'>
+
+
+
             <Row align='space-between'>
               <Column>
                 <Text fontSize="70px" bold >
                   Requiem</Text>
-                <Text fontSize="70px" bold>
-                  Finance</Text>
+                  <Text fontSize="70px" bold>
+                Finance</Text>
               </Column>
               <Image src='https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png' width={300} height={240} alt="REQT" />
 
             </Row>
-          </PageSection>
-
-          <Stepper>
-            {steps.map((step, index) => (
-              <Step key={step} index={index} status={status[index]} >
-                <Card>
-                  <CardBody>
-                    <Text fontSize='24px' textTransform="capitalize" bold>{headers[index]}</Text>
-                    {step}
-                  </CardBody>
-                </Card>
-              </Step>
-            ))}
-          </Stepper>
-
-          <PageSection
-            innerProps={{ style: HomeSectionContainerStyles }}
-            background={theme.colors.background}
-            index={2}
-            hasCurvedDivider
-          >
-            <OuterWedgeWrapper>
-              <InnerWedgeWrapper top fill='#FFFAF0'>
-                <WedgeBottomRight height='30px' />
-
-              </InnerWedgeWrapper>
-
-            </OuterWedgeWrapper>
-          </PageSection>
-
-        </Container>
 
 
-        {/* <ReactMarkdown children={getText()} /> */}
+            <Stepper>
+              {steps.map((step, index) => (
+                <Step key={step} index={index} status={status[index]} >
+                  <Card>
+                    <CardBody>
+                      <Text fontSize='24px' textTransform="capitalize" bold>{headers[index]}</Text>
+                      {step}
+                    </CardBody>
+                  </Card>
+                </Step>
+              ))}
+            </Stepper>
 
 
-        {/*
+          </Container>
+
+
+          {/* <ReactMarkdown children={getText()} /> */}
+
+
+          {/*
       <PageSection
         innerProps={{ style: HomeSectionContainerStyles }}
         background={theme.colors.background}
@@ -151,6 +142,22 @@ const Home: React.FC = () => {
         <SalesSection {...cakeSectionData} />
         <CakeDataRow />
       </PageSection> */}
+        
+
+        <PageSection
+        innerProps={{ style: HomeSectionContainerStyles }}
+        background={theme.colors.background}
+        index={4}
+        hasCurvedDivider
+      >
+        <OuterWedgeWrapper>
+          <InnerWedgeWrapper top fill='#FFFAF0'>
+            <WedgeBottomRight height='30px' />
+
+          </InnerWedgeWrapper>
+
+        </OuterWedgeWrapper>
+      </PageSection>
       </PageSection>
     </>
   )

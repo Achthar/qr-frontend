@@ -85,10 +85,6 @@ export function useMintStablesActionHandlers(): {
 }
 
 export function useDerivedMintStablesInfo(
-  currency1: Token,
-  currency2: Token,
-  currency3: Token | undefined,
-  currency4: Token | undefined,
 ): {
   stableCurrencies: { [field in StablesField]?: Currency }
   stablePool?: StablePool | null
@@ -104,15 +100,12 @@ export function useDerivedMintStablesInfo(
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
   // const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
   // tokens
-  const stableCurrencies: { [field in StablesField]?: Token } = useMemo(
-    () => ({
-      [StablesField.CURRENCY_1]: currency1,
-      [StablesField.CURRENCY_2]: currency2,
-      [StablesField.CURRENCY_3]: currency3 ?? undefined,
-      [StablesField.CURRENCY_4]: currency4 ?? undefined,
-    }),
-    [currency1, currency2, currency3, currency4],
-  )
+  const stableCurrencies: { [field in StablesField]?: Token } = {
+    [StablesField.CURRENCY_1]: STABLES_INDEX_MAP[chainId][0],
+    [StablesField.CURRENCY_2]: STABLES_INDEX_MAP[chainId][1],
+    [StablesField.CURRENCY_3]: STABLES_INDEX_MAP[chainId][2],
+    [StablesField.CURRENCY_4]: STABLES_INDEX_MAP[chainId][3],
+  }
 
   // stablesPair
   const [stablePoolState, stablePool] = useStablePool()
@@ -160,7 +153,7 @@ export function useDerivedMintStablesInfo(
   const stablesLiquidityMinted = useMemo(() => {
 
     if (stablePool && totalSupply) {
-      return stablePool.getLiquidityMinted( // BigNumber.from(0)
+      return stablePool.getLiquidityAmount( // BigNumber.from(0)
         [
           parsedStablesAmount1 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount1, chainId).toBigNumber(),
           parsedStablesAmount2 === undefined ? BigNumber.from(0) : wrappedCurrencyAmount(parsedStablesAmount2, chainId).toBigNumber(),

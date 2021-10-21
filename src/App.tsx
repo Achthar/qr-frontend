@@ -41,6 +41,7 @@ const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
 const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
+const RemoveStableLiquidity = lazy(() => import('./views/RemoveStableLiquidity'))
 
 // This config is required for number formatting
 BigNumber.config({
@@ -91,6 +92,7 @@ const App: React.FC = () => {
             <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
             <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
             <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
+            <Route exact strict path="/remove/stables" component={RemoveStableLiquidity} />
             {/* Redirect */}
             <Route path="/pool">
               <Redirect to="/liquidity" />
