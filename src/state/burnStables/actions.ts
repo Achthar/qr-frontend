@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit'
-import { BurnStablesState } from './reducer'
 
 export enum StablesField {
   LIQUIDITY_PERCENT = 'LIQUIDITY_PERCENT',

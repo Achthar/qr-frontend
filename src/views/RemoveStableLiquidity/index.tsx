@@ -3,12 +3,14 @@ import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Percent, Price, Token, STABLE_POOL_LP_ADDRESS } from '@pancakeswap/sdk'
+import { Percent, Price, Token, STABLE_POOL_LP_ADDRESS, TokenAmount } from '@pancakeswap/sdk'
 import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@pancakeswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
+import tokens from 'config/constants/tokens'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
+import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanelStable from '../../components/CurrencyInputPanel/CurrencyInputPanelStable'
@@ -21,7 +23,6 @@ import { LightGreyCard } from '../../components/Card'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
 import { ROUTER_ADDRESS } from '../../config/constants'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { useCurrency } from '../../hooks/Tokens'
 import { useStableLPContract } from '../../hooks/useContract'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
@@ -37,8 +38,8 @@ import { useBurnStablesActionHandlers, useDerivedBurnStablesInfo, useBurnStableS
 
 import { StablesField } from '../../state/burnStables/actions'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
-import Page from '../Page'
-import tokens from 'config/constants/tokens'
+
+
 
 const BorderCard = styled.div`
   border: solid 1px ${({ theme }) => theme.colors.cardBorder};
@@ -65,6 +66,8 @@ export default function RemoveLiquidity({
     typedValueLiquidity,
     typedValueSingle
   } = useBurnStableState()
+
+
   const { stablePool, parsedAmounts, error } = useDerivedBurnStablesInfo()
   const { onField1Input, onField2Input, onField3Input, onField4Input, onLpInput } = useBurnStablesActionHandlers()
 
@@ -103,10 +106,13 @@ export default function RemoveLiquidity({
   // pair contract
   const stableLpContract: Contract | null = useStableLPContract(stablePool?.liquidityToken?.address)
 
-  const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
-  )
+  // const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
+  //   account ?? undefined,
+  //   [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
+  // )
+
+  const userPoolBalance = new TokenAmount(new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
+    BigNumber.from(0).toBigInt())
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
@@ -176,18 +182,21 @@ export default function RemoveLiquidity({
   }
   const amountstoRemove = [parsedAmounts[StablesField.CURRENCY_1], parsedAmounts[StablesField.CURRENCY_2],
   parsedAmounts[StablesField.CURRENCY_3], parsedAmounts[StablesField.CURRENCY_4]]
-
-  let priceMatrix = [[undefined, undefined, undefined, undefined], [undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined], [undefined, undefined, undefined, undefined]]
-  for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
-    for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
-      if (i !== j) {
-        priceMatrix[i][j] = new Price(stablePool?.tokens[i], tokens[j],
-          stablePool.calculateSwap(j, i, amountstoRemove[j].toBigNumber()).toBigInt(),
-          amountstoRemove[j].raw)
+  console.log("SP remove ", stablePool)
+  const priceMatrix = []
+  if (stablePool !== null)
+    for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
+      for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
+        priceMatrix.push([])
+        if (i !== j && amountstoRemove[j] !== undefined) {
+          priceMatrix?.[i].push(new Price(stablePool?.tokens[i], tokens[j],
+            stablePool.calculateSwap(j, i, amountstoRemove[j].toBigNumber()).toBigInt(),
+            amountstoRemove[j].raw))
+        } else {
+          priceMatrix?.[i].push(undefined)
+        }
       }
     }
-  }
 
   // wrapped onUserInput to clear signatures
   // const onUserInput = useCallback(
@@ -344,13 +353,13 @@ export default function RemoveLiquidity({
             <RowBetween>
               <Text>{t('Price')}</Text>
               <Text>
-                1 {stablePool?.tokens[0].symbol} = {stablePool ? priceMatrix[0][1].toSignificant(6) : '-'} {stablePool?.tokens[1].symbol}
+                1 {stablePool?.tokens[0].symbol} = {stablePool ? priceMatrix?.[0][1]?.toSignificant(6) : '-'} {stablePool?.tokens[1].symbol}
               </Text>
             </RowBetween>
             <RowBetween>
               <div />
               <Text>
-                1 {stablePool?.tokens[1]?.symbol} = {stablePool ? priceMatrix[1][2].toSignificant(6) : '-'} {stablePool?.tokens[0].symbol}
+                1 {stablePool?.tokens[1]?.symbol} = {stablePool ? priceMatrix?.[1][2]?.toSignificant(6) : '-'} {stablePool?.tokens[0].symbol}
               </Text>
             </RowBetween>
           </>
@@ -378,14 +387,14 @@ export default function RemoveLiquidity({
       onLpInput(StablesField.LIQUIDITY_PERCENT, '0')
     }
     setTxHash('')
-  }, [txHash])
+  }, [txHash, onLpInput])
 
 
   const liquidityPercentChangeCallback = useCallback(
     (value: number) => {
       onLpInput(StablesField.LIQUIDITY_PERCENT, value.toString())
     },
-    [],
+    [onLpInput],
   )
 
   const [innerLiquidityPercentage, setInnerLiquidityPercentage] = useDebouncedChangeHandler(
@@ -496,7 +505,7 @@ export default function RemoveLiquidity({
               <CurrencyInputPanelStable
                 width='200px'
                 value={formattedAmounts[StablesField.LIQUIDITY]}
-                onUserInput={(value)=>onLpInput(StablesField.LIQUIDITY, value)}
+                onUserInput={(value) => onLpInput(StablesField.LIQUIDITY, value)}
                 onMax={() => {
                   onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
                 }}
@@ -514,7 +523,7 @@ export default function RemoveLiquidity({
                 onUserInput={onField1Input}
                 onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
                 showMaxButton={!atMaxAmount}
-                stableCurrency={stablePool.tokens[1]}
+                stableCurrency={stablePool?.tokens[1]}
                 label={t('Output')}
                 id="remove-liquidity-tokena"
               />
@@ -528,7 +537,7 @@ export default function RemoveLiquidity({
                 onUserInput={onField2Input}
                 onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
                 showMaxButton={!atMaxAmount}
-                stableCurrency={stablePool.tokens[1]}
+                stableCurrency={stablePool?.tokens[1]}
                 label={t('Output')}
                 id="remove-liquidity-tokenb"
               />
@@ -545,7 +554,7 @@ export default function RemoveLiquidity({
                     1 {stablePool?.tokens[0].symbol} =
                   </Text>
                   <Text small>
-                    {priceMatrix[0][1].toSignificant(2)} {stablePool?.tokens[1].symbol}
+                    {priceMatrix?.[0][1]?.toSignificant(2)} {stablePool?.tokens[1].symbol}
                   </Text>
                 </Flex>
                 <Flex justifyContent="space-between">
@@ -553,7 +562,7 @@ export default function RemoveLiquidity({
                     1 {stablePool?.tokens[1].symbol} =
                   </Text>
                   <Text small>
-                    {priceMatrix[1][0].toSignificant(2)} {stablePool?.tokens[0].symbol}
+                    {priceMatrix?.[1][0]?.toSignificant(2)} {stablePool?.tokens[0].symbol}
                   </Text>
                 </Flex>
               </LightGreyCard>

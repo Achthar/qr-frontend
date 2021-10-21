@@ -56,7 +56,7 @@ interface PositionCardProps extends CardProps {
   showUnwrapped?: boolean
 }
 
-export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool}: PositionCardProps) {
+export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: PositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
@@ -337,7 +337,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
               </Button>
               <Button
                 as={Link}
-                to={`/add/stable`}
+                to='/add/stable'
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
                 width="100%"

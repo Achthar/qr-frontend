@@ -1,5 +1,14 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp, typeInputSingle, selectStableSingle } from './actions'
+import {
+  StablesField,
+  typeInput1,
+  typeInput2,
+  typeInput3,
+  typeInput4,
+  typeInputLp,
+  typeInputSingle,
+  selectStableSingle
+} from './actions'
 
 export interface BurnStablesState {
   readonly independentStablesField: StablesField
@@ -60,12 +69,6 @@ export default createReducer<BurnStablesState>(initialState, (builder) =>
       ...state,
       independentStablesField: stablesField,
       typedValueSingle,
-    }
-  }).addCase(selectStableSingle, (state, { payload: { stablesField, selectedStableSingle } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      selectedStableSingle,
     }
   }),
 )

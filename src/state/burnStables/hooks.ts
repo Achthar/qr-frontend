@@ -1,15 +1,15 @@
-import { Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool } from '@pancakeswap/sdk'
+import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS } from '@pancakeswap/sdk'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useStablePool } from 'hooks/useStablePool'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { BigNumber } from 'ethers'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
-import { useTokenBalances } from '../wallet/hooks'
-import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp, typeInputSingle, selectStableSingle } from './actions'
+// import { useTokenBalances } from '../wallet/hooks'
+import { useTokenBalancesWithLoadingIndicator } from '../wallet/hooks'
+import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp } from './actions'
 
 export function useBurnStableState(): AppState['burnStables'] {
   return useSelector<AppState, AppState['burnStables']>((state) => state.burnStables)
@@ -47,7 +47,25 @@ export function useDerivedBurnStablesInfo(
   const [stablePoolState, stablePool] = useStablePool()
 
   // balances
-  const relevantTokenBalances = useTokenBalances(account ?? undefined, [stablePool?.liquidityToken])
+  // const relevantTokenBalances = useTokenBalances(account ?? undefined, [stablePool?.liquidityToken])
+
+  const [relevantTokenBalances, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
+    account ?? undefined,
+    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
+    stablePool?.tokens[0],
+    stablePool?.tokens[1],
+    stablePool?.tokens[2],
+    stablePool?.tokens[3]],
+  )
+
+  const userBalances = stablePool &&
+    relevantTokenBalances ? [stablePool?.tokens[0],
+    stablePool?.tokens[1],
+    stablePool?.tokens[2],
+    stablePool?.tokens[3]].map((token, index) => relevantTokenBalances[token.address]?.toBigNumber()) : undefined
+
+  console.log("RTB", relevantTokenBalances)
+  console.log("userbasl", userBalances)
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[stablePool?.liquidityToken?.address ?? '']
 
 
@@ -61,44 +79,48 @@ export function useDerivedBurnStablesInfo(
     [StablesField.LIQUIDITY]: stablePool?.liquidityToken,
   }
   // liquidity values
-  const totalSupply = useTotalSupply(stablePool?.liquidityToken)
+  const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply// useTotalSupply(stablePool?.liquidityToken)
   const liquidityValue1 =
     stablePool &&
       totalSupply &&
       userLiquidity &&
+      userBalances[0] !== undefined &&
       tokens &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? stablePool.getLiquidityValue(0, Object.values(relevantTokenBalances).map((balance) => BigNumber.from(balance.raw)))
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? stablePool.getLiquidityValue(0, userBalances)
       : undefined
   const liquidityValue2 =
     stablePool &&
       totalSupply &&
+      userBalances[0] !== undefined &&
       userLiquidity &&
       tokens &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? stablePool.getLiquidityValue(1, Object.values(relevantTokenBalances).map((balance) => BigNumber.from(balance.raw)))
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? stablePool.getLiquidityValue(1, userBalances)
       : undefined
 
   const liquidityValue3 =
     stablePool &&
       totalSupply &&
+      userBalances[0] !== undefined &&
       userLiquidity &&
       tokens &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? stablePool.getLiquidityValue(2, Object.values(relevantTokenBalances).map((balance) => BigNumber.from(balance.raw)))
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? stablePool.getLiquidityValue(2, userBalances)
       : undefined
 
   const liquidityValue4 =
     stablePool &&
       totalSupply &&
+      userBalances[0] !== undefined &&
       userLiquidity &&
       tokens &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? stablePool.getLiquidityValue(3, Object.values(relevantTokenBalances).map((balance) => BigNumber.from(balance.raw)))
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? stablePool.getLiquidityValue(3, userBalances)
       : undefined
 
   // the value of the LP in the respective ccy 
@@ -131,7 +153,7 @@ export function useDerivedBurnStablesInfo(
     const independentAmount3 = tryParseAmount(chainId, typedValue3, tokens[2])
     const independentAmount4 = tryParseAmount(chainId, typedValue4, tokens[3])
 
-    if (independentAmount1 && independentAmount2 &&
+    if (stablePool && independentAmount1 && independentAmount2 &&
       independentAmount3 && independentAmount4 && liquidityValues) {
       const liqAmount = stablePool.getLiquidityAmount(
         [
@@ -143,7 +165,7 @@ export function useDerivedBurnStablesInfo(
         ],
         false // false for withdrawl
       )
-      percentToRemove = liqAmount.gte(totalSupply.toBigNumber()) ? new Percent('100', '100') : new Percent(liqAmount.toBigInt(), totalSupply.raw)
+      percentToRemove = liqAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liqAmount.toBigInt(), totalSupply.toBigInt())
     }
   }
 
@@ -221,7 +243,7 @@ export function useBurnStablesActionHandlers(): {
     (typedValue1: string) => {
       dispatch(typeInput1({
         stablesField: StablesField.CURRENCY_1,
-        typedValue1: typedValue1
+        typedValue1
       }))
     },
     [dispatch],
@@ -230,7 +252,7 @@ export function useBurnStablesActionHandlers(): {
     (typedValue2: string) => {
       dispatch(typeInput2({
         stablesField: StablesField.CURRENCY_2,
-        typedValue2: typedValue2
+        typedValue2
       }))
     },
     [dispatch],
@@ -239,7 +261,7 @@ export function useBurnStablesActionHandlers(): {
     (typedValue3: string) => {
       dispatch(typeInput3({
         stablesField: StablesField.CURRENCY_3,
-        typedValue3: typedValue3
+        typedValue3
       }))
     },
     [dispatch],
@@ -248,7 +270,7 @@ export function useBurnStablesActionHandlers(): {
     (typedValue4: string) => {
       dispatch(typeInput4({
         stablesField: StablesField.CURRENCY_4,
-        typedValue4: typedValue4
+        typedValue4
       }))
     },
     [dispatch],
@@ -256,8 +278,8 @@ export function useBurnStablesActionHandlers(): {
   const onLpInput = useCallback(
     (stablesField: StablesField, typedValueLp: string) => {
       dispatch(typeInputLp({
-        stablesField: stablesField,
-        typedValueLp: typedValueLp
+        stablesField,
+        typedValueLp
       }))
     },
     [dispatch],
