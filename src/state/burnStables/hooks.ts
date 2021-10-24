@@ -58,7 +58,7 @@ export function useDerivedBurnStablesInfo(
     STABLES_INDEX_MAP[chainId][3]],
   )
 
-  console.log("indep. field:", independentStablesField, "typed lp val:", typedValueLiquidity)
+ 
   const userBalances = stablePool &&
     relevantTokenBalances ? [STABLES_INDEX_MAP[chainId][0],
     STABLES_INDEX_MAP[chainId][1],
@@ -149,7 +149,6 @@ export function useDerivedBurnStablesInfo(
   else if (independentStablesField === StablesField.LIQUIDITY) {
     if (stablePool?.liquidityToken) {
       const independentLpAmount = tryParseAmount(chainId, typedValueLiquidity, stablePool.liquidityToken)
-      console.log("ia:", independentLpAmount.toSignificant(6))
       if (independentLpAmount && userLiquidity && !independentLpAmount.greaterThan(userLiquidity)) {
         percentToRemove = new Percent(independentLpAmount.raw, userLiquidity.raw)
       }
@@ -158,13 +157,12 @@ export function useDerivedBurnStablesInfo(
   // user specified a specific amount of tokens in the pool
   // this can hapen fully idependently from each other
   else {
-    const independentAmount1 = tryParseAmount(chainId, typedValue1, tokens[0])
-    const independentAmount2 = tryParseAmount(chainId, typedValue2, tokens[1])
-    const independentAmount3 = tryParseAmount(chainId, typedValue3, tokens[2])
-    const independentAmount4 = tryParseAmount(chainId, typedValue4, tokens[3])
+    const independentAmount1 = tryParseAmount(chainId, typedValue1, tokens[StablesField.CURRENCY_1])
+    const independentAmount2 = tryParseAmount(chainId, typedValue2, tokens[StablesField.CURRENCY_2])
+    const independentAmount3 = tryParseAmount(chainId, typedValue3, tokens[StablesField.CURRENCY_3])
+    const independentAmount4 = tryParseAmount(chainId, typedValue4, tokens[StablesField.CURRENCY_4])
 
-    if (stablePool && independentAmount1 && independentAmount2 &&
-      independentAmount3 && independentAmount4 && liquidityValues) {
+    if (stablePool) {
       const liqAmount = stablePool.getLiquidityAmount(
         [
           independentAmount1.toBigNumber(),
@@ -178,9 +176,7 @@ export function useDerivedBurnStablesInfo(
       percentToRemove = liqAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liqAmount.toBigInt(), totalSupply.toBigInt())
     }
   }
-  console.log("PTM", percentToRemove)
-  console.log("stableAmountsFromLp", stableAmountsFromLp)
-  console.log("TOKENS", tokens)
+
   const parsedAmounts: {
     [StablesField.LIQUIDITY_PERCENT]: Percent
     [StablesField.LIQUIDITY]?: TokenAmount
@@ -211,6 +207,8 @@ export function useDerivedBurnStablesInfo(
         ? new TokenAmount(tokens[StablesField.CURRENCY_4], stableAmountsFromLp[3].toBigInt())
         : undefined,
   }
+
+
   console.log("PA", parsedAmounts)
   let error: string | undefined
   if (!account) {

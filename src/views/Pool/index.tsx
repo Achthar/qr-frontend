@@ -68,13 +68,6 @@ export default function Pool() {
     [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
   )
 
-  // useTokenBalance(
-  //   chainId,
-  //   account ?? undefined,
-  //   new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
-  // )
-  console.log("SP", stablePool)
-  console.log("PB", userPoolBalance)
   const renderBody = () => {
     if (!account) {
       return (

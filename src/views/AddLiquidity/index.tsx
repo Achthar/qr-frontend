@@ -342,7 +342,6 @@ export default function AddLiquidity({
 
   // mint state
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
-  console.log("vals", [typedValue1, typedValue2, typedValue3, typedValue4])
 
   const {
     stableCurrencies,
