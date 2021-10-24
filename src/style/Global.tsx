@@ -9,16 +9,28 @@ declare module 'styled-components' {
 
 const GlobalStyle = createGlobalStyle`
   * {
-    font-family: 'Kanit', sans-serif;
+    font-family: 'Raleway', sans-serif;
   }
   body {
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color:  ${({ theme }) => theme.colors.background};;
 
     img {
       height: auto;
       max-width: 100%;
     }
   }
+  #background-video {
+    opacity: 0.2;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+}
 `
 
 export default GlobalStyle
