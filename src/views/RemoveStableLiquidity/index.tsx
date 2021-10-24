@@ -10,6 +10,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import tokens from 'config/constants/tokens'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
+import Row from 'components/Row'
 import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -69,7 +70,14 @@ export default function RemoveLiquidity({
 
 
   const { stablePool, parsedAmounts, error } = useDerivedBurnStablesInfo()
-  const { onField1Input, onField2Input, onField3Input, onField4Input, onLpInput } = useBurnStablesActionHandlers()
+
+  const {
+    onField1Input: _onField1Input,
+    onField2Input: _onField2Input,
+    onField3Input: _onField3Input,
+    onField4Input: _onField4Input,
+    onLpInput: _onLpInput
+  } = useBurnStablesActionHandlers()
 
   const isValid = !error
 
@@ -95,9 +103,9 @@ export default function RemoveLiquidity({
     [StablesField.CURRENCY_2]:
       independentStablesField === StablesField.CURRENCY_2 ? typedValue2 : parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(6) ?? '',
     [StablesField.CURRENCY_3]:
-      independentStablesField === StablesField.CURRENCY_1 ? typedValue3 : parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(6) ?? '',
+      independentStablesField === StablesField.CURRENCY_3 ? typedValue3 : parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(6) ?? '',
     [StablesField.CURRENCY_4]:
-      independentStablesField === StablesField.CURRENCY_2 ? typedValue4 : parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6) ?? '',
+      independentStablesField === StablesField.CURRENCY_4 ? typedValue4 : parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6) ?? '',
 
   }
 
@@ -133,7 +141,7 @@ export default function RemoveLiquidity({
       { name: 'verifyingContract', type: 'address' },
     ]
     const domain = {
-      name: 'Pancake LPs',
+      name: 'Requiem Stable LPs',
       version: '1',
       chainId,
       verifyingContract: stablePool.liquidityToken.address,
@@ -180,42 +188,77 @@ export default function RemoveLiquidity({
         }
       })
   }
-  const amountstoRemove = [parsedAmounts[StablesField.CURRENCY_1], parsedAmounts[StablesField.CURRENCY_2],
-  parsedAmounts[StablesField.CURRENCY_3], parsedAmounts[StablesField.CURRENCY_4]]
-  console.log("SP remove ", stablePool)
+  const amountstoRemove = [
+    parsedAmounts[StablesField.CURRENCY_1], parsedAmounts[StablesField.CURRENCY_2],
+    parsedAmounts[StablesField.CURRENCY_3], parsedAmounts[StablesField.CURRENCY_4]
+  ]
+
+
   const priceMatrix = []
   if (stablePool !== null)
     for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
+      priceMatrix.push([])
       for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
-        priceMatrix.push([])
         if (i !== j && amountstoRemove[j] !== undefined) {
-          priceMatrix?.[i].push(new Price(stablePool?.tokens[i], tokens[j],
-            stablePool.calculateSwap(j, i, amountstoRemove[j].toBigNumber()).toBigInt(),
+          priceMatrix?.[i].push(new Price(stablePool?.tokens[i], stablePool?.tokens[j],
+            stablePool.calculateSwap(
+              j,
+              i,
+              amountstoRemove[j].toBigNumber()
+            ).toBigInt(),
             amountstoRemove[j].raw))
         } else {
           priceMatrix?.[i].push(undefined)
         }
       }
     }
-
+  console.log(priceMatrix)
   // wrapped onUserInput to clear signatures
-  // const onUserInput = useCallback(
-  //   (field: Field, value: string) => {
-  //     setSignatureData(null)
-  //     return _onUserInput(field, value)
-  //   },
-  //   [_onUserInput],
-  // )
+  const onField1Input = useCallback(
+    (field: StablesField, value: string) => {
+      setSignatureData(null)
+      return _onField1Input(field, value)
+    },
+    [_onField1Input],
+  )
 
-  // const onLiquidityInput = useCallback((value: string): void => onLiquidityInput(StablesField.LIQUIDITY, value), [onUserInput])
-  // const onCurrency1Input = useCallback((value: string): void => onField1Input(StablesField.CURRENCY_A, value), [onUserInput])
-  // const onCurrency2Input = useCallback((value: string): void => onUserInput(StablesField.CURRENCY_B, value), [onUserInput])
-  // const onCurrency3Input = useCallback((value: string): void => onUserInput(StablesField.CURRENCY_A, value), [onUserInput])
-  // const onCurrency4Input = useCallback((value: string): void => onUserInput(StablesField.CURRENCY_B, value), [onUserInput])
+  const onField2Input = useCallback(
+    (field: StablesField, value: string) => {
+      setSignatureData(null)
+      return _onField2Input(field, value)
+    },
+    [_onField2Input],
+  )
 
+
+  const onField3Input = useCallback(
+    (field: StablesField, value: string) => {
+      setSignatureData(null)
+      return _onField3Input(field, value)
+    },
+    [_onField3Input],
+  )
+
+
+  const onField4Input = useCallback(
+    (field: StablesField, value: string) => {
+      setSignatureData(null)
+      return _onField4Input(field, value)
+    },
+    [_onField4Input],
+  )
+
+  const onLpInput = useCallback(
+    (field: StablesField, value: string) => {
+      setSignatureData(null)
+      console.log("ONLPVCAL", value)
+      return _onLpInput(field, value)
+    },
+    [_onLpInput],
+  )
   // tx sending
   const addTransaction = useTransactionAdder()
-  async function onRemove() {
+  async function onStablesLpRemove() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const { [StablesField.CURRENCY_1]: currencyAmount1, [StablesField.CURRENCY_2]: currencyAmount2,
       [StablesField.CURRENCY_3]: currencyAmount3, [StablesField.CURRENCY_4]: currencyAmount4 } = parsedAmounts
@@ -365,7 +408,7 @@ export default function RemoveLiquidity({
           </>
         )
         }
-        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onRemove}>
+        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onStablesLpRemove}>
           {t('Confirm')}
         </Button>
       </>
@@ -401,6 +444,7 @@ export default function RemoveLiquidity({
     Number.parseInt(parsedAmounts[StablesField.LIQUIDITY_PERCENT].toFixed(0)),
     liquidityPercentChangeCallback,
   )
+  console.log("innerLiquidityPercentage", innerLiquidityPercentage)
 
   const [onPresentRemoveLiquidity] = useModal(
     <TransactionConfirmationModal
@@ -477,24 +521,49 @@ export default function RemoveLiquidity({
                   {t('You will receive')}
                 </Text>
                 <LightGreyCard>
-                  <Flex justifyContent="space-between" mb="8px">
-                    <Flex>
-                      <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[1]} />
-                      <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
-                        {stablePool?.tokens[0].symbol}
-                      </Text>
-                    </Flex>
-                    <Text small>{formattedAmounts[StablesField.CURRENCY_1] || '-'}</Text>
-                  </Flex>
-                  <Flex justifyContent="space-between">
-                    <Flex>
-                      <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[1]} />
-                      <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
-                        {stablePool?.tokens[1].symbol}
-                      </Text>
-                    </Flex>
-                    <Text small>{formattedAmounts[StablesField.CURRENCY_1] || '-'}</Text>
-                  </Flex>
+
+                  <RowBetween>
+                    <AutoColumn>
+                      <Flex justifyContent="space-between" mb="8px">
+                        <Flex>
+                          <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[0]} />
+                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
+                            {stablePool?.tokens[0].symbol}
+                          </Text>
+                        </Flex>
+                        <Text small>{formattedAmounts[StablesField.CURRENCY_1] || '-'}</Text>
+                      </Flex>
+                      <Flex justifyContent="space-between">
+                        <Flex>
+                          <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[2]} />
+                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
+                            {stablePool?.tokens[2].symbol}
+                          </Text>
+                        </Flex>
+                        <Text small>{formattedAmounts[StablesField.CURRENCY_3] || '-'}</Text>
+                      </Flex>
+                    </AutoColumn>
+                    <AutoColumn>
+                      <Flex justifyContent="space-between" mb="8px">
+                        <Flex>
+                          <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[1]} />
+                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
+                            {stablePool?.tokens[1].symbol}
+                          </Text>
+                        </Flex>
+                        <Text small>{formattedAmounts[StablesField.CURRENCY_2] || '-'}</Text>
+                      </Flex>
+                      <Flex justifyContent="space-between">
+                        <Flex>
+                          <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[3]} />
+                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
+                            {stablePool?.tokens[3].symbol}
+                          </Text>
+                        </Flex>
+                        <Text small>{formattedAmounts[StablesField.CURRENCY_4] || '-'}</Text>
+                      </Flex>
+                    </AutoColumn>
+                  </RowBetween>
                 </LightGreyCard>
               </AutoColumn>
             </>
@@ -503,7 +572,7 @@ export default function RemoveLiquidity({
           {showDetailed && (
             <Box my="16px">
               <CurrencyInputPanelStable
-                width='200px'
+                width='100%'
                 value={formattedAmounts[StablesField.LIQUIDITY]}
                 onUserInput={(value) => onLpInput(StablesField.LIQUIDITY, value)}
                 onMax={() => {
@@ -517,29 +586,57 @@ export default function RemoveLiquidity({
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanelStable
-                width='200px'
+                width='100%'
                 hideBalance
                 value={formattedAmounts[StablesField.CURRENCY_1]}
-                onUserInput={onField1Input}
+                onUserInput={(value: string) => { onField1Input(StablesField.CURRENCY_1, value) }}
                 onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
                 showMaxButton={!atMaxAmount}
-                stableCurrency={stablePool?.tokens[1]}
+                stableCurrency={stablePool?.tokens[0]}
                 label={t('Output')}
-                id="remove-liquidity-tokena"
+                id="remove-liquidity-token1"
               />
               <ColumnCenter>
                 <AddIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanelStable
-                width='200px'
+                width='100%'
                 hideBalance
-                value={formattedAmounts[StablesField.CURRENCY_1]}
-                onUserInput={onField2Input}
+                value={formattedAmounts[StablesField.CURRENCY_2]}
+                onUserInput={(value: string) => { onField2Input(StablesField.CURRENCY_2, value) }}
                 onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={stablePool?.tokens[1]}
                 label={t('Output')}
-                id="remove-liquidity-tokenb"
+                id="remove-liquidity-token2"
+              />
+              <ColumnCenter>
+                <AddIcon width="24px" my="16px" />
+              </ColumnCenter>
+              <CurrencyInputPanelStable
+                width='100%'
+                hideBalance
+                value={formattedAmounts[StablesField.CURRENCY_3]}
+                onUserInput={(value: string) => { onField3Input(StablesField.CURRENCY_3, value) }}
+                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                showMaxButton={!atMaxAmount}
+                stableCurrency={stablePool?.tokens[2]}
+                label={t('Output')}
+                id="remove-liquidity-token3"
+              />
+              <ColumnCenter>
+                <AddIcon width="24px" my="16px" />
+              </ColumnCenter>
+              <CurrencyInputPanelStable
+                width='100%'
+                hideBalance
+                value={formattedAmounts[StablesField.CURRENCY_4]}
+                onUserInput={(value: string) => { onField4Input(StablesField.CURRENCY_4, value) }}
+                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                showMaxButton={!atMaxAmount}
+                stableCurrency={stablePool?.tokens[3]}
+                label={t('Output')}
+                id="remove-liquidity-token4"
               />
             </Box>
           )}
@@ -549,23 +646,167 @@ export default function RemoveLiquidity({
                 {t('Prices')}
               </Text>
               <LightGreyCard>
-                <Flex justifyContent="space-between">
-                  <Text small color="textSubtle">
-                    1 {stablePool?.tokens[0].symbol} =
-                  </Text>
-                  <Text small>
-                    {priceMatrix?.[0][1]?.toSignificant(2)} {stablePool?.tokens[1].symbol}
-                  </Text>
-                </Flex>
-                <Flex justifyContent="space-between">
-                  <Text small color="textSubtle">
-                    1 {stablePool?.tokens[1].symbol} =
-                  </Text>
-                  <Text small>
-                    {priceMatrix?.[1][0]?.toSignificant(2)} {stablePool?.tokens[0].symbol}
-                  </Text>
-                </Flex>
+                <RowFixed gap='md' padding='1px' align='center'>
+                  <AutoColumn gap='sd'>
+                    <Text small color="textSubtle">
+                      in/out
+                    </Text>
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[0].symbol} =
+                    </Text>
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[1].symbol} =
+                    </Text>
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[2].symbol} =
+                    </Text>
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[3].symbol} =
+                    </Text>
+                  </AutoColumn>
+                  <AutoColumn>
+                    <Text small color="textSubtle">
+                      {stablePool?.tokens[0].symbol}
+                    </Text>
+                    <Text small color="textSubtle" textAlign='center'>
+                      -
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[1][0]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[2][0]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[3][0]?.toSignificant(6)}
+                    </Text>
+                  </AutoColumn>
+                  <AutoColumn>
+                    <Text small color="textSubtle">
+                      {stablePool?.tokens[1].symbol}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[0][1]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle" textAlign='center'>
+                      -
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[2][1]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[3][1]?.toSignificant(6)}
+                    </Text>
+                  </AutoColumn>
+                  <AutoColumn>
+                    <Text small color="textSubtle">
+                      {stablePool?.tokens[2].symbol}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[0][2]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[1][2]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle" textAlign='center'>
+                      -
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[3][2]?.toSignificant(6)}
+                    </Text>
+                  </AutoColumn>
+                  <AutoColumn>
+                    <Text small color="textSubtle">
+                      {stablePool?.tokens[3].symbol}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[0][3]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[1][3]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle">
+                      {priceMatrix?.[2][3]?.toSignificant(6)}
+                    </Text>
+                    <Text small color="textSubtle" textAlign='center'>
+                      -
+                    </Text>
+                  </AutoColumn>
+                </RowFixed>
               </LightGreyCard>
+
+              {/* <LightGreyCard>
+                <AutoColumn>
+                  <Flex justifyContent="space-between">
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[0].symbol} =
+                    </Text>
+                    <Text small>
+                      -
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[0][1]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[0][2]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[0][3]?.toSignificant(6)}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between">
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[1].symbol} =
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[1][0]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      -
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[1][2]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[1][3]?.toSignificant(6)}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between">
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[2].symbol} =
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[2][0]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[2][1]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      -
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[2][3]?.toSignificant(6)}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between">
+                    <Text small color="textSubtle">
+                      1 {stablePool?.tokens[3].symbol} =
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[3][0]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[3][1]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      {priceMatrix?.[3][2]?.toSignificant(6)}
+                    </Text>
+                    <Text small>
+                      -
+                    </Text>
+                  </Flex>
+                </AutoColumn>
+              </LightGreyCard> */}
             </AutoColumn>
           )}
           <Box position="relative" mt="16px">

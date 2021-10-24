@@ -12,15 +12,15 @@ export enum StablesField {
 }
 
 // case withdrawl by LP
-export const typeInputLp = createAction<{ stablesField: StablesField; typedValueLp: string }>('burn/typeInputStablesBurnLp')
+export const typeInputLp = createAction<{ stablesField: StablesField; typedValueLp: string }>('burnStables/typeInputStablesBurnLp')
 
 // withdrawl by token amounts
-export const typeInput1 = createAction<{ stablesField: StablesField; typedValue1: string }>('burn/typeInput1StablesBurn')
-export const typeInput2 = createAction<{ stablesField: StablesField; typedValue2: string }>('burn/typeInput2StablesBurn')
-export const typeInput3 = createAction<{ stablesField: StablesField; typedValue3: string }>('burn/typeInput3StablesBurn')
-export const typeInput4 = createAction<{ stablesField: StablesField; typedValue4: string }>('burn/typeInput4StablesBurn')
+export const typeInput1 = createAction<{ stablesField: StablesField; typedValue1: string }>('burnStables/typeInput1StablesBurn')
+export const typeInput2 = createAction<{ stablesField: StablesField; typedValue2: string }>('burnStables/typeInput2StablesBurn')
+export const typeInput3 = createAction<{ stablesField: StablesField; typedValue3: string }>('burnStables/typeInput3StablesBurn')
+export const typeInput4 = createAction<{ stablesField: StablesField; typedValue4: string }>('burnStables/typeInput4StablesBurn')
 
 // withdrawls by single Token amount
-export const typeInputSingle = createAction<{ stablesField: StablesField; typedValueSingle: string }>('burn/typeInputSingleStablesBurn')
+export const typeInputSingle = createAction<{ stablesField: StablesField; typedValueSingle: string }>('burnStables/typeInputSingleStablesBurn')
 
-export const selectStableSingle = createAction<{ stablesField: StablesField; selectedStableSingle: number }>('burn/typeInputSingleStablesBurn')
+export const selectStableSingle = createAction<{ stablesField: StablesField; selectedStableSingle: number }>('burnStables/selectInputSingleStablesBurn')

@@ -34,41 +34,42 @@ const initialState: BurnStablesState = {
 }
 
 export default createReducer<BurnStablesState>(initialState, (builder) =>
-  builder.addCase(typeInputLp, (state, { payload: { stablesField, typedValueLp } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValueLp,
-    }
-  }).addCase(typeInput1, (state, { payload: { stablesField, typedValue1 } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValue1,
-    }
-  }).addCase(typeInput2, (state, { payload: { stablesField, typedValue2 } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValue2,
-    }
-  }).addCase(typeInput3, (state, { payload: { stablesField, typedValue3 } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValue3,
-    }
-  }).addCase(typeInput4, (state, { payload: { stablesField, typedValue4 } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValue4,
-    }
-  }).addCase(typeInputSingle, (state, { payload: { stablesField, typedValueSingle } }) => {
-    return {
-      ...state,
-      independentStablesField: stablesField,
-      typedValueSingle,
-    }
-  }),
+  builder
+    .addCase(typeInputLp, (state, { payload: { stablesField, typedValueLp } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValueLiquidity: typedValueLp,
+      }
+    }).addCase(typeInput1, (state, { payload: { stablesField, typedValue1 } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue1,
+      }
+    }).addCase(typeInput2, (state, { payload: { stablesField, typedValue2 } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue2,
+      }
+    }).addCase(typeInput3, (state, { payload: { stablesField, typedValue3 } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue3,
+      }
+    }).addCase(typeInput4, (state, { payload: { stablesField, typedValue4 } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue4,
+      }
+    }).addCase(typeInputSingle, (state, { payload: { stablesField, typedValueSingle } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValueSingle,
+      }
+    }),
 )

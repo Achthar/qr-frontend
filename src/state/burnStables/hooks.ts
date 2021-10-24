@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS } from '@pancakeswap/sdk'
+import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS, STABLES_INDEX_MAP } from '@pancakeswap/sdk'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -52,30 +52,31 @@ export function useDerivedBurnStablesInfo(
   const [relevantTokenBalances, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
     [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
-    stablePool?.tokens[0],
-    stablePool?.tokens[1],
-    stablePool?.tokens[2],
-    stablePool?.tokens[3]],
+    STABLES_INDEX_MAP[chainId][0],
+    STABLES_INDEX_MAP[chainId][1],
+    STABLES_INDEX_MAP[chainId][2],
+    STABLES_INDEX_MAP[chainId][3]],
   )
 
+  console.log("indep. field:", independentStablesField, "typed lp val:", typedValueLiquidity)
   const userBalances = stablePool &&
-    relevantTokenBalances ? [stablePool?.tokens[0],
-    stablePool?.tokens[1],
-    stablePool?.tokens[2],
-    stablePool?.tokens[3]].map((token, index) => relevantTokenBalances[token.address]?.toBigNumber()) : undefined
+    relevantTokenBalances ? [STABLES_INDEX_MAP[chainId][0],
+    STABLES_INDEX_MAP[chainId][1],
+    STABLES_INDEX_MAP[chainId][2],
+    STABLES_INDEX_MAP[chainId][3]].map((token, index) => relevantTokenBalances[token.address]?.toBigNumber()) : undefined
 
   console.log("RTB", relevantTokenBalances)
-  console.log("userbasl", userBalances)
+  console.log("userbalances", userBalances)
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[stablePool?.liquidityToken?.address ?? '']
 
 
   const tokens = {
-    [StablesField.CURRENCY_1]: stablePool?.tokens[0],
-    [StablesField.CURRENCY_2]: stablePool?.tokens[1],
-    [StablesField.CURRENCY_3]: stablePool?.tokens[2],
-    [StablesField.CURRENCY_4]: stablePool?.tokens[3],
+    [StablesField.CURRENCY_1]: STABLES_INDEX_MAP[chainId][0],
+    [StablesField.CURRENCY_2]: STABLES_INDEX_MAP[chainId][1],
+    [StablesField.CURRENCY_3]: STABLES_INDEX_MAP[chainId][2],
+    [StablesField.CURRENCY_4]: STABLES_INDEX_MAP[chainId][3],
     [StablesField.SELECTED_SINGLE]: selectedStableSingle,
-    [StablesField.CURRENCY_SINGLE]: stablePool?.tokens[selectedStableSingle],
+    [StablesField.CURRENCY_SINGLE]: STABLES_INDEX_MAP[chainId][selectedStableSingle],
     [StablesField.LIQUIDITY]: stablePool?.liquidityToken,
   }
   // liquidity values
@@ -132,14 +133,23 @@ export function useDerivedBurnStablesInfo(
   }
 
   let percentToRemove: Percent = new Percent('0', '100')
+  let stableAmountsFromLp = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)]
   // user specified a %
+  console.log("percentToRemove", percentToRemove)
   if (independentStablesField === StablesField.LIQUIDITY_PERCENT) {
     percentToRemove = new Percent(typedValueLiquidity, '100')
+    if (stablePool && percentToRemove.greaterThan('0')) {
+      console.log("argument", BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)))
+      stableAmountsFromLp = stablePool.calculateRemoveLiquidity(
+        BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator))
+      )
+    }
   }
   // user specified a specific amount of liquidity tokens
   else if (independentStablesField === StablesField.LIQUIDITY) {
     if (stablePool?.liquidityToken) {
       const independentLpAmount = tryParseAmount(chainId, typedValueLiquidity, stablePool.liquidityToken)
+      console.log("ia:", independentLpAmount.toSignificant(6))
       if (independentLpAmount && userLiquidity && !independentLpAmount.greaterThan(userLiquidity)) {
         percentToRemove = new Percent(independentLpAmount.raw, userLiquidity.raw)
       }
@@ -168,7 +178,9 @@ export function useDerivedBurnStablesInfo(
       percentToRemove = liqAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liqAmount.toBigInt(), totalSupply.toBigInt())
     }
   }
-
+  console.log("PTM", percentToRemove)
+  console.log("stableAmountsFromLp", stableAmountsFromLp)
+  console.log("TOKENS", tokens)
   const parsedAmounts: {
     [StablesField.LIQUIDITY_PERCENT]: Percent
     [StablesField.LIQUIDITY]?: TokenAmount
@@ -183,23 +195,23 @@ export function useDerivedBurnStablesInfo(
         ? new TokenAmount(userLiquidity.token, percentToRemove.multiply(userLiquidity.raw).quotient)
         : undefined,
     [StablesField.CURRENCY_1]:
-      tokens && percentToRemove && percentToRemove.greaterThan('0') && liquidityValue1
-        ? new TokenAmount(tokens[0], percentToRemove.multiply(liquidityValue1.raw).quotient)
+      stablePool && stableAmountsFromLp && percentToRemove && percentToRemove.greaterThan('0')
+        ? new TokenAmount(tokens[StablesField.CURRENCY_1], stableAmountsFromLp[0].toBigInt())
         : undefined,
     [StablesField.CURRENCY_2]:
-      tokens && percentToRemove && percentToRemove.greaterThan('0') && liquidityValue2
-        ? new TokenAmount(tokens[1], percentToRemove.multiply(liquidityValue2.raw).quotient)
+      stablePool && stableAmountsFromLp && percentToRemove && percentToRemove.greaterThan('0')
+        ? new TokenAmount(tokens[StablesField.CURRENCY_2], stableAmountsFromLp[1].toBigInt())
         : undefined,
     [StablesField.CURRENCY_3]:
-      tokens && percentToRemove && percentToRemove.greaterThan('0') && liquidityValue3
-        ? new TokenAmount(tokens[2], percentToRemove.multiply(liquidityValue3.raw).quotient)
+      stablePool && stableAmountsFromLp && percentToRemove && percentToRemove.greaterThan('0')
+        ? new TokenAmount(tokens[StablesField.CURRENCY_3], stableAmountsFromLp[2].toBigInt())
         : undefined,
     [StablesField.CURRENCY_4]:
-      tokens && percentToRemove && percentToRemove.greaterThan('0') && liquidityValue4
-        ? new TokenAmount(tokens[3], percentToRemove.multiply(liquidityValue4.raw).quotient)
+      stablePool && stableAmountsFromLp && percentToRemove && percentToRemove.greaterThan('0')
+        ? new TokenAmount(tokens[StablesField.CURRENCY_4], stableAmountsFromLp[3].toBigInt())
         : undefined,
   }
-
+  console.log("PA", parsedAmounts)
   let error: string | undefined
   if (!account) {
     error = 'Connect Wallet'
@@ -231,45 +243,45 @@ export function useDerivedBurnStablesInfo(
 // }
 
 export function useBurnStablesActionHandlers(): {
-  onField1Input: (typedValue1: string) => void,
-  onField2Input: (typedValue2: string) => void,
-  onField3Input: (typedValue3: string) => void,
-  onField4Input: (typedValue4: string) => void,
+  onField1Input: (stablesField: StablesField, typedValue1: string) => void,
+  onField2Input: (stablesField: StablesField, typedValue2: string) => void,
+  onField3Input: (stablesField: StablesField, typedValue3: string) => void,
+  onField4Input: (stablesField: StablesField, typedValue4: string) => void,
   onLpInput: (stablesField: StablesField, typedValueLp: string) => void,
 } {
   const dispatch = useDispatch<AppDispatch>()
 
   const onField1Input = useCallback(
-    (typedValue1: string) => {
+    (stablesField: StablesField, typedValue1: string) => {
       dispatch(typeInput1({
-        stablesField: StablesField.CURRENCY_1,
+        stablesField,
         typedValue1
       }))
     },
     [dispatch],
   )
   const onField2Input = useCallback(
-    (typedValue2: string) => {
+    (stablesField: StablesField, typedValue2: string) => {
       dispatch(typeInput2({
-        stablesField: StablesField.CURRENCY_2,
+        stablesField,
         typedValue2
       }))
     },
     [dispatch],
   )
   const onField3Input = useCallback(
-    (typedValue3: string) => {
+    (stablesField: StablesField, typedValue3: string) => {
       dispatch(typeInput3({
-        stablesField: StablesField.CURRENCY_3,
+        stablesField,
         typedValue3
       }))
     },
     [dispatch],
   )
   const onField4Input = useCallback(
-    (typedValue4: string) => {
+    (stablesField: StablesField, typedValue4: string) => {
       dispatch(typeInput4({
-        stablesField: StablesField.CURRENCY_4,
+        stablesField,
         typedValue4
       }))
     },
