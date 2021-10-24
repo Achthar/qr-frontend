@@ -19,11 +19,10 @@ const CustomMenu: React.FC = () => {
         display: 'flex',
         zIndex: 9,
         paddingRight: 15,
-        background: '#08060B',
       }}
     >
       <GlobalSettings />
-      <ChainIdSelector/>
+      <ChainIdSelector />
       <UserMenu />
     </div>
   )
