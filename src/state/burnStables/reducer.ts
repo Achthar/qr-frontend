@@ -7,7 +7,8 @@ import {
   typeInput4,
   typeInputLp,
   typeInputSingle,
-  selectStableSingle
+  selectStableSingle,
+  setTypeSingleInputs
 } from './actions'
 
 export interface BurnStablesState {
@@ -70,6 +71,14 @@ export default createReducer<BurnStablesState>(initialState, (builder) =>
         ...state,
         independentStablesField: stablesField,
         typedValueSingle,
+      }
+    }).addCase(setTypeSingleInputs, (state, { payload: { typedValues } }) => {
+      return {
+        ...state,
+        typedValue1: typedValues[0],
+        typedValue2: typedValues[1],
+        typedValue3: typedValues[2],
+        typedValue4: typedValues[3],
       }
     }),
 )

@@ -1,5 +1,5 @@
 import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS, STABLES_INDEX_MAP } from '@pancakeswap/sdk'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useStablePool } from 'hooks/useStablePool'
@@ -12,7 +12,7 @@ import { tryParseAmount } from '../swap/hooks'
 // import { useTokenBalances } from '../wallet/hooks'
 
 import { useTokenBalancesWithLoadingIndicator } from '../wallet/hooks'
-import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp } from './actions'
+import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp, setTypeSingleInputs } from './actions'
 
 export function useBurnStableState(): AppState['burnStables'] {
   return useSelector<AppState, AppState['burnStables']>((state) => state.burnStables)
@@ -46,6 +46,11 @@ export function useDerivedBurnStablesInfo(
     typedValueSingle,
     selectedStableSingle
   } = useBurnStableState()
+
+
+  // const {
+  //   onLpInputSetOthers
+  // } = useBurnStablesActionHandlers()
 
   // pair + totalsupply
   const [stablePoolState, stablePool] = useStablePool()
@@ -142,10 +147,12 @@ export function useDerivedBurnStablesInfo(
   let percentToRemove: Percent = new Percent('0', '100')
   let stableAmountsFromLp = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)]
   let liquidityAmount = BigNumber.from(0)
-  let independentAmount1 = tryParseAmount(chainId, '0', tokens[StablesField.CURRENCY_1])
-  let independentAmount2 = tryParseAmount(chainId, '0', tokens[StablesField.CURRENCY_2])
-  let independentAmount3 = tryParseAmount(chainId, '0', tokens[StablesField.CURRENCY_3])
-  let independentAmount4 = tryParseAmount(chainId, '0', tokens[StablesField.CURRENCY_4])
+  console.log("Typedval", [typedValue1, typedValue2, typedValue3, typedValue4])
+  const independentAmount1 = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, tokens[StablesField.CURRENCY_1])
+  const independentAmount2 = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, tokens[StablesField.CURRENCY_2])
+  const independentAmount3 = tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, tokens[StablesField.CURRENCY_3])
+  const independentAmount4 = tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, tokens[StablesField.CURRENCY_4])
+
   const independentLpAmount = tryParseAmount(chainId, typedValueLiquidity === '' ? '0' : typedValueLiquidity, tokens[StablesField.LIQUIDITY])
 
   // user specified a %
@@ -157,6 +164,7 @@ export function useDerivedBurnStablesInfo(
         BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)
         )
       )
+
     }
   }
   // user specified a specific amount of liquidity tokens
@@ -169,17 +177,17 @@ export function useDerivedBurnStablesInfo(
         percentToRemove = new Percent(independentLpAmount.raw, userLiquidity.raw)
       }
     }
+    // onLpInputSetOthers(stableAmountsFromLp.map((bn) => bn.toString()))
   }
-
 
   // user specified a specific amount of tokens in the pool
   // this can hapen fully idependently from each other
   else {
     console.log("typed:", typedValue1, typedValue2, typedValue3, typedValue4)
-    independentAmount1 = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, tokens[StablesField.CURRENCY_1])
-    independentAmount2 = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, tokens[StablesField.CURRENCY_2])
-    independentAmount3 = tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, tokens[StablesField.CURRENCY_3])
-    independentAmount4 = tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, tokens[StablesField.CURRENCY_4])
+    // independentAmount1 = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, tokens[StablesField.CURRENCY_1])
+    // independentAmount2 = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, tokens[StablesField.CURRENCY_2])
+    // independentAmount3 = tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, tokens[StablesField.CURRENCY_3])
+    // independentAmount4 = tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, tokens[StablesField.CURRENCY_4])
 
     if (stablePool) {
       liquidityAmount = stablePool.getLiquidityAmount(
@@ -197,6 +205,8 @@ export function useDerivedBurnStablesInfo(
 
     }
   }
+
+
   // create the cases for the single stables amount inputs
   const finalSingleAmounts = (independentStablesField === StablesField.LIQUIDITY || independentStablesField === StablesField.LIQUIDITY_PERCENT) ?
     [
@@ -227,9 +237,6 @@ export function useDerivedBurnStablesInfo(
         ? new TokenAmount(tokens[StablesField.CURRENCY_4], independentAmount4.raw)
         : undefined,
     ]
-  console.log("UL", userLiquidity)
-  console.log("UL raw", userLiquidity?.raw)
-  console.log("LA", liquidityAmount.toBigInt())
 
   const finalLiquidityAmount = (independentStablesField === StablesField.LIQUIDITY_PERCENT) ?
     userLiquidity?.raw !== undefined && percentToRemove && percentToRemove.greaterThan('0')
@@ -297,6 +304,7 @@ export function useBurnStablesActionHandlers(): {
   onField3Input: (stablesField: StablesField, typedValue3: string) => void,
   onField4Input: (stablesField: StablesField, typedValue4: string) => void,
   onLpInput: (stablesField: StablesField, typedValueLp: string) => void,
+  onLpInputSetOthers: (typedValues: string[]) => void,
 } {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -346,5 +354,34 @@ export function useBurnStablesActionHandlers(): {
     [dispatch],
   )
 
-  return { onField1Input, onField2Input, onField3Input, onField4Input, onLpInput }
+  const onLpInputSetOthers = useCallback(
+    (typedValues: string[]) => {
+      // dispatch(setTypeSingleInputs({
+      //   typedValues
+      // }))
+
+      dispatch(typeInput1({
+        stablesField: StablesField.CURRENCY_1,
+        typedValue1: typedValues[0]
+      }))
+
+      dispatch(typeInput2({
+        stablesField: StablesField.CURRENCY_2,
+        typedValue2: typedValues[1]
+      }))
+
+      dispatch(typeInput3({
+        stablesField: StablesField.CURRENCY_3,
+        typedValue3: typedValues[2]
+      }))
+
+      dispatch(typeInput4({
+        stablesField: StablesField.CURRENCY_4,
+        typedValue4: typedValues[3]
+      }))
+    },
+    [dispatch],
+  )
+
+  return { onField1Input, onField2Input, onField3Input, onField4Input, onLpInput, onLpInputSetOthers }
 }

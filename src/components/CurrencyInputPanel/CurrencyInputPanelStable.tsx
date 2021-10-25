@@ -109,8 +109,8 @@ export default function CurrencyInputPanelStable({
           <Flex alignItems="center" justifyContent="space-between">
             {stablePool ? (
               <Column>
-                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={16} margin />
-                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={16} margin />
+                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={24} margin />
+                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={24} margin />
               </Column>
             ) : stableCurrency ? (
               <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />

@@ -81,7 +81,8 @@ export default function RemoveLiquidity({
     onField2Input,
     onField3Input,
     onField4Input,
-    onLpInput: _onLpInput
+    onLpInput: _onLpInput,
+    onLpInputSetOthers
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
@@ -581,20 +582,60 @@ export default function RemoveLiquidity({
                   min={0}
                   max={100}
                   value={innerLiquidityPercentage}
-                  onValueChanged={(value) => setInnerLiquidityPercentage(Math.ceil(value))}
+                  onValueChanged={(value) => {
+                    setInnerLiquidityPercentage(Math.ceil(value))
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}
                   mb="16px"
                 />
                 <Flex flexWrap="wrap" justifyContent="space-evenly">
-                  <Button variant="tertiary" scale="sm" onClick={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '25')}>
+                  <Button variant="tertiary" scale="sm" onClick={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '25')
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}>
                     25%
                   </Button>
-                  <Button variant="tertiary" scale="sm" onClick={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '50')}>
+                  <Button variant="tertiary" scale="sm" onClick={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '50')
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}>
                     50%
                   </Button>
-                  <Button variant="tertiary" scale="sm" onClick={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '75')}>
+                  <Button variant="tertiary" scale="sm" onClick={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '75')
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}>
                     75%
                   </Button>
-                  <Button variant="tertiary" scale="sm" onClick={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}>
+                  <Button variant="tertiary" scale="sm" onClick={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}>
                     Max
                   </Button>
                 </Flex>
@@ -664,13 +705,28 @@ export default function RemoveLiquidity({
               <CurrencyInputPanelStable
                 width='100%'
                 value={formattedAmounts[StablesField.LIQUIDITY]}
-                onUserInput={(value) => onLpInput(StablesField.LIQUIDITY, value)}
+                onUserInput={(value) => {
+                  onLpInput(StablesField.LIQUIDITY, value)
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
+                }}
                 onMax={() => {
                   onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
                 }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
+                stablePool={stablePool}
               />
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />
@@ -680,7 +736,15 @@ export default function RemoveLiquidity({
                 hideBalance
                 value={formattedAmounts[StablesField.CURRENCY_1]}
                 onUserInput={(value: string) => { onField1Input(StablesField.CURRENCY_1, value) }}
-                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                onMax={() => {
+                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
+                }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][0]}
                 label={t('Output')}
@@ -691,7 +755,15 @@ export default function RemoveLiquidity({
                 hideBalance
                 value={formattedAmounts[StablesField.CURRENCY_2]}
                 onUserInput={(value: string) => { onField2Input(StablesField.CURRENCY_2, value) }}
-                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                onMax={() => {
+                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
+                }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][1]}
                 label={t('Output')}
@@ -702,7 +774,15 @@ export default function RemoveLiquidity({
                 hideBalance
                 value={formattedAmounts[StablesField.CURRENCY_3]}
                 onUserInput={(value: string) => { onField3Input(StablesField.CURRENCY_3, value) }}
-                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                onMax={() => {
+                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
+                }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][2]}
                 label={t('Output')}
@@ -713,7 +793,15 @@ export default function RemoveLiquidity({
                 hideBalance
                 value={formattedAmounts[StablesField.CURRENCY_4]}
                 onUserInput={(value: string) => { onField4Input(StablesField.CURRENCY_4, value) }}
-                onMax={() => onLpInput(StablesField.LIQUIDITY_PERCENT, '100')}
+                onMax={() => {
+                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInputSetOthers([
+                    formattedAmounts[StablesField.CURRENCY_1],
+                    formattedAmounts[StablesField.CURRENCY_2],
+                    formattedAmounts[StablesField.CURRENCY_3],
+                    formattedAmounts[StablesField.CURRENCY_4]
+                  ])
+                }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][3]}
                 label={t('Output')}
@@ -733,6 +821,7 @@ export default function RemoveLiquidity({
                 showMaxButton={!atMaxAmount}
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
+                stablePool={stablePool}
               />
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />

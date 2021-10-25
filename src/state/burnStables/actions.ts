@@ -25,3 +25,5 @@ export const typeInput4 = createAction<{ stablesField: StablesField; typedValue4
 export const typeInputSingle = createAction<{ stablesField: StablesField; typedValueSingle: string }>('burnStables/typeInputSingleStablesBurn')
 
 export const selectStableSingle = createAction<{ stablesField: StablesField; selectedStableSingle: number }>('burnStables/selectInputSingleStablesBurn')
+
+export const setTypeSingleInputs = createAction<{ typedValues: string[] }>('burnStables/typeInputsFromLpCalc')
