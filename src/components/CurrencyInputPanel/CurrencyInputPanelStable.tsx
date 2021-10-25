@@ -1,10 +1,11 @@
 /* eslint react/jsx-boolean-value: 0 */
 import React from 'react'
-import { Currency, Pair } from '@pancakeswap/sdk'
+import { Currency, StablePool } from '@pancakeswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@pancakeswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import Column from 'components/Column'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
@@ -51,7 +52,7 @@ interface CurrencyInputPanelStable {
   label?: string
   stableCurrency: Currency
   hideBalance?: boolean
-  pair?: Pair | null
+  stablePool?: StablePool | null
   hideInput?: boolean
   otherCurrency?: Currency | null
   id: string
@@ -67,7 +68,7 @@ export default function CurrencyInputPanelStable({
   label,
   stableCurrency,
   hideBalance = false,
-  pair = null, // used for double token logo
+  stablePool = null, // used for double token logo
   id,
 }: CurrencyInputPanelStable) {
   const { account, chainId } = useActiveWeb3React()
@@ -106,8 +107,11 @@ export default function CurrencyInputPanelStable({
           </>
 
           <Flex alignItems="center" justifyContent="space-between">
-            {pair ? (
-              <DoubleCurrencyLogo chainId={chainId} currency0={pair.token0} currency1={pair.token1} size={16} margin />
+            {stablePool ? (
+              <Column>
+                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={16} margin />
+                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={16} margin />
+              </Column>
             ) : stableCurrency ? (
               <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
             ) : null}

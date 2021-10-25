@@ -193,7 +193,6 @@ export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: Po
 export default function FullStablesPositionCard({ userLpPoolBalance, stablePool, ...props }: PositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
-
   const tokens = stablePool.tokens
 
   const [showMore, setShowMore] = useState(false)
@@ -209,12 +208,17 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
       : undefined
 
 
+  console.log("total:", totalPoolTokens?.toString())
+  console.log("stable total:", stablePool.lpTotalSupply?.toString())
+  console.log("user:", userLpPoolBalance?.toBigNumber().toString())
+  console.log("validate", totalPoolTokens >= userLpPoolBalance.toBigNumber())
+  // stablePool?.setTotalSupply(totalPoolTokens.toBigNumber())
 
   const amountsDeposited = !!stablePool &&
     !!totalPoolTokens &&
     !!userLpPoolBalance &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    totalPoolTokens.gte(userLpPoolBalance.raw.toString())
+    totalPoolTokens.gte(userLpPoolBalance.toBigNumber())
     ? stablePool.calculateRemoveLiquidity(userLpPoolBalance.toBigNumber()).map((amount, index) => new TokenAmount(tokens[index], amount.toBigInt()))
     : [undefined, undefined, undefined, undefined]
 
