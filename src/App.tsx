@@ -60,47 +60,50 @@ const App: React.FC = () => {
       <ResetCSS />
       <GlobalStyle />
       <CustomMenu />
+      <video id="background-video" autoPlay loop muted poster="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractalStatic.jpg">
+        <source src="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractal2.0.mp4" type="video/mp4" />
+      </video>
       <SuspenseWithChunkError fallback={<PageLoader />}>
-        <Popups/>
+        <Popups />
         {/* <Web3ReactManager> */}
-          
-          <Switch>
-            <Route path="/" exact>
-              <Home />
-            </Route>
-            <Route path="/farms">
-              <Farms />
-            </Route>
-            <Route path="/pools">
-              <Pools />
-            </Route>
-            {/* <Route path="/ifo">
+
+        <Switch>
+          <Route path="/" exact>
+            <Home />
+          </Route>
+          <Route path="/farms">
+            <Farms />
+          </Route>
+          <Route path="/pools">
+            <Pools />
+          </Route>
+          {/* <Route path="/ifo">
               <Ifos />
             </Route> */}
-            {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-            <Route exact strict path="/exchange" component={Swap} />
-            <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
-            <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
-            <Route exact strict path="/find" component={PoolFinder} />
-            <Route exact strict path="/liquidity" component={Liquidity} />
-            <Route exact strict path="/create" component={RedirectToAddLiquidity} />
-            <Route exact path="/add" component={AddLiquidity} />
-            <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-            <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
-            <Route exact path="/create" component={AddLiquidity} />
-            <Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-            <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
-            {/* <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} /> */}
-            <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
-            <Route exact path="/remove/stables" component={RemoveStableLiquidity} />
-            {/* Redirect */}
-            <Route path="/pool">
-              <Redirect to="/liquidity" />
-            </Route>
+          {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
+          <Route exact strict path="/exchange" component={Swap} />
+          <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
+          <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
+          <Route exact strict path="/find" component={PoolFinder} />
+          <Route exact strict path="/liquidity" component={Liquidity} />
+          <Route exact strict path="/create" component={RedirectToAddLiquidity} />
+          <Route exact path="/add" component={AddLiquidity} />
+          <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
+          <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+          <Route exact path="/create" component={AddLiquidity} />
+          <Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
+          <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+          {/* <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} /> */}
+          <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
+          <Route exact path="/remove/stables" component={RemoveStableLiquidity} />
+          {/* Redirect */}
+          <Route path="/pool">
+            <Redirect to="/liquidity" />
+          </Route>
 
-            {/* 404 */}
-            <Route component={NotFound} />
-          </Switch>
+          {/* 404 */}
+          <Route component={NotFound} />
+        </Switch>
         {/* </Web3ReactManager> */}
         <CustomNav />
       </SuspenseWithChunkError>
