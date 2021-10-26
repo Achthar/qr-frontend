@@ -5,7 +5,8 @@ import { Button, ChevronDownIcon, Text, useModal, Flex } from '@pancakeswap/uiki
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import Column from 'components/Column'
+import Column, { ColumnCenter, AutoColumn } from 'components/Column'
+import Row from 'components/Row'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
@@ -39,9 +40,13 @@ const InputPanel = styled.div<{ width: string }>`
   width: ${(props) => props.width}
 `
 const Container = styled.div<{ hideInput: boolean }>`
-  border-radius: 16px;
+  border-radius: 13px;
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
+  &:hover {
+    outline: 1px solid black;
+    border-color: solid black;
+  }
 `
 interface CurrencyInputPanelStable {
   width: string
@@ -80,18 +85,19 @@ export default function CurrencyInputPanelStable({
       <Container hideInput={false}>
 
         <LabelRow>
-          {account && (
+          {!hideBalance && account && (
             <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'>
               {!hideBalance && !!stableCurrency && selectedCurrencyBalance
                 ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
-                : ' -'}
-            </Text>
-          )}
+                : hideBalance ? ' -' : ''}
+            </Text>)
+            // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
+          }
         </LabelRow>
-        <InputRow style={{ padding: '0px', borderRadius: '8px' }} selected={true}>
+        <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
           <>
             <NumericalInput
-              style={{ paddingLeft: 25 }}
+              style={{ paddingLeft: 30 }}
               className="token-amount-input"
               value={value}
               onUserInput={(val) => {
@@ -104,18 +110,28 @@ export default function CurrencyInputPanelStable({
                 MAX
               </Button>
             )}
+            <Flex alignItems="center" justifyContent="space-between" paddingRight={30}>
+              {stablePool ? (
+                <Row>
+                  <Column>
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={25} margin />
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={25} margin />
+
+                  </Column>
+                  <Text mr='5px' width='30px' >Stable LP</Text>
+                </Row>
+              ) : stableCurrency ? (
+                <Row>
+                  <ColumnCenter >
+                    <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
+                  </ColumnCenter>
+                  <Text mr='5px' width='30px'>{stableCurrency.symbol}</Text>
+                </Row>
+              ) : null}
+            </Flex>
           </>
 
-          <Flex alignItems="center" justifyContent="space-between">
-            {stablePool ? (
-              <Column>
-                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={24} margin />
-                <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={24} margin />
-              </Column>
-            ) : stableCurrency ? (
-              <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
-            ) : null}
-          </Flex>
+
         </InputRow>
       </Container>
     </InputPanel>

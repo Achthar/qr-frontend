@@ -4,7 +4,10 @@ import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Percent, Price, Token, STABLE_POOL_LP_ADDRESS, TokenAmount, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, Currency } from '@pancakeswap/sdk'
-import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, ButtonMenu, ButtonMenuItem, TabMenu, Tab, Table, Th, Td } from '@pancakeswap/uikit'
+import {
+  Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex,
+  useModal, ButtonMenu, ButtonMenuItem, TabMenu, Tab, Table, Th, Td
+} from '@pancakeswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
@@ -44,7 +47,7 @@ import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
 // const function getStableIndex(token)
 
 const BorderCard = styled.div`
-  border: solid 1px ${({ theme }) => theme.colors.cardBorder};
+  border: solid 3px ${({ theme }) => theme.colors.cardBorder};
   border-radius: 16px;
   padding: 16px;
 `
@@ -66,11 +69,12 @@ export default function RemoveLiquidity({
     typedValue3,
     typedValue4,
     typedValueLiquidity,
+    calculatedSingleValues,
     typedValueSingle
   } = useBurnStableState()
 
 
-  const { stablePool, parsedAmounts, error } = useDerivedBurnStablesInfo()
+  const { stablePool, parsedAmounts, error, calculatedValuesFormatted } = useDerivedBurnStablesInfo()
 
   const {
     // onField1Input: _onField1Input,
@@ -81,8 +85,12 @@ export default function RemoveLiquidity({
     onField2Input,
     onField3Input,
     onField4Input,
-    onLpInput: _onLpInput,
-    onLpInputSetOthers
+    onLpInput, // : _onLpInput,
+    onLpInputSetOthers,
+    onField1CalcInput,
+    onField2CalcInput,
+    onField3CalcInput,
+    onField4CalcInput
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
@@ -91,7 +99,8 @@ export default function RemoveLiquidity({
   const enum StableRemovalState {
     BY_LP,
     BY_TOKENS,
-    BY_SINGLE_TOKEN
+    BY_SINGLE_TOKEN,
+
   }
 
 
@@ -215,13 +224,13 @@ export default function RemoveLiquidity({
   //   [_onField4Input],
   // )
 
-  const onLpInput = useCallback(
-    (field: StablesField, value: string) => {
-      setSignatureData(null)
-      return _onLpInput(field, value)
-    },
-    [_onLpInput],
-  )
+  // const onLpInput = useCallback(
+  //   (field: StablesField, value: string) => {
+  //     setSignatureData(null)
+  //     return _onLpInput(field, value)
+  //   },
+  //   [_onLpInput],
+  // )
   // tx sending
   const addTransaction = useTransactionAdder()
 
@@ -232,6 +241,7 @@ export default function RemoveLiquidity({
 
 
   // function for removing stable swap liquidity
+  // REmoval with LP amount as input
   async function onStablesLpRemove() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const { [StablesField.CURRENCY_1]: currencyAmount1, [StablesField.CURRENCY_2]: currencyAmount2,
@@ -241,6 +251,7 @@ export default function RemoveLiquidity({
     }
     const router = getStableRouterContract(chainId, library, account)
 
+    // we take the first results (lower ones) since we want to receive a minimum amount of tokens
     const amountsMin = {
       [StablesField.CURRENCY_1]: calculateSlippageAmount(currencyAmount1, allowedSlippage)[0],
       [StablesField.CURRENCY_2]: calculateSlippageAmount(currencyAmount2, allowedSlippage)[0],
@@ -264,8 +275,116 @@ export default function RemoveLiquidity({
           BigNumber.from(amountsMin[StablesField.CURRENCY_3].toString()),
           BigNumber.from(amountsMin[StablesField.CURRENCY_4].toString())
         ],
-        deadline.toHexString(),
+        deadline,
       ]
+
+    }
+    else {
+      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    }
+
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map((methodName) =>
+        router.estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch((err) => {
+            console.error(`estimateGas failed`, methodName, args, err)
+            return undefined
+          }),
+      ),
+    )
+
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+      BigNumber.isBigNumber(safeGasEstimate),
+    )
+
+    // all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error('This transaction would fail. Please contact support.')
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation]
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+
+      setAttemptingTxn(true)
+      await router[methodName](...args, {
+        gasLimit: safeGasEstimate,
+        gasPrice,
+      })
+        .then((response: TransactionResponse) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${stablePool?.tokens[1].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${stablePool?.tokens[2].symbol
+              } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${stablePool?.tokens[3].symbol
+              } from Requiem Stable Swap`,
+          })
+
+          setTxHash(response.hash)
+        })
+        .catch((err: Error) => {
+          setAttemptingTxn(false)
+          // we only care if the error is something _other_ than the user rejected the tx
+          console.error(err)
+        })
+    }
+  }
+
+  console.log("PA",
+    Object.assign({},
+      ...Object.values(parsedAmounts).map((amount, index) => ({ [Object.keys(parsedAmounts)[index]]: amount?.toFixed(6) }))))
+
+  // function for removing stable swap liquidity
+  // removal with stablecoin amounts herre
+  async function onStablesAmountsRemove() {
+    if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
+    const { [StablesField.CURRENCY_1]: currencyAmount1, [StablesField.CURRENCY_2]: currencyAmount2,
+      [StablesField.CURRENCY_3]: currencyAmount3, [StablesField.CURRENCY_4]: currencyAmount4 } = parsedAmounts
+    if (!currencyAmount1 || !currencyAmount2 || !currencyAmount3 || !currencyAmount4) {
+      throw new Error('missing currency amounts')
+    }
+    const router = getStableRouterContract(chainId, library, account)
+
+    const liquidityAmount = parsedAmounts[StablesField.LIQUIDITY]
+
+    // slippage for LP burn, takes second result from slippage calculation
+    const lpAmountMax = calculateSlippageAmount(liquidityAmount, allowedSlippage)[1]
+
+    console.log("amMax", lpAmountMax.toString())
+    console.log("orig", liquidityAmount.toSignificant(6))
+
+    console.log("amnt raw", liquidityAmount)
+
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
+
+    let methodNames: string[]
+    let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
+    // we have approval, use normal remove liquidity
+    if (approval === ApprovalState.APPROVED) {
+      methodNames = ['removeLiquidityImbalance']
+      args = [
+        [
+          currencyAmount1.toBigNumber(),
+          currencyAmount2.toBigNumber(),
+          currencyAmount3.toBigNumber(),
+          currencyAmount4.toBigNumber(),
+        ],
+        BigNumber.from(lpAmountMax.toString()),
+        deadline,
+      ]
+      console.log("pool amnts", stablePool.calculateRemoveLiquidity(liquidityAmount.toBigNumber()).map(bn => bn.toString()))
+      console.log("lp amnts", stablePool.getLiquidityAmount([
+        currencyAmount1.toBigNumber(),
+        currencyAmount2.toBigNumber(),
+        currencyAmount3.toBigNumber(),
+        currencyAmount4.toBigNumber()
+      ], false).toString())
+
+      console.log("CCYS", [currencyAmount1,
+        currencyAmount2,
+        currencyAmount3,
+        currencyAmount4,])
 
     }
     else {
@@ -327,7 +446,7 @@ export default function RemoveLiquidity({
           <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
             <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[0]} size="24px" />
-            <Text fontSize="24px" ml="10px">
+            <Text fontSize="24px" ml="10px" mr='5px'>
               {stablePool?.tokens[0].symbol}
             </Text>
           </RowFixed>
@@ -339,7 +458,7 @@ export default function RemoveLiquidity({
           <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
             <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[1]} size="24px" />
-            <Text fontSize="24px" ml="10px">
+            <Text fontSize="24px" ml="10px" mr='5px'>
               {stablePool?.tokens[1].symbol}
             </Text>
           </RowFixed>
@@ -351,7 +470,7 @@ export default function RemoveLiquidity({
           <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
             <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[2]} size="24px" />
-            <Text fontSize="24px" ml="10px">
+            <Text fontSize="24px" ml="10px" mr='5px'>
               {stablePool?.tokens[2].symbol}
             </Text>
           </RowFixed>
@@ -363,7 +482,7 @@ export default function RemoveLiquidity({
           <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
             <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[3]} size="24px" />
-            <Text fontSize="24px" ml="10px">
+            <Text fontSize="24px" ml="10px" mr='5px'>
               {stablePool?.tokens[3].symbol}
             </Text>
           </RowFixed>
@@ -378,10 +497,10 @@ export default function RemoveLiquidity({
     )
   }
 
-  function priceMatrixComponent(fontsize: string) {
+  function priceMatrixComponent(fontsize: string, width: string) {
     return (
       <>
-        <Table width='100%'>
+        <Table width={width}>
           <thead>
             <tr>
               <Th textAlign="left">Base</Th>
@@ -466,12 +585,40 @@ export default function RemoveLiquidity({
     )
   }
 
+
+  function field1Func(value: string) {
+    return independentStablesField === StablesField.LIQUIDITY || independentStablesField === StablesField.LIQUIDITY_PERCENT ?
+      onField1CalcInput(StablesField.CURRENCY_1, value, calculatedValuesFormatted) :
+      onField1Input(StablesField.CURRENCY_1, value)
+  }
+
+  function field2Func(value: string) {
+    return independentStablesField === StablesField.LIQUIDITY || independentStablesField === StablesField.LIQUIDITY_PERCENT ?
+      onField2CalcInput(StablesField.CURRENCY_2, value, calculatedValuesFormatted) :
+      onField2Input(StablesField.CURRENCY_2, value)
+  }
+
+
+  function field3Func(value: string) {
+    return independentStablesField === StablesField.LIQUIDITY || independentStablesField === StablesField.LIQUIDITY_PERCENT ?
+      onField3CalcInput(StablesField.CURRENCY_3, value, calculatedValuesFormatted) :
+      onField3Input(StablesField.CURRENCY_3, value)
+  }
+
+
+  function field4Func(value: string) {
+    return independentStablesField === StablesField.LIQUIDITY || independentStablesField === StablesField.LIQUIDITY_PERCENT ?
+      onField4CalcInput(StablesField.CURRENCY_4, value, calculatedValuesFormatted) :
+      onField4Input(StablesField.CURRENCY_4, value)
+  }
+
+
   function modalBottom() {
     return (
       <>
         <RowBetween>
           <Text>
-            {`${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol}-${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol
+            {`${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol}-${stablePool?.tokens[2].symbol}-${stablePool?.tokens[3].symbol
               } Stable Swap LP burned`}
           </Text>
           <RowFixed>
@@ -482,13 +629,21 @@ export default function RemoveLiquidity({
             <Text>{parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
         </RowBetween>
-        {stablePool && (
-          priceMatrixComponent('15px')
-        )
+        <AutoColumn>
+          {stablePool && (
+            priceMatrixComponent('13px', '110%')
+          )
+          }
+        </AutoColumn>
+        {stableRemovalState === StableRemovalState.BY_LP || true ? (
+          <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onStablesLpRemove}>
+            Confirm removal by LP Amount
+          </Button>) :
+          (
+            <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onStablesAmountsRemove}>
+              Confirm removal by Stable Coin Amounts
+            </Button>)
         }
-        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onStablesLpRemove}>
-          {t('Confirm')}
-        </Button>
       </>
     )
   }
@@ -543,7 +698,9 @@ export default function RemoveLiquidity({
         <AppHeader
           backTo="/pool"
           title='Remove Stable Swap Liquidity'
-          subtitle={`To receive ${stablePool?.tokens[0].symbol}, ${stablePool?.tokens[1].symbol}, ${stablePool?.tokens[2].symbol} and/or ${stablePool?.tokens[3].symbol}`}
+          subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${STABLES_INDEX_MAP[chainId ?? 43113][1].symbol
+            }, ${STABLES_INDEX_MAP[chainId ?? 43113][2].symbol
+            } and/or ${STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}`}
           noConfig
         />
 
@@ -560,9 +717,9 @@ export default function RemoveLiquidity({
             <Text textAlign='center'>Select withdrawl Type</Text>
 
             <LiquidityStateButtonWrapper>
-              <ButtonMenu activeIndex={stableRemovalState} onItemClick={handleClick} scale="sm" variant="subtle" ml="10px" marginBottom='1px'>
+              <ButtonMenu activeIndex={stableRemovalState} onItemClick={handleClick} scale="sm" variant="subtle" marginBottom='1px'>
                 <ButtonMenuItem>LP Percent</ButtonMenuItem>
-                <ButtonMenuItem>Unbalanced</ButtonMenuItem>
+                <ButtonMenuItem>LP Amount</ButtonMenuItem>
                 <ButtonMenuItem>Single Stable</ButtonMenuItem>
               </ButtonMenu>
             </LiquidityStateButtonWrapper>
@@ -584,57 +741,32 @@ export default function RemoveLiquidity({
                   value={innerLiquidityPercentage}
                   onValueChanged={(value) => {
                     setInnerLiquidityPercentage(Math.ceil(value))
-                    onLpInputSetOthers([
-                      formattedAmounts[StablesField.CURRENCY_1],
-                      formattedAmounts[StablesField.CURRENCY_2],
-                      formattedAmounts[StablesField.CURRENCY_3],
-                      formattedAmounts[StablesField.CURRENCY_4]
-                    ])
+
                   }}
                   mb="16px"
                 />
                 <Flex flexWrap="wrap" justifyContent="space-evenly">
                   <Button variant="tertiary" scale="sm" onClick={() => {
                     onLpInput(StablesField.LIQUIDITY_PERCENT, '25')
-                    onLpInputSetOthers([
-                      formattedAmounts[StablesField.CURRENCY_1],
-                      formattedAmounts[StablesField.CURRENCY_2],
-                      formattedAmounts[StablesField.CURRENCY_3],
-                      formattedAmounts[StablesField.CURRENCY_4]
-                    ])
+
                   }}>
                     25%
                   </Button>
                   <Button variant="tertiary" scale="sm" onClick={() => {
                     onLpInput(StablesField.LIQUIDITY_PERCENT, '50')
-                    onLpInputSetOthers([
-                      formattedAmounts[StablesField.CURRENCY_1],
-                      formattedAmounts[StablesField.CURRENCY_2],
-                      formattedAmounts[StablesField.CURRENCY_3],
-                      formattedAmounts[StablesField.CURRENCY_4]
-                    ])
+
                   }}>
                     50%
                   </Button>
                   <Button variant="tertiary" scale="sm" onClick={() => {
                     onLpInput(StablesField.LIQUIDITY_PERCENT, '75')
-                    onLpInputSetOthers([
-                      formattedAmounts[StablesField.CURRENCY_1],
-                      formattedAmounts[StablesField.CURRENCY_2],
-                      formattedAmounts[StablesField.CURRENCY_3],
-                      formattedAmounts[StablesField.CURRENCY_4]
-                    ])
+
                   }}>
                     75%
                   </Button>
                   <Button variant="tertiary" scale="sm" onClick={() => {
                     onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                    onLpInputSetOthers([
-                      formattedAmounts[StablesField.CURRENCY_1],
-                      formattedAmounts[StablesField.CURRENCY_2],
-                      formattedAmounts[StablesField.CURRENCY_3],
-                      formattedAmounts[StablesField.CURRENCY_4]
-                    ])
+
                   }}>
                     Max
                   </Button>
@@ -658,7 +790,7 @@ export default function RemoveLiquidity({
                       <Flex justifyContent="space-between" mb="8px">
                         <Flex>
                           <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][0]} />
-                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
+                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px" mr="8px">
                             {STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}
                           </Text>
                         </Flex>
@@ -667,7 +799,7 @@ export default function RemoveLiquidity({
                       <Flex justifyContent="space-between">
                         <Flex>
                           <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][2]} />
-                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
+                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">
                             {STABLES_INDEX_MAP[chainId ?? 43113][2].symbol}
                           </Text>
                         </Flex>
@@ -678,7 +810,7 @@ export default function RemoveLiquidity({
                       <Flex justifyContent="space-between" mb="8px">
                         <Flex>
                           <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][1]} />
-                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px">
+                          <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px" mr="8px">
                             {STABLES_INDEX_MAP[chainId ?? 43113][1].symbol}
                           </Text>
                         </Flex>
@@ -687,7 +819,7 @@ export default function RemoveLiquidity({
                       <Flex justifyContent="space-between">
                         <Flex>
                           <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][3]} />
-                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px">
+                          <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">
                             {STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}
                           </Text>
                         </Flex>
@@ -699,7 +831,6 @@ export default function RemoveLiquidity({
               </AutoColumn>
             </>
           )}
-
           {stableRemovalState === StableRemovalState.BY_TOKENS && (
             <Box my="16px">
               <CurrencyInputPanelStable
@@ -707,106 +838,83 @@ export default function RemoveLiquidity({
                 value={formattedAmounts[StablesField.LIQUIDITY]}
                 onUserInput={(value) => {
                   onLpInput(StablesField.LIQUIDITY, value)
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
                 }}
                 onMax={() => {
                   onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
                 }}
                 showMaxButton={!atMaxAmount}
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
                 stablePool={stablePool}
+                hideBalance={false}
               />
               <ColumnCenter>
-                <ArrowDownIcon width="24px" my="16px" />
+                <ArrowDownIcon width="24px" my="5px" />
               </ColumnCenter>
-              <CurrencyInputPanelStable
-                width='100%'
-                hideBalance
-                value={formattedAmounts[StablesField.CURRENCY_1]}
-                onUserInput={(value: string) => { onField1Input(StablesField.CURRENCY_1, value) }}
-                onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
-                }}
-                showMaxButton={!atMaxAmount}
-                stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][0]}
-                label={t('Output')}
-                id="remove-liquidity-token1"
-              />
-              <CurrencyInputPanelStable
-                width='100%'
-                hideBalance
-                value={formattedAmounts[StablesField.CURRENCY_2]}
-                onUserInput={(value: string) => { onField2Input(StablesField.CURRENCY_2, value) }}
-                onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
-                }}
-                showMaxButton={!atMaxAmount}
-                stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][1]}
-                label={t('Output')}
-                id="remove-liquidity-token2"
-              />
-              <CurrencyInputPanelStable
-                width='100%'
-                hideBalance
-                value={formattedAmounts[StablesField.CURRENCY_3]}
-                onUserInput={(value: string) => { onField3Input(StablesField.CURRENCY_3, value) }}
-                onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
-                }}
-                showMaxButton={!atMaxAmount}
-                stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][2]}
-                label={t('Output')}
-                id="remove-liquidity-token3"
-              />
-              <CurrencyInputPanelStable
-                width='100%'
-                hideBalance
-                value={formattedAmounts[StablesField.CURRENCY_4]}
-                onUserInput={(value: string) => { onField4Input(StablesField.CURRENCY_4, value) }}
-                onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
-                  onLpInputSetOthers([
-                    formattedAmounts[StablesField.CURRENCY_1],
-                    formattedAmounts[StablesField.CURRENCY_2],
-                    formattedAmounts[StablesField.CURRENCY_3],
-                    formattedAmounts[StablesField.CURRENCY_4]
-                  ])
-                }}
-                showMaxButton={!atMaxAmount}
-                stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][3]}
-                label={t('Output')}
-                id="remove-liquidity-token4"
-              />
+              <AutoColumn gap="2px">
+                <CurrencyInputPanelStable
+                  width='100%'
+                  hideBalance
+                  value={formattedAmounts[StablesField.CURRENCY_1]}
+                  onUserInput={(value: string) => field1Func(value)}
+                  onMax={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+
+                  }}
+                  showMaxButton={!atMaxAmount}
+                  stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][0]}
+                  label={t('Output')}
+                  id="remove-liquidity-token1"
+                />
+                <CurrencyInputPanelStable
+                  width='100%'
+                  hideBalance
+                  value={formattedAmounts[StablesField.CURRENCY_2]}
+                  onUserInput={(value: string) => field2Func(value)}
+                  onMax={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                    onLpInputSetOthers([
+                      formattedAmounts[StablesField.CURRENCY_1],
+                      formattedAmounts[StablesField.CURRENCY_2],
+                      formattedAmounts[StablesField.CURRENCY_3],
+                      formattedAmounts[StablesField.CURRENCY_4]
+                    ])
+                  }}
+                  showMaxButton={!atMaxAmount}
+                  stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][1]}
+                  label={t('Output')}
+                  id="remove-liquidity-token2"
+                />
+
+                <CurrencyInputPanelStable
+                  width='100%'
+                  hideBalance
+                  value={formattedAmounts[StablesField.CURRENCY_3]}
+                  onUserInput={(value: string) => field3Func(value)}
+                  onMax={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+
+                  }}
+                  showMaxButton={!atMaxAmount}
+                  stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][2]}
+                  label={t('Output')}
+                  id="remove-liquidity-token3"
+                />
+
+                <CurrencyInputPanelStable
+                  width='100%'
+                  hideBalance
+                  value={formattedAmounts[StablesField.CURRENCY_4]}
+                  onUserInput={(value: string) => field4Func(value)}
+                  onMax={() => {
+                    onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  }}
+                  showMaxButton={!atMaxAmount}
+                  stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][3]}
+                  label={t('Output')}
+                  id="remove-liquidity-token4"
+                />
+              </AutoColumn>
             </Box>
           )}
           {stableRemovalState === StableRemovalState.BY_SINGLE_TOKEN && (
@@ -846,7 +954,7 @@ export default function RemoveLiquidity({
                 Price Matrix
               </Text>
               <LightGreyCard>
-                {priceMatrixComponent('12px')}
+                {priceMatrixComponent('12px', '80%')}
               </LightGreyCard>
             </AutoColumn>
           )}

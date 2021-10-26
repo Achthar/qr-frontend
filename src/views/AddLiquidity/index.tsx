@@ -604,7 +604,7 @@ export default function AddLiquidity({
                   stableCurrency={STABLES_INDEX_MAP[chainId][0]}
                   id="add-liquidity-input-token1"
                 />
-                {typedValue1 !== '' ?
+                {
                   ((approval1 !== ApprovalState.APPROVED) && (
                     <ButtonStableApprove
                       onClick={approve1Callback}
@@ -617,9 +617,7 @@ export default function AddLiquidity({
                         t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_1]?.symbol })
                       )}
                     </ButtonStableApprove>
-                  )) : (
-                    <Button startIcon={<ArrowBackIcon width='50px' />} variant='secondary' width='50px' ml='3px' mr='3px' padding='1px' />
-                  )}
+                  ))}
               </Row>
               <Row>
                 <CurrencyInputPanelStable
@@ -633,7 +631,7 @@ export default function AddLiquidity({
                   stableCurrency={STABLES_INDEX_MAP[chainId][1]}
                   id="add-liquidity-input-token2"
                 />
-                {typedValue2 !== '' ?
+                {
                   ((approval2 !== ApprovalState.APPROVED) && (
                     <ButtonStableApprove
                       onClick={approve2Callback}
@@ -646,9 +644,7 @@ export default function AddLiquidity({
                         t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_2]?.symbol })
                       )}
                     </ButtonStableApprove>
-                  )) : (
-                    <Button startIcon={<ArrowBackIcon width='50px' />} variant='secondary' width='50px' ml='3px' mr='3px' padding='1px' />
-                  )}
+                  ))}
               </Row>
               <Row>
                 <CurrencyInputPanelStable
@@ -662,7 +658,7 @@ export default function AddLiquidity({
                   stableCurrency={STABLES_INDEX_MAP[chainId][2]}
                   id="add-liquidity-input-token3"
                 />
-                {typedValue3 !== '' ?
+                {
                   ((approval3 !== ApprovalState.APPROVED) && (
                     <ButtonStableApprove
                       onClick={approve3Callback}
@@ -675,9 +671,7 @@ export default function AddLiquidity({
                         t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_3]?.symbol })
                       )}
                     </ButtonStableApprove>
-                  )) : (
-                    <Button startIcon={<ArrowBackIcon width='50px' />} variant='secondary' width='50px' ml='3px' mr='3px' padding='1px' />
-                  )
+                  ))
                 }
               </Row>
               <Row>
@@ -692,7 +686,7 @@ export default function AddLiquidity({
                   stableCurrency={STABLES_INDEX_MAP[chainId][3]}
                   id="add-liquidity-input-token4"
                 />
-                {typedValue4 !== '' ? (
+                {
                   (approval4 !== ApprovalState.APPROVED) && (
                     <ButtonStableApprove
                       onClick={approve4Callback}
@@ -705,9 +699,7 @@ export default function AddLiquidity({
                         t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_4]?.symbol })
                       )}
                     </ButtonStableApprove>
-                  )) : (
-                  <Button startIcon={<ArrowBackIcon width='50px' />} variant='secondary' width='50px' ml='3px' mr='3px' padding='1px' />
-                )}
+                  )}
               </Row>
 
               {liquidityState !== LiquidityState.STABLE ?

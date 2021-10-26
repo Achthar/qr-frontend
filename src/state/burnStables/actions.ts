@@ -9,7 +9,8 @@ export enum StablesField {
   CURRENCY_4 = 'CURRENCY_4',
   SELECTED_SINGLE = 'SELECTED_SINGLE',
   CURRENCY_SINGLE = 'CURRENCY_SINGLE',
-  LIQUIDITY_DEPENDENT = 'LIQUIDITY_DEPENDENT'
+  LIQUIDITY_DEPENDENT = 'LIQUIDITY_DEPENDENT',
+  CALCULATED_SINGLE_VALUES = 'CALCULATED_SINGLE_VALUES' // that field is for the calculated values from LP input
 }
 
 // case withdrawl by LP
@@ -21,9 +22,17 @@ export const typeInput2 = createAction<{ stablesField: StablesField; typedValue2
 export const typeInput3 = createAction<{ stablesField: StablesField; typedValue3: string }>('burnStables/typeInput3StablesBurn')
 export const typeInput4 = createAction<{ stablesField: StablesField; typedValue4: string }>('burnStables/typeInput4StablesBurn')
 
+export const typeInput1Calculated = createAction<{ stablesField: StablesField; typedValue1: string; calculatedValues: string[] }>('burnStables/typeInput1CalculatedStablesBurn')
+export const typeInput2Calculated = createAction<{ stablesField: StablesField; typedValue2: string; calculatedValues: string[] }>('burnStables/typeInput2CalculatedStablesBurn')
+export const typeInput3Calculated = createAction<{ stablesField: StablesField; typedValue3: string; calculatedValues: string[] }>('burnStables/typeInput3CalculatedStablesBurn')
+export const typeInput4Calculated = createAction<{ stablesField: StablesField; typedValue4: string; calculatedValues: string[] }>('burnStables/typeInput4CalculatedStablesBurn')
+
+
+export const typeInput = createAction<{ stablesField: StablesField; typedValue: string }>('burnStables/typeInputStablesBurn')
+
 // withdrawls by single Token amount
 export const typeInputSingle = createAction<{ stablesField: StablesField; typedValueSingle: string }>('burnStables/typeInputSingleStablesBurn')
 
 export const selectStableSingle = createAction<{ stablesField: StablesField; selectedStableSingle: number }>('burnStables/selectInputSingleStablesBurn')
 
-export const setTypeSingleInputs = createAction<{ typedValues: string[] }>('burnStables/typeInputsFromLpCalc')
+export const setTypeSingleInputs = createAction<{ calculatedSingleValues: string[] }>('burnStables/typeInputsFromLpCalc')

@@ -5,10 +5,15 @@ import {
   typeInput2,
   typeInput3,
   typeInput4,
+  typeInput,
   typeInputLp,
   typeInputSingle,
   selectStableSingle,
-  setTypeSingleInputs
+  setTypeSingleInputs,
+  typeInput1Calculated,
+  typeInput2Calculated,
+  typeInput3Calculated,
+  typeInput4Calculated,
 } from './actions'
 
 export interface BurnStablesState {
@@ -18,6 +23,7 @@ export interface BurnStablesState {
   readonly typedValue2: string
   readonly typedValue3: string
   readonly typedValue4: string
+  readonly calculatedSingleValues: string[]
   readonly selectedStableSingle: number
   readonly typedValueSingle: string
 
@@ -30,6 +36,7 @@ const initialState: BurnStablesState = {
   typedValue2: '0',
   typedValue3: '0',
   typedValue4: '0',
+  calculatedSingleValues: ['0', '0', '0', '0'],
   selectedStableSingle: 0,
   typedValueSingle: '0',
 }
@@ -72,13 +79,53 @@ export default createReducer<BurnStablesState>(initialState, (builder) =>
         independentStablesField: stablesField,
         typedValueSingle,
       }
-    }).addCase(setTypeSingleInputs, (state, { payload: { typedValues } }) => {
+    }).addCase(setTypeSingleInputs, (state, { payload: { calculatedSingleValues } }) => {
       return {
         ...state,
-        typedValue1: typedValues[0],
-        typedValue2: typedValues[1],
-        typedValue3: typedValues[2],
-        typedValue4: typedValues[3],
+        calculatedSingleValues
+      }
+
+    }).addCase(typeInput, (state, { payload: { stablesField, typedValue } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue4: typedValue,
+      }
+    }).addCase(typeInput1Calculated, (state, { payload: { stablesField, typedValue1, calculatedValues } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue1,
+        typedValue2: calculatedValues[1],
+        typedValue3: calculatedValues[2],
+        typedValue4: calculatedValues[3],
+      }
+    }).addCase(typeInput2Calculated, (state, { payload: { stablesField, typedValue2, calculatedValues } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue1: calculatedValues[0],
+        typedValue2,
+        typedValue3: calculatedValues[2],
+        typedValue4: calculatedValues[3],
+      }
+    }).addCase(typeInput3Calculated, (state, { payload: { stablesField, typedValue3, calculatedValues } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue1: calculatedValues[0],
+        typedValue2: calculatedValues[1],
+        typedValue3,
+        typedValue4: calculatedValues[3],
+      }
+    }).addCase(typeInput4Calculated, (state, { payload: { stablesField, typedValue4, calculatedValues } }) => {
+      return {
+        ...state,
+        independentStablesField: stablesField,
+        typedValue1: calculatedValues[0],
+        typedValue2: calculatedValues[1],
+        typedValue3: calculatedValues[2],
+        typedValue4,
       }
     }),
 )
