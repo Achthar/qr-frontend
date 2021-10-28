@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Trade, TokenAmount, CurrencyAmount, ETHER, NETWORK_CCY } from '@requiemswap/sdk'
+import { Trade, TokenAmount, CurrencyAmount, NETWORK_CCY, TradeV3 } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { ROUTER_ADDRESS } from '../config/constants'
@@ -8,6 +8,7 @@ import useTokenAllowance from './useTokenAllowance'
 import { Field } from '../state/swap/actions'
 import { useTransactionAdder, useHasPendingApproval } from '../state/transactions/hooks'
 import { computeSlippageAdjustedAmounts } from '../utils/prices'
+import { computeSlippageAdjustedAmountsV3 } from '../utils/pricesV3'
 import { calculateGasMargin } from '../utils'
 import { useTokenContract } from './useContract'
 import { useCallWithGasPrice } from './useCallWithGasPrice'
@@ -111,6 +112,17 @@ export function useApproveCallbackFromTrade(chainId:number, trade?: Trade, allow
   const amountToApprove = useMemo(
     () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
     [trade, allowedSlippage],
+  )
+
+  return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS[chainId])
+}
+
+
+// wraps useApproveCallback in the context of a swap
+export function useApproveCallbackFromTradeV3(chainId:number, tradeV3?: TradeV3, allowedSlippage = 0) {
+  const amountToApprove = useMemo(
+    () => (tradeV3 ? computeSlippageAdjustedAmountsV3(tradeV3, allowedSlippage)[Field.INPUT] : undefined),
+    [tradeV3, allowedSlippage],
   )
 
   return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS[chainId])

@@ -20,6 +20,8 @@ import history from './routerHistory'
 // Views included in the main bundle
 import Pools from './views/Pools'
 import Swap from './views/Swap'
+import SwapV3 from './views/SwapV3'
+
 import {
   RedirectDuplicateTokenIds,
   RedirectOldAddLiquidityPathStructure,
@@ -82,6 +84,7 @@ const App: React.FC = () => {
             </Route> */}
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
           <Route exact strict path="/exchange" component={Swap} />
+          <Route exact strict path="/exchangeV3" component={SwapV3} />
           <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
           <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
           <Route exact strict path="/find" component={PoolFinder} />

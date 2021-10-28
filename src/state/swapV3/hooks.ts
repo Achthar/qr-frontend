@@ -1,22 +1,23 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, TradeV3, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useStablePool } from 'hooks/useStablePool'
 import useENS from 'hooks/ENS/useENS'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCurrency } from 'hooks/Tokens'
-// import { useTradeExactIn, useTradeExactOut } from 'hooks/Trades'
 import { useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
 import useParsedQueryString from 'hooks/useParsedQueryString'
 import { useTranslation } from 'contexts/Localization'
 import { isAddress } from 'utils'
-import { computeSlippageAdjustedAmounts } from 'utils/prices'
+import { computeSlippageAdjustedAmountsV3 } from 'utils/pricesV3'
 import { AppDispatch, AppState } from '../index'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
-import { SwapState } from './reducer'
+import { SwapV3State } from './reducer'
 import { useUserSlippageTolerance } from '../user/hooks'
+
 
 export function useSwapV3State(): AppState['swapV3'] {
   return useSelector<AppState, AppState['swapV3']>((state) => state.swap)
@@ -31,6 +32,7 @@ export function useSwapV3ActionHandlers(chainId: number): {
   const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
+      console.log("CCYSelect")
       dispatch(
         selectCurrency({
           field,
@@ -98,19 +100,19 @@ const BAD_RECIPIENT_ADDRESSES: string[] = [
  * @param trade to check for the given address
  * @param checksummedAddress address to check in the pairs and tokens
  */
-function involvesAddress(trade: Trade, checksummedAddress: string): boolean {
+function involvesAddress(trade: TradeV3, checksummedAddress: string): boolean {
   return (
     trade.route.path.some((token) => token.address === checksummedAddress) ||
-    trade.route.pairs.some((pair) => pair.liquidityToken.address === checksummedAddress)
+    trade.route.sources.some((source) => source.liquidityToken.address === checksummedAddress)
   )
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapInfo(chainId: number): {
+export function useDerivedSwapV3Info(chainId: number): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
-  v2Trade: Trade | undefined
+  v3Trade: TradeV3 | undefined
   inputError?: string
 } {
   const { account } = useActiveWeb3React()
@@ -124,6 +126,10 @@ export function useDerivedSwapInfo(chainId: number): {
     recipient,
   } = useSwapV3State()
 
+console.log("input ids", inputCurrencyId,outputCurrencyId)
+
+  const [stablePoolState, stablePool] = useStablePool()
+
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
 
@@ -134,16 +140,16 @@ export function useDerivedSwapInfo(chainId: number): {
     inputCurrency ?? undefined,
     outputCurrency ?? undefined,
   ])
-  
+
 
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  const bestTradeExactIn = useTradeV3ExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeV3ExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  const bestTradeExactIn = useTradeV3ExactIn(stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
+  const bestTradeExactOut = useTradeV3ExactOut(stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
 
-  const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
+  const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
 
   const currencyBalances = {
     [Field.INPUT]: relevantTokenBalances[0],
@@ -181,7 +187,7 @@ export function useDerivedSwapInfo(chainId: number): {
 
   const [allowedSlippage] = useUserSlippageTolerance()
 
-  const slippageAdjustedAmounts = v2Trade && allowedSlippage && computeSlippageAdjustedAmounts(v2Trade, allowedSlippage)
+  const slippageAdjustedAmounts = v3Trade && allowedSlippage && computeSlippageAdjustedAmountsV3(v3Trade, allowedSlippage)
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -197,7 +203,7 @@ export function useDerivedSwapInfo(chainId: number): {
     currencies,
     currencyBalances,
     parsedAmount,
-    v2Trade: v2Trade ?? undefined,
+    v3Trade: v3Trade ?? undefined,
     inputError,
   }
 }
@@ -234,7 +240,7 @@ function validatedRecipient(recipient: any): string | null {
   return null
 }
 
-export function queryParametersToSwapState(chainId: number, parsedQs: ParsedQs): SwapState {
+export function queryParametersToSwapV3State(chainId: number, parsedQs: ParsedQs): SwapV3State {
   let inputCurrency = parseCurrencyFromURLParameter(chainId, parsedQs.inputCurrency)
   let outputCurrency = parseCurrencyFromURLParameter(chainId, parsedQs.outputCurrency)
   if (inputCurrency === outputCurrency) {
@@ -273,7 +279,7 @@ export function useDefaultsFromURLSearch():
 
   useEffect(() => {
     if (!chainId) return
-    const parsed = queryParametersToSwapState(chainId, parsedQs)
+    const parsed = queryParametersToSwapV3State(chainId, parsedQs)
 
     dispatch(
       replaceSwapState({

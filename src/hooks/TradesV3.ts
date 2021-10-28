@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { isTradeBetter } from 'utils/trades'
-import { Currency, CurrencyAmount, Pair, Token, Trade } from '@requiemswap/sdk'
+import { isTradeV3Better } from 'utils/tradesV3'
+import { Currency, CurrencyAmount, Pair, Token, TradeV3, StablePool } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -95,7 +95,7 @@ const MAX_HOPS = 4
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
-export function useTradeV3ExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
+export function useTradeV3ExactIn(stablePool: StablePool, currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): TradeV3 | null {
 
   const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
 
@@ -105,18 +105,18 @@ export function useTradeV3ExactIn(currencyAmountIn?: CurrencyAmount, currencyOut
     if (currencyAmountIn && currencyOut && allowedPairs.length > 0) {
       if (singleHopOnly) {
         return (
-          Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, { maxHops: 1, maxNumResults: 1 })[0] ??
+          TradeV3.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: 1, maxNumResults: 1 })[0] ??
           null
         )
       }
       // search through trades with varying hops, find best trade out of them
-      let bestTradeSoFar: Trade | null = null
+      let bestTradeSoFar: TradeV3 | null = null
       for (let i = 1; i <= MAX_HOPS; i++) {
-        const currentTrade: Trade | null =
-          Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, { maxHops: i, maxNumResults: 1 })[0] ??
+        const currentTrade: TradeV3 | null =
+          TradeV3.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: i, maxNumResults: 1 })[0] ??
           null
         // if current trade is best yet, save it
-        if (isTradeBetter(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
+        if (isTradeV3Better(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
           bestTradeSoFar = currentTrade
         }
       }
@@ -124,13 +124,13 @@ export function useTradeV3ExactIn(currencyAmountIn?: CurrencyAmount, currencyOut
     }
 
     return null
-  }, [allowedPairs, currencyAmountIn, currencyOut, singleHopOnly])
+  }, [allowedPairs, currencyAmountIn, currencyOut, singleHopOnly, stablePool])
 }
 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
-export function useTradeV3ExactOut(currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): Trade | null {
+export function useTradeV3ExactOut(stablePool: StablePool, currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): TradeV3 | null {
   const allowedPairs = useAllCommonPairs(currencyIn, currencyAmountOut?.currency)
 
   const [singleHopOnly] = useUserSingleHopOnly()
@@ -139,24 +139,24 @@ export function useTradeV3ExactOut(currencyIn?: Currency, currencyAmountOut?: Cu
     if (currencyIn && currencyAmountOut && allowedPairs.length > 0) {
       if (singleHopOnly) {
         return (
-          Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, { maxHops: 1, maxNumResults: 1 })[0] ??
+          TradeV3.bestTradeExactOut(stablePool, allowedPairs, currencyIn, currencyAmountOut, { maxHops: 1, maxNumResults: 1 })[0] ??
           null
         )
       }
       // search through trades with varying hops, find best trade out of them
-      let bestTradeSoFar: Trade | null = null
+      let bestTradeSoFar: TradeV3 | null = null
       for (let i = 1; i <= MAX_HOPS; i++) {
         const currentTrade =
-          Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, { maxHops: i, maxNumResults: 1 })[0] ??
+          TradeV3.bestTradeExactOut(stablePool, allowedPairs, currencyIn, currencyAmountOut, { maxHops: i, maxNumResults: 1 })[0] ??
           null
-        if (isTradeBetter(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
+        if (isTradeV3Better(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
           bestTradeSoFar = currentTrade
         }
       }
       return bestTradeSoFar
     }
     return null
-  }, [currencyIn, currencyAmountOut, allowedPairs, singleHopOnly])
+  }, [currencyIn, currencyAmountOut, allowedPairs, singleHopOnly, stablePool])
 }
 
 export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {

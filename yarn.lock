@@ -2972,7 +2972,7 @@
 
 "@requiemswap/sdk@https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master":
   version "2.4.0"
-  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#b8789a7e55f9917511dc440caaf3aec5794a8332"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#b1ec5ff70eef45008002f199013026c43cd1fc51"
   dependencies:
     "@pancakeswap-libs/pancake-swap-core" "^0.1.0"
     big.js "^5.2.2"
@@ -22065,9 +22065,9 @@ walker@^1.0.7, walker@~1.0.5:
     makeerror "1.0.12"
 
 walletlink@^2.1.10:
-  version "2.1.11"
-  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.1.11.tgz#4ed5d53066f4fae8cc43169475e4f9d1f6b8735a"
-  integrity sha512-DdnQ2jnVHAdKgQ1IgxPKn3GvVEUbrGCgvgqKqQ7eanxUnyWgRm5T8Ib6NqPDuQ6SNFk6St54uN+uxV7GP6AyZg==
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.2.6.tgz#cfea3ba94e5ea33e87b0a2f31151a77ee1a59d72"
+  integrity sha512-4TF1kkpo9aq1QlfKv6jTCEsV8Rc+1RIuXn2EtsTJt9/H02fG3oy7k49sqB4gXZ9CWN48yoXnmSwq1GdkvfYGjw==
   dependencies:
     "@metamask/safe-event-emitter" "2.0.0"
     bind-decorator "^1.0.11"
