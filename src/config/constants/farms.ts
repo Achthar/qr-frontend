@@ -1,4 +1,4 @@
-import {ChainId} from '@pancakeswap/sdk'
+import {ChainId} from '@requiemswap/sdk'
 import tokens from './tokens'
 import { FarmConfig } from './types'
 

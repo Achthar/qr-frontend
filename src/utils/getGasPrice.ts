@@ -1,4 +1,4 @@
-// import { ChainId } from '@pancakeswap/sdk'
+// import { ChainId } from '@requiemswap/sdk'
 import store from 'state'
 import { GAS_PRICE_GWEI } from 'state/user/hooks/helpers'
 import { ChainId } from '../config/index'

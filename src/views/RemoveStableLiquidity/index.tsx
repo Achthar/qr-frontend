@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Percent, Price, Token, STABLE_POOL_LP_ADDRESS, TokenAmount, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, Currency } from '@pancakeswap/sdk'
+import { Percent, Price, Token, STABLE_POOL_LP_ADDRESS, TokenAmount, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, Currency } from '@requiemswap/sdk'
 import {
   Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex,
   useModal, ButtonMenu, ButtonMenuItem, TabMenu, Tab, Table, Th, Td
-} from '@pancakeswap/uikit'
+} from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
@@ -115,12 +115,14 @@ export default function RemoveLiquidity({
   const handleClick = (newIndex: StableRemovalState) => setStableRemovalState(newIndex);
 
 
-  // const enum StableSelectState {
-  //   FIRST = 0,
-  //   SECOND = 1,
-  //   THIRD = 2,
-  //   FOURTH = 4
-  // }
+  // map for the selection panel in redemption versus the single stable
+  const stableSelectMap = {
+    43113:{
+    'USDC': 0,
+    'USDT': 1,
+    'DAI': 2,
+    'TUSD': 4}
+  }
 
   const [stableSelectState, setStableSelectState] = useState<number>(0)
 
@@ -890,7 +892,8 @@ export default function RemoveLiquidity({
                   width='100%'
                   hideBalance
                   value={formattedAmounts[StablesField.CURRENCY_3]}
-                  onUserInput={(value: string) => field3Func(value)}
+                  hideInput
+                  onUserInput={(value: string) =>  field3Func(value)}
                   onMax={() => {
                     onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
 

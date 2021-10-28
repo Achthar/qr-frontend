@@ -11,6 +11,7 @@ import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
 import swap from './swap/reducer'
+import swapV3 from './swapV3/reducer'
 import mint from './mint/reducer'
 import mintStables from './mintStables/reducer'
 import lists from './lists/reducer'
@@ -34,6 +35,7 @@ const store = configureStore({
     user,
     transactions,
     swap,
+    swapV3,
     mint,
     mintStables,
     burn,

@@ -4,11 +4,11 @@ import {
   TokenPairImageProps as UIKitTokenPairImageProps,
   TokenImage as UIKitTokenImage,
   ImageProps,
-} from '@pancakeswap/uikit'
+} from '@requiemswap/uikit'
 import tokens from 'config/constants/tokens'
 import { Token } from 'config/constants/types'
 import { getAddress } from 'utils/addressHelpers'
-import { NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 
 interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc' | 'secondarySrc'> {
   chainId:number,

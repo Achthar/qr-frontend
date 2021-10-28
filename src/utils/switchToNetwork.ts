@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { hexStripZeros } from '@ethersproject/bytes'
 import { Web3Provider } from '@ethersproject/providers'
 import { CHAIN_INFO } from 'config/constants/index'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 
 import { setupNetwork } from 'utils/wallet'
 import { addNetwork } from 'utils/addNetwork'

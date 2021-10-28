@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, Pair, Percent, STABLE_POOL_ADDRESS, StablePool, TokenAmount, Token } from '@pancakeswap/sdk'
+import { JSBI, Pair, Percent, STABLE_POOL_ADDRESS, StablePool, TokenAmount, Token } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -11,7 +11,7 @@ import {
   CardProps,
   AddIcon,
   CircleOutlineIcon,
-} from '@pancakeswap/uikit'
+} from '@requiemswap/uikit'
 import { BigNumber } from 'ethers'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'

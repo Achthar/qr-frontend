@@ -1,4 +1,4 @@
-import { Currency, ETHER, Token, NETWORK_CCY } from '@pancakeswap/sdk'
+import { Currency, ETHER, Token, NETWORK_CCY } from '@requiemswap/sdk'
 
 export function currencyId(chainId: number, currency: Currency): string {
   if (currency === NETWORK_CCY[chainId]) {

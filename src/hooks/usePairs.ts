@@ -1,4 +1,4 @@
-import { TokenAmount, Pair, Currency } from '@pancakeswap/sdk'
+import { TokenAmount, Pair, Currency } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'

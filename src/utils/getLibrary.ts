@@ -1,7 +1,7 @@
 import { Web3Provider } from '@ethersproject/providers'
 import ms from 'ms.macro'
 
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 
 const NETWORK_POLLING_INTERVALS: { [chainId: number]: number } = {
   [ChainId.BSC_MAINNET]: ms`1s`,

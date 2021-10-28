@@ -1,5 +1,5 @@
 
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import BigNumber from 'bignumber.js/bignumber'
 // import { BIG_TEN } from 'utils/bigNumber'
 import {ChainGroup} from 'config/constants/types'
@@ -11,7 +11,7 @@ BigNumber.config({
 
 export const BSC_BLOCK_TIME = 3
 
-export { ChainId } from '@pancakeswap/sdk'
+export { ChainId } from '@requiemswap/sdk'
 
 export const BASE_BSC_SCAN_URLS = {
   [ChainId.BSC_MAINNET]: 'https://bscscan.com',

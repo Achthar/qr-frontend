@@ -7,7 +7,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
-import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@pancakeswap/sdk'
+import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { parseBytes32String } from '@ethersproject/strings'
-import { Currency, ETHER, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { Currency, ETHER, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { arrayify } from 'ethers/lib/utils'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'

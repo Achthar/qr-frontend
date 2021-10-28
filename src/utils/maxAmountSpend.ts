@@ -1,4 +1,4 @@
-import { CurrencyAmount, ETHER, JSBI, NETWORK_CCY } from '@pancakeswap/sdk'
+import { CurrencyAmount, ETHER, JSBI, NETWORK_CCY } from '@requiemswap/sdk'
 import { MIN_BNB } from '../config/constants'
 
 /**

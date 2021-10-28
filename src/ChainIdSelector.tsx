@@ -6,10 +6,10 @@ import {
   L2_CHAIN_IDS,
   SupportedL2ChainId,
 } from 'config/constants/index'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@pancakeswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@requiemswap/uikit'
 import { useWeb3React } from "@web3-react/core";
 
 import { ApplicationModal } from 'state/application/actions'

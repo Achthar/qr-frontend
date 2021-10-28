@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, Pair, Percent } from '@pancakeswap/sdk'
+import { JSBI, Pair, Percent } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -10,7 +10,7 @@ import {
   Flex,
   CardProps,
   AddIcon,
-} from '@pancakeswap/uikit'
+} from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'

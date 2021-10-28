@@ -1,4 +1,4 @@
-import { ChainId, Token } from '@pancakeswap/sdk'
+import { ChainId, Token } from '@requiemswap/sdk'
 import { chain } from 'lodash'
 
 export const WETH = {

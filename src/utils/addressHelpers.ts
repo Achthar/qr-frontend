@@ -1,4 +1,4 @@
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import {addresses} from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address } from 'config/constants/types'

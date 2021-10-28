@@ -5,7 +5,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { hexStripZeros } from '@ethersproject/bytes'
 import { CHAIN_INFO } from 'config/constants/index'
 import { Web3Provider } from '@ethersproject/providers'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import { nodes } from './getRpcUrl'
 
 /**

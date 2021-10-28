@@ -1,6 +1,6 @@
 import React from 'react'
-import { Currency, currencyEquals, ETHER, Token, NETWORK_CCY } from '@pancakeswap/sdk'
-import { Text } from '@pancakeswap/uikit'
+import { Currency, currencyEquals, ETHER, Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Text } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 

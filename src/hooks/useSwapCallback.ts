@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@pancakeswap/sdk'
+import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'

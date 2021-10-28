@@ -1,7 +1,7 @@
 import React, { lazy, useCallback } from 'react'
 import config from 'components/Menu/config'
 import { Router, Redirect, Route, Switch, useHistory } from 'react-router-dom'
-import { ButtonMenu, ButtonMenuItem, ResetCSS } from '@pancakeswap/uikit'
+import { ButtonMenu, ButtonMenuItem, ResetCSS } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
 import { useTranslation } from 'contexts/Localization'
 import useEagerConnect from 'hooks/useEagerConnect'

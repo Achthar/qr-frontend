@@ -1,4 +1,4 @@
-import { ChainId, Token as SDKToken, Pair } from '@pancakeswap/sdk'
+import { ChainId, Token as SDKToken, Pair } from '@requiemswap/sdk'
 import tokens from './tokens'
 import { FarmAuctionBidderConfig, Token } from './types'
 

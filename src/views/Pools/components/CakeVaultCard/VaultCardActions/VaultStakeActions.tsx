@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Button, useModal, Skeleton } from '@pancakeswap/uikit'
+import { Flex, Button, useModal, Skeleton } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
 import { useTranslation } from 'contexts/Localization'
 import type { Pool } from 'state/types'

@@ -1,6 +1,6 @@
 import { BaseQueryFn } from '@reduxjs/toolkit/query'
 import { createApi } from '@reduxjs/toolkit/query/react'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import { DocumentNode } from 'graphql'
 import { ClientError, gql, GraphQLClient } from 'graphql-request'
 import { AppState } from 'state'

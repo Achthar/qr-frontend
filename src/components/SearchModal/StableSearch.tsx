@@ -1,6 +1,6 @@
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { Currency, ETHER, Token, NETWORK_CCY, STABLES_INDEX_MAP, STABLECOINS } from '@pancakeswap/sdk'
-import { Text, Input, Box } from '@pancakeswap/uikit'
+import { Currency, ETHER, Token, NETWORK_CCY, STABLES_INDEX_MAP, STABLECOINS } from '@requiemswap/sdk'
+import { Text, Input, Box } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
 import { useAudioModeManager } from 'state/user/hooks'

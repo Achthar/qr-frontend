@@ -12,7 +12,7 @@ import {
   Text,
   TimerIcon,
   useTooltip,
-} from '@pancakeswap/uikit'
+} from '@requiemswap/uikit'
 import { BASE_BSC_SCAN_URL } from 'config'
 import { getNetworkExplorerLink } from 'utils'
 import { useBlock } from 'state/block/hooks'

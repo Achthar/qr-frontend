@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade, NETWORK_CCY } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade, NETWORK_CCY } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Flex } from '@pancakeswap/uikit'
+import { Flex } from '@requiemswap/uikit'
 import Footer from 'components/Menu/Footer'
 
 const StyledPage = styled.div`

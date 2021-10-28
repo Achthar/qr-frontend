@@ -1,7 +1,7 @@
 /* eslint object-shorthand: 0 */
 import { parseUnits } from '@ethersproject/units'
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
-import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, StablePool, Percent, Price, TokenAmount, STABLES_INDEX_MAP, Token } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, StablePool, Percent, Price, TokenAmount, STABLES_INDEX_MAP, Token } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'

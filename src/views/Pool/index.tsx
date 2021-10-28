@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
-import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@pancakeswap/sdk'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@pancakeswap/uikit'
+import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
+import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { BigNumber } from 'ethers'
@@ -83,30 +83,33 @@ export default function Pool() {
         </Text>
       )
     }
-    if (userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) || allV2PairsWithLiquidity?.length > 0) {
-      return (<Column>
-        {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
-          <FullStablesPositionCard
-            userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
-            stablePool={stablePool}
-          />)}
-        {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
-          <FullPositionCard
-            // chainId={chainId}
-            key={v2Pair.liquidityToken.address}
-            pair={v2Pair}
-            mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
-          />)))}
-      </Column>)
-    }
 
+    return (<Column>
+      {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+        <FullStablesPositionCard
+          userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
+          stablePool={stablePool}
+        />)}
+      {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
+        <FullPositionCard
+          // chainId={chainId}
+          key={v2Pair.liquidityToken.address}
+          pair={v2Pair}
+          mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
+        />)))}
 
-    return (
-      <Text color="textSubtle" textAlign="center">
-        {t('No liquidity found.')}
-      </Text>
+      {(userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().eq(0) && allV2PairsWithLiquidity?.length === 0) && (
+        <Text color="textSubtle" textAlign="center">
+          {t('No liquidity found.')}
+        </Text>
+      )}
+    </Column>
     )
   }
+
+
+
+
 
   return (
     <Page>

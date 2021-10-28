@@ -1,6 +1,6 @@
-import { Currency, CurrencyAmount, Fraction, Percent } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Fraction, Percent } from '@requiemswap/sdk'
 import React from 'react'
-import { Button, Text } from '@pancakeswap/uikit'
+import { Button, Text } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { RowBetween, RowFixed } from '../../components/Layout/Row'
 import { CurrencyLogo } from '../../components/Logo'

@@ -1,4 +1,4 @@
-import { ButtonMenu, ButtonMenuItem, useMatchBreakpoints } from '@pancakeswap/uikit'
+import { ButtonMenu, ButtonMenuItem, useMatchBreakpoints } from '@requiemswap/uikit'
 import config from 'components/Menu/config'
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'

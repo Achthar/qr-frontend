@@ -1,4 +1,4 @@
-import { Token, ChainId } from '@pancakeswap/sdk'
+import { Token, ChainId } from '@requiemswap/sdk'
 import { parseUnits } from 'ethers/lib/utils'
 import { SerializedToken } from '../actions'
 

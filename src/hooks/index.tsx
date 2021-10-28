@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-shadow: 0 */
 /* eslint no-lonely-if : 0 */
 import { Web3Provider } from '@ethersproject/providers'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import { useWeb3React as useWeb3ReactCore } from '@web3-react/core'
 // eslint-disable-next-line import/no-unresolved
 import { Web3ReactContextInterface } from '@web3-react/core/dist/types'

@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS, STABLES_INDEX_MAP } from '@pancakeswap/sdk'
+import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS, STABLES_INDEX_MAP } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -48,7 +48,7 @@ export function useDerivedBurnStablesInfo(
     typedValue4,
     typedValueLiquidity,
     typedValueSingle,
-    selectedStableSingle
+    selectedStableSingle,
   } = useBurnStableState()
 
 

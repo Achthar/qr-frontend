@@ -1,4 +1,4 @@
-import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@pancakeswap/sdk'
+import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@requiemswap/sdk'
 import ms from 'ms.macro'
 
 import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC, REQT } from './tokens'

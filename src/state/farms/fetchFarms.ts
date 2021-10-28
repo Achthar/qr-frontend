@@ -1,5 +1,5 @@
 import { FarmConfig } from 'config/constants/types'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import fetchFarm from './fetchFarm'
 
 const fetchFarms = async (chainId: number, farmsToFetch: { [chainId in ChainId]: FarmConfig[] }) => {

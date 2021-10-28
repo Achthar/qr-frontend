@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { hexStripZeros } from '@ethersproject/bytes'
 import { Web3Provider } from '@ethersproject/providers'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 import { L1ChainInfo, L2ChainInfo } from 'config/constants/index'
 
 interface AddNetworkArguments {

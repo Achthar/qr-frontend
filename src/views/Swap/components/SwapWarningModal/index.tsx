@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { ModalBody, ModalContainer, Message, ModalHeader, Box, Heading } from '@pancakeswap/uikit'
+import { ModalBody, ModalContainer, Message, ModalHeader, Box, Heading } from '@requiemswap/uikit'
 import useTheme from 'hooks/useTheme'
 import { getAddress } from 'utils/addressHelpers'
 import { useTranslation } from 'contexts/Localization'
 import { WrappedTokenInfo } from 'state/lists/hooks'
 import SwapWarningTokensConfig from 'config/constants/swapWarningTokens'
 import SafemoonWarning from './SafemoonWarning'
-import BondlyWarning from './BondlyWarning'
 import Acknowledgement from './Acknowledgement'
 
 const StyledModalContainer = styled(ModalContainer)`
@@ -55,10 +54,6 @@ const SwapWarningModal: React.FC<SwapWarningModalProps> = ({chainId, swapCurrenc
     [getAddress(chainId, SwapWarningTokensConfig.safemoon.address)]: {
       symbol: SwapWarningTokensConfig.safemoon.symbol,
       component: <SafemoonWarning />,
-    },
-    [getAddress(chainId, SwapWarningTokensConfig.bondly.address)]: {
-      symbol: SwapWarningTokensConfig.bondly.symbol,
-      component: <BondlyWarning />,
     },
   }
 

@@ -1,4 +1,4 @@
-import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@pancakeswap/sdk'
+import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BUSD, CAKE } from '../config/constants/tokens'

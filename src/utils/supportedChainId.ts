@@ -1,4 +1,4 @@
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@requiemswap/sdk'
 
 /**
  * Returns the input chain ID if chain is supported. If not, return undefined

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { isTradeBetter } from 'utils/trades'
-import { Currency, CurrencyAmount, Pair, Token, Trade } from '@pancakeswap/sdk'
+import { Currency, CurrencyAmount, Pair, Token, Trade } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -95,7 +95,7 @@ const MAX_HOPS = 4
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
-export function useTradeExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
+export function useTradeV3ExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
 
   const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
 
@@ -130,7 +130,7 @@ export function useTradeExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?:
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
-export function useTradeExactOut(currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): Trade | null {
+export function useTradeV3ExactOut(currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): Trade | null {
   const allowedPairs = useAllCommonPairs(currencyIn, currencyAmountOut?.currency)
 
   const [singleHopOnly] = useUserSingleHopOnly()

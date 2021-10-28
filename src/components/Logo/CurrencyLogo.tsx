@@ -1,5 +1,5 @@
-import { Currency, ETHER, Token, NETWORK_CCY } from '@pancakeswap/sdk'
-import { BinanceIcon } from '@pancakeswap/uikit'
+import { Currency, ETHER, Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { BinanceIcon } from '@requiemswap/uikit'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useHttpLocations from '../../hooks/useHttpLocations'
