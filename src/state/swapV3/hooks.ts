@@ -20,7 +20,7 @@ import { useUserSlippageTolerance } from '../user/hooks'
 
 
 export function useSwapV3State(): AppState['swapV3'] {
-  return useSelector<AppState, AppState['swapV3']>((state) => state.swap)
+  return useSelector<AppState, AppState['swapV3']>((state) => state.swapV3)
 }
 
 export function useSwapV3ActionHandlers(chainId: number): {
@@ -32,7 +32,6 @@ export function useSwapV3ActionHandlers(chainId: number): {
   const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
-      console.log("CCYSelect")
       dispatch(
         selectCurrency({
           field,
@@ -125,8 +124,6 @@ export function useDerivedSwapV3Info(chainId: number): {
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
   } = useSwapV3State()
-
-console.log("input ids", inputCurrencyId,outputCurrencyId)
 
   const [stablePoolState, stablePool] = useStablePool()
 

@@ -20,7 +20,7 @@ export function RedirectToSwap(props: RouteComponentProps<{ outputCurrency: stri
     <Redirect
       to={{
         ...location,
-        pathname: '/exchange',
+        pathname: '/exchangeV3',
         search:
           search && search.length > 1
             ? `${search}&outputCurrency=${outputCurrency}`

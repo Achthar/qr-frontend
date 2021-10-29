@@ -29,7 +29,7 @@ import { useCurrency, useAllTokens } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTradeV3 } from '../../hooks/useApproveCallback'
 import { useSwapV3Callback } from '../../hooks/useSwapV3Callback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
-import { Field } from '../../state/swap/actions'
+import { Field } from '../../state/swapV3/actions'
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapV3Info,
@@ -111,7 +111,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapV3ActionHandlers(chainId)
 
-  
+
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -253,7 +253,9 @@ export default function SwapV3({ history }: RouteComponentProps) {
     (inputCurrency) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
       onCurrencySelection(Field.INPUT, inputCurrency)
+      console.log("handle input slet", inputCurrency)
       const showSwapWarning = shouldShowSwapWarning(inputCurrency)
+      console.log("warning", showSwapWarning)
       if (showSwapWarning) {
         setSwapWarningCurrency(inputCurrency)
       } else {
@@ -297,6 +299,8 @@ export default function SwapV3({ history }: RouteComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [importTokensNotInDefault.length])
 
+  console.log("CCYS", currencies)
+
   const [onPresentConfirmModal] = useModal(
     <ConfirmSwapV3Modal
       trade={trade}
@@ -312,7 +316,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     />,
     true,
     true,
-    'confirmSwapModal',
+    'confirmSwapV3Modal',
   )
 
   return (

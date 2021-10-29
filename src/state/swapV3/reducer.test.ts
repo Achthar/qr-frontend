@@ -1,9 +1,9 @@
 import { createStore, Store } from 'redux'
 import { Field, selectCurrency } from './actions'
-import reducer, { SwapState } from './reducer'
+import reducer, { SwapV3State } from './reducer'
 
-describe('swap reducer', () => {
-  let store: Store<SwapState>
+describe('swapV3 reducer', () => {
+  let store: Store<SwapV3State>
 
   beforeEach(() => {
     store = createStore(reducer, {
