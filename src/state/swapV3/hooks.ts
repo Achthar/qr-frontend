@@ -127,6 +127,8 @@ export function useDerivedSwapV3Info(chainId: number): {
 
   const [stablePoolState, stablePool] = useStablePool()
 
+  console.log("SPINITIAL", stablePool)
+
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
 
