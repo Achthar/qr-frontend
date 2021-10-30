@@ -253,9 +253,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     (inputCurrency) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
       onCurrencySelection(Field.INPUT, inputCurrency)
-      console.log("handle input slet", inputCurrency)
       const showSwapWarning = shouldShowSwapWarning(inputCurrency)
-      console.log("warning", showSwapWarning)
       if (showSwapWarning) {
         setSwapWarningCurrency(inputCurrency)
       } else {
@@ -298,8 +296,6 @@ export default function SwapV3({ history }: RouteComponentProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [importTokensNotInDefault.length])
-
-  console.log("CCYS", currencies)
 
   const [onPresentConfirmModal] = useModal(
     <ConfirmSwapV3Modal
