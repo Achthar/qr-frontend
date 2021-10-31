@@ -22,7 +22,9 @@ const CustomMenu: React.FC = () => {
       }}
     >
       <GlobalSettings />
-      <ChainIdSelector />
+      <div style={{ marginRight: 10 }}>
+        <ChainIdSelector />
+      </div>
       <UserMenu />
     </div>
   )

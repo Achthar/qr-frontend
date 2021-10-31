@@ -6,13 +6,12 @@ import { useHistory, useLocation } from 'react-router'
 import styled from 'styled-components'
 import Logo from './components/Logo/Logo'
 
-const StyledLogo = styled(Logo) <{ size: string }>`
+const StyledLogo = styled(Logo)<{ size: string }>`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
 `
 
-const LIQUIDITY_ROUTES = ['/add', '/find']
-
+const LIQUIDITY_ROUTES = ['/add', '/find', '/remove']
 
 const CustomNav: React.FC = () => {
   const { t } = useTranslation()
@@ -48,7 +47,7 @@ const CustomNav: React.FC = () => {
         {menuItems.map((menuItem) =>
           isMobile ? (
             <ButtonMenuItem key={menuItem.label}>
-              <StyledLogo size='24px' srcs={[menuItem.icon]} alt={menuItem.label.charAt(0)} />
+              <StyledLogo size="24px" srcs={[menuItem.icon]} alt={menuItem.label.charAt(0)} />
             </ButtonMenuItem>
           ) : (
             <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>
