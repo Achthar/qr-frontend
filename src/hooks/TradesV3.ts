@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { isTradeV3Better } from 'utils/tradesV3'
-import { Currency, CurrencyAmount, Pair, Token, TradeV3, StablePool } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, Pair, Token, TradeV3, StablePool, StablePairWrapper } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -97,11 +97,15 @@ const MAX_HOPS = 4
  */
 export function useTradeV3ExactIn(stablePool: StablePool, currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): TradeV3 | null {
 
-  const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
-
   const [singleHopOnly] = useUserSingleHopOnly()
-
+  const regularPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut) as (Pair | StablePairWrapper)[]
   return useMemo(() => {
+    let allowedPairs = regularPairs
+    if (stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
+
+    console.log("SP", stablePool)
+    console.log("additions", stablePool !== null ? StablePairWrapper.wrapPairsFromPool(stablePool) : null)
+    console.log("AP IN", allowedPairs)
     if (currencyAmountIn && currencyOut && allowedPairs.length > 0) {
       if (singleHopOnly) {
         return (
@@ -124,18 +128,21 @@ export function useTradeV3ExactIn(stablePool: StablePool, currencyAmountIn?: Cur
     }
 
     return null
-  }, [allowedPairs, currencyAmountIn, currencyOut, singleHopOnly, stablePool])
+  }, [regularPairs, currencyAmountIn, currencyOut, singleHopOnly, stablePool])
 }
 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
 export function useTradeV3ExactOut(stablePool: StablePool, currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): TradeV3 | null {
-  const allowedPairs = useAllCommonPairs(currencyIn, currencyAmountOut?.currency)
 
   const [singleHopOnly] = useUserSingleHopOnly()
-
+  const regularPairs = useAllCommonPairs(currencyIn, currencyAmountOut?.currency) as (Pair | StablePairWrapper)[]
   return useMemo(() => {
+    let allowedPairs = regularPairs
+    if (stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
+    console.log("SP", stablePool)
+    console.log("AP OUT", allowedPairs)
     if (currencyIn && currencyAmountOut && allowedPairs.length > 0) {
       if (singleHopOnly) {
         return (
@@ -156,7 +163,7 @@ export function useTradeV3ExactOut(stablePool: StablePool, currencyIn?: Currency
       return bestTradeSoFar
     }
     return null
-  }, [currencyIn, currencyAmountOut, allowedPairs, singleHopOnly, stablePool])
+  }, [regularPairs, currencyIn, currencyAmountOut, singleHopOnly, stablePool])
 }
 
 export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {

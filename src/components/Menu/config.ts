@@ -17,16 +17,16 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
     icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/liquidity.svg',
     href: '/liquidity',
   },
-  {
-    label: t('Farms'),
-    icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/farms.svg',
-    href: '/farms',
-  },
-  {
-    label: t('Pools'),
-    icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
-    href: '/pools',
-  },
+  // {
+  //   label: t('Farms'),
+  //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/farms.svg',
+  //   href: '/farms',
+  // },
+  // {
+  //   label: t('Pools'),
+  //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
+  //   href: '/pools',
+  // },
 ]
 
 export default config
