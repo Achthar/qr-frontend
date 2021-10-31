@@ -20,7 +20,7 @@ import useHarvestPool from '../../../hooks/useHarvestPool'
 import useStakePool from '../../../hooks/useStakePool'
 
 interface CollectModalProps {
-  chainId:number
+  chainId: number
   formattedBalance: string
   fullBalance: string
   earningToken: Token
@@ -99,7 +99,6 @@ const CollectModal: React.FC<CollectModalProps> = ({
           <ButtonMenu
             activeIndex={shouldCompound ? 0 : 1}
             scale="sm"
-            variant="subtle"
             onItemClick={(index) => setShouldCompound(!index)}
           >
             <ButtonMenuItem as="button">{t('Compound')}</ButtonMenuItem>

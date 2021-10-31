@@ -33,7 +33,6 @@ export default function Manage({
         activeIndex={showLists ? 0 : 1}
         onItemClick={() => setShowLists((prev) => !prev)}
         scale="sm"
-        variant="subtle"
         mb="32px"
       >
         <ButtonMenuItem width="50%">{t('Lists')}</ButtonMenuItem>

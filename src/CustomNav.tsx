@@ -30,7 +30,7 @@ const CustomNav: React.FC = () => {
   const handleMenuItemClick = (index: number) => {
     history.push(menuItems[index].href)
   }
-
+  const current = menuItems[activeIndex]
   return (
     <div
       style={{
@@ -43,11 +43,15 @@ const CustomNav: React.FC = () => {
         zIndex: 9,
       }}
     >
-      <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md" variant="subtle">
+      <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md">
         {menuItems.map((menuItem) =>
           isMobile ? (
             <ButtonMenuItem key={menuItem.label}>
-              <StyledLogo size="24px" srcs={[menuItem.icon]} alt={menuItem.label.charAt(0)} />
+              <StyledLogo
+                size="24px"
+                srcs={[current.label === menuItem.label ? menuItem.iconSelected : menuItem.icon]}
+                alt={menuItem.label.charAt(0)}
+              />
             </ButtonMenuItem>
           ) : (
             <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>

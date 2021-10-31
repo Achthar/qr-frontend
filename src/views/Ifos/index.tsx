@@ -16,7 +16,7 @@ const Ifos = () => {
       <Hero />
       <Container>
         <Flex justifyContent="center" alignItems="center" mb="32px">
-          <ButtonMenu activeIndex={!isExact ? 1 : 0} scale="sm" variant="subtle">
+          <ButtonMenu activeIndex={!isExact ? 1 : 0} scale="sm">
             <ButtonMenuItem as={Link} to={`${url}`}>
               {t('Next IFO')}
             </ButtonMenuItem>

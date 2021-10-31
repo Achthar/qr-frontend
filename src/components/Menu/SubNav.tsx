@@ -27,7 +27,7 @@ const Nav = () => {
   const { t } = useTranslation()
   return (
     <StyledNav>
-      <ButtonMenu activeIndex={getActiveIndex(location.pathname)} scale="sm" variant="subtle">
+      <ButtonMenu activeIndex={getActiveIndex(location.pathname)} scale="sm">
         <ButtonMenuItem id="swap-nav-link" to="/swap" as={Link}>
           {t('Swap')}
         </ButtonMenuItem>

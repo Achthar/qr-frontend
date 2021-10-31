@@ -2993,7 +2993,7 @@
 
 "@requiemswap/uikit@https://gitpkg.now.sh/Achthar/requiem-toolkit/packages/pancake-uikit?master":
   version "1.0.1"
-  resolved "https://gitpkg.now.sh/Achthar/requiem-toolkit/packages/pancake-uikit?master#6c40f8f822b5ca969a4f4730f689072e9e36a1e9"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-toolkit/packages/pancake-uikit?master#946ab15c562af9ec79a7e5899a9f067b4f62e1af"
   dependencies:
     "@popperjs/core" "^2.9.2"
     "@types/lodash" "^4.14.168"

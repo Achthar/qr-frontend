@@ -1,20 +1,34 @@
-import { MenuEntry } from '@requiemswap/uikit'
 import { ContextApi } from 'contexts/Localization/types'
+import logo from '../../assets/logoTransparent.svg'
+import exchangeIconLight from '../../assets/exchangeIconLight.svg'
+import exchangeIconDark from '../../assets/exchangeIconDark.svg'
+import liquidityIconLight from '../../assets/liquidityIconLight.svg'
+import liquidityIconDark from '../../assets/liquidityIconDark.svg'
+
+interface MenuEntry {
+  label: string
+  icon: string
+  iconSelected: string
+  href: string
+}
 
 const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
   {
     label: t('Home'),
-    icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_no_background.svg',
+    icon: logo,
+    iconSelected: logo,
     href: '/',
   },
   {
     label: t('Exchange'),
-    icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/exchange.svg',
+    icon: exchangeIconLight,
+    iconSelected: exchangeIconDark,
     href: '/exchange',
   },
   {
     label: t('Liquidity'),
-    icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/liquidity.svg',
+    icon: liquidityIconLight,
+    iconSelected: liquidityIconDark,
     href: '/liquidity',
   },
   // {
