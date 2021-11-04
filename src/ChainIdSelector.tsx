@@ -305,9 +305,9 @@ const ChainIdSelector = () => {
       </FlyoutHeader>
       <Row targetChain={ChainId.AVAX_MAINNET} />
       <Row targetChain={ChainId.AVAX_TESTNET} />
-      <Row targetChain={ChainId.BSC_MAINNET} />
+      {/* <Row targetChain={ChainId.BSC_MAINNET} />
       <Row targetChain={ChainId.BSC_TESTNET} />
-      <Row targetChain={ChainId.MATIC_TESTNET} />
+      <Row targetChain={ChainId.MATIC_TESTNET} /> */}
       {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
 
     </UIKitUserMenu>

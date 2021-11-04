@@ -400,10 +400,10 @@ export default function RemoveLiquidity({
     // slippage for LP burn, takes second result from slippage calculation
     const lpAmountMax = calculateSlippageAmount(liquidityAmount, allowedSlippage)[1]
 
-    console.log('amMax', lpAmountMax.toString())
-    console.log('orig', liquidityAmount.toSignificant(6))
+    // console.log('amMax', lpAmountMax.toString())
+    // console.log('orig', liquidityAmount.toSignificant(6))
 
-    console.log('amnt raw', liquidityAmount)
+    // console.log('amnt raw', liquidityAmount)
 
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
@@ -422,26 +422,26 @@ export default function RemoveLiquidity({
         BigNumber.from(lpAmountMax.toString()),
         deadline,
       ]
-      console.log(
-        'pool amnts',
-        stablePool.calculateRemoveLiquidity(liquidityAmount.toBigNumber()).map((bn) => bn.toString()),
-      )
-      console.log(
-        'lp amnts',
-        stablePool
-          .getLiquidityAmount(
-            [
-              currencyAmount1.toBigNumber(),
-              currencyAmount2.toBigNumber(),
-              currencyAmount3.toBigNumber(),
-              currencyAmount4.toBigNumber(),
-            ],
-            false,
-          )
-          .toString(),
-      )
+      // console.log(
+      //   'pool amnts',
+      //   stablePool.calculateRemoveLiquidity(liquidityAmount.toBigNumber()).map((bn) => bn.toString()),
+      // )
+      // console.log(
+      //   'lp amnts',
+      //   stablePool
+      //     .getLiquidityAmount(
+      //       [
+      //         currencyAmount1.toBigNumber(),
+      //         currencyAmount2.toBigNumber(),
+      //         currencyAmount3.toBigNumber(),
+      //         currencyAmount4.toBigNumber(),
+      //       ],
+      //       false,
+      //     )
+      //     .toString(),
+      // )
 
-      console.log('CCYS', [currencyAmount1, currencyAmount2, currencyAmount3, currencyAmount4])
+      // console.log('CCYS', [currencyAmount1, currencyAmount2, currencyAmount3, currencyAmount4])
     } else {
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }

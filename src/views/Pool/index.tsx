@@ -89,6 +89,7 @@ export default function Pool() {
         <FullStablesPositionCard
           userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
           stablePool={stablePool}
+          mb ='20px'
         />)}
       {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
         <FullPositionCard

@@ -18,7 +18,7 @@ import { FarmsState, Farm } from '../types'
 
 // import { chain } from 'lodash'
 
-const chainIdFromState =  43113 // useAppSelector((state) => state.application.chainId)
+const chainIdFromState = 43113 // useAppSelector((state) => state.application.chainId)
 
 function noAccountFarmConfig(chainId: number) {
   return farmsDict[chainId].map((farm) => ({
@@ -34,7 +34,7 @@ function noAccountFarmConfig(chainId: number) {
 
 function initialState(chainId: number): FarmsState { return { data: noAccountFarmConfig(chainId), loadArchivedFarmsData: false, userDataLoaded: false } }
 
-export function nonArchivedFarms(chainId: number): FarmConfig[] { return farmsDict[chainId ?? 56].filter(({ pid }) => !isArchivedPid(pid)) }
+export function nonArchivedFarms(chainId: number): FarmConfig[] { return farmsDict[chainId ?? 43113].filter(({ pid }) => !isArchivedPid(pid)) }
 
 // Async thunks
 export const fetchFarmsPublicDataAsync = createAsyncThunk<Farm[], number[]>(

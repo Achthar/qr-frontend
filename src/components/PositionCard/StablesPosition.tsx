@@ -222,22 +222,18 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
     ? stablePool.calculateRemoveLiquidity(userLpPoolBalance.toBigNumber()).map((amount, index) => new TokenAmount(tokens[index], amount.toBigInt()))
     : [undefined, undefined, undefined, undefined]
 
-
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
       <Flex justifyContent="space-between" role="button" onClick={() => setShowMore(!showMore)} p="16px">
         <Flex flexDirection="column">
           <Flex alignItems="center" mb="4px">
-            <Column>
+            <AutoColumn gap="4px">
               <DoubleCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} size={20} />
               <DoubleCurrencyLogo chainId={chainId} currency0={tokens[2]} currency1={tokens[3]} size={20} />
-            </Column>
+            </AutoColumn>
             <Column>
               <Text bold ml="8px">
-                {!tokens ? <Dots>Loading</Dots> : `${tokens[0].symbol}-${tokens[1].symbol}`}
-              </Text>
-              <Text bold ml="8px">
-                {!tokens ? <Dots>Loading</Dots> : `${tokens[2].symbol}-${tokens[3].symbol}`}
+                {!tokens ? <Dots>Loading</Dots> : `${tokens[0].symbol}-${tokens[1].symbol}-${tokens[2].symbol}-${tokens[3].symbol}-Pool`}
               </Text>
             </Column>
           </Flex>
@@ -248,110 +244,112 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
         {showMore ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Flex>
 
-      {showMore && (
-        <AutoColumn gap="8px" style={{ padding: '16px' }}>
-          <RowFixed>
-            <Text color="primary" ml="5px" bold textAlign='center'>
-              Pooled Stablecoins
-            </Text>
-          </RowFixed>
-          <FixedHeightRow>
-
+      {
+        showMore && (
+          <AutoColumn gap="8px" style={{ padding: '16px' }}>
             <RowFixed>
-              <CurrencyLogo chainId={chainId} size="20px" currency={tokens[0]} />
-              <Text color="textSubtle" ml="4px">
-                {tokens[0].symbol}
+              <Text color="primary" ml="5px" bold textAlign='center'>
+                Pooled Stablecoins
               </Text>
             </RowFixed>
-            {amountsDeposited ? (
-              <RowFixed>
-                <Text ml="6px">{amountsDeposited?.[0]?.toSignificant(6)}</Text>
-              </RowFixed>
-            ) : (
-              '-'
-            )}
-          </FixedHeightRow>
+            <FixedHeightRow>
 
-          <FixedHeightRow>
-            <RowFixed>
-              <CurrencyLogo chainId={chainId} size="20px" currency={tokens[1]} />
-              <Text color="textSubtle" ml="4px">
-                {tokens[1].symbol}
+              <RowFixed>
+                <CurrencyLogo chainId={chainId} size="20px" currency={tokens[0]} />
+                <Text color="textSubtle" ml="4px">
+                  {tokens[0].symbol}
+                </Text>
+              </RowFixed>
+              {amountsDeposited ? (
+                <RowFixed>
+                  <Text ml="6px">{amountsDeposited?.[0]?.toSignificant(6)}</Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
+            </FixedHeightRow>
+
+            <FixedHeightRow>
+              <RowFixed>
+                <CurrencyLogo chainId={chainId} size="20px" currency={tokens[1]} />
+                <Text color="textSubtle" ml="4px">
+                  {tokens[1].symbol}
+                </Text>
+              </RowFixed>
+              {amountsDeposited ? (
+                <RowFixed>
+                  <Text ml="6px">{amountsDeposited?.[1]?.toSignificant(6)}</Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
+            </FixedHeightRow>
+            <FixedHeightRow>
+              <RowFixed>
+                <CurrencyLogo chainId={chainId} size="20px" currency={tokens[2]} />
+                <Text color="textSubtle" ml="4px">
+                  {tokens[2].symbol}
+                </Text>
+              </RowFixed>
+              {amountsDeposited ? (
+                <RowFixed>
+                  <Text ml="6px">{amountsDeposited?.[2]?.toSignificant(6)}</Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
+            </FixedHeightRow>
+            <FixedHeightRow>
+              <RowFixed>
+                <CurrencyLogo chainId={chainId} size="20px" currency={tokens[3]} />
+                <Text color="textSubtle" ml="4px">
+                  {tokens[3].symbol}
+                </Text>
+              </RowFixed>
+              {amountsDeposited ? (
+                <RowFixed>
+                  <Text ml="6px">{amountsDeposited?.[3]?.toSignificant(6)}</Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
+            </FixedHeightRow>
+
+
+            <FixedHeightRow>
+              <Text color="textSubtle">Share of pool</Text>
+              <Text>
+                {poolTokenPercentage
+                  ? `${poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)}%`
+                  : '-'}
               </Text>
-            </RowFixed>
-            {amountsDeposited ? (
-              <RowFixed>
-                <Text ml="6px">{amountsDeposited?.[1]?.toSignificant(6)}</Text>
-              </RowFixed>
-            ) : (
-              '-'
-            )}
-          </FixedHeightRow>
-          <FixedHeightRow>
-            <RowFixed>
-              <CurrencyLogo chainId={chainId} size="20px" currency={tokens[2]} />
-              <Text color="textSubtle" ml="4px">
-                {tokens[2].symbol}
-              </Text>
-            </RowFixed>
-            {amountsDeposited ? (
-              <RowFixed>
-                <Text ml="6px">{amountsDeposited?.[2]?.toSignificant(6)}</Text>
-              </RowFixed>
-            ) : (
-              '-'
-            )}
-          </FixedHeightRow>
-          <FixedHeightRow>
-            <RowFixed>
-              <CurrencyLogo chainId={chainId} size="20px" currency={tokens[3]} />
-              <Text color="textSubtle" ml="4px">
-                {tokens[3].symbol}
-              </Text>
-            </RowFixed>
-            {amountsDeposited ? (
-              <RowFixed>
-                <Text ml="6px">{amountsDeposited?.[3]?.toSignificant(6)}</Text>
-              </RowFixed>
-            ) : (
-              '-'
-            )}
-          </FixedHeightRow>
+            </FixedHeightRow>
 
-
-          <FixedHeightRow>
-            <Text color="textSubtle">Share of pool</Text>
-            <Text>
-              {poolTokenPercentage
-                ? `${poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)}%`
-                : '-'}
-            </Text>
-          </FixedHeightRow>
-
-          {userLpPoolBalance && JSBI.greaterThan(userLpPoolBalance.raw, BIG_INT_ZERO) && (
-            <Flex flexDirection="column">
-              <Button
-                as={Link}
-                to='/remove/stables'
-                variant="primary"
-                width="100%"
-                mb="8px"
-              >
-                Remove
-              </Button>
-              <Button
-                as={Link}
-                to='/add/stable'
-                variant="text"
-                startIcon={<AddIcon color="primary" />}
-                width="100%"
-              >
-                Add liquidity instead
-              </Button>
-            </Flex>
-          )}
-        </AutoColumn>
-      )}
-    </Card>
+            {userLpPoolBalance && JSBI.greaterThan(userLpPoolBalance.raw, BIG_INT_ZERO) && (
+              <Flex flexDirection="column">
+                <Button
+                  as={Link}
+                  to='/remove/stables'
+                  variant="primary"
+                  width="100%"
+                  mb="8px"
+                >
+                  Remove
+                </Button>
+                <Button
+                  as={Link}
+                  to='/add/stable'
+                  variant="text"
+                  startIcon={<AddIcon color="primary" />}
+                  width="100%"
+                >
+                  Add liquidity instead
+                </Button>
+              </Flex>
+            )}
+          </AutoColumn>
+        )
+      }
+    </Card >
   )
 }

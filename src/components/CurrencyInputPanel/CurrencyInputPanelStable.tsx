@@ -112,11 +112,10 @@ export default function CurrencyInputPanelStable({
             <Flex alignItems="center" justifyContent="space-between" paddingRight={30}>
               {stablePool ? (
                 <Row>
-                  <Column>
-                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={25} margin />
-                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={25} margin />
-
-                  </Column>
+                  <AutoColumn gap="4px">
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={20} margin />
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={20} margin />
+                  </AutoColumn>
                   <Text mr='5px' width='30px' >Stable LP</Text>
                 </Row>
               ) : stableCurrency ? (
