@@ -233,7 +233,10 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
             </AutoColumn>
             <Column>
               <Text bold ml="8px">
-                {!tokens ? <Dots>Loading</Dots> : `${tokens[0].symbol}-${tokens[1].symbol}-${tokens[2].symbol}-${tokens[3].symbol}-Pool`}
+                {!tokens ? <Dots>Loading</Dots> : 'Quad Stable Pool'}
+              </Text>
+              <Text ml="8px" fontSize='10px'>
+                {!tokens ? <Dots>Loading</Dots> : `${tokens[0].symbol}-${tokens[1].symbol}-${tokens[2].symbol}-${tokens[3].symbol}`}
               </Text>
             </Column>
           </Flex>

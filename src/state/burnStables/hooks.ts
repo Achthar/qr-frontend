@@ -152,7 +152,7 @@ export function useDerivedBurnStablesInfo(
   let stableAmountsFromLp = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)]
   let liquidityAmount = BigNumber.from(0)
   let calculatedValuesFormatted = [typedValue1, typedValue2, typedValue3, typedValue4]
-  console.log("Typedval", [typedValue1, typedValue2, typedValue3, typedValue4])
+  // console.log("Typedval", [typedValue1, typedValue2, typedValue3, typedValue4])
   const independentAmount1 = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, tokens[StablesField.CURRENCY_1])
   const independentAmount2 = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, tokens[StablesField.CURRENCY_2])
   const independentAmount3 = tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, tokens[StablesField.CURRENCY_3])
@@ -163,7 +163,7 @@ export function useDerivedBurnStablesInfo(
   // user specified a %
   if (independentStablesField === StablesField.LIQUIDITY_PERCENT) {
     percentToRemove = new Percent(typedValueLiquidity, '100')
-    console.log("LP typed", typedValueLiquidity)
+    // console.log("LP typed", typedValueLiquidity)
     if (stablePool && percentToRemove.greaterThan('0')) {
       stableAmountsFromLp = stablePool.calculateRemoveLiquidity( // BigNumber.from(percentToRemove.multiply(userLiquidity))
         BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)
@@ -172,9 +172,7 @@ export function useDerivedBurnStablesInfo(
       calculatedValuesFormatted = stableAmountsFromLp.map(
         (amount, index) => new TokenAmount(STABLES_INDEX_MAP[chainId][index], amount.toBigInt())
       ).map(amount => amount.toSignificant(6))
-      console.log("typed from LP", calculatedValuesFormatted)
-
-
+      // console.log("typed from LP", calculatedValuesFormatted)
     }
   }
   // user specified a specific amount of liquidity tokens
@@ -214,7 +212,7 @@ export function useDerivedBurnStablesInfo(
         ],
         false // false for withdrawl
       )
-      console.log("here")
+      // console.log("here")
       percentToRemove = liquidityAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liquidityAmount.toBigInt(), totalSupply.toBigInt())
 
     }

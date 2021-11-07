@@ -31,9 +31,9 @@
   "dependencies": {
     "@binance-chain/bsc-connector": "^1.0.0",
     "@ethersproject/experimental": "^5.0.1",
-    "@requiemswap/sdk": "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master",
     "@reach/dialog": "^0.16.0",
     "@reduxjs/toolkit": "^1.5.0",
+    "@requiemswap/sdk": "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master",
     "@requiemswap/uikit": "https://gitpkg.now.sh/Achthar/requiem-toolkit/packages/pancake-uikit?master",
     "@types/multicodec": "^1.0.0",
     "@types/node": "^13.13.5",
@@ -75,6 +75,7 @@
     "react-device-detect": "^2.0.1",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.8",
+    "react-flow-renderer": "^9.6.11",
     "react-ga": "^3.3.0",
     "react-helmet-async": "^1.0.9",
     "react-markdown": "^6.0.2",

@@ -105,7 +105,7 @@ export default function SwapV3ModalFooter({
                   <Text mb="12px">For each trade a 0.25% fee is paid</Text>
                   <Text>- 0.17% to LP token holders</Text>
                   <Text>- 0.03% to the Treasury</Text>
-                  <Text>- 0.05% towards CAKE buyback and burn</Text>
+                  <Text>- 0.05% towards REQT buyback and burn</Text>
                 </>
               }
               ml="4px"

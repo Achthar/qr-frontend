@@ -28,6 +28,10 @@ export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
   [ChainId.MATIC_TESTNET]: '0x4e8848da06E40E866b82f6b52417494936c9509b'
 }
 
+export const AGGREGATOR_ADDRESS ={
+  43113: '0x5726fa73f24Fac131c44282e17917A6a13C8307e'
+}
+
 export const L1_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
   ChainId.BSC_TESTNET,

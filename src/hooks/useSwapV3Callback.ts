@@ -6,7 +6,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'
 import { BIPS_BASE, INITIAL_ALLOWED_SLIPPAGE } from '../config/constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
-import { calculateGasMargin, getRouterContract, isAddress, shortenAddress } from '../utils'
+import { calculateGasMargin, getRouterContract, getAggregatorContract, isAddress, shortenAddress } from '../utils'
 import isZero from '../utils/isZero'
 import useTransactionDeadline from './useTransactionDeadline'
 import useENS from './ENS/useENS'
@@ -54,11 +54,18 @@ function useSwapV3CallArguments(
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId || !deadline) return []
 
-    const contract: Contract | null = getRouterContract(chainId, library, account)
+    const multiSwap = !(trade.route.pathMatrix.length === 1 && trade.route.routerIds[0] === 1)
+
+    const contract: Contract | null = !multiSwap
+      ? getRouterContract(chainId, library, account)
+      : getAggregatorContract(chainId, library, account)
+
     if (!contract) {
       return []
     }
 
+    // console.log("CONTRACT", contract)
+    console.log("MS", multiSwap)
     const swapMethods = []
 
     swapMethods.push(
@@ -67,6 +74,7 @@ function useSwapV3CallArguments(
         allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
         recipient,
         deadline: deadline.toNumber(),
+        multiSwap,
       }),
     )
 
@@ -77,9 +85,11 @@ function useSwapV3CallArguments(
           allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
           recipient,
           deadline: deadline.toNumber(),
+          multiSwap,
         }),
       )
     }
+    console.log("SWAPMETHODS:", swapMethods)
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
   }, [account, allowedSlippage, chainId, deadline, library, recipient, trade])
@@ -142,9 +152,8 @@ export function useSwapV3Callback(
                   .catch((callError) => {
                     console.error('Call threw error', call, callError)
                     const reason: string = callError.reason || callError.data?.message || callError.message
-                    const errorMessage = `The transaction cannot succeed due to error: ${
-                      reason ?? 'Unknown error, check the logs'
-                    }.`
+                    const errorMessage = `The transaction cannot succeed due to error: ${reason ?? 'Unknown error, check the logs'
+                      }.`
 
                     return { call, error: new Error(errorMessage) }
                   })
@@ -187,11 +196,10 @@ export function useSwapV3Callback(
             const withRecipient =
               recipient === account
                 ? base
-                : `${base} to ${
-                    recipientAddressOrName && isAddress(recipientAddressOrName)
-                      ? shortenAddress(recipientAddressOrName)
-                      : recipientAddressOrName
-                  }`
+                : `${base} to ${recipientAddressOrName && isAddress(recipientAddressOrName)
+                  ? shortenAddress(recipientAddressOrName)
+                  : recipientAddressOrName
+                }`
 
             addTransaction(response, {
               summary: withRecipient,

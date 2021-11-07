@@ -103,9 +103,6 @@ export function useTradeV3ExactIn(stablePool: StablePool, currencyAmountIn?: Cur
     let allowedPairs = regularPairs
     if (stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
 
-    console.log("SP", stablePool)
-    console.log("additions", stablePool !== null ? StablePairWrapper.wrapPairsFromPool(stablePool) : null)
-    console.log("AP IN", allowedPairs)
     if (currencyAmountIn && currencyOut && allowedPairs.length > 0) {
       if (singleHopOnly) {
         return (
@@ -141,9 +138,8 @@ export function useTradeV3ExactOut(stablePool: StablePool, currencyIn?: Currency
   return useMemo(() => {
     let allowedPairs = regularPairs
     if (stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
-    console.log("SP", stablePool)
-    console.log("AP OUT", allowedPairs)
-    if (currencyIn && currencyAmountOut && allowedPairs.length > 0) {
+
+    if (currencyIn && currencyAmountOut && allowedPairs.length > 0 && stablePool !== null) {
       if (singleHopOnly) {
         return (
           TradeV3.bestTradeExactOut(stablePool, allowedPairs, currencyIn, currencyAmountOut, { maxHops: 1, maxNumResults: 1 })[0] ??

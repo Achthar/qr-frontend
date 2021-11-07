@@ -80,7 +80,6 @@ export default function SwapV3({ history }: RouteComponentProps) {
 
   // swap state
   const { independentField, typedValue, recipient } = useSwapV3State()
-  console.log("IF", independentField)
 
   const {
     v3Trade,
