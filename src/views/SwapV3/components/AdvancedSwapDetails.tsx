@@ -31,7 +31,7 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSli
           <Text fontSize="14px">
             {isExactIn
               ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
-                '-'
+              '-'
               : `${slippageAdjustedAmounts[Field.INPUT]?.toSignificant(4)} ${trade.inputAmount.currency.symbol}` ?? '-'}
           </Text>
         </RowFixed>
@@ -84,6 +84,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
   const showRoute = Boolean(trade && trade.route.path.length > 2)
 
   return (
+
     <AutoColumn gap="0px">
       {trade && (
         <>
@@ -100,9 +101,10 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
                     ml="4px"
                   />
                 </span>
-                <SwapV3Route trade={trade} />
+                {trade && (<SwapV3Route trade={trade} />)}
               </RowBetween>
             </>
+
           )}
         </>
       )}

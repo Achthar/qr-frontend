@@ -46,7 +46,7 @@ export default memo(function SwapV3Route({ trade }: { trade: TradeV3 }) {
                     )}
                   </Row>
                   <Text fontSize="10px" textAlign='center'>
-                    {trade.route.routerIds[j] === 0 ? 'Quad Swap' : 'Pairs'}
+                    {trade.route.routerIds[j] === 0 ? 'Quad' : 'Pairs'}
                   </Text>
                 </AutoColumn>
               </Flex>
