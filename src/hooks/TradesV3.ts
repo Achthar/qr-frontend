@@ -103,7 +103,7 @@ export function useTradeV3ExactIn(stablePool: StablePool, currencyAmountIn?: Cur
     let allowedPairs = regularPairs
     if (stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
 
-    if (currencyAmountIn && currencyOut && allowedPairs.length > 0) {
+    if (currencyAmountIn && currencyOut && allowedPairs.length > 0 ) {
       if (singleHopOnly) {
         return (
           TradeV3.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: 1, maxNumResults: 1 })[0] ??
