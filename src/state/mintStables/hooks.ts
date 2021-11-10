@@ -137,7 +137,6 @@ export function useDerivedMintStablesInfo(
     [StablesField.CURRENCY_4]: balances[stableCurrencies[StablesField.CURRENCY_4].address]
   }
 
-
   const parsedStablesAmount1: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, STABLES_INDEX_MAP[chainId][0])
 
   const parsedStablesAmount2: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, STABLES_INDEX_MAP[chainId][1])
@@ -182,8 +181,8 @@ export function useDerivedMintStablesInfo(
     stablesError = 'Connect Wallet'
   }
 
-  if (!parsedStablesAmount1 || !parsedStablesAmount2
-    || !parsedStablesAmount3 || !parsedStablesAmount4) {
+  if (!parsedStablesAmount1 && !parsedStablesAmount2
+    && !parsedStablesAmount3 && !parsedStablesAmount4) {
     stablesError = stablesError ?? 'Enter an amount'
   }
 
@@ -208,10 +207,10 @@ export function useDerivedMintStablesInfo(
 
   const parsedStablesAmounts =
   {
-    [StablesField.CURRENCY_1]: parsedStablesAmount1,
-    [StablesField.CURRENCY_2]: parsedStablesAmount2,
-    [StablesField.CURRENCY_3]: parsedStablesAmount3,
-    [StablesField.CURRENCY_4]: parsedStablesAmount4
+    [StablesField.CURRENCY_1]: parsedStablesAmount1 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][0], '0') : parsedStablesAmount1,
+    [StablesField.CURRENCY_2]: parsedStablesAmount2 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][1], '0') : parsedStablesAmount2,
+    [StablesField.CURRENCY_3]: parsedStablesAmount3 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][2], '0') : parsedStablesAmount3,
+    [StablesField.CURRENCY_4]: parsedStablesAmount4 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][3], '0') : parsedStablesAmount4
   }
 
   return {

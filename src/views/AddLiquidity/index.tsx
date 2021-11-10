@@ -84,8 +84,8 @@ export default function AddLiquidity({
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId])) ||
-        (currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]))),
+    ((currencyA && currencyEquals(currencyA, WRAPPED_NETWORK_TOKENS[chainId])) ||
+      (currencyB && currencyEquals(currencyB, WRAPPED_NETWORK_TOKENS[chainId]))),
   )
 
   const expertMode = useIsExpertMode()
@@ -217,9 +217,8 @@ export default function AddLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
-              currencies[Field.CURRENCY_A]?.symbol
-            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
+            summary: `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${currencies[Field.CURRENCY_A]?.symbol
+              } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencies[Field.CURRENCY_B]?.symbol}`,
           })
 
           setTxHash(response.hash)
@@ -437,6 +436,17 @@ export default function AddLiquidity({
     }
   }, {})
 
+  const stableAddValid: boolean = (
+    approval1 === ApprovalState.APPROVED &&
+    approval2 === ApprovalState.APPROVED &&
+    approval3 === ApprovalState.APPROVED &&
+    approval4 === ApprovalState.APPROVED
+  ) && (
+      !parsedStablesAmounts[StablesField.CURRENCY_1].toBigNumber().eq(0)
+      || !parsedStablesAmounts[StablesField.CURRENCY_2].toBigNumber().eq(0)
+      || !parsedStablesAmounts[StablesField.CURRENCY_3].toBigNumber().eq(0)
+      || !parsedStablesAmounts[StablesField.CURRENCY_4].toBigNumber().eq(0)
+    )
   async function onStablesAdd() {
     if (!chainId || !library || !account) return
     const stableRouter = getStableRouterContract(chainId, library, account)
@@ -487,11 +497,9 @@ export default function AddLiquidity({
               StablesField.CURRENCY_2
             ]?.toSignificant(2)}, ${parsedStablesAmounts[StablesField.CURRENCY_3]?.toSignificant(
               2,
-            )}, ${parsedStablesAmounts[StablesField.CURRENCY_4]?.toSignificant(2)}] ${
-              parsedStablesAmounts[StablesField.CURRENCY_1]?.currency.symbol
-            }-${parsedStablesAmounts[StablesField.CURRENCY_2]?.currency.symbol}-${
-              parsedStablesAmounts[StablesField.CURRENCY_3]?.currency.symbol
-            }-${parsedStablesAmounts[StablesField.CURRENCY_4]?.currency.symbol}`,
+            )}, ${parsedStablesAmounts[StablesField.CURRENCY_4]?.toSignificant(2)}] ${parsedStablesAmounts[StablesField.CURRENCY_1]?.currency.symbol
+              }-${parsedStablesAmounts[StablesField.CURRENCY_2]?.currency.symbol}-${parsedStablesAmounts[StablesField.CURRENCY_3]?.currency.symbol
+              }-${parsedStablesAmounts[StablesField.CURRENCY_4]?.currency.symbol}`,
           })
 
           setTxHash(response.hash)
@@ -866,18 +874,17 @@ export default function AddLiquidity({
                     approval4 === ApprovalState.PENDING) && <RowBetween>Approvals still pending...</RowBetween>}
                   <Button
                     variant={
-                      !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-                        ? 'danger'
-                        : 'primary'
+                      // !!parsedStablesAmounts[StablesField.CURRENCY_1] && !!parsedStablesAmounts[StablesField.CURRENCY_2]
+                      //   && !!parsedStablesAmounts[StablesField.CURRENCY_3] && !!parsedStablesAmounts[StablesField.CURRENCY_4]
+                      //   ? 'danger'
+                      //   : 
+                      'primary'
                     }
                     onClick={() => {
                       onStablesAdd()
                     }}
                     disabled={
-                      approval1 !== ApprovalState.APPROVED ||
-                      approval2 !== ApprovalState.APPROVED ||
-                      approval3 !== ApprovalState.APPROVED ||
-                      approval4 !== ApprovalState.APPROVED
+                      !stableAddValid
                     }
                   >
                     Supply Stable Liquidity
