@@ -68,7 +68,7 @@ import {
   useBurnStableState,
 } from '../../state/burnStables/hooks'
 
-import { StablesField } from '../../state/burnStables/actions'
+import { selectStableSingle, StablesField } from '../../state/burnStables/actions'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
 
 // const function getStableIndex(token)
@@ -99,7 +99,7 @@ export default function RemoveLiquidity({
     typedValueSingle,
   } = useBurnStableState()
 
-  const { stablePool, parsedAmounts, error, calculatedValuesFormatted } = useDerivedBurnStablesInfo()
+  const { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle } = useDerivedBurnStablesInfo()
 
   const {
     // onField1Input: _onField1Input,
@@ -116,6 +116,8 @@ export default function RemoveLiquidity({
     onField2CalcInput,
     onField3CalcInput,
     onField4CalcInput,
+    onSingleFieldInput,
+    onSelectStableSingle
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
@@ -138,10 +140,10 @@ export default function RemoveLiquidity({
   // map for the selection panel in redemption versus the single stable
   const stableSelectMap = {
     43113: {
-      USDC: 0,
-      USDT: 1,
-      DAI: 2,
-      TUSD: 4,
+      'USDC': 0,
+      'USDT': 1,
+      'DAI': 2,
+      'TUSD': 3,
     },
   }
 
@@ -160,8 +162,8 @@ export default function RemoveLiquidity({
     [StablesField.LIQUIDITY_PERCENT]: parsedAmounts[StablesField.LIQUIDITY_PERCENT].equalTo('0')
       ? '0'
       : parsedAmounts[StablesField.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
-      ? '<1'
-      : parsedAmounts[StablesField.LIQUIDITY_PERCENT].toFixed(0),
+        ? '<1'
+        : parsedAmounts[StablesField.LIQUIDITY_PERCENT].toFixed(0),
     [StablesField.LIQUIDITY]:
       independentStablesField === StablesField.LIQUIDITY
         ? typedValueLiquidity
@@ -182,6 +184,16 @@ export default function RemoveLiquidity({
       independentStablesField === StablesField.CURRENCY_4
         ? typedValue4
         : parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6) ?? '',
+    [StablesField.LIQUIDITY_SINGLE]:
+      // independentStablesField === StablesField.CURRENCY_SINGLE
+      //   ? typedValueLiquidity
+      //   : 
+      parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6) ?? '',
+    [StablesField.CURRENCY_SINGLE]:
+      // independentStablesField === StablesField.CURRENCY_SINGLE
+      //   ? typedValueLiquidity
+      //   : 
+      parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(6) ?? '',
   }
 
   const atMaxAmount = parsedAmounts[StablesField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
@@ -349,15 +361,11 @@ export default function RemoveLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${
-              stablePool?.tokens[0].symbol
-            }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${
-              stablePool?.tokens[1].symbol
-            }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${
-              stablePool?.tokens[2].symbol
-            } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${
-              stablePool?.tokens[3].symbol
-            } from Requiem Stable Swap`,
+            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${stablePool?.tokens[1].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${stablePool?.tokens[2].symbol
+              } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${stablePool?.tokens[3].symbol
+              } from Requiem Stable Swap`,
           })
 
           setTxHash(response.hash)
@@ -370,15 +378,90 @@ export default function RemoveLiquidity({
     }
   }
 
-  console.log(
-    'PA',
-    Object.assign(
-      {},
-      ...Object.values(parsedAmounts).map((amount, index) => ({
-        [Object.keys(parsedAmounts)[index]]: amount?.toFixed(6),
-      })),
-    ),
-  )
+  // function for removing stable swap liquidity
+  // REmoval with LP amount as input
+  async function onStablesLpRemoveSingle() {
+    if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
+    const {
+      [StablesField.LIQUIDITY]: liquidityAmount,
+      [StablesField.CURRENCY_SINGLE]: singleStableAmount,
+      [StablesField.SELECTED_SINGLE]: selectedSingle
+    } = parsedAmounts
+    if (!liquidityAmount || !singleStableAmount) {
+      throw new Error('missing currency amounts')
+    }
+    const router = getStableRouterContract(chainId, library, account)
+
+    // we take the first results (lower ones) since we want to receive a minimum amount of tokens
+    const amountMin = calculateSlippageAmount(singleStableAmount, allowedSlippage)[0]
+
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
+
+    let methodNames: string[]
+    let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
+    // we have approval, use normal remove liquidity
+    // removeLiquidityOneToken( uint256 lpAmount, uint8 index, uint256 minAmount,  uint256 deadline )
+    if (approval === ApprovalState.APPROVED) {
+      methodNames = ['removeLiquidityOneToken']
+      args = [
+        liquidityAmount.toBigNumber(),
+        selectedSingle,
+        BigNumber.from(amountMin.toString()),
+        deadline,
+      ]
+    } else {
+      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    }
+
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map((methodName) =>
+        router.estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch((err) => {
+            console.error(`estimateGas failed`, methodName, args, err)
+            return undefined
+          }),
+      ),
+    )
+
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+      BigNumber.isBigNumber(safeGasEstimate),
+    )
+
+    // all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error('This transaction would fail. Please contact support.')
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation]
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+
+      setAttemptingTxn(true)
+      await router[methodName](...args, {
+        gasLimit: safeGasEstimate,
+        gasPrice,
+      })
+        .then((response: TransactionResponse) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(3)} ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol
+              } from Requiem Stable Swap`,
+          })
+
+          setTxHash(response.hash)
+        })
+        .catch((err: Error) => {
+          setAttemptingTxn(false)
+          // we only care if the error is something _other_ than the user rejected the tx
+          console.error(err)
+        })
+    }
+  }
+
+  // console.log(
+  //   'PA',
+  //   parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)
+  // )
 
   // function for removing stable swap liquidity
   // removal with stablecoin amounts herre
@@ -395,6 +478,7 @@ export default function RemoveLiquidity({
     }
     const router = getStableRouterContract(chainId, library, account)
 
+    // console.log("LA", parsedAmounts[StablesField.LIQUIDITY].toSignificant(5))
     const liquidityAmount = parsedAmounts[StablesField.LIQUIDITY]
 
     // slippage for LP burn, takes second result from slippage calculation
@@ -477,15 +561,11 @@ export default function RemoveLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${
-              stablePool?.tokens[0].symbol
-            }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${
-              stablePool?.tokens[1].symbol
-            }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${
-              stablePool?.tokens[2].symbol
-            } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${
-              stablePool?.tokens[3].symbol
-            } from Requiem Stable Swap`,
+            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${stablePool?.tokens[1].symbol
+              }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${stablePool?.tokens[2].symbol
+              } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${stablePool?.tokens[3].symbol
+              } from Requiem Stable Swap`,
           })
 
           setTxHash(response.hash)
@@ -685,12 +765,75 @@ export default function RemoveLiquidity({
     )
   }
 
-  const pendingText = t('Removing %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6) ?? '',
-    symbolA: stablePool?.tokens[0].symbol ?? '',
-    amountB: parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6) ?? '',
-    symbolB: stablePool?.tokens[1].symbol ?? '',
-  })
+
+  function modalBottomSingle() {
+    return (
+      <>
+        <RowBetween>
+          <Text>
+            {`${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol}-${stablePool?.tokens[2].symbol}-${stablePool?.tokens[3].symbol} Stable Swap LP burned`}
+          </Text>
+          <RowFixed>
+            <AutoColumn>
+              <DoubleCurrencyLogo
+                chainId={chainId}
+                currency0={stablePool?.tokens[0]}
+                currency1={stablePool?.tokens[1]}
+                margin
+              />
+              <DoubleCurrencyLogo
+                chainId={chainId}
+                currency0={stablePool?.tokens[2]}
+                currency1={stablePool?.tokens[3]}
+                margin
+              />
+            </AutoColumn>
+            <Text>{parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6)}</Text>
+          </RowFixed>
+        </RowBetween>
+        {/* <AutoColumn>{stablePool && priceMatrixComponent('13px', '110%')}</AutoColumn> */}
+        <Button
+          disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
+          onClick={onStablesLpRemoveSingle}
+        >
+          Confirm removal by LP Amount versus single Token
+        </Button>
+
+      </>
+    )
+  }
+
+  function modalHeaderSingle() {
+    return (
+      <AutoColumn gap="md">
+        <RowBetween align="flex-end">
+          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(6)}</Text>
+          <RowFixed gap="4px">
+            <CurrencyLogo chainId={chainId} currency={parsedAmounts[StablesField.CURRENCY_SINGLE]?.token} size="24px" />
+            <Text fontSize="24px" ml="10px" mr="5px">
+              {stablePool?.tokens[0].symbol}
+            </Text>
+          </RowFixed>
+        </RowBetween>
+        <Text small textAlign="left" pt="12px">
+          {t('Output is estimated. If the price changes by more than %slippage%% your transaction will revert.', {
+            slippage: allowedSlippage / 100,
+          })}
+        </Text>
+      </AutoColumn>
+    )
+  }
+  // console.log("SS", parsedAmounts[StablesField.SELECTED_SINGLE])
+
+  const pendingText = `Removing ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+    }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${stablePool?.tokens[1].symbol
+    }, ${parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(3)} ${stablePool?.tokens[2].symbol
+    } and ${parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(3)} ${stablePool?.tokens[3].symbol
+    } from Requiem Stable Swap`
+
+  const pendingTextSingle = `Removing ${parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+    } from Requiem Stable Swap`
+
 
   const handleDismissConfirmation = useCallback(() => {
     setSignatureData(null) // important that we clear signature data to avoid bad sigs
@@ -727,15 +870,28 @@ export default function RemoveLiquidity({
     'removeLiquidityModal',
   )
 
+  const [onPresentRemoveLiquiditySingle] = useModal(
+    <TransactionConfirmationModal
+      title={t('You will receive')}
+      customOnDismiss={handleDismissConfirmation}
+      attemptingTxn={attemptingTxn}
+      hash={txHash || ''}
+      content={() => <ConfirmationModalContent topContent={modalHeaderSingle} bottomContent={modalBottomSingle} />}
+      pendingText={pendingTextSingle}
+    />,
+    true,
+    true,
+    'removeLiquidityModalSingle',
+  )
+
   return (
     <Page>
       <AppBody>
         <AppHeader
           backTo="/pool"
           title="Remove Stable Swap Liquidity"
-          subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${
-            STABLES_INDEX_MAP[chainId ?? 43113][1].symbol
-          }, ${STABLES_INDEX_MAP[chainId ?? 43113][2].symbol} and/or ${STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}`}
+          subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${STABLES_INDEX_MAP[chainId ?? 43113][1].symbol
+            }, ${STABLES_INDEX_MAP[chainId ?? 43113][2].symbol} and/or ${STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}`}
           noConfig
         />
 
@@ -974,31 +1130,33 @@ export default function RemoveLiquidity({
               <CurrencyInputPanelStable
                 width="100%"
                 value={formattedAmounts[StablesField.LIQUIDITY]}
-                onUserInput={(value) => onLpInput(StablesField.LIQUIDITY, value)}
-                onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                onUserInput={(value) => {
+                  onLpInput(StablesField.LIQUIDITY, value)
                 }}
-                showMaxButton={!atMaxAmount}
+                showMaxButton={false}
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
                 stablePool={stablePool}
+                hideBalance={false}
+                label='Select LP Amount to Burn'
               />
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <SingleStableInputPanel
                 value={formattedAmounts[StablesField.CURRENCY_SINGLE]}
-                onUserInput={(value: string) => onField2Input(StablesField.CURRENCY_SINGLE, value)}
+                onUserInput={(_: string) => null}
                 onCurrencySelect={(ccy: Currency) => {
-                  onField2Input(StablesField.CURRENCY_SINGLE, '0')
+                  onSelectStableSingle(stableSelectMap[chainId][ccy.symbol])
                 }}
-                onMax={() => {
-                  onField2Input(StablesField.CURRENCY_SINGLE, '0')
-                }}
+                // onMax={() => {
+                //   onField2Input(StablesField.CURRENCY_SINGLE, '0')
+                // }}
                 showMaxButton={false}
-                currency={STABLES_INDEX_MAP[chainId ?? 43113][stableSelectState]}
+                currency={STABLES_INDEX_MAP[chainId ?? 43113][parsedAmounts[StablesField.SELECTED_SINGLE]]}
                 id="add-liquidity-input-token-single"
                 showCommonBases
+                label='Recieved Amount'
               />
             </Box>
           )}
@@ -1014,38 +1172,75 @@ export default function RemoveLiquidity({
             {!account ? (
               <ConnectWalletButton />
             ) : (
-              <RowBetween>
-                <Button
-                  variant={approval === ApprovalState.APPROVED || signatureData !== null ? 'success' : 'primary'}
-                  onClick={approveCallback}
-                  disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
-                  width="100%"
-                  mr="0.5rem"
-                >
-                  {approval === ApprovalState.PENDING ? (
-                    <Dots>{t('Enabling')}</Dots>
-                  ) : approval === ApprovalState.APPROVED || signatureData !== null ? (
-                    t('Enabled')
-                  ) : (
-                    t('Enable')
-                  )}
-                </Button>
-                <Button
-                  variant={
-                    !isValid && !!parsedAmounts[StablesField.CURRENCY_1] && !!parsedAmounts[StablesField.CURRENCY_2]
-                      ? 'danger'
-                      : 'primary'
-                  }
-                  onClick={() => {
-                    onPresentRemoveLiquidity()
-                  }}
-                  width="100%"
-                  disabled={!isValid || (signatureData === null && approval !== ApprovalState.APPROVED)}
-                >
-                  {error || t('Remove')}
-                </Button>
-              </RowBetween>
-            )}
+
+              stableRemovalState !== StableRemovalState.BY_SINGLE_TOKEN ? (
+                <RowBetween>
+                  <Button
+                    variant={approval === ApprovalState.APPROVED || signatureData !== null ? 'success' : 'primary'}
+                    onClick={approveCallback}
+                    disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
+                    width="100%"
+                    mr="0.5rem"
+                  >
+                    {approval === ApprovalState.PENDING ? (
+                      <Dots>{t('Enabling')}</Dots>
+                    ) : approval === ApprovalState.APPROVED || signatureData !== null ? (
+                      t('Enabled')
+                    ) : (
+                      t('Enable')
+                    )}
+                  </Button>
+                  <Button
+                    variant={
+                      !isValid && !!parsedAmounts[StablesField.CURRENCY_1] && !!parsedAmounts[StablesField.CURRENCY_2]
+                        && !!parsedAmounts[StablesField.CURRENCY_3] && !!parsedAmounts[StablesField.CURRENCY_4]
+                        ? 'danger'
+                        : 'primary'
+                    }
+                    onClick={() => {
+                      onPresentRemoveLiquidity()
+                    }}
+                    width="100%"
+                    disabled={!isValid || (signatureData === null && approval !== ApprovalState.APPROVED)}
+                  >
+                    {error || t('Remove')}
+                  </Button>
+                </RowBetween>)
+                : (
+                  <RowBetween>
+                    <Button
+                      variant={approval === ApprovalState.APPROVED || signatureData !== null ? 'success' : 'primary'}
+                      onClick={approveCallback}
+                      disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
+                      width="100%"
+                      mr="0.5rem"
+                    >
+                      {approval === ApprovalState.PENDING ? (
+                        <Dots>{t('Enabling')}</Dots>
+                      ) : approval === ApprovalState.APPROVED || signatureData !== null ? (
+                        t('Enabled')
+                      ) : (
+                        t('Enable')
+                      )}
+                    </Button>
+                    <Button
+                      variant={
+                        !!parsedAmounts[StablesField.CURRENCY_SINGLE] && !!parsedAmounts[StablesField.LIQUIDITY_SINGLE]
+                          ? 'danger'
+                          : 'primary'
+                      }
+                      onClick={() => {
+                        onPresentRemoveLiquiditySingle()
+                      }}
+                      width="100%"
+                      disabled={(signatureData === null && approval !== ApprovalState.APPROVED)}
+                    >
+                      {error || t('Remove')}
+                    </Button>
+                  </RowBetween>
+                )
+            )
+            }
           </Box>
         </CardBody>
       </AppBody>

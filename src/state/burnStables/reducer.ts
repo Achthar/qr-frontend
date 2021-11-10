@@ -127,5 +127,10 @@ export default createReducer<BurnStablesState>(initialState, (builder) =>
         typedValue3: calculatedValues[2],
         typedValue4,
       }
+    }).addCase(selectStableSingle, (state, { payload: {selectedStableSingle } }) => {
+      return {
+        ...state,
+        selectedStableSingle,
+      }
     }),
 )

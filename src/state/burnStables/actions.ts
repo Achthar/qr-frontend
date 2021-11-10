@@ -10,7 +10,9 @@ export enum StablesField {
   SELECTED_SINGLE = 'SELECTED_SINGLE',
   CURRENCY_SINGLE = 'CURRENCY_SINGLE',
   LIQUIDITY_DEPENDENT = 'LIQUIDITY_DEPENDENT',
-  CALCULATED_SINGLE_VALUES = 'CALCULATED_SINGLE_VALUES' // that field is for the calculated values from LP input
+  LIQUIDITY_SINGLE = 'LIQUIDITY_SINGLE',
+  CALCULATED_SINGLE_VALUES = 'CALCULATED_SINGLE_VALUES', // that field is for the calculated values from LP input
+  CURRENCY_SINGLE_FEE = 'CURRENCY_SINGLE_FEE'
 }
 
 // case withdrawl by LP
@@ -33,6 +35,6 @@ export const typeInput = createAction<{ stablesField: StablesField; typedValue: 
 // withdrawls by single Token amount
 export const typeInputSingle = createAction<{ stablesField: StablesField; typedValueSingle: string }>('burnStables/typeInputSingleStablesBurn')
 
-export const selectStableSingle = createAction<{ stablesField: StablesField; selectedStableSingle: number }>('burnStables/selectInputSingleStablesBurn')
+export const selectStableSingle = createAction<{selectedStableSingle: number }>('burnStables/selectInputSingleStablesBurn')
 
 export const setTypeSingleInputs = createAction<{ calculatedSingleValues: string[] }>('burnStables/typeInputsFromLpCalc')
