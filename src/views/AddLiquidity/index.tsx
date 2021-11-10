@@ -793,7 +793,7 @@ export default function AddLiquidity({
                 <>
                   <LightCard padding="0px" borderRadius="20px">
                     <LightCard padding="1rem" borderRadius="20px">
-                      <StablePoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} stablePool={stablePool} />
+                      <StablePoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} stablePool={stablePool} formattedStablesAmounts={formattedStablesAmounts} />
                     </LightCard>
                   </LightCard>
                 </>

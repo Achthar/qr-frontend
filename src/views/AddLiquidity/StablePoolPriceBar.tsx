@@ -1,6 +1,7 @@
-import { Currency, Percent, Price, StablePool, STABLES_INDEX_MAP, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, Percent, Price, StablePool, STABLES_INDEX_MAP, TokenAmount } from '@requiemswap/sdk'
 import React, { useMemo } from 'react'
 import { Text } from '@requiemswap/uikit'
+import { StablesField } from 'state/mintStables/actions'
 import { useTranslation } from 'contexts/Localization'
 import { CurrencyLogo } from 'components/Logo'
 import Row from 'components/Row'
@@ -8,82 +9,101 @@ import Column from 'components/Column'
 import { AutoColumn } from '../../components/Layout/Column'
 import { AutoRow } from '../../components/Layout/Row'
 import { ONE_BIPS, ZERO_PERCENT } from '../../config/constants'
-import { StablesField } from '../../state/mintStables/actions'
 
 
 
 function StablePoolPriceBar({
   stablePool,
   poolTokenPercentage,
+  formattedStablesAmounts
 }: {
   stablePool: StablePool
   poolTokenPercentage?: Percent
+  formattedStablesAmounts?: { [field in StablesField]: CurrencyAmount }
 }) {
   const { t } = useTranslation()
   const amounts = useMemo(() =>
     stablePool?.getBalances().map((amnt, index) => new TokenAmount(STABLES_INDEX_MAP[stablePool.chainId][index], amnt.toBigInt()))
     , [stablePool])
+
+  const percentages = useMemo(() => {
+    return Object.values(formattedStablesAmounts).map((amnt, index) => new Percent(amnt.toBigNumber().toBigInt(),
+      amounts?.[index].toBigNumber().toBigInt()))
+  }, [amounts, formattedStablesAmounts])
+
   return (
     <AutoColumn gap="md">
       <AutoRow justify="space-around" gap="4px">
         <AutoColumn justify="center">
-          {/* <Text>{price?.toSignificant(6) ?? '-'}</Text> */}
-          {/* <Text fontSize="14px" pt={1}>
-            {t('%assetA% per %assetB%', {
-              assetA: currencies[StablesField.CURRENCY_B]?.symbol ?? '',
-              assetB: currencies[StablesField.CURRENCY_A]?.symbol ?? '',
-            })}
-          </Text> */}
-          {/* <AutoColumn gap="sm"> */}
-
           {amounts && (
             <Column>
-              <Row justify="start" gap="4px">
+              <Row justify="start" gap="7px">
+                <Text fontSize="13px" bold>
+                  Reserves
+                </Text>
+                <Text fontSize="10px" marginLeft="15px">
+                  Share Added
+                </Text>
+              </Row>
+              <Row justify="start" gap="7px">
                 <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[0].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px" pt={1}>
+                <Text fontSize="14px" >
                   {
                     amounts?.[0].toSignificant(6)
                   }
+                </Text>
+                <Text fontSize="10px" marginLeft="15px">
+                  {
+                    percentages?.[0]?.equalTo(ZERO_PERCENT) ? '0' :
+                      (percentages?.[0]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[0]?.toFixed(2)) ?? '0'}
+                  %
                 </Text>
               </Row>
 
               <Row justify="start" gap="4px">
                 <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[1].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px" pt={1}>
+                <Text fontSize="14px">
                   {
                     amounts?.[1].toSignificant(6)
                   }
                 </Text>
+                <Text fontSize="10px" marginLeft="15px">
+                  {
+                    percentages?.[1]?.equalTo(ZERO_PERCENT) ? '0' :
+                      (percentages?.[1]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[1]?.toFixed(2)) ?? '0'}
+                  %
+                </Text>
               </Row>
               <Row justify="start" gap="4px">
                 <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[2].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px" pt={1}>
+                <Text fontSize="14px">
                   {
                     amounts?.[2].toSignificant(6)
                   }
                 </Text>
+                <Text fontSize="10px" marginLeft="15px">
+                  {
+                    percentages?.[2]?.equalTo(ZERO_PERCENT) ? '0' :
+                      (percentages?.[2]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[2]?.toFixed(2)) ?? '0'}
+                  %
+                </Text>
               </Row>
               <Row justify="start" gap="4px">
                 <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[3].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px" pt={1}>
+                <Text fontSize="14px">
                   {
                     amounts?.[3].toSignificant(6)
                   }
                 </Text>
+                <Text fontSize="10px" marginLeft="15px">
+                  {
+                    percentages?.[3]?.equalTo(ZERO_PERCENT) ? '0' :
+                      (percentages?.[3]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[3]?.toFixed(2)) ?? '0'}
+                  %
+                </Text>
               </Row>
             </Column>
           )}
-
-          {/* </AutoColumn> */}
-        </AutoColumn>
-        <AutoColumn justify="center">
-          {/* <Text>{price?.invert()?.toSignificant(6) ?? '-'}</Text> */}
-          {/* <Text fontSize="14px" pt={1}>
-            {t('%assetA% per %assetB%', {
-              assetA: currencies[StablesField.CURRENCY_A]?.symbol ?? '',
-              assetB: currencies[StablesField.CURRENCY_B]?.symbol ?? '',
-            })}
-          </Text> */}
         </AutoColumn>
         <AutoColumn justify="center">
           <Text>
@@ -92,8 +112,9 @@ function StablePoolPriceBar({
                 (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ?? '0'}
             %
           </Text>
-          <Text fontSize="14px" pt={1}>
-            {t('Share of Quad Pool')}
+          <Text fontSize="12px" pt={1}>
+            Total Share of
+            Quad Pool
           </Text>
         </AutoColumn>
       </AutoRow>

@@ -24,7 +24,7 @@ const InputRow = styled.div<{ selected: boolean }>`
 const LabelRow = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  align-items: center;
+  align-items: right;
   color: ${({ theme }) => theme.colors.text};
   font-size: 0.75rem;
   line-height: 1rem;
@@ -34,7 +34,7 @@ const InputPanel = styled.div<{ width: string }>`
   display: flex;
   flex-flow: column wrap;
   position: relative;
-  border-radius: 20px;
+  border-radius: 17px;
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1;
   width: ${(props) => props.width}
@@ -83,16 +83,19 @@ export default function CurrencyInputPanelStable({
     <InputPanel id={id} width={width}>
       <Container hideInput={false}>
 
-        <LabelRow>
-          {!hideBalance && account && (
-            <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'>
-              {!hideBalance && !!stableCurrency && selectedCurrencyBalance
-                ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
-                : hideBalance ? ' -' : ''}
-            </Text>)
-            // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
-          }
-        </LabelRow>
+        <RowBetween>
+          <LabelRow >
+            {!hideBalance && account && (
+              <Text onClick={onMax} fontSize="12px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
+                {!hideBalance && !!stableCurrency && selectedCurrencyBalance
+                  ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                  : ' -'}
+              </Text>)
+              // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
+            }
+          </LabelRow>
+
+        </RowBetween>
         <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
           <>
             <NumericalInput
