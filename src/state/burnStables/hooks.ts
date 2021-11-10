@@ -40,7 +40,7 @@ export function useDerivedBurnStablesInfo(
   error?: string
   stablePool: StablePool
   errorSingle?: string
-  liquidityTradeValues?:TokenAmount[]
+  liquidityTradeValues?: TokenAmount[]
 } {
   const { account, chainId } = useActiveWeb3React()
 
@@ -100,56 +100,7 @@ export function useDerivedBurnStablesInfo(
   }
   // liquidity values
   const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply// useTotalSupply(stablePool?.liquidityToken)
-  const liquidityValue1 =
-    stablePool &&
-      totalSupply &&
-      userLiquidity &&
-      userBalances[0] !== undefined &&
-      tokens &&
-      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      totalSupply.gte(userLiquidity.toBigNumber())
-      ? stablePool.getLiquidityValue(0, userBalances)
-      : undefined
-  const liquidityValue2 =
-    stablePool &&
-      totalSupply &&
-      userBalances[0] !== undefined &&
-      userLiquidity &&
-      tokens &&
-      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      totalSupply.gte(userLiquidity.toBigNumber())
-      ? stablePool.getLiquidityValue(1, userBalances)
-      : undefined
 
-  const liquidityValue3 =
-    stablePool &&
-      totalSupply &&
-      userBalances[0] !== undefined &&
-      userLiquidity &&
-      tokens &&
-      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      totalSupply.gte(userLiquidity.toBigNumber())
-      ? stablePool.getLiquidityValue(2, userBalances)
-      : undefined
-
-  const liquidityValue4 =
-    stablePool &&
-      totalSupply &&
-      userBalances[0] !== undefined &&
-      userLiquidity &&
-      tokens &&
-      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      totalSupply.gte(userLiquidity.toBigNumber())
-      ? stablePool.getLiquidityValue(3, userBalances)
-      : undefined
-
-  // the value of the LP in the respective ccy 
-  const liquidityValues: { [StablesField.CURRENCY_1]?: TokenAmount;[StablesField.CURRENCY_2]?: TokenAmount;[StablesField.CURRENCY_3]?: TokenAmount;[StablesField.CURRENCY_4]?: TokenAmount } = {
-    [StablesField.CURRENCY_1]: liquidityValue1,
-    [StablesField.CURRENCY_2]: liquidityValue2,
-    [StablesField.CURRENCY_3]: liquidityValue3,
-    [StablesField.CURRENCY_4]: liquidityValue4,
-  }
   // const dispatch = useDispatch<AppDispatch>()
   // default values are set here
   let percentToRemove: Percent = new Percent('0', '100')
@@ -339,7 +290,65 @@ export function useDerivedBurnStablesInfo(
   if (!parsedAmounts[StablesField.LIQUIDITY_SINGLE] || !parsedAmounts[StablesField.CURRENCY_SINGLE]) {
     errorSingle = errorSingle ?? 'Enter an amount'
   }
-  return { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle }
+
+  const newPool = stablePool?.clone()
+  if (newPool && finalSingleAmounts[0] !== undefined) {
+    newPool.setTokenBalances(newPool.getBalances().map((val,index)=>val.sub(finalSingleAmounts[index].toBigNumber())))
+  }
+
+  const liquidityValue1 =
+    stablePool &&
+      totalSupply &&
+      userLiquidity &&
+      finalSingleAmounts[0] !== undefined &&
+      tokens &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? newPool.getLiquidityValue(0, finalSingleAmounts.map((amnt) => amnt.toBigNumber()))
+      : undefined
+  const liquidityValue2 =
+    stablePool &&
+      totalSupply &&
+      finalSingleAmounts[1] !== undefined &&
+      userLiquidity &&
+      tokens &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? newPool.getLiquidityValue(1, finalSingleAmounts.map((amnt) => amnt.toBigNumber()))
+      : undefined
+
+  const liquidityValue3 =
+    stablePool &&
+      totalSupply &&
+      finalSingleAmounts[0] !== undefined &&
+      userLiquidity &&
+      tokens &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? newPool.getLiquidityValue(2, finalSingleAmounts.map((amnt) => amnt.toBigNumber()))
+      : undefined
+
+  const liquidityValue4 =
+    stablePool &&
+      totalSupply &&
+      finalSingleAmounts[0] !== undefined &&
+      userLiquidity &&
+      tokens &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      totalSupply.gte(userLiquidity.toBigNumber())
+      ? newPool.getLiquidityValue(3, finalSingleAmounts.map((amnt) => amnt.toBigNumber()))
+      : undefined
+
+  // the value of the LP in the respective ccy 
+  const liquidityValues: { [StablesField.CURRENCY_1]?: TokenAmount;[StablesField.CURRENCY_2]?: TokenAmount;[StablesField.CURRENCY_3]?: TokenAmount;[StablesField.CURRENCY_4]?: TokenAmount } = {
+    [StablesField.CURRENCY_1]: liquidityValue1,
+    [StablesField.CURRENCY_2]: liquidityValue2,
+    [StablesField.CURRENCY_3]: liquidityValue3,
+    [StablesField.CURRENCY_4]: liquidityValue4,
+  }
+
+  const liquidityTradeValues = [liquidityValue1, liquidityValue2, liquidityValue3, liquidityValue4]
+  return { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle, liquidityTradeValues }
 }
 
 export function useBurnStablesActionHandlers(): {

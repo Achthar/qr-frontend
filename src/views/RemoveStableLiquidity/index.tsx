@@ -11,7 +11,7 @@ import {
   TokenAmount,
   STABLES_INDEX_MAP,
   STABLE_POOL_ADDRESS,
-  Currency,
+  Currency
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -99,7 +99,7 @@ export default function RemoveLiquidity({
     typedValueSingle,
   } = useBurnStableState()
 
-  const { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle } = useDerivedBurnStablesInfo()
+  const { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle, liquidityTradeValues } = useDerivedBurnStablesInfo()
 
   const {
     // onField1Input: _onField1Input,
@@ -636,6 +636,107 @@ export default function RemoveLiquidity({
     )
   }
 
+  function tradeValues() {
+
+    const val = parsedAmounts[StablesField.CURRENCY_SINGLE] && liquidityTradeValues
+      && liquidityTradeValues[parsedAmounts[StablesField.SELECTED_SINGLE]] ?
+      (parsedAmounts[StablesField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
+        liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].toBigNumber().toBigInt())
+      : undefined
+
+    const valNet = parsedAmounts[StablesField.CURRENCY_SINGLE] && liquidityTradeValues && parsedAmounts[StablesField.CURRENCY_SINGLE_FEE]
+      && liquidityTradeValues[parsedAmounts[StablesField.SELECTED_SINGLE]] ?
+      (parsedAmounts[StablesField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
+        liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].toBigNumber().toBigInt()
+        - parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].toBigNumber().toBigInt())
+      : undefined
+
+    return (
+
+      <>
+        <Text bold color="secondary" fontSize="12px" textTransform="uppercase">
+          LP Trade Values
+        </Text>
+        <LightGreyCard>
+          <Row justify="start" gap="7px">
+            <Row justify="start" gap="7px">
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][0]} size='15px' style={{ marginRight: '4px' }} />
+              <Text fontSize="14px" >
+                {
+                  liquidityTradeValues?.[0]?.toSignificant(6)
+                }
+              </Text>
+            </Row>
+
+            <Row justify="start" gap="4px">
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][1]} size='15px' style={{ marginRight: '4px' }} />
+              <Text fontSize="14px">
+                {
+                  liquidityTradeValues?.[1]?.toSignificant(6)
+                }
+              </Text>
+            </Row>
+            <Row justify="start" gap="4px">
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][2]} size='15px' style={{ marginRight: '4px' }} />
+              <Text fontSize="14px">
+                {
+                  liquidityTradeValues?.[2]?.toSignificant(6)
+                }
+              </Text>
+            </Row>
+            <Row justify="start" gap="4px">
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][3]} size='15px' style={{ marginRight: '4px' }} />
+              <Text fontSize="14px">
+                {
+                  liquidityTradeValues?.[3]?.toSignificant(6)
+                }
+              </Text>
+            </Row>
+          </Row> {
+            val && (
+              <Row justify="start" gap="4px">
+                <Text fontSize="12px" color={val >= 0 ? 'green' : 'red'} textAlign='left'>
+                  {`${val >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].token, val >= 0 ? val : -val).toSignificant(4)
+                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol}`}
+                </Text>
+                <Text fontSize="12px" color={val >= 0 ? 'green' : 'red'} textAlign='right' ml='5px'>
+                  {val >= 0 ? ' advantage vs manual withdrawl' : ' disadvantage vs manual withdrawl'}
+                </Text>
+              </Row>
+
+            )
+          }
+          {
+            parsedAmounts[StablesField.CURRENCY_SINGLE_FEE] && (
+              <Row justify="start" gap="4px">
+                <Text fontSize="12px" textAlign='left'>
+                  {`${parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].toSignificant(4)
+                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].token.symbol} `}
+                </Text>
+                <Text fontSize="12px" textAlign='right' ml='5px'>
+                  withdrawl fee (but lower gas cost)
+                </Text>
+              </Row>)
+          }
+
+          {
+            valNet && (
+              <Row justify="start" gap="4px">
+                <Text fontSize="12px" color={valNet >= 0 ? 'green' : 'red'} textAlign='left'>
+                  {`${valNet >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].token, valNet >= 0 ? valNet : -valNet).toSignificant(4)
+                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol} `}
+                </Text>
+                <Text fontSize="12px" color={valNet >= 0 ? 'green' : 'red'} textAlign='right' ml='5px'>
+                  net difference
+                </Text>
+              </Row>
+
+            )}
+        </LightGreyCard>
+      </>
+    )
+  }
+
   function priceMatrixComponent(fontsize: string, width: string) {
     return (
       <>
@@ -1133,7 +1234,10 @@ export default function RemoveLiquidity({
                 onUserInput={(value) => {
                   onLpInput(StablesField.LIQUIDITY, value)
                 }}
-                showMaxButton={false}
+                onMax={() => {
+                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                }}
+                showMaxButton
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
                 stablePool={stablePool}
@@ -1160,14 +1264,19 @@ export default function RemoveLiquidity({
               />
             </Box>
           )}
-          {stablePool && (
+          {stableRemovalState !== StableRemovalState.BY_SINGLE_TOKEN ? stablePool && (
             <AutoColumn gap="10px" style={{ marginTop: '16px' }}>
               <Text bold color="secondary" fontSize="12px" textTransform="uppercase">
                 Price Matrix
               </Text>
               <LightGreyCard>{priceMatrixComponent('12px', '80%')}</LightGreyCard>
             </AutoColumn>
-          )}
+          )
+            : stablePool && (
+              <AutoColumn gap="10px" style={{ marginTop: '16px' }}>
+                {tradeValues()}
+              </AutoColumn>)
+          }
           <Box position="relative" mt="16px">
             {!account ? (
               <ConnectWalletButton />
