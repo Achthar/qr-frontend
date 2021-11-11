@@ -14,7 +14,7 @@ import { useBlock } from 'state/block/hooks'
 import useRefresh from './useRefresh'
 import { useTotalSupply } from './useTokenBalance'
 import { useStableLPContract, useTokenContract } from './useContract'
-import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
+import { NEVER_RELOAD, useSingleCallResult, useSingleContractMultipleFunctions } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 
@@ -47,12 +47,18 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
     'getTokenBalances'
   )
 
+  // const results = useSingleContractMultipleFunctions(
+  //   getStableSwapContract(chainId ?? 43113),
+  //   ['totalSupply', 'getA', 'getTokenBalances'],
+  //   []
+  // )
+
   const { currentBlock } = useBlock()
 
   return useMemo(() => {
 
     // when loading return signal
-    if (tokenReservesResult.loading || aResult.loading || supplyResult.loading || !tokenReservesResult?.result?.[0]) {
+    if (tokenReservesResult.loading || aResult.loading || supplyResult.loading) {
       return [
         StablePoolState.LOADING,
         null
@@ -71,7 +77,7 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
 
     const stablePool = new StablePool(
       STABLES_INDEX_MAP[chainId ?? 43113],
-      tokenReservesResult.result[0],
+      tokenReservesResult.result?.[0],
       aResult.result?.[0], // we add the value of A later
       swapStorage,
       currentBlock, // block timestamp to be set later

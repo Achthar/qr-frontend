@@ -259,3 +259,32 @@ export function useSingleCallResult(
     return toCallState(result, contract?.interface, fragment, currentBlock)
   }, [result, contract, fragment, currentBlock])
 }
+
+export function useSingleContractMultipleFunctions(
+  contract: Contract | null | undefined,
+  methodNames: string[],
+  callInputs: OptionalMethodInputs[],
+  options?: ListenerOptions,
+): CallState[] {
+  const fragments = useMemo(() => methodNames.map((methodName) =>contract?.interface?.getFunction(methodName)), [contract, methodNames])
+  const calls = useMemo(
+    () =>
+      contract && fragments && callInputs && callInputs.length > 0
+        ? callInputs.map<Call>((inputs, index) => {
+          return {
+            address: contract.address,
+            callData: contract.interface.encodeFunctionData(fragments[index], inputs),
+          }
+        })
+        : [],
+    [callInputs, contract, fragments],
+  )
+
+  const results = useCallsData(calls, options)
+
+  const { currentBlock } = useBlock()
+
+  return useMemo(() => {
+    return results.map((result, index) => toCallState(result, contract?.interface, fragments[index], currentBlock))
+  }, [fragments, contract, results, currentBlock])
+}
