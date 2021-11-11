@@ -3,7 +3,7 @@ import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, TradeV3, NET
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useStablePool } from 'hooks/useStablePool'
+import { StablePoolState, useStablePool } from 'hooks/useStablePool'
 import useENS from 'hooks/ENS/useENS'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCurrency } from 'hooks/Tokens'
@@ -142,8 +142,8 @@ export function useDerivedSwapV3Info(chainId: number): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  const bestTradeExactIn = useTradeV3ExactIn(stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeV3ExactOut(stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  const bestTradeExactIn = useTradeV3ExactIn(stablePoolState, stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
+  const bestTradeExactOut = useTradeV3ExactOut(stablePoolState, stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
 
   const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut

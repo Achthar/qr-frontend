@@ -714,7 +714,7 @@ export default function RemoveLiquidity({
                     } ${parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].token.symbol} `}
                 </Text>
                 <Text fontSize="12px" textAlign='right' ml='5px'>
-                  withdrawl fee (but lower gas cost)
+                  withdrawl fee
                 </Text>
               </Row>)
           }
