@@ -77,11 +77,11 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
 
     const stablePool = new StablePool(
       STABLES_INDEX_MAP[chainId ?? 43113],
-      tokenReservesResult.result?.[0],
+      tokenReservesResult.result[0],
       aResult.result?.[0], // we add the value of A later
       swapStorage,
       currentBlock, // block timestamp to be set later
-      supplyResult.result?.[0],
+      supplyResult.result[0],
       BigNumber.from(0) // the individual fee is calculated later since its individual
     )
 

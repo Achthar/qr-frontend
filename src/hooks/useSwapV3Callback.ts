@@ -89,7 +89,7 @@ function useSwapV3CallArguments(
         }),
       )
     }
-    console.log("SWAPMETHODS:", swapMethods)
+    // console.log("SWAPMETHODS:", swapMethods)
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
   }, [account, allowedSlippage, chainId, deadline, library, recipient, trade])
