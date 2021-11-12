@@ -27,7 +27,7 @@ import {
   AddIcon,
   ArrowBackIcon,
 } from '@requiemswap/uikit'
-import { RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
@@ -35,12 +35,10 @@ import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
-import { stableCCYs } from 'components/CurrencyInputPanel/stableCurrencies'
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
-import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
 import { DoubleCurrencyLogo } from 'components/Logo'
 import { AppHeader, AppBody } from 'components/App'
 import { MinimalPositionCard } from 'components/PositionCard'
@@ -53,9 +51,7 @@ import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { Field } from 'state/mint/actions'
-import { StablesField } from 'state/mintStables/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks'
-import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
@@ -66,7 +62,6 @@ import Dots from 'components/Loader/Dots'
 import { currencyId } from 'utils/currencyId'
 import ConfirmAddModalBottom from './ConfirmAddModalBottom'
 import PoolPriceBar from './PoolPriceBar'
-import StablePoolPriceBar from './StablePoolPriceBar'
 import Page from '../Page'
 
 export default function AddLiquidity({
@@ -363,172 +358,36 @@ export default function AddLiquidity({
     justify-content: right;
     padding: 1px;
   `
-  //  stuff for stable swap starts here
-
-  // get the correctly arranged stablecoins
-
-  // mint state
-  const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
-
-  const {
-    stableCurrencies,
-    stablePool,
-    stablePoolState,
-    stablesCurrencyBalances,
-    parsedStablesAmounts,
-    stablesLiquidityMinted,
-    stablesPoolTokenPercentage,
-    stablesError,
-  } = useDerivedMintStablesInfo()
-
-  const formattedStablesAmounts = {
-    [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],
-    [StablesField.CURRENCY_2]: parsedStablesAmounts[StablesField.CURRENCY_2],
-    [StablesField.CURRENCY_3]: parsedStablesAmounts[StablesField.CURRENCY_3],
-    [StablesField.CURRENCY_4]: parsedStablesAmounts[StablesField.CURRENCY_4],
-  }
-
-  const { onField1Input, onField2Input, onField3Input, onField4Input } = useMintStablesActionHandlers()
-
-  const [approval1, approve1Callback] = useApproveCallback(
-    chainId,
-    formattedStablesAmounts[StablesField.CURRENCY_1],
-    STABLE_POOL_ADDRESS[chainId],
-  )
-  const [approval2, approve2Callback] = useApproveCallback(
-    chainId,
-    formattedStablesAmounts[StablesField.CURRENCY_2],
-    STABLE_POOL_ADDRESS[chainId],
-  )
-  const [approval3, approve3Callback] = useApproveCallback(
-    chainId,
-    formattedStablesAmounts[StablesField.CURRENCY_3],
-    STABLE_POOL_ADDRESS[chainId],
-  )
-  const [approval4, approve4Callback] = useApproveCallback(
-    chainId,
-    formattedStablesAmounts[StablesField.CURRENCY_4],
-    STABLE_POOL_ADDRESS[chainId],
-  )
-
-  // get the max amounts user can add
-  const maxAmountsStables: { [field in StablesField]?: TokenAmount } = [
-    StablesField.CURRENCY_1,
-    StablesField.CURRENCY_2,
-    StablesField.CURRENCY_3,
-    StablesField.CURRENCY_4,
-  ].reduce((accumulator, field) => {
-    return {
-      ...accumulator,
-      [field]: maxAmountSpend(chainId, stablesCurrencyBalances[field]),
-    }
-  }, {})
-
-  const atMaxAmountsStables: { [field in Field]?: StablesField } = [
-    StablesField.CURRENCY_1,
-    StablesField.CURRENCY_2,
-    StablesField.CURRENCY_3,
-    StablesField.CURRENCY_4,
-  ].reduce((accumulator, field) => {
-    return {
-      ...accumulator,
-      [field]: maxAmounts[field]?.equalTo(parsedStablesAmounts[field] ?? '0'),
-    }
-  }, {})
-
-  const stableAddValid: boolean = (
-    approval1 === ApprovalState.APPROVED &&
-    approval2 === ApprovalState.APPROVED &&
-    approval3 === ApprovalState.APPROVED &&
-    approval4 === ApprovalState.APPROVED
-  ) && (
-      !parsedStablesAmounts[StablesField.CURRENCY_1].toBigNumber().eq(0)
-      || !parsedStablesAmounts[StablesField.CURRENCY_2].toBigNumber().eq(0)
-      || !parsedStablesAmounts[StablesField.CURRENCY_3].toBigNumber().eq(0)
-      || !parsedStablesAmounts[StablesField.CURRENCY_4].toBigNumber().eq(0)
-    )
-  async function onStablesAdd() {
-    if (!chainId || !library || !account) return
-    const stableRouter = getStableRouterContract(chainId, library, account)
-
-    const {
-      [StablesField.CURRENCY_1]: parsedAmount1,
-      [StablesField.CURRENCY_2]: parsedAmount2,
-      [StablesField.CURRENCY_3]: parsedAmount3,
-      [StablesField.CURRENCY_4]: parsedAmount4,
-    } = parsedStablesAmounts
-    if (!parsedAmount1 && !parsedAmount2 && !parsedAmount3 && !parsedAmount4 && !deadline) {
-      return
-    }
-
-    const amountMin = calculateSlippageAmount(parsedAmount1, noLiquidity ? 0 : allowedSlippage)[0]
-
-    // let estimate
-    // let method: (...args: any) => Promise<TransactionResponse>
-    // let args: Array<string | string[] | number>
-    // let value: BigNumber | null
-
-    const estimate = stableRouter.estimateGas.addLiquidity
-    const method = stableRouter.addLiquidity
-    const args = [
-      [
-        parsedStablesAmounts[StablesField.CURRENCY_1].toBigNumber(),
-        parsedStablesAmounts[StablesField.CURRENCY_2].toBigNumber(),
-        parsedStablesAmounts[StablesField.CURRENCY_3].toBigNumber(),
-        parsedStablesAmounts[StablesField.CURRENCY_4].toBigNumber(),
-      ],
-      amountMin.toString(),
-      deadline.toHexString(),
-    ]
-    const value = null
-
-    setAttemptingTxn(true)
-    await estimate(...args, value ? { value } : {})
-      .then((estimatedGasLimit) =>
-        method(...args, {
-          ...(value ? { value } : {}),
-          gasLimit: calculateGasMargin(estimatedGasLimit),
-          gasPrice,
-        }).then((response) => {
-          setAttemptingTxn(false)
-
-          addTransaction(response, {
-            summary: `Add [${parsedStablesAmounts[StablesField.CURRENCY_1]?.toSignificant(2)}, ${parsedStablesAmounts[
-              StablesField.CURRENCY_2
-            ]?.toSignificant(2)}, ${parsedStablesAmounts[StablesField.CURRENCY_3]?.toSignificant(
-              2,
-            )}, ${parsedStablesAmounts[StablesField.CURRENCY_4]?.toSignificant(2)}] ${parsedStablesAmounts[StablesField.CURRENCY_1]?.currency.symbol
-              }-${parsedStablesAmounts[StablesField.CURRENCY_2]?.currency.symbol}-${parsedStablesAmounts[StablesField.CURRENCY_3]?.currency.symbol
-              }-${parsedStablesAmounts[StablesField.CURRENCY_4]?.currency.symbol}`,
-          })
-
-          setTxHash(response.hash)
-        }),
-      )
-      .catch((err) => {
-        setAttemptingTxn(false)
-        // we only care if the error is something _other_ than the user rejected the tx
-        if (err?.code !== 4001) {
-          console.error(err)
-        }
-      })
-  }
 
   return (
     <Page>
-      <LiquidityStateButtonWrapper>
-        <ButtonMenu activeIndex={liquidityState} onItemClick={handleClick} scale="sm" ml="24px">
-          <ButtonMenuItem>Pairs</ButtonMenuItem>
-          <ButtonMenuItem>Stable</ButtonMenuItem>
-        </ButtonMenu>
-      </LiquidityStateButtonWrapper>
+      <Row width='200px' height='50px'>
+        {/* <ButtonMenu activeIndex={liquidityState} onItemClick={handleClick} scale="sm" ml="24px"> */}
+        <Button
+          as={Link}
+          to='/add'
+          variant="primary"
+          width="100%"
+          mb="8px"
+        >
+          Pairs
+        </Button>
+        <Button
+          as={Link}
+          to='/add/stable'
+          variant="secondary"
+          width="100%"
+          mb="8px"
+        >
+          Stables
+        </Button>
+        {/* </ButtonMenu> */}
+      </Row>
       <AppBody>
         <AppHeader
-          title={liquidityState === LiquidityState.STANDARD ? t('Add Liquidity') : 'Add Stablecoin Liquidity'}
+          title={t('Add Liquidity')}
           subtitle={
-            liquidityState === LiquidityState.STANDARD
-              ? t('Add liquidity to receive LP tokens')
-              : 'Receive collateralizable StableSwap LP Tokens'
+            t('Add liquidity to receive LP tokens')
           }
           helper={t(
             'Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pool.',
@@ -536,363 +395,130 @@ export default function AddLiquidity({
           backTo="/pool"
         />
         <CardBody>
-          {liquidityState === LiquidityState.STANDARD ? (
-            <AutoColumn gap="20px">
-              {noLiquidity && (
-                <ColumnCenter>
-                  <Message variant="warning">
-                    <div>
-                      <Text bold mb="8px">
-                        {t('You are the first liquidity provider.')}
-                      </Text>
-                      <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
-                      <Text>{t('Once you are happy with the rate click supply to review.')}</Text>
-                    </div>
-                  </Message>
-                </ColumnCenter>
-              )}
-              <CurrencyInputPanel
-                value={formattedAmounts[Field.CURRENCY_A]}
-                onUserInput={onFieldAInput}
-                onMax={() => {
-                  onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-                }}
-                onCurrencySelect={handleCurrencyASelect}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-                currency={currencies[Field.CURRENCY_A]}
-                id="add-liquidity-input-tokena"
-                showCommonBases
-              />
+          <AutoColumn gap="20px">
+            {noLiquidity && (
               <ColumnCenter>
-                <AddIcon width="16px" />
+                <Message variant="warning">
+                  <div>
+                    <Text bold mb="8px">
+                      {t('You are the first liquidity provider.')}
+                    </Text>
+                    <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
+                    <Text>{t('Once you are happy with the rate click supply to review.')}</Text>
+                  </div>
+                </Message>
               </ColumnCenter>
-              <CurrencyInputPanel
-                value={formattedAmounts[Field.CURRENCY_B]}
-                onUserInput={onFieldBInput}
-                onCurrencySelect={handleCurrencyBSelect}
-                onMax={() => {
-                  onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-                }}
-                showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-                currency={currencies[Field.CURRENCY_B]}
-                id="add-liquidity-input-tokenb"
-                showCommonBases
-              />
-              {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
-                <>
-                  <LightCard padding="0px" borderRadius="20px">
-                    <RowBetween padding="1rem">
-                      <Text fontSize="14px">
-                        {noLiquidity ? t('Initial prices and pool share') : t('Prices and pool share')}
-                      </Text>
-                    </RowBetween>{' '}
-                    <LightCard padding="1rem" borderRadius="20px">
-                      <PoolPriceBar
-                        currencies={currencies}
-                        poolTokenPercentage={poolTokenPercentage}
-                        noLiquidity={noLiquidity}
-                        price={price}
-                      />
-                    </LightCard>
+            )}
+            <CurrencyInputPanel
+              value={formattedAmounts[Field.CURRENCY_A]}
+              onUserInput={onFieldAInput}
+              onMax={() => {
+                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+              }}
+              onCurrencySelect={handleCurrencyASelect}
+              showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+              currency={currencies[Field.CURRENCY_A]}
+              id="add-liquidity-input-tokena"
+              showCommonBases
+            />
+            <ColumnCenter>
+              <AddIcon width="16px" />
+            </ColumnCenter>
+            <CurrencyInputPanel
+              value={formattedAmounts[Field.CURRENCY_B]}
+              onUserInput={onFieldBInput}
+              onCurrencySelect={handleCurrencyBSelect}
+              onMax={() => {
+                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+              }}
+              showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+              currency={currencies[Field.CURRENCY_B]}
+              id="add-liquidity-input-tokenb"
+              showCommonBases
+            />
+            {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
+              <>
+                <LightCard padding="0px" borderRadius="20px">
+                  <RowBetween padding="1rem">
+                    <Text fontSize="14px">
+                      {noLiquidity ? t('Initial prices and pool share') : t('Prices and pool share')}
+                    </Text>
+                  </RowBetween>{' '}
+                  <LightCard padding="1rem" borderRadius="20px">
+                    <PoolPriceBar
+                      currencies={currencies}
+                      poolTokenPercentage={poolTokenPercentage}
+                      noLiquidity={noLiquidity}
+                      price={price}
+                    />
                   </LightCard>
-                </>
-              )}
+                </LightCard>
+              </>
+            )}
 
-              {addIsUnsupported ? (
-                <Button disabled mb="4px">
-                  {t('Unsupported Asset')}
-                </Button>
-              ) : !account ? (
-                <ConnectWalletButton />
-              ) : (
-                <AutoColumn gap="md">
-                  {(approvalA === ApprovalState.NOT_APPROVED ||
-                    approvalA === ApprovalState.PENDING ||
-                    approvalB === ApprovalState.NOT_APPROVED ||
-                    approvalB === ApprovalState.PENDING) &&
-                    isValid && (
-                      <RowBetween>
-                        {approvalA !== ApprovalState.APPROVED && (
-                          <Button
-                            onClick={approveACallback}
-                            disabled={approvalA === ApprovalState.PENDING}
-                            width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
-                          >
-                            {approvalA === ApprovalState.PENDING ? (
-                              <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })}</Dots>
-                            ) : (
-                              t('Enable %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })
-                            )}
-                          </Button>
-                        )}
-                        {approvalB !== ApprovalState.APPROVED && (
-                          <Button
-                            onClick={approveBCallback}
-                            disabled={approvalB === ApprovalState.PENDING}
-                            width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
-                          >
-                            {approvalB === ApprovalState.PENDING ? (
-                              <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })}</Dots>
-                            ) : (
-                              t('Enable %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })
-                            )}
-                          </Button>
-                        )}
-                      </RowBetween>
-                    )}
-                  <Button
-                    variant={
-                      !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-                        ? 'danger'
-                        : 'primary'
-                    }
-                    onClick={() => {
-                      if (expertMode) {
-                        onAdd()
-                      } else {
-                        onPresentAddLiquidityModal()
-                      }
-                    }}
-                    disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-                  >
-                    {error ?? t('Supply')}
-                  </Button>
-                </AutoColumn>
-              )}
-            </AutoColumn> // stableSwap Liquidity here
-          ) : (
-            <AutoColumn gap="5px">
-              <Row>
-                <CurrencyInputPanelStable
-                  width={approval1 !== ApprovalState.APPROVED ? '300px' : '100%'}
-                  value={typedValue1}
-                  onUserInput={onField1Input}
-                  onMax={() => {
-                    onField1Input(maxAmountsStables[StablesField.CURRENCY_1]?.toExact() ?? '')
-                  }}
-                  showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_1]}
-                  stableCurrency={STABLES_INDEX_MAP[chainId][0]}
-                  id="add-liquidity-input-token1"
-                />
-                {approval1 !== ApprovalState.APPROVED && (
-                  <ButtonStableApprove
-                    onClick={approve1Callback}
-                    disabled={approval1 === ApprovalState.PENDING}
-                    width="80px"
-                  >
-                    {approval1 === ApprovalState.PENDING ? (
-                      <Dots>{t('Enabling %asset%', { asset: stableCurrencies[StablesField.CURRENCY_1]?.symbol })}</Dots>
-                    ) : (
-                      t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_1]?.symbol })
-                    )}
-                  </ButtonStableApprove>
-                )}
-              </Row>
-              <Row>
-                <CurrencyInputPanelStable
-                  width={approval2 !== ApprovalState.APPROVED ? '300px' : '100%'}
-                  value={typedValue2}
-                  onUserInput={onField2Input}
-                  onMax={() => {
-                    onField2Input(maxAmountsStables[StablesField.CURRENCY_2]?.toExact() ?? '')
-                  }}
-                  showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_2]}
-                  stableCurrency={STABLES_INDEX_MAP[chainId][1]}
-                  id="add-liquidity-input-token2"
-                />
-                {approval2 !== ApprovalState.APPROVED && (
-                  <ButtonStableApprove
-                    onClick={approve2Callback}
-                    disabled={approval2 === ApprovalState.PENDING}
-                    width="80px"
-                  >
-                    {approval2 === ApprovalState.PENDING ? (
-                      <Dots>{t('Enabling %asset%', { asset: stableCurrencies[StablesField.CURRENCY_2]?.symbol })}</Dots>
-                    ) : (
-                      t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_2]?.symbol })
-                    )}
-                  </ButtonStableApprove>
-                )}
-              </Row>
-              <Row>
-                <CurrencyInputPanelStable
-                  width={approval3 !== ApprovalState.APPROVED ? '300px' : '100%'}
-                  value={typedValue3}
-                  onUserInput={onField3Input}
-                  onMax={() => {
-                    onField3Input(maxAmountsStables[StablesField.CURRENCY_3]?.toExact() ?? '')
-                  }}
-                  showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_3]}
-                  stableCurrency={STABLES_INDEX_MAP[chainId][2]}
-                  id="add-liquidity-input-token3"
-                />
-                {approval3 !== ApprovalState.APPROVED && (
-                  <ButtonStableApprove
-                    onClick={approve3Callback}
-                    disabled={approval3 === ApprovalState.PENDING}
-                    width="80px"
-                  >
-                    {approval3 === ApprovalState.PENDING ? (
-                      <Dots>{t('Enabling %asset%', { asset: stableCurrencies[StablesField.CURRENCY_3]?.symbol })}</Dots>
-                    ) : (
-                      t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_3]?.symbol })
-                    )}
-                  </ButtonStableApprove>
-                )}
-              </Row>
-              <Row>
-                <CurrencyInputPanelStable
-                  width={approval4 !== ApprovalState.APPROVED ? '300px' : '100%'}
-                  value={typedValue4}
-                  onUserInput={onField4Input}
-                  onMax={() => {
-                    onField4Input(maxAmountsStables[StablesField.CURRENCY_4]?.toExact() ?? '')
-                  }}
-                  showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_4]}
-                  stableCurrency={STABLES_INDEX_MAP[chainId][3]}
-                  id="add-liquidity-input-token4"
-                />
-                {approval4 !== ApprovalState.APPROVED && (
-                  <ButtonStableApprove
-                    onClick={approve4Callback}
-                    disabled={(approval4 as ApprovalState) === ApprovalState.PENDING}
-                    width="80px"
-                  >
-                    {(approval4 as ApprovalState) === ApprovalState.PENDING ? (
-                      <Dots>{t('Enabling %asset%', { asset: stableCurrencies[StablesField.CURRENCY_4]?.symbol })}</Dots>
-                    ) : (
-                      t('Enable %asset%', { asset: stableCurrencies[StablesField.CURRENCY_4]?.symbol })
-                    )}
-                  </ButtonStableApprove>
-                )}
-              </Row>
-
-              {liquidityState !== LiquidityState.STABLE ? (
-                currencies[Field.CURRENCY_A] &&
-                currencies[Field.CURRENCY_B] &&
-                pairState !== PairState.INVALID && (
-                  <>
-                    <LightCard padding="0px" borderRadius="20px">
-                      <RowBetween padding="1rem">
-                        <Text fontSize="14px">
-                          {noLiquidity ? t('Initial prices and pool share') : t('Prices and pool share')}
-                        </Text>
-                      </RowBetween>{' '}
-                      <LightCard padding="1rem" borderRadius="20px">
-                        <PoolPriceBar
-                          currencies={currencies}
-                          poolTokenPercentage={poolTokenPercentage}
-                          noLiquidity={noLiquidity}
-                          price={price}
-                        />
-                      </LightCard>
-                    </LightCard>
-                  </>
-                )
-              ) : (
-                <>
-                  <LightCard padding="0px" borderRadius="20px">
-                    <LightCard padding="1rem" borderRadius="20px">
-                      <StablePoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} stablePool={stablePool} formattedStablesAmounts={formattedStablesAmounts} />
-                    </LightCard>
-                  </LightCard>
-                </>
-              )}
-              {liquidityState !== LiquidityState.STABLE ? (
-                addIsUnsupported ? (
-                  <Button disabled mb="4px">
-                    {t('Unsupported Asset')}
-                  </Button>
-                ) : !account ? (
-                  <ConnectWalletButton />
-                ) : (
-                  <AutoColumn gap="md">
-                    {(approvalA === ApprovalState.NOT_APPROVED ||
-                      approvalA === ApprovalState.PENDING ||
-                      approvalB === ApprovalState.NOT_APPROVED ||
-                      approvalB === ApprovalState.PENDING) &&
-                      isValid && (
-                        <RowBetween>
-                          {approvalA !== ApprovalState.APPROVED && (
-                            <Button
-                              onClick={approveACallback}
-                              disabled={approvalA === ApprovalState.PENDING}
-                              width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
-                            >
-                              {approvalA === ApprovalState.PENDING ? (
-                                <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })}</Dots>
-                              ) : (
-                                t('Enable %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })
-                              )}
-                            </Button>
+            {addIsUnsupported ? (
+              <Button disabled mb="4px">
+                {t('Unsupported Asset')}
+              </Button>
+            ) : !account ? (
+              <ConnectWalletButton />
+            ) : (
+              <AutoColumn gap="md">
+                {(approvalA === ApprovalState.NOT_APPROVED ||
+                  approvalA === ApprovalState.PENDING ||
+                  approvalB === ApprovalState.NOT_APPROVED ||
+                  approvalB === ApprovalState.PENDING) &&
+                  isValid && (
+                    <RowBetween>
+                      {approvalA !== ApprovalState.APPROVED && (
+                        <Button
+                          onClick={approveACallback}
+                          disabled={approvalA === ApprovalState.PENDING}
+                          width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
+                        >
+                          {approvalA === ApprovalState.PENDING ? (
+                            <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })}</Dots>
+                          ) : (
+                            t('Enable %asset%', { asset: currencies[Field.CURRENCY_A]?.symbol })
                           )}
-                          {approvalB !== ApprovalState.APPROVED && (
-                            <Button
-                              onClick={approveBCallback}
-                              disabled={approvalB === ApprovalState.PENDING}
-                              width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
-                            >
-                              {approvalB === ApprovalState.PENDING ? (
-                                <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })}</Dots>
-                              ) : (
-                                t('Enable %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })
-                              )}
-                            </Button>
-                          )}
-                        </RowBetween>
+                        </Button>
                       )}
-                    <Button
-                      variant={
-                        !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-                          ? 'danger'
-                          : 'primary'
-                      }
-                      onClick={() => {
-                        if (expertMode) {
-                          onAdd()
-                        } else {
-                          onPresentAddLiquidityModal()
-                        }
-                      }}
-                      disabled={
-                        !isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED
-                      }
-                    >
-                      {error ?? t('Supply')}
-                    </Button>
-                  </AutoColumn>
-                ) // stable lqiuidty add here
-              ) : (
-                <AutoColumn gap="md">
-                  {(approval1 === ApprovalState.NOT_APPROVED ||
-                    approval1 === ApprovalState.PENDING ||
-                    approval2 === ApprovalState.NOT_APPROVED ||
-                    approval2 === ApprovalState.PENDING ||
-                    approval3 === ApprovalState.NOT_APPROVED ||
-                    approval3 === ApprovalState.PENDING ||
-                    approval4 === ApprovalState.NOT_APPROVED ||
-                    approval4 === ApprovalState.PENDING) && <RowBetween>Approvals still pending...</RowBetween>}
-                  <Button
-                    variant={
-                      // !!parsedStablesAmounts[StablesField.CURRENCY_1] && !!parsedStablesAmounts[StablesField.CURRENCY_2]
-                      //   && !!parsedStablesAmounts[StablesField.CURRENCY_3] && !!parsedStablesAmounts[StablesField.CURRENCY_4]
-                      //   ? 'danger'
-                      //   : 
-                      'primary'
+                      {approvalB !== ApprovalState.APPROVED && (
+                        <Button
+                          onClick={approveBCallback}
+                          disabled={approvalB === ApprovalState.PENDING}
+                          width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
+                        >
+                          {approvalB === ApprovalState.PENDING ? (
+                            <Dots>{t('Enabling %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })}</Dots>
+                          ) : (
+                            t('Enable %asset%', { asset: currencies[Field.CURRENCY_B]?.symbol })
+                          )}
+                        </Button>
+                      )}
+                    </RowBetween>
+                  )}
+                <Button
+                  variant={
+                    !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                      ? 'danger'
+                      : 'primary'
+                  }
+                  onClick={() => {
+                    if (expertMode) {
+                      onAdd()
+                    } else {
+                      onPresentAddLiquidityModal()
                     }
-                    onClick={() => {
-                      onStablesAdd()
-                    }}
-                    disabled={
-                      !stableAddValid
-                    }
-                  >
-                    Supply Stable Liquidity
-                  </Button>
-                </AutoColumn>
-              )}
-            </AutoColumn>
-          )}
+                  }}
+                  disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                >
+                  {error ?? t('Supply')}
+                </Button>
+              </AutoColumn>
+            )}
+          </AutoColumn>
+
         </CardBody>
       </AppBody>
       {!addIsUnsupported ? (

@@ -85,10 +85,10 @@ export function useMintStablesActionHandlers(): {
 }
 
 export function useDerivedMintStablesInfo(
+  stablePool:StablePool,
+  stablePoolState: StablePoolState
 ): {
   stableCurrencies: { [field in StablesField]?: Currency }
-  stablePool?: StablePool | null
-  stablePoolState: StablePoolState
   stablesCurrencyBalances: { [field in StablesField]?: CurrencyAmount }
   parsedStablesAmounts: { [field in StablesField]?: CurrencyAmount }
   stablesLiquidityMinted?: TokenAmount
@@ -107,8 +107,8 @@ export function useDerivedMintStablesInfo(
     [StablesField.CURRENCY_4]: STABLES_INDEX_MAP[chainId][3],
   }
 
-  // stablesPair
-  const [stablePoolState, stablePool] = useStablePool()
+  // // stablesPair
+  // const [stablePoolState, stablePool] = useStablePool()
 
   // stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
 
@@ -215,8 +215,8 @@ export function useDerivedMintStablesInfo(
 
   return {
     stableCurrencies,
-    stablePool,
-    stablePoolState,
+    // stablePool,
+    // stablePoolState,
     stablesCurrencyBalances,
     parsedStablesAmounts,
     stablesLiquidityMinted: stablePool === null ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),

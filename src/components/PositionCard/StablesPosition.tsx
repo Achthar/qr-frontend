@@ -207,10 +207,10 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
       : undefined
 
 
-  console.log("total:", totalPoolTokens?.toString())
-  console.log("stable total:", stablePool.lpTotalSupply?.toString())
-  console.log("user:", userLpPoolBalance?.toBigNumber().toString())
-  console.log("validate", totalPoolTokens >= userLpPoolBalance.toBigNumber())
+  // console.log("total:", totalPoolTokens?.toString())
+  // console.log("stable total:", stablePool.lpTotalSupply?.toString())
+  // console.log("user:", userLpPoolBalance?.toBigNumber().toString())
+  // console.log("validate", totalPoolTokens >= userLpPoolBalance.toBigNumber())
   // stablePool?.setTotalSupply(totalPoolTokens.toBigNumber())
 
   const amountsDeposited = !!stablePool &&
