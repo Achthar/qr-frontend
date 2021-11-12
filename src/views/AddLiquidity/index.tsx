@@ -902,7 +902,7 @@ export default function AddLiquidity({
           </AutoColumn>
         ) : null
       ) : (
-        <UnsupportedCurrencyFooter currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]} />
+        <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]} />
       )}
     </Page>
   )

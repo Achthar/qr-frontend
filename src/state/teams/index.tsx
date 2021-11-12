@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import teamsList from 'config/constants/teams'
 import { Team } from 'config/constants/types'
 import { TeamsById, TeamsState } from '../types'
@@ -48,7 +48,7 @@ export const { fetchStart, teamFetchSucceeded, fetchFailed, teamsFetchSucceeded 
 // Thunks
 export const fetchTeam = (teamId: number) => async (dispatch) => {
   try {
-    const {chainId} =useWeb3React()
+    const { chainId } = useNetworkState()
     dispatch(fetchStart())
     const team = await getTeam(chainId, teamId)
     dispatch(teamFetchSucceeded(team))
@@ -59,7 +59,7 @@ export const fetchTeam = (teamId: number) => async (dispatch) => {
 
 export const fetchTeams = () => async (dispatch) => {
   try {
-    const {chainId} =useWeb3React()
+    const { chainId } = useNetworkState()
     dispatch(fetchStart())
     const teams = await getTeams(chainId)
     dispatch(teamsFetchSucceeded(teams))

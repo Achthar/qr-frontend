@@ -20,7 +20,7 @@ const TransactionStatusText = styled.div`
   }
 `
 
-const TransactionState = styled(ExternalLink)<{ pending: boolean; success?: boolean }>`
+const TransactionState = styled(ExternalLink) <{ pending: boolean; success?: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,8 +36,8 @@ const IconWrapper = styled.div<{ pending: boolean; success?: boolean }>`
   color: ${({ pending, success, theme }) => (pending ? theme.primary1 : success ? theme.green1 : theme.red1)};
 `
 
-export default function Transaction({ hash }: { hash: string }) {
-  const { chainId } = useActiveWeb3React()
+export default function Transaction({ chainId, hash }: { chainId: number, hash: string }) {
+  // const { chainId } = useActiveWeb3React()
   const allTransactions = useAllTransactions()
 
   const tx = allTransactions?.[hash]

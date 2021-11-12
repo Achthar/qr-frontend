@@ -1,5 +1,5 @@
 import React from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { ifosConfig } from 'config/constants'
 import useGetPublicIfoV2Data from 'views/Ifos/hooks/v2/useGetPublicIfoData'
 import useGetWalletIfoV2Data from 'views/Ifos/hooks/v2/useGetWalletIfoData'
@@ -15,7 +15,7 @@ import IfoQuestions from './components/IfoQuestions'
 const activeIfo = ifosConfig.find((ifo) => ifo.isActive)
 
 const Ifo = () => {
-  const {chainId} = useWeb3React()
+  const {chainId} = useNetworkState()
   const publicIfoData = useGetPublicIfoV2Data(chainId, activeIfo)
   const walletIfoData = useGetWalletIfoV2Data(chainId, activeIfo)
 

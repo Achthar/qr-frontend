@@ -81,6 +81,7 @@ export default function CurrencyInputPanel({
 
   const [onPresentCurrencyModal] = useModal(
     <CurrencySearchModal
+      chainId={chainId}
       onCurrencySelect={onCurrencySelect}
       selectedCurrency={currency}
       otherSelectedCurrency={otherCurrency}

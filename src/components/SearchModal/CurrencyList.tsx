@@ -18,7 +18,7 @@ import CircleLoader from '../Loader/CircleLoader'
 import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 
-function currencyKey(chainId:number, currency: Currency): string {
+function currencyKey(chainId: number, currency: Currency): string {
   return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId] ? NETWORK_CCY[chainId].symbol : ''
 }
 
@@ -41,7 +41,7 @@ function Balance({ balance }: { balance: CurrencyAmount }) {
   return <StyledBalanceText title={balance.toExact()}>{balance.toSignificant(4)}</StyledBalanceText>
 }
 
-const MenuItem = styled(RowBetween)<{ disabled: boolean; selected: boolean }>`
+const MenuItem = styled(RowBetween) <{ disabled: boolean; selected: boolean }>`
   padding: 4px 20px;
   height: 56px;
   display: grid;
@@ -56,19 +56,22 @@ const MenuItem = styled(RowBetween)<{ disabled: boolean; selected: boolean }>`
 `
 
 function CurrencyRow({
+  chainId,
+  account,
   currency,
   onSelect,
   isSelected,
   otherSelected,
   style,
 }: {
+  chainId: number
+  account: string
   currency: Currency
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
 }) {
-  const { account, chainId } = useActiveWeb3React()
   const key = currencyKey(chainId, currency)
   const selectedTokenList = useCombinedActiveList()
   const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currency)
@@ -121,7 +124,7 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const { chainId } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies
@@ -174,6 +177,8 @@ export default function CurrencyList({
       }
       return (
         <CurrencyRow
+          chainId={chainId}
+          account={account}
           style={style}
           currency={currency}
           isSelected={isSelected}
@@ -192,6 +197,7 @@ export default function CurrencyList({
       showImportView,
       breakIndex,
       t,
+      account
     ],
   )
 

@@ -7,7 +7,7 @@ import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import HarvestAction from './HarvestAction'
 import StakedAction from './StakedAction'
 import Apr, { AprProps } from '../Apr'
@@ -140,7 +140,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   expanded,
 }) => {
   const farm = details
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   const { t } = useTranslation()
   const isActive = farm.multiplier !== '0X'
   const { quoteToken, token, dual } = farm

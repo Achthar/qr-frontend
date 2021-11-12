@@ -3,7 +3,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useBlock } from 'state/block/hooks'
 import { simpleRpcProvider } from 'utils/providers'
 import { AppDispatch, AppState } from '../index'
@@ -52,7 +52,7 @@ export const NEVER_RELOAD: ListenerOptions = {
 
 // the lowest level call for subscribing to contract data
 function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const callResults = useSelector<AppState, AppState['multicall']['callResults']>(
     (state) => state.multicall.callResults,
   )

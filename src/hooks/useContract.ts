@@ -20,6 +20,7 @@ import {
   getFarmAuctionContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
@@ -184,7 +185,7 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 }
 
 export function useMulticallContract(): Contract | null {
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   return useContract(getMulticallAddress(chainId), multiCallAbi, false)
 }
 

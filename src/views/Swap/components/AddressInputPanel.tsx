@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import { Text, Link } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import useENS from '../../../hooks/ENS/useENS'
 import useActiveWeb3React from '../../../hooks/useActiveWeb3React'
 import { AutoColumn } from '../../../components/Layout/Column'
@@ -77,7 +78,7 @@ export default function AddressInputPanel({
   // triggers whenever the typed value changes
   onChange: (value: string) => void
 }) {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const { t } = useTranslation()
 

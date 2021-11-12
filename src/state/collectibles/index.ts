@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { CollectiblesState } from 'state/types'
 import { nftSources } from 'config/constants/nfts'
 import { NftType } from 'config/constants/types'
@@ -23,7 +23,7 @@ export const fetchWalletNfts = createAsyncThunk<NftSourceItem[], string>(
     // For each nft source get nft data
     const nftSourcePromises = Object.keys(nftSources).map(async (nftSourceType) => {
       const { address: addressObj } = nftSources[nftSourceType as NftType]
-      const {chainId} = useWeb3React();
+      const {chainId} = useNetworkState();
       const address = getAddress(chainId, addressObj)
       const contract = getErc721Contract(chainId, address)
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import { simpleRpcProvider } from 'utils/providers'
@@ -17,7 +18,7 @@ import type { State, Pool } from '../types'
 import { transformPool } from './helpers'
 
 export const useFetchPublicPoolsData = () => {
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
 

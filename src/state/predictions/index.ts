@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ethers } from 'ethers'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { formatUnits } from 'ethers/lib/utils'
 import maxBy from 'lodash/maxBy'
 import merge from 'lodash/merge'
@@ -66,7 +66,7 @@ type PredictionInitialization = Pick<
 export const initializePredictions = createAsyncThunk<PredictionInitialization, string>(
   'predictions/intialize',
   async (account = null) => {
-    const{chainId} = useWeb3React()
+    const { chainId } = useNetworkState()
     // Static values
     const marketData = await getPredictionData(chainId)
     const epochs =
@@ -110,7 +110,7 @@ export const initializePredictions = createAsyncThunk<PredictionInitialization, 
 )
 
 export const fetchRound = createAsyncThunk<ReduxNodeRound, number>('predictions/fetchRound', async (epoch) => {
-  const{chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const predictionContract = getPredictionsContract(chainId)
   const response = await predictionContract.rounds(epoch)
   return serializePredictionsRoundsResponse(response)
@@ -119,7 +119,7 @@ export const fetchRound = createAsyncThunk<ReduxNodeRound, number>('predictions/
 export const fetchRounds = createAsyncThunk<{ [key: string]: ReduxNodeRound }, number[]>(
   'predictions/fetchRounds',
   async (epochs) => {
-    const{chainId} = useWeb3React()
+    const { chainId } = useNetworkState()
     const rounds = await getRoundsData(chainId, epochs)
     return rounds.reduce((accum, round) => {
       if (!round) {
@@ -137,7 +137,7 @@ export const fetchRounds = createAsyncThunk<{ [key: string]: ReduxNodeRound }, n
 )
 
 export const fetchMarketData = createAsyncThunk<MarketData>('predictions/fetchMarketData', async () => {
-  const{chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const marketData = await getPredictionData(chainId)
   return marketData
 })
@@ -145,7 +145,7 @@ export const fetchMarketData = createAsyncThunk<MarketData>('predictions/fetchMa
 export const fetchLedgerData = createAsyncThunk<LedgerData, { account: string; epochs: number[] }>(
   'predictions/fetchLedgerData',
   async ({ account, epochs }) => {
-    const{chainId} = useWeb3React()
+    const { chainId } = useNetworkState()
     const ledgers = await getLedgerData(chainId, account, epochs)
     return makeLedgerData(account, ledgers, epochs)
   },
@@ -155,7 +155,7 @@ export const fetchClaimableStatuses = createAsyncThunk<
   PredictionsState['claimableStatuses'],
   { account: string; epochs: number[] }
 >('predictions/fetchClaimableStatuses', async ({ account, epochs }) => {
-  const{chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const ledgers = await getClaimStatuses(chainId, account, epochs)
   return ledgers
 })
@@ -177,7 +177,7 @@ export const fetchNodeHistory = createAsyncThunk<
   { account: string; bets: Bet[]; claimableStatuses: PredictionsState['claimableStatuses'] },
   string
 >('predictions/fetchNodeHistory', async (account) => {
-  const{chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const userRounds = await fetchLatestUserRounds(chainId, account)
 
   if (!userRounds) {

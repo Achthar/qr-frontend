@@ -3,6 +3,7 @@ import { useWeb3React } from '@web3-react/core'
 import { Box, Flex, InjectedModalProps, Modal, Button, Spinner } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useTheme from 'hooks/useTheme'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import useGetVotingPower from '../hooks/useGetVotingPower'
 import DetailsView from './CastVoteModal/DetailsView'
 
@@ -11,7 +12,7 @@ interface VoteDetailsModalProps extends InjectedModalProps {
 }
 
 const VoteDetailsModal: React.FC<VoteDetailsModalProps> = ({ block, onDismiss }) => {
-  const {chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const { t } = useTranslation()
   const [modalIsOpen, setModalIsOpen] = useState(true)
   const { isLoading, total, cakeBalance, cakeVaultBalance, cakePoolBalance, poolsBalance, cakeBnbLpBalance } =

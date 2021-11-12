@@ -5,12 +5,12 @@ import styled from 'styled-components'
 import { AutoRow } from 'components/Layout/Row'
 import { AutoColumn } from 'components/Layout/Column'
 import { CurrencyLogo } from 'components/Logo'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { getNetworkExplorerLink } from 'utils'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useUnsupportedTokens } from '../hooks/Tokens'
 
 interface Props extends InjectedModalProps {
+  chainId: number
   currencies: (Currency | undefined)[]
 }
 
@@ -25,13 +25,12 @@ const DetailsFooter = styled.div`
   text-align: center;
 `
 
-const UnsupportedModal: React.FC<Props> = ({ currencies, onDismiss }) => {
-  const { chainId } = useActiveWeb3React()
+const UnsupportedModal: React.FC<Props> = ({ chainId, currencies, onDismiss }) => {
   const tokens =
     chainId && currencies
       ? currencies.map((currency) => {
-          return wrappedCurrency(currency, chainId)
-        })
+        return wrappedCurrency(currency, chainId)
+      })
       : []
 
   const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
@@ -69,8 +68,8 @@ const UnsupportedModal: React.FC<Props> = ({ currencies, onDismiss }) => {
   )
 }
 
-export default function UnsupportedCurrencyFooter({ currencies }: { currencies: (Currency | undefined)[] }) {
-  const [onPresentModal] = useModal(<UnsupportedModal currencies={currencies} />)
+export default function UnsupportedCurrencyFooter({ chainId, currencies }: { chainId: number, currencies: (Currency | undefined)[] }) {
+  const [onPresentModal] = useModal(<UnsupportedModal chainId={chainId} currencies={currencies} />)
 
   return (
     <DetailsFooter>

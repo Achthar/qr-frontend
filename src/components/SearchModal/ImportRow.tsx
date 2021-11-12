@@ -5,7 +5,7 @@ import { AutoRow, RowFixed } from 'components/Layout/Row'
 import { AutoColumn } from 'components/Layout/Column'
 import CurrencyLogo from 'components/Logo/CurrencyLogo'
 import { ListLogo } from 'components/Logo'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCombinedInactiveList } from 'state/lists/hooks'
 import styled from 'styled-components'
 import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
@@ -51,7 +51,7 @@ export default function ImportRow({
   setImportToken: (token: Token) => void
 }) {
   // globals
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const { t } = useTranslation()
 

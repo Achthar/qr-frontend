@@ -105,7 +105,7 @@ export default function Swap({ history }: RouteComponentProps) {
       [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
       [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
     }
-    
+
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(chainId)
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
@@ -503,7 +503,7 @@ export default function Swap({ history }: RouteComponentProps) {
       {!swapIsUnsupported ? (
         <AdvancedSwapDetailsDropdown trade={trade} />
       ) : (
-        <UnsupportedCurrencyFooter currencies={[currencies.INPUT, currencies.OUTPUT]} />
+        <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.INPUT, currencies.OUTPUT]} />
       )}
     </Page>
   )

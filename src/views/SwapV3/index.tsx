@@ -507,7 +507,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
       {!swapIsUnsupported ? (
         <AdvancedSwapDetailsDropdown trade={trade} />
       ) : (
-        <UnsupportedCurrencyFooter currencies={[currencies.INPUT, currencies.OUTPUT]} />
+        <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.INPUT, currencies.OUTPUT]} />
       )}
     </Page>
   )

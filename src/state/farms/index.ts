@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useWeb3React } from '@web3-react/core'
 import { farmList as farmsDict } from 'config/constants/farms'
 import isArchivedPid from 'utils/farmHelpers'

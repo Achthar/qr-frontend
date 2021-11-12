@@ -3,11 +3,11 @@ import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { DEFAULT_LIST_OF_LISTS, UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { AppState } from '../index'
 import { tokenList as DEFAULT_TOKEN_LIST } from '../../config/constants/tokenLists/tokenlist'
 import UNSUPPORTED_TOKEN_LIST from '../../config/constants/tokenLists/pancake-unsupported.tokenlist.json'
 import { ChainId } from '../../config/index'
-import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 
 type TagDetails = Tags[keyof Tags]
 export interface TagInfo extends TagDetails {
@@ -163,7 +163,7 @@ export function useInactiveListUrls(): string[] {
 
 // get all the tokens from active lists, combine with local default tokens
 export function useCombinedActiveList(): TokenAddressMap {
-  const { chainId } = useActiveWeb3React();
+  const { chainId } = useNetworkState();
   const activeListUrls = useActiveListUrls()
   const activeTokens = useCombinedTokenMapFromUrls(activeListUrls)
   const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST[chainId ?? 43113]) //  DEFAULT_TOKEN_LIST[chainId as unknown as string])
@@ -178,7 +178,7 @@ export function useCombinedInactiveList(): TokenAddressMap {
 
 // used to hide warnings on import for default tokens
 export function useDefaultTokenList(): TokenAddressMap {
-  const { chainId } = useActiveWeb3React();
+  const { chainId } = useNetworkState();
   return listToTokenMap(DEFAULT_TOKEN_LIST[chainId]) // DEFAULT_TOKEN_LIST[chainId as unknown as string])
 }
 

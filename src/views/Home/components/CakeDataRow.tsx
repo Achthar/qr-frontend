@@ -4,10 +4,10 @@ import { useTotalSupply, useBurnedBalance } from 'hooks/useTokenBalance'
 import { getCakeAddress } from 'utils/addressHelpers'
 import { getBalanceNumber, formatLocalisedCompactNumber } from 'utils/formatBalance'
 import { Flex, Text, Heading, Skeleton } from '@requiemswap/uikit'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useTranslation } from 'contexts/Localization'
 import Balance from 'components/Balance'
 import { useCakeBusdPriceNumber } from '../../../hooks/useBUSDPrice'
-import { useWeb3React } from '@web3-react/core'
 
 const StyledColumn = styled(Flex) <{ noMobileBorder?: boolean }>`
   flex-direction: column;
@@ -46,7 +46,7 @@ const emissionsPerBlock = 15
 
 const CakeDataRow = () => {
   const { t } = useTranslation()
-  const {chainId} = useWeb3React()
+  const {chainId} = useNetworkState()
   const totalSupply = useTotalSupply()
   const burnedBalance = getBalanceNumber(useBurnedBalance(getCakeAddress(chainId)))
   const cakeSupply = totalSupply ? getBalanceNumber(totalSupply) - burnedBalance : 0

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, Text } from '@requiemswap/uikit'
 import { getNetworkExplorerLink } from 'utils'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useTranslation } from 'contexts/Localization'
 import truncateHash from 'utils/truncateHash'
 
@@ -11,7 +11,7 @@ interface DescriptionWithTxProps {
 }
 
 const DescriptionWithTx: React.FC<DescriptionWithTxProps> = ({ txHash, children }) => {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const { t } = useTranslation()
 
   return (

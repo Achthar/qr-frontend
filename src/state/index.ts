@@ -7,12 +7,14 @@ import poolsReducer from './pools'
 import achievementsReducer from './achievements'
 import blockReducer from './block'
 import votingReducer from './voting'
+// import networkReducer from './globalNetwork/reducer'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
 import swap from './swap/reducer'
 import swapV3 from './swapV3/reducer'
 import mint from './mint/reducer'
+import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
@@ -24,13 +26,14 @@ const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
   reducer: {
+    globalNetwork,
     application,
     achievements: achievementsReducer,
     block: blockReducer,
     farms: farmsReducer,
     pools: poolsReducer,
     voting: votingReducer,
-
+ 
     // Exchange
     user,
     transactions,

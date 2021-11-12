@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BSC_BLOCK_TIME } from 'config'
 import { simpleRpcProvider } from 'utils/providers'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 /**
  * Returns a countdown in seconds of a given block
@@ -9,7 +9,7 @@ import { useWeb3React } from '@web3-react/core'
 const useBlockCountdown = (blockNumber: number) => {
   const timer = useRef<ReturnType<typeof setTimeout>>(null)
   const [secondsRemaining, setSecondsRemaining] = useState(0)
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
 
   useEffect(() => {
     const startCountdown = async () => {

@@ -196,11 +196,11 @@ const WalletAction = styled(ButtonSecondary)`
   }
 `
 
-function renderTransactions(transactions: string[]) {
+function renderTransactions(chainId: number, transactions: string[]) {
   return (
     <TransactionListWrapper>
       {transactions.map((hash, i) => {
-        return <Transaction key={i} hash={hash} />
+        return <Transaction chainId={chainId} key={i} hash={hash} />
       })}
     </TransactionListWrapper>
   )
@@ -374,8 +374,8 @@ export default function AccountDetails({
             <TYPE.body>{t('accountDetails.recentTransactions')}</TYPE.body>
             <LinkStyledButton onClick={clearAllTransactionsCallback}>{t('accountDetails.clearAll')}</LinkStyledButton>
           </AutoRow>
-          {renderTransactions(pendingTransactions)}
-          {renderTransactions(confirmedTransactions)}
+          {renderTransactions(chainId, pendingTransactions)}
+          {renderTransactions(chainId, confirmedTransactions)}
         </LowerSection>
       ) : (
         <LowerSection>

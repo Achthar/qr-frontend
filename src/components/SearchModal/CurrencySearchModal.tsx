@@ -37,6 +37,7 @@ const StyledModalBody = styled(ModalBody)`
 `
 
 interface CurrencySearchModalProps extends InjectedModalProps {
+  chainId:number
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -44,6 +45,7 @@ interface CurrencySearchModalProps extends InjectedModalProps {
 }
 
 export default function CurrencySearchModal({
+  chainId,
   onDismiss = () => null,
   onCurrencySelect,
   selectedCurrency,
@@ -95,6 +97,7 @@ export default function CurrencySearchModal({
       <StyledModalBody>
         {modalView === CurrencyModalView.search ? (
           <CurrencySearch
+            chainId={chainId}
             onCurrencySelect={handleCurrencySelect}
             selectedCurrency={selectedCurrency}
             otherSelectedCurrency={otherSelectedCurrency}

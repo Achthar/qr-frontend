@@ -8,7 +8,7 @@ import { useRemoveUserAddedToken } from 'state/user/hooks'
 import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
 import { CurrencyLogo } from 'components/Logo'
 import { getNetworkExplorerLink, isAddress } from 'utils'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useTranslation } from 'contexts/Localization'
 import Column, { AutoColumn } from '../Layout/Column'
 import ImportRow from './ImportRow'
@@ -37,7 +37,7 @@ export default function ManageTokens({
   setModalView: (view: CurrencyModalView) => void
   setImportToken: (token: Token) => void
 }) {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const { t } = useTranslation()
 

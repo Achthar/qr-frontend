@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
 import useENS from 'hooks/ENS/useENS'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import { useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
 import useParsedQueryString from 'hooks/useParsedQueryString'
@@ -267,7 +268,7 @@ export function queryParametersToSwapV3State(chainId: number, parsedQs: ParsedQs
 export function useDefaultsFromURLSearch():
   | { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined }
   | undefined {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()
   const [result, setResult] = useState<

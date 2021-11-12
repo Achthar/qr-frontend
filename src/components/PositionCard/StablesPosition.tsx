@@ -16,7 +16,6 @@ import { BigNumber } from 'ethers'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import useTotalSupply from '../../hooks/useTotalSupply'
 
@@ -57,11 +56,12 @@ interface PositionCardProps extends CardProps {
 }
 
 export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: PositionCardProps) {
-  const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
 
   const tokens = stablePool.tokens
+
+  const chainId = stablePool.chainId
 
   const [showMore, setShowMore] = useState(false)
 
@@ -191,10 +191,9 @@ export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: Po
 }
 
 export default function FullStablesPositionCard({ userLpPoolBalance, stablePool, ...props }: PositionCardProps) {
-  const { account, chainId } = useActiveWeb3React()
 
   const tokens = stablePool.tokens
-
+  const chainId = stablePool.chainId
   const [showMore, setShowMore] = useState(false)
 
   // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())

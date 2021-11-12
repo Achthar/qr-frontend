@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { getBep20Contract, getCakeContract } from 'utils/contractHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { simpleRpcProvider } from 'utils/providers'
@@ -52,7 +53,7 @@ const useTokenBalance = (tokenAddress: string) => {
 
 export const useTotalSupply = () => {
   const { slowRefresh } = useRefresh()
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   const [totalSupply, setTotalSupply] = useState<BigNumber>()
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export const useTotalSupply = () => {
 }
 
 export const useBurnedBalance = (tokenAddress: string) => {
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   const [balance, setBalance] = useState(BIG_ZERO)
   const { slowRefresh } = useRefresh()
 

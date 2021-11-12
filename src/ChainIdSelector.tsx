@@ -11,7 +11,7 @@ import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@requiemswap/uikit'
 import { useWeb3React } from "@web3-react/core";
-
+import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useToggleModal } from 'state/application/hooks'
 
@@ -218,6 +218,8 @@ const ExplorerText = ({ chainId }: { chainId: SupportedL2ChainId }) => {
 }
 
 const ChainIdSelector = () => {
+  // global network chainId
+  const {onChainChange} =useGlobalNetworkActionHandlers()
 
   const { chainId, library } = useWeb3React()
 
@@ -236,6 +238,7 @@ const ChainIdSelector = () => {
   function Row({ targetChain }: { targetChain: number }) {
     const handleRowClick = () => {
       switchToNetwork({ library, chainId: targetChain })
+      onChainChange(chainId)
       // useToggleModal()
       toggle()
       //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)

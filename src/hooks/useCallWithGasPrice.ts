@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import ethers, { Contract, CallOverrides } from 'ethers'
 import { useGasPrice } from 'state/user/hooks'
 import { get } from 'lodash'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 /**
  * Perform a contract call with a gas price returned from useGasPrice
@@ -13,7 +13,7 @@ import { useWeb3React } from '@web3-react/core'
  * @returns https://docs.ethers.io/v5/api/providers/types/#providers-TransactionReceipt
  */
 export function useCallWithGasPrice() {
-  const {chainId} =useWeb3React()
+  const { chainId } = useNetworkState()
   const gasPrice = useGasPrice(chainId)
 
   const callWithGasPrice = useCallback(

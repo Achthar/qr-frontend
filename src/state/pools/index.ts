@@ -7,6 +7,7 @@ import { getPoolApr } from 'utils/apr'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { getAddress } from 'utils/addressHelpers'
 import { useWeb3React } from '@web3-react/core'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 import { fetchPoolsBlockLimits, fetchPoolsStakingLimits, fetchPoolsTotalStaking } from './fetchPools'
 import {
   fetchPoolsAllowance,
@@ -44,7 +45,7 @@ const initialState: PoolsState = {
 }
 
 // Thunks
-export const fetchPoolsPublicDataAsync = (chainId:number, currentBlock: number) => async (dispatch, getState) => {
+export const fetchPoolsPublicDataAsync = (chainId: number, currentBlock: number) => async (dispatch, getState) => {
 
   const blockLimits = await fetchPoolsBlockLimits(chainId)
   const totalStakings = await fetchPoolsTotalStaking(chainId)
@@ -68,11 +69,11 @@ export const fetchPoolsPublicDataAsync = (chainId:number, currentBlock: number) 
     const earningTokenPrice = earningTokenAddress ? prices[earningTokenAddress] : 0
     const apr = !isPoolFinished
       ? getPoolApr(
-          stakingTokenPrice,
-          earningTokenPrice,
-          getBalanceNumber(new BigNumber(totalStaking.totalStaked), pool.stakingToken.decimals),
-          parseFloat(pool.tokenPerBlock),
-        )
+        stakingTokenPrice,
+        earningTokenPrice,
+        getBalanceNumber(new BigNumber(totalStaking.totalStaked), pool.stakingToken.decimals),
+        parseFloat(pool.tokenPerBlock),
+      )
       : 0
 
     return {
@@ -111,59 +112,59 @@ export const fetchPoolsStakingLimitsAsync = (chainId: number) => async (dispatch
 
 export const fetchPoolsUserDataAsync =
   (chainId: number, account: string): AppThunk =>
-  async (dispatch) => {
-    const allowances = await fetchPoolsAllowance(chainId, account)
-    const stakingTokenBalances = await fetchUserBalances(chainId, account)
-    const stakedBalances = await fetchUserStakeBalances(chainId, account)
-    const pendingRewards = await fetchUserPendingRewards(chainId, account)
+    async (dispatch) => {
+      const allowances = await fetchPoolsAllowance(chainId, account)
+      const stakingTokenBalances = await fetchUserBalances(chainId, account)
+      const stakedBalances = await fetchUserStakeBalances(chainId, account)
+      const pendingRewards = await fetchUserPendingRewards(chainId, account)
 
-    const userData = poolsConfig.map((pool) => ({
-      sousId: pool.sousId,
-      allowance: allowances[pool.sousId],
-      stakingTokenBalance: stakingTokenBalances[pool.sousId],
-      stakedBalance: stakedBalances[pool.sousId],
-      pendingReward: pendingRewards[pool.sousId],
-    }))
+      const userData = poolsConfig.map((pool) => ({
+        sousId: pool.sousId,
+        allowance: allowances[pool.sousId],
+        stakingTokenBalance: stakingTokenBalances[pool.sousId],
+        stakedBalance: stakedBalances[pool.sousId],
+        pendingReward: pendingRewards[pool.sousId],
+      }))
 
-    dispatch(setPoolsUserData(userData))
-  }
+      dispatch(setPoolsUserData(userData))
+    }
 
 export const updateUserAllowance =
   (chainId: number, sousId: number, account: string): AppThunk =>
-  async (dispatch) => {
-    const allowances = await fetchPoolsAllowance(chainId, account)
-    dispatch(updatePoolsUserData({ sousId, field: 'allowance', value: allowances[sousId] }))
-  }
+    async (dispatch) => {
+      const allowances = await fetchPoolsAllowance(chainId, account)
+      dispatch(updatePoolsUserData({ sousId, field: 'allowance', value: allowances[sousId] }))
+    }
 
 export const updateUserBalance =
   (chainId: number, sousId: number, account: string): AppThunk =>
-  async (dispatch) => {
-    const tokenBalances = await fetchUserBalances(chainId, account)
-    dispatch(updatePoolsUserData({ sousId, field: 'stakingTokenBalance', value: tokenBalances[sousId] }))
-  }
+    async (dispatch) => {
+      const tokenBalances = await fetchUserBalances(chainId, account)
+      dispatch(updatePoolsUserData({ sousId, field: 'stakingTokenBalance', value: tokenBalances[sousId] }))
+    }
 
 export const updateUserStakedBalance =
   (chainId: number, sousId: number, account: string): AppThunk =>
-  async (dispatch) => {
-    const stakedBalances = await fetchUserStakeBalances(chainId, account)
-    dispatch(updatePoolsUserData({ sousId, field: 'stakedBalance', value: stakedBalances[sousId] }))
-  }
+    async (dispatch) => {
+      const stakedBalances = await fetchUserStakeBalances(chainId, account)
+      dispatch(updatePoolsUserData({ sousId, field: 'stakedBalance', value: stakedBalances[sousId] }))
+    }
 
 export const updateUserPendingReward =
   (chainId: number, sousId: number, account: string): AppThunk =>
-  async (dispatch) => {
-    const pendingRewards = await fetchUserPendingRewards(chainId, account)
-    dispatch(updatePoolsUserData({ sousId, field: 'pendingReward', value: pendingRewards[sousId] }))
-  }
+    async (dispatch) => {
+      const pendingRewards = await fetchUserPendingRewards(chainId, account)
+      dispatch(updatePoolsUserData({ sousId, field: 'pendingReward', value: pendingRewards[sousId] }))
+    }
 
 export const fetchCakeVaultPublicData = createAsyncThunk<CakeVault>('cakeVault/fetchPublicData', async () => {
-  const{chainId}=useWeb3React()
+  const { chainId } = useWeb3React()
   const publicVaultInfo = await fetchPublicVaultData(chainId)
   return publicVaultInfo
 })
 
 export const fetchCakeVaultFees = createAsyncThunk<VaultFees>('cakeVault/fetchFees', async () => {
-  const{chainId}=useWeb3React()
+  const { chainId } = useWeb3React()
   const vaultFees = await fetchVaultFees(chainId)
   return vaultFees
 })

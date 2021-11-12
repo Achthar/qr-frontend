@@ -2,12 +2,12 @@ import { DEFAULT_TXN_DISMISS_MS } from 'config/constants'
 import { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector, AppState } from 'state'
 
-import useActiveWeb3React from '../../hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 import { addPopup, ApplicationModal, PopupContent, removePopup, setOpenModal } from './actions'
 
 export function useBlockNumber(): number | undefined {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   return useAppSelector((state: AppState) => state.application.blockNumber[chainId ?? -1])
 }

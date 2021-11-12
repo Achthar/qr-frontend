@@ -4,6 +4,7 @@ import { Currency, CurrencyAmount, Pair, Token, TradeV3, StablePool, StablePairW
 import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { StablePoolState } from 'hooks/useStablePool'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import {
@@ -18,7 +19,7 @@ import { wrappedCurrency } from '../utils/wrappedCurrency'
 import { useUnsupportedTokens } from './Tokens'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const [tokenA, tokenB] = chainId
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
@@ -170,7 +171,7 @@ export function useTradeV3ExactOut(stablePoolState: StablePoolState, stablePool:
 
 export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {
   const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const tokenIn = wrappedCurrency(currencyIn, chainId)
   const tokenOut = wrappedCurrency(currencyOut, chainId)

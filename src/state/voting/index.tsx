@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useWeb3React } from '@web3-react/core'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 import { merge } from 'lodash'
 import { Proposal, ProposalState, VotingStateLoadingStatus, VotingState, Vote, State } from 'state/types'
 import { getAllVotes, getProposal, getProposals, getVoteVerificationStatuses } from './helpers'

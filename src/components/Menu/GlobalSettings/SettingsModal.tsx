@@ -6,7 +6,7 @@ import { useTranslation } from 'contexts/Localization'
 import { useSwapActionHandlers } from 'state/swap/hooks'
 import usePersistState from 'hooks/usePersistState'
 import useTheme from 'hooks/useTheme'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import QuestionHelper from '../../QuestionHelper'
 import TransactionSettings from './TransactionSettings'
 import ExpertModal from './ExpertModal'
@@ -20,7 +20,7 @@ const PancakeToggleWrapper = styled.div`
 `
 
 const SettingsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
-  const {chainId} = useWeb3React()
+  const { chainId } = useNetworkState()
   const [showConfirmExpertModal, setShowConfirmExpertModal] = useState(false)
   const [rememberExpertModeAcknowledgement, setRememberExpertModeAcknowledgement] = usePersistState(false, {
     localStorageKey: 'pancake_expert_mode_remember_acknowledgement',
@@ -67,7 +67,7 @@ const SettingsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
           <Text bold textTransform="uppercase" fontSize="12px" color="secondary" mb="24px">
             {t('Global')}
           </Text>
-          <GasSettings />
+          {GasSettings(chainId)}
         </Flex>
         <Flex pt="24px" flexDirection="column" borderTop={`1px ${theme.colors.cardBorder} solid`}>
           <Text bold textTransform="uppercase" fontSize="12px" color="secondary" mb="24px">

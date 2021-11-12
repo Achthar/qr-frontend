@@ -7,7 +7,7 @@ import { AutoColumn } from 'components/Column'
 import { AutoRow } from 'components/Row'
 import { useTranslation } from 'contexts/Localization'
 import styled, { ThemeContext } from 'styled-components'
-import { useActiveWeb3React } from '../../hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { TYPE } from '../../theme'
 import { ExternalLink } from '../../theme/components'
 
@@ -25,7 +25,7 @@ export default function TransactionPopup({
   success?: boolean
   summary?: string
 }) {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)

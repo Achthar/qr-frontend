@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAppDispatch } from 'state'
 import useIsWindowVisible from 'hooks/useIsWindowVisible'
 import { simpleRpcProvider } from 'utils/providers'
@@ -12,7 +12,7 @@ export const usePollBlockNumber = () => {
   const timer = useRef(null)
   const dispatch = useAppDispatch()
   const isWindowVisible = useIsWindowVisible()
-  const { chainId } = useWeb3React()
+  const { chainId } = useNetworkState()
   useEffect(() => {
     if (isWindowVisible) {
       timer.current = setInterval(async () => {

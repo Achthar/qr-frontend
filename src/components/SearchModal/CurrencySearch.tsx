@@ -5,7 +5,6 @@ import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
 import { useAudioModeManager } from 'state/user/hooks'
 import useDebounce from 'hooks/useDebounce'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } from '../../hooks/Tokens'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
@@ -18,6 +17,7 @@ import useTokenComparator from './sorting'
 import ImportRow from './ImportRow'
 
 interface CurrencySearchProps {
+  chainId:number
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -29,6 +29,7 @@ interface CurrencySearchProps {
 const swapSound = new Audio('swap.mp3')
 
 function CurrencySearch({
+  chainId,
   selectedCurrency,
   onCurrencySelect,
   otherSelectedCurrency,
@@ -37,7 +38,6 @@ function CurrencySearch({
   setImportToken,
 }: CurrencySearchProps) {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
 
   // refs for fixed size lists
   const fixedList = useRef<FixedSizeList>()

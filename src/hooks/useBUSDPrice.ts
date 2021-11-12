@@ -1,6 +1,7 @@
 import { ChainId, Currency, currencyEquals, JSBI, Price, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { BUSD, CAKE } from '../config/constants/tokens'
 import { PairState, usePairs } from './usePairs'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
@@ -12,7 +13,7 @@ const BUSD_MAINNET = BUSD[ChainId.BSC_MAINNET]
  * @param currency currency to compute the BUSD price of
  */
 export default function useBUSDPrice(currency?: Currency): Price {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const wrapped = wrappedCurrency(currency, chainId)
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
     () => [
@@ -73,7 +74,7 @@ export default function useBUSDPrice(currency?: Currency): Price {
 }
 
 export const useCakeBusdPrice = (): Price => {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const currentChaindId = chainId || ChainId.BSC_MAINNET
   const cakeBusdPrice = useBUSDPrice(CAKE[currentChaindId])
   return cakeBusdPrice
