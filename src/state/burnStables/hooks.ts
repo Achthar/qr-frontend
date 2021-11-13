@@ -2,7 +2,7 @@ import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, ST
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useStablePool } from 'hooks/useStablePool'
+import { StablePoolState, useStablePool } from 'hooks/useStablePool'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { BigNumber } from 'ethers'
 
@@ -22,6 +22,8 @@ export function useBurnStableState(): AppState['burnStables'] {
 }
 
 export function useDerivedBurnStablesInfo(
+  stablePool: StablePool,
+  stablePoolState: StablePoolState
 ): {
   parsedAmounts: {
     [StablesField.LIQUIDITY_PERCENT]: Percent
@@ -38,7 +40,6 @@ export function useDerivedBurnStablesInfo(
   }
   calculatedValuesFormatted: string[],
   error?: string
-  stablePool: StablePool
   errorSingle?: string
   liquidityTradeValues?: TokenAmount[]
 } {
@@ -61,7 +62,7 @@ export function useDerivedBurnStablesInfo(
   } = useBurnStablesActionHandlers()
 
   // pair + totalsupply
-  const [stablePoolState, stablePool] = useStablePool()
+  // const [stablePoolState, stablePool] = useStablePool()
 
   const lpToken = new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
   // balances
@@ -348,7 +349,10 @@ export function useDerivedBurnStablesInfo(
   }
 
   const liquidityTradeValues = [liquidityValue1, liquidityValue2, liquidityValue3, liquidityValue4]
-  return { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle, liquidityTradeValues }
+  return { 
+    // stablePool, 
+    parsedAmounts, 
+    error, calculatedValuesFormatted, errorSingle, liquidityTradeValues }
 }
 
 export function useBurnStablesActionHandlers(): {

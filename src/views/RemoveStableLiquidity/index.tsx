@@ -36,7 +36,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import tokens from 'config/constants/tokens'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
-import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import { useStablePool } from 'hooks/useStablePool'
 import Row from 'components/Row'
 import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
 import Page from '../Page'
@@ -99,7 +99,8 @@ export default function RemoveLiquidity({
     typedValueSingle,
   } = useBurnStableState()
 
-  const { stablePool, parsedAmounts, error, calculatedValuesFormatted, errorSingle, liquidityTradeValues } = useDerivedBurnStablesInfo()
+  const [stablePoolState, stablePool] = useStablePool()
+  const { parsedAmounts, error, calculatedValuesFormatted, errorSingle, liquidityTradeValues } = useDerivedBurnStablesInfo(stablePool, stablePoolState)
 
   const {
     // onField1Input: _onField1Input,
