@@ -5,7 +5,6 @@ import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useBlock } from 'state/block/hooks'
-import { simpleRpcProvider } from 'utils/providers'
 import { AppDispatch, AppState } from '../index'
 import {
   addMulticallListeners,

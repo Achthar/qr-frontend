@@ -6,16 +6,17 @@ import IERC20 from 'config/abi/avax/IERC20.json'
 // import { serializeError } from 'eth-rpc-errors'
 // import { Interface } from '@ethersproject/abi'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { BigNumber } from 'ethers'
 import { getStableLpContract, getStableSwapContract } from 'utils/contractHelpers'
 import { swapStorageData } from 'config/constants/stableSwapData'
-import { simpleRpcProvider } from 'utils/providers'
 import { useBlock } from 'state/block/hooks'
 import useRefresh from './useRefresh'
 import { useTotalSupply } from './useTokenBalance'
 import { useStableLPContract, useTokenContract } from './useContract'
 import { NEVER_RELOAD, useSingleCallResult, useSingleContractMultipleFunctions } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
+
 
 
 export enum StablePoolState {
@@ -26,31 +27,31 @@ export enum StablePoolState {
 }
 
 export function useStablePool(): [StablePoolState, StablePool | null] {
-  const chainId = 43113
+  const {chainId} = useNetworkState()
   const { slowRefresh } = useRefresh()
 
   console.log("SPC")
 
   // for now we only load the supply once on thos 
   const supplyResult = useSingleCallResult(
-    getStableLpContract(chainId ?? 43113),
+    getStableLpContract(chainId),
     'totalSupply',
   )
 
   // static data, only loaded once
   const aResult = useSingleCallResult(
-    getStableSwapContract(chainId ?? 43113),
+    getStableSwapContract(chainId),
     'getA', undefined, NEVER_RELOAD
   )
 
   // token reserves only reload them in shorter cycles
   const tokenReservesResult = useSingleCallResult(
-    getStableSwapContract(chainId ?? 43113),
+    getStableSwapContract(chainId),
     'getTokenBalances'
   )
 
   // const results = useSingleContractMultipleFunctions(
-  //   getStableSwapContract(chainId ?? 43113),
+  //   getStableSwapContract(chainId),
   //   ['totalSupply', 'getA', 'getTokenBalances'],
   //   []
   // )
@@ -68,17 +69,17 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
     }
 
     const swapStorage = new SwapStorage(
-      Object.values(STABLES_INDEX_MAP[chainId ?? 43113]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
-      swapStorageData[chainId ?? 43113].fee,
-      swapStorageData[chainId ?? 43113].adminFee,
-      swapStorageData[chainId ?? 43113].initialA,
-      swapStorageData[chainId ?? 43113].futureA,
-      swapStorageData[chainId ?? 43113].initialATime,
-      swapStorageData[chainId ?? 43113].futureATime,
-      swapStorageData[chainId ?? 43113].lpToken)
+      Object.values(STABLES_INDEX_MAP[chainId]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
+      swapStorageData[chainId].fee,
+      swapStorageData[chainId].adminFee,
+      swapStorageData[chainId].initialA,
+      swapStorageData[chainId].futureA,
+      swapStorageData[chainId].initialATime,
+      swapStorageData[chainId].futureATime,
+      swapStorageData[chainId].lpToken)
 
     const stablePool = new StablePool(
-      STABLES_INDEX_MAP[chainId ?? 43113],
+      STABLES_INDEX_MAP[chainId],
       tokenReservesResult.result[0],
       aResult.result?.[0], // we add the value of A later
       swapStorage,

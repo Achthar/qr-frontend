@@ -94,7 +94,7 @@ export const getVoteVerificationStatuses = async (
   block?: number,
   chainId?: number,
 ): Promise<{ [key: string]: boolean }> => {
-  const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
+  const blockNumber = block || (await simpleRpcProvider(chainId, "getVoteVerificationStatuses").getBlockNumber())
 
   const votesToVerify = votes.map((vote) => ({
     address: vote.voter,

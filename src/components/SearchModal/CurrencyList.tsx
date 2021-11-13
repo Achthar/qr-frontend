@@ -7,7 +7,8 @@ import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { LightGreyCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+// import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useWeb3React } from '@web3-react/core'
 import { useCombinedActiveList } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { useIsUserAddedToken, useAllInactiveTokens } from '../../hooks/Tokens'
@@ -124,7 +125,7 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const { chainId, account } = useActiveWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies

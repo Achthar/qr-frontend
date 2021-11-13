@@ -13,7 +13,7 @@ export const getActivePools = async (chainId?: number, block?: number) => {
   const eligiblePools = pools
     .filter((pool) => pool.sousId !== 0)
     .filter((pool) => pool.isFinished === false || pool.isFinished === undefined)
-  const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
+  const blockNumber = block || (await simpleRpcProvider(chainId, "getActivePools").getBlockNumber())
   const startBlockCalls = eligiblePools.map(({ contractAddress }) => ({
     address: getAddress(chainId, contractAddress),
     name: 'startBlock',

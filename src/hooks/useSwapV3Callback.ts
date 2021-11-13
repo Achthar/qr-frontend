@@ -47,8 +47,8 @@ function useSwapV3CallArguments(
 ): SwapV3Call[] {
   const { account, chainId, library } = useActiveWeb3React()
 
-  const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
-  const recipient = recipientAddressOrName === null ? account : recipientAddress
+  // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
+  const recipient = recipientAddressOrName ?? account // recipientAddressOrName === null ? account : recipientAddress
   const deadline = useTransactionDeadline(chainId)
 
   return useMemo(() => {
@@ -109,8 +109,8 @@ export function useSwapV3Callback(
 
   const addTransaction = useTransactionAdder()
 
-  const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
-  const recipient = recipientAddressOrName === null ? account : recipientAddress
+  // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
+  const recipient = account // recipientAddressOrName === null ? account : recipientAddress
 
   return useMemo(() => {
     if (!trade || !library || !account || !chainId) {

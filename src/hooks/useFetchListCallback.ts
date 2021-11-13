@@ -1,5 +1,5 @@
 import { nanoid } from '@reduxjs/toolkit'
- // import { ChainId } from '@requiemswap/sdk'
+// import { ChainId } from '@requiemswap/sdk'
 import { TokenList } from '@uniswap/token-lists'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
@@ -9,11 +9,11 @@ import { fetchTokenList } from '../state/lists/actions'
 import getTokenList from '../utils/getTokenList'
 import resolveENSContentHash from '../utils/ENS/resolveENSContentHash'
 // import useWeb3Provider from './useActiveWeb3React'
-import {ChainId} from '../config/index'
+import { ChainId } from '../config/index'
 
 function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Promise<TokenList> {
   // const { library } = useWeb3Provider()
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, library } = useActiveWeb3React("useFetchListCallback")
   const dispatch = useDispatch<AppDispatch>()
 
   const ensResolver = useCallback(

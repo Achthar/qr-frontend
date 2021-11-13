@@ -1,7 +1,7 @@
 import { CurrencyAmount, JSBI, Pair, Percent, TokenAmount, StablePool, Token, STABLE_POOL_LP_ADDRESS, STABLES_INDEX_MAP } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { BigNumber } from 'ethers'
@@ -9,21 +9,24 @@ import { BigNumber } from 'ethers'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
-// import { useTokenBalances } from '../wallet/hooks'
 
-import { useTokenBalancesWithLoadingIndicator } from '../wallet/hooks'
 import {
   StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp, setTypeSingleInputs,
   typeInput1Calculated, typeInput2Calculated, typeInput3Calculated, typeInput4Calculated, typeInputSingle, selectStableSingle
 } from './actions'
+
 
 export function useBurnStableState(): AppState['burnStables'] {
   return useSelector<AppState, AppState['burnStables']>((state) => state.burnStables)
 }
 
 export function useDerivedBurnStablesInfo(
+  relevantTokenBalances: {
+    [tokenAddress: string]: TokenAmount;
+  },
   stablePool: StablePool,
-  stablePoolState: StablePoolState
+  stablePoolState: StablePoolState,
+  account?: string,
 ): {
   parsedAmounts: {
     [StablesField.LIQUIDITY_PERCENT]: Percent
@@ -43,7 +46,6 @@ export function useDerivedBurnStablesInfo(
   errorSingle?: string
   liquidityTradeValues?: TokenAmount[]
 } {
-  const { account, chainId } = useActiveWeb3React()
 
   const {
     independentStablesField,
@@ -63,19 +65,10 @@ export function useDerivedBurnStablesInfo(
 
   // pair + totalsupply
   // const [stablePoolState, stablePool] = useStablePool()
-
+  const { chainId } = useNetworkState()
   const lpToken = new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
   // balances
   // const relevantTokenBalances = useTokenBalances(account ?? undefined, [stablePool?.liquidityToken])
-
-  const [relevantTokenBalances, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    [lpToken,
-      STABLES_INDEX_MAP[chainId][0],
-      STABLES_INDEX_MAP[chainId][1],
-      STABLES_INDEX_MAP[chainId][2],
-      STABLES_INDEX_MAP[chainId][3]],
-  )
 
   // console.log("independent Field", independentStablesField)
 
@@ -294,7 +287,7 @@ export function useDerivedBurnStablesInfo(
 
   const newPool = stablePool?.clone()
   if (newPool && finalSingleAmounts[0] !== undefined) {
-    newPool.setTokenBalances(newPool.getBalances().map((val,index)=>val.sub(finalSingleAmounts[index].toBigNumber())))
+    newPool.setTokenBalances(newPool.getBalances().map((val, index) => val.sub(finalSingleAmounts[index].toBigNumber())))
   }
 
   const liquidityValue1 =
@@ -349,10 +342,11 @@ export function useDerivedBurnStablesInfo(
   }
 
   const liquidityTradeValues = [liquidityValue1, liquidityValue2, liquidityValue3, liquidityValue4]
-  return { 
+  return {
     // stablePool, 
-    parsedAmounts, 
-    error, calculatedValuesFormatted, errorSingle, liquidityTradeValues }
+    parsedAmounts,
+    error, calculatedValuesFormatted, errorSingle, liquidityTradeValues
+  }
 }
 
 export function useBurnStablesActionHandlers(): {

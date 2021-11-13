@@ -95,7 +95,7 @@ export const useGetBnbBalance = () => {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const walletBalance = await simpleRpcProvider(chainId).getBalance(account)
+        const walletBalance = await simpleRpcProvider(chainId, "useGetBnbBalance").getBalance(account)
         setBalance(new BigNumber(walletBalance.toString()))
         setFetchStatus(FetchStatus.SUCCESS)
       } catch {

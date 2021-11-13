@@ -16,7 +16,7 @@ export const usePollBlockNumber = () => {
   useEffect(() => {
     if (isWindowVisible) {
       timer.current = setInterval(async () => {
-        const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
+        const blockNumber = await simpleRpcProvider(chainId, "usePollBlockNumber").getBlockNumber()
         dispatch(setBlock(blockNumber))
       }, 6000)
     } else {

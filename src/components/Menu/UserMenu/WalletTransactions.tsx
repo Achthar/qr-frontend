@@ -4,13 +4,13 @@ import { Box, Button, Flex, Text } from '@requiemswap/uikit'
 import { AppDispatch } from 'state'
 import { useAllTransactions } from 'state/transactions/hooks'
 import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { clearAllTransactions } from 'state/transactions/actions'
 import { orderBy } from 'lodash'
 import TransactionRow from './TransactionRow'
 
 const WalletTransactions: React.FC = () => {
-  const { chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
   const allTransactions = useAllTransactions()

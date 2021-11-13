@@ -35,7 +35,7 @@ export interface Message {
 /**
  * Generates metadata required by snapshot to validate payload
  */
-export const generateMetaData = (chainId:number) => {
+export const generateMetaData = (chainId: number) => {
   return {
     plugins: {},
     network: chainId,
@@ -76,8 +76,8 @@ export const sendSnapshotData = async (message: Message) => {
   return data
 }
 
-export const getVotingPower = async (chainId:number, account: string, poolAddresses: string[], block?: number) => {
-  const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
+export const getVotingPower = async (chainId: number, account: string, poolAddresses: string[], block?: number) => {
+  const blockNumber = block || (await simpleRpcProvider(chainId, "getVotingPower").getBlockNumber())
   const response = await fetch(`${SNAPSHOT_VOTING_API}/power`, {
     method: 'post',
     headers: {

@@ -42,7 +42,7 @@ const useGetTopPoolsByApr = (chainId: number, isIntersecting: boolean) => {
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
       setFetchStatus(FetchStatus.FETCHING)
-      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
+      const blockNumber = await simpleRpcProvider(chainId, "useGetTopPoolsByApr").getBlockNumber()
 
       try {
         await dispatch(fetchCakeVaultFees())

@@ -60,7 +60,7 @@ const getContract = (
   address: string,
   signer?: ethers.Signer | ethers.providers.Provider,
 ) => {
-  const signerOrProvider = signer ?? simpleRpcProvider(chainId)
+  const signerOrProvider = signer ?? simpleRpcProvider(chainId, `getContract, ${address}!`)
   return new ethers.Contract(address, abi, signerOrProvider)
 }
 

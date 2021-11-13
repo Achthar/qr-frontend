@@ -44,7 +44,7 @@ export const fetchUserBalances = async (chainId, account) => {
   )
 
   // BNB pools
-  const bnbBalance = await simpleRpcProvider(chainId).getBalance(account)
+  const bnbBalance = await simpleRpcProvider(chainId, "fetchUserBalances").getBalance(account)
   const bnbBalances = bnbPools.reduce(
     (acc, pool) => ({ ...acc, [pool.sousId]: new BigNumber(bnbBalance.toString()).toJSON() }),
     {},

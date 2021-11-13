@@ -1,4 +1,4 @@
-import { ChainId, Token } from '@requiemswap/sdk'
+import { ChainId, Token, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
 import { chain } from 'lodash'
 
 export const WETH = {
@@ -16,6 +16,10 @@ export const WETH = {
     'WBNB',
     'Wrapped BNB'
   )
+}
+
+export const STABLE_POOL_LP = {
+  [ChainId.AVAX_TESTNET]: new Token(43113, STABLE_POOL_LP_ADDRESS[43113], 18, 'RSLP', 'Requiem Stable LP')
 }
 
 export const REQT: { [chainId: number]: Token } = {

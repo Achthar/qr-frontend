@@ -37,7 +37,7 @@ const useGetVotingPower = (chainId?: number, block?: number, isActive = true): S
       setIsLoading(true)
 
       try {
-        const blockNumber = block || (await simpleRpcProvider(chainId).getBlockNumber())
+        const blockNumber = block || (await simpleRpcProvider(chainId, "useGetVotingPower").getBlockNumber())
         const eligiblePools = await getActivePools(blockNumber)
         const poolAddresses = eligiblePools.map(({ contractAddress }) => getAddress(chainId, contractAddress))
         const {

@@ -24,7 +24,7 @@ export const useFetchPublicPoolsData = () => {
 
   useEffect(() => {
     const fetchPoolsPublicData = async () => {
-      const blockNumber = await simpleRpcProvider(chainId).getBlockNumber()
+      const blockNumber = await simpleRpcProvider(chainId, "useFetchPublicPoolsData").getBlockNumber()
       dispatch(fetchPoolsPublicDataAsync(chainId, blockNumber))
     }
 

@@ -48,7 +48,7 @@ import Page from '../Page'
 export default function AddStableLiquidity({
   history,
 }: RouteComponentProps<{ stable: string }>) {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React("AL")
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
 
@@ -99,7 +99,7 @@ export default function AddStableLiquidity({
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
     stablesError,
-  } = useDerivedMintStablesInfo(stablePool, stablePoolState)
+  } = useDerivedMintStablesInfo(stablePool, stablePoolState, account)
 
   const formattedStablesAmounts = {
     [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],
@@ -153,6 +153,19 @@ export default function AddStableLiquidity({
     return {
       ...accumulator,
       [field]: maxAmountsStables[field]?.equalTo(parsedStablesAmounts[field] ?? '0'),
+    }
+  }, {})
+
+
+  const balances: { [address: string]: TokenAmount } = [
+    StablesField.CURRENCY_1,
+    StablesField.CURRENCY_2,
+    StablesField.CURRENCY_3,
+    StablesField.CURRENCY_4,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [stablesCurrencyBalances[field]?.token.address]: stablesCurrencyBalances[field],
     }
   }, {})
 
@@ -281,6 +294,8 @@ export default function AddStableLiquidity({
                 }}
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_1]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][0]}
+                balances={balances}
+                account={account}
                 id="add-liquidity-input-token1"
               />
 
@@ -311,6 +326,8 @@ export default function AddStableLiquidity({
                 }}
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_2]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][1]}
+                balances={balances}
+                account={account}
                 id="add-liquidity-input-token2"
               />
               {account && (approval2 !== ApprovalState.APPROVED && (
@@ -337,6 +354,8 @@ export default function AddStableLiquidity({
                 }}
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_3]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][2]}
+                balances={balances}
+                account={account}
                 id="add-liquidity-input-token3"
               />
               {account && (approval3 !== ApprovalState.APPROVED && (
@@ -363,6 +382,8 @@ export default function AddStableLiquidity({
                 }}
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_4]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][3]}
+                balances={balances}
+                account={account}
                 id="add-liquidity-input-token4"
               />
               {account && (approval4 !== ApprovalState.APPROVED && (

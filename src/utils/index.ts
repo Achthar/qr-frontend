@@ -107,6 +107,7 @@ export function getAggregatorContract(chainId: number, library: Web3Provider, ac
 
 export function getStableRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = StablesRouter
+  console.log("getStableRouterContract")
   return getContract(STABLE_POOL_ADDRESS[chainId], ABI, library, account)
 }
 
