@@ -26,6 +26,8 @@ import {
   Tag,
   AddIcon,
   ArrowBackIcon,
+  Box,
+  ChevronLeftIcon
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
@@ -294,9 +296,9 @@ export default function AddLiquidity({
     (currencyA_: Currency) => {
       const newCurrencyIdA = currencyId(chainId, currencyA_)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/add/${currencyIdB}/${currencyIdA}`)
+        history.push(`/addV2/${currencyIdB}/${currencyIdA}`)
       } else {
-        history.push(`/add/${newCurrencyIdA}/${currencyIdB}`)
+        history.push(`/addV2/${newCurrencyIdA}/${currencyIdB}`)
       }
     },
     [chainId, currencyIdB, history, currencyIdA],
@@ -306,12 +308,12 @@ export default function AddLiquidity({
       const newCurrencyIdB = currencyId(chainId, currencyB_)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/add/${currencyIdB}/${newCurrencyIdB}`)
+          history.push(`/addV2/${currencyIdB}/${newCurrencyIdB}`)
         } else {
-          history.push(`/add/${newCurrencyIdB}`)
+          history.push(`/addV2/${newCurrencyIdB}`)
         }
       } else {
-        history.push(`/add/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
+        history.push(`/addV2/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
       }
     },
     [chainId, currencyIdA, history, currencyIdB],
@@ -349,16 +351,6 @@ export default function AddLiquidity({
 
   const [liquidityState, setLiquidityState] = useState<LiquidityState>(LiquidityState.STANDARD)
   const handleClick = (newIndex: LiquidityState) => setLiquidityState(newIndex)
-
-  const LiquidityStateButtonWrapper = styled.div`
-    margin-bottom: 20px;
-  `
-  const StablesInputWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: right;
-    padding: 1px;
-  `
 
   return (
     <Page>
@@ -410,33 +402,71 @@ export default function AddLiquidity({
                 </Message>
               </ColumnCenter>
             )}
-            <CurrencyInputPanel
-              value={formattedAmounts[Field.CURRENCY_A]}
-              onUserInput={onFieldAInput}
-              onMax={() => {
-                onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-              }}
-              onCurrencySelect={handleCurrencyASelect}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-              currency={currencies[Field.CURRENCY_A]}
-              id="add-liquidity-input-tokena"
-              showCommonBases
-            />
+            <Box>
+              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
+                <span>
+                  <CurrencyInputPanel
+                    borderRadius='5px'
+                    width='300px'
+                    value={formattedAmounts[Field.CURRENCY_A]}
+                    onUserInput={onFieldAInput}
+                    onMax={() => {
+                      onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                    }}
+                    onCurrencySelect={handleCurrencyASelect}
+                    showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                    currency={currencies[Field.CURRENCY_A]}
+                    id="add-liquidity-input-tokena"
+                    showCommonBases
+                  />
+                </span>
+                <ChevronLeftIcon width="16px" />
+                <span>
+                  <PercentageInputPanel
+                    borderRadius='5px'
+                    width='30%'
+                    value='50'
+                    onUserInput={(_: string) => null}
+                    label={`Weight ${currencies[Field.CURRENCY_A]?.symbol ?? ''}`}
+                    id='weight0'
+                    onHover
+                  />
+                </span>
+              </Flex>
+            </Box>
             <ColumnCenter>
               <AddIcon width="16px" />
             </ColumnCenter>
-            <CurrencyInputPanel
-              value={formattedAmounts[Field.CURRENCY_B]}
-              onUserInput={onFieldBInput}
-              onCurrencySelect={handleCurrencyBSelect}
-              onMax={() => {
-                onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-              }}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-              currency={currencies[Field.CURRENCY_B]}
-              id="add-liquidity-input-tokenb"
-              showCommonBases
-            />
+            <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' >
+              <span>
+                <CurrencyInputPanel
+                  borderRadius='5px'
+                  width='300px'
+                  value={formattedAmounts[Field.CURRENCY_B]}
+                  onUserInput={onFieldBInput}
+                  onCurrencySelect={handleCurrencyBSelect}
+                  onMax={() => {
+                    onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+                  }}
+                  showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+                  currency={currencies[Field.CURRENCY_B]}
+                  id="add-liquidity-input-tokenb"
+                  showCommonBases
+                />
+              </span>
+              <ChevronLeftIcon width="16px" />
+              <span>
+                <PercentageInputPanel
+                  borderRadius='5px'
+                  width='30%'
+                  value='50'
+                  onUserInput={(_: string) => null}
+                  label={`Weight ${currencies[Field.CURRENCY_B]?.symbol ?? ''}`}
+                  id='weight0'
+                  onHover
+                />
+              </span>
+            </Flex>
             {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
               <>
                 <LightCard padding="0px" borderRadius="20px">

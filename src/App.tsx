@@ -27,6 +27,13 @@ import {
   RedirectOldAddLiquidityPathStructure,
   RedirectToAddLiquidity,
 } from './views/AddLiquidity/redirects'
+
+import {
+  RedirectDuplicateTokenIdsV2,
+  RedirectOldAddLiquidityPathStructureV2,
+  RedirectToAddLiquidityV2,
+} from './views/AddLiquidityV2/redirects'
+
 import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidity/redirects'
 import { RedirectPathToSwapOnly, RedirectToSwap } from './views/Swap/redirects'
 import CustomMenu from './CustomNav'
@@ -37,9 +44,11 @@ import GlobalStyle from './style/Global'
 // Route-based code splitting
 // Only pool is included in the main bundle because of it's the most visited page
 const Home = lazy(() => import('./views/Home'))
+const Balances = lazy(() => import('./views/Balances'))
 const Farms = lazy(() => import('./views/Farms'))
 const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
+const AddLiquidityV2 = lazy(() => import('./views/AddLiquidityV2'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
@@ -91,7 +100,11 @@ const App: React.FC = () => {
           <Route exact strict path="/find" component={PoolFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
+          <Route exact path="/balances" component={Balances} />
           <Route exact path="/add" component={AddLiquidity} />
+          <Route exact path="/addV2" component={AddLiquidityV2} />
+          <Route exact path="/addV2/:currencyIdA" component={RedirectOldAddLiquidityPathStructureV2} />
+          <Route exact path="/addV2/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIdsV2} />
           <Route exact path="/add/stable" component={AddStableLiquidity} />
           <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
           <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />

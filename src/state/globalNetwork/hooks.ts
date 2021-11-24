@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from '../index'
-import { setChainId } from './actions'
+import { setChainId, setAccount } from './actions'
 
 export function useNetworkState(): AppState['globalNetwork'] {
   return useSelector<AppState, AppState['globalNetwork']>((state) => state.globalNetwork)
@@ -9,6 +9,7 @@ export function useNetworkState(): AppState['globalNetwork'] {
 
 export function useGlobalNetworkActionHandlers(): {
   onChainChange: (chainId: number) => void
+  onAccountChange: (account: string) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -18,9 +19,15 @@ export function useGlobalNetworkActionHandlers(): {
     },
     [dispatch],
   )
-
+  const onAccountChange = useCallback(
+    (account: string) => {
+      dispatch(setAccount({ account }))
+    },
+    [dispatch],
+  )
   return {
-    onChainChange
+    onChainChange,
+    onAccountChange
   }
 }
 

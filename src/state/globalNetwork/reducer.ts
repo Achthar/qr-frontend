@@ -1,12 +1,14 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { setChainId } from './actions'
+import { setChainId, setAccount } from './actions'
 
 export interface GlobalNetworkState {
-  readonly chainId: number
+  readonly chainId: number,
+  readonly account: string
 }
 
 const initialState: GlobalNetworkState = {
-  chainId: 43113
+  chainId: 43113,
+  account: undefined
 }
 
 
@@ -16,6 +18,11 @@ export default createReducer<GlobalNetworkState>(initialState, (builder) =>
       return {
         ...state,
         chainId,
+      }
+    }).addCase(setAccount, (state, { payload: { account } }) => {
+      return {
+        ...state,
+        account,
       }
     }),
 )

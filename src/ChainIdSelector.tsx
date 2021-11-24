@@ -219,9 +219,9 @@ const ExplorerText = ({ chainId }: { chainId: SupportedL2ChainId }) => {
 
 const ChainIdSelector = () => {
   // global network chainId
-  const {onChainChange} =useGlobalNetworkActionHandlers()
+  const {onChainChange, onAccountChange} =useGlobalNetworkActionHandlers()
 
-  const { chainId, library } = useWeb3React()
+  const { chainId, library, account } = useWeb3React()
 
   const open = useModalOpen(ApplicationModal.NETWORK_SELECTOR)
   const toggle = useToggleModal(ApplicationModal.NETWORK_SELECTOR)
@@ -239,6 +239,7 @@ const ChainIdSelector = () => {
     const handleRowClick = () => {
       switchToNetwork({ library, chainId: targetChain })
       onChainChange(chainId)
+      onAccountChange(account)
       // useToggleModal()
       toggle()
       //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)

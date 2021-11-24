@@ -30,20 +30,23 @@ const LabelRow = styled.div`
   line-height: 1rem;
   padding: 0.75rem 1rem 0 1rem;
 `
-const InputPanel = styled.div<{ hideInput?: boolean }>`
+const InputPanel = styled.div<{ hideInput?: boolean, width: string }>`
   display: flex;
   flex-flow: column nowrap;
   position: relative;
   border-radius: ${({ hideInput }) => (hideInput ? '8px' : '20px')};
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1;
+  width: ${(props) => props.width};
 `
-const Container = styled.div<{ hideInput: boolean }>`
-  border-radius: 16px;
+const Container = styled.div<{ hideInput: boolean, borderRadius: string }>`
+  border-radius: ${(props) => props.borderRadius};
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
 `
 interface CurrencyInputPanelProps {
+  borderRadius?: string
+  width?: string
   value: string
   onUserInput: (value: string) => void
   onMax?: () => void
@@ -60,6 +63,8 @@ interface CurrencyInputPanelProps {
   showCommonBases?: boolean
 }
 export default function CurrencyInputPanel({
+  borderRadius = '16px',
+  width = '100%',
   value,
   onUserInput,
   onMax,
@@ -90,8 +95,8 @@ export default function CurrencyInputPanel({
     />,
   )
   return (
-    <InputPanel id={id}>
-      <Container hideInput={hideInput}>
+    <InputPanel id={id} width={width} >
+      <Container hideInput={hideInput} borderRadius={borderRadius}>
         {!hideInput && (
           <LabelRow>
             <RowBetween>

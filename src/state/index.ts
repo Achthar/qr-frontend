@@ -4,10 +4,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import application from './application/reducer'
 import farmsReducer from './farms'
 import poolsReducer from './pools'
-import achievementsReducer from './achievements'
 import blockReducer from './block'
 import votingReducer from './voting'
-// import networkReducer from './globalNetwork/reducer'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
@@ -20,6 +18,7 @@ import lists from './lists/reducer'
 import burn from './burn/reducer'
 import burnStables from './burnStables/reducer'
 import multicall from './multicall/reducer'
+import userBalances from './userBalances/reducer'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 
@@ -28,11 +27,11 @@ const store = configureStore({
   reducer: {
     globalNetwork,
     application,
-    achievements: achievementsReducer,
     block: blockReducer,
     farms: farmsReducer,
     pools: poolsReducer,
     voting: votingReducer,
+    userBalances,
  
     // Exchange
     user,

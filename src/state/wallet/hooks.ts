@@ -111,9 +111,9 @@ export function useCurrencyBalances(
 
   const tokenBalances = useTokenBalances(account, tokens)
 
-  const containsBNB: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
+  const containsNetworkCcy: boolean = useMemo(() => currencies?.some((currency) => currency === NETWORK_CCY[chainId]) ?? false, [chainId, currencies])
 
-  const ethBalance = useNetworkCCYBalances(chainId, containsBNB ? [account] : [])
+  const ethBalance = useNetworkCCYBalances(chainId, containsNetworkCcy ? [account] : [])
 
   return useMemo(
     () =>

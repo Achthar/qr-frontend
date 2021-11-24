@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
-import useTotalSupply from 'hooks/useTotalSupply'
 import { BigNumber } from 'ethers'
 
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'

@@ -83,7 +83,7 @@ export default function Pool() {
         </Text>
       )
     }
-
+    console.log("POOLC")
     return (<Column>
       {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
         <FullStablesPositionCard
