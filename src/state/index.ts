@@ -14,6 +14,7 @@ import swapV3 from './swapV3/reducer'
 import mint from './mint/reducer'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
+import mintWeightedPair from './mintWeightedPair/reducer'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
 import burnStables from './burnStables/reducer'
@@ -40,6 +41,7 @@ const store = configureStore({
     swapV3,
     mint,
     mintStables,
+    mintWeightedPair,
     burn,
     burnStables,
     multicall,

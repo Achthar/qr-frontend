@@ -8,10 +8,11 @@ import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
-import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
+import { JSBI, Percent, Token, CurrencyAmount, Currency, ETHER, NETWORK_CCY, STABLE_POOL_ADDRESS, REQUIEM_PAIR_MANAGER } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
+import  RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -99,6 +100,13 @@ export function getRouterContract(chainId: number, library: Web3Provider, accoun
   const ABI = chainId === 43113 ? IRequiemRouter02AVAX : chainId === 8001 ? IRequiemRouter02 : IUniswapV2Router02ABI
   return getContract(ROUTER_ADDRESS[chainId], ABI, library, account)
 }
+
+// account is optional
+export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
+  const ABI = chainId === 43113 ? RequiemQPairManager : ''
+  return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
+}
+
 
 export function getAggregatorContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = chainId === 43113 ? Aggregator : Aggregator

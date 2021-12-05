@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
+import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Card } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { BigNumber } from 'ethers'
@@ -18,7 +18,9 @@ import {
   useUserBalancesState,
   getStables,
   getMainTokens,
-  getTokenAmounts
+  getTokenAmounts,
+  getStableAmounts,
+  getMainAmounts
 } from '../../state/userBalances/hooks'
 import { useTokenBalancesWithLoadingIndicator as xD } from '../../state/wallet/hooks'
 import {
@@ -34,6 +36,14 @@ import Page from '../Page'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
+`
+
+export const BodyWrapper = styled(Card)`
+  border-radius: 24px;
+  max-width: 2000px;
+  width: 100%;
+  z-index: 1;
+  align:center;
 `
 
 export default function Balances() {
@@ -58,9 +68,19 @@ export default function Balances() {
     getTokenAmounts(chainId, allBalances),
     [chainId, allBalances]
   )
-  console.log(amounts)
-  console.log(allBalances)
-  console.log(networkCcyBalance)
+  const stableAmounts = useMemo(() =>
+    getStableAmounts(chainId, allBalances),
+    [chainId, allBalances]
+  )
+
+  const mainAmounts = useMemo(() =>
+    getMainAmounts(chainId, allBalances),
+    [chainId, allBalances]
+  )
+
+  // console.log(amounts)
+  // console.log(allBalances)
+  // console.log(networkCcyBalance)
   const renderBody = () => {
     if (!account) {
       return (
@@ -76,16 +96,41 @@ export default function Balances() {
         </Text>
       )
     }
-    return (<Column>
-      {!fetchingAllBalances && amounts.map((tokenAmount, index) => (
-        <TokenPositionCard
-          tokenAmount={tokenAmount}
-          mb={index < Object.values(allBalances).length - 1 ? '16px' : 0}
-          gap='1px'
-          padding = '1px'
-          showSymbol
-        />))}
-    </Column>
+    return (
+      <div style={{ zIndex: 15 }}>
+        <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='10px' marginLeft='10px'>
+          <Column>
+            {!fetchingAllBalances && mainAmounts.map((tokenAmount, index) => (
+              <TokenPositionCard
+                tokenAmount={tokenAmount}
+                mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
+                gap='1px'
+                padding='0px'
+                showSymbol
+              />))}
+          </Column>
+          <Column>
+            {!fetchingAllBalances && stableAmounts.slice(0, 2).map((tokenAmount, index) => (
+              <TokenPositionCard
+                tokenAmount={tokenAmount}
+                mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
+                gap='1px'
+                padding='0px'
+                showSymbol
+              />))}
+          </Column>
+          <Column>
+            {!fetchingAllBalances && stableAmounts.slice(2, 4).map((tokenAmount, index) => (
+              <TokenPositionCard
+                tokenAmount={tokenAmount}
+                mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
+                gap='1px'
+                padding='0px'
+                showSymbol
+              />))}
+          </Column>
+        </Flex >
+      </div>
     )
   }
 
@@ -94,23 +139,20 @@ export default function Balances() {
 
 
   return (
-    <Page>
-      <AppBody>
-        <AppHeader title='Your Liquidity' subtitle='Remove liquidity to receive tokens back' />
-        <Body>
-          {renderBody()}
-          {account && (
+    <>
+      {/* <BodyWrapper> */}
+      {/* <AppHeader title='Your Liquidity' subtitle='Remove liquidity to receive tokens back' /> */}
+      {/* <Body> */}
+      {renderBody()}
+      {/* {account && (
             <Flex flexDirection="column" alignItems="center" mt="24px">
               <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to="/find">
                 Find other tokens
               </Button>
             </Flex>
-          )}
-        </Body>
-        <CardFooter style={{ textAlign: 'center' }}>
-          Add Liquidity
-        </CardFooter>
-      </AppBody>
-    </Page>
+          )} */}
+      {/* </Body> */}
+      {/* </BodyWrapper> */}
+    </>
   )
 }

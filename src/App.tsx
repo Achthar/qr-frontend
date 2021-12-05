@@ -38,13 +38,13 @@ import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidity/red
 import { RedirectPathToSwapOnly, RedirectToSwap } from './views/Swap/redirects'
 import CustomMenu from './CustomNav'
 import CustomNav from './CustomMenu'
-
+import Balances from './Balances'
 import GlobalStyle from './style/Global'
 
 // Route-based code splitting
 // Only pool is included in the main bundle because of it's the most visited page
 const Home = lazy(() => import('./views/Home'))
-const Balances = lazy(() => import('./views/Balances'))
+// const Balances = lazy(() => import('./views/Balances'))
 const Farms = lazy(() => import('./views/Farms'))
 const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
@@ -71,7 +71,7 @@ const App: React.FC = () => {
     <Router history={history}>
       <ResetCSS />
       <GlobalStyle />
-      <CustomMenu />
+      {/* <CustomMenu /> */}
       <video id="background-video" autoPlay loop muted poster="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractalStatic.jpg">
         <source src="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractal2.0.mp4" type="video/mp4" />
       </video>
@@ -100,7 +100,6 @@ const App: React.FC = () => {
           <Route exact strict path="/find" component={PoolFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
-          <Route exact path="/balances" component={Balances} />
           <Route exact path="/add" component={AddLiquidity} />
           <Route exact path="/addV2" component={AddLiquidityV2} />
           <Route exact path="/addV2/:currencyIdA" component={RedirectOldAddLiquidityPathStructureV2} />
@@ -122,6 +121,7 @@ const App: React.FC = () => {
           {/* 404 */}
           <Route component={NotFound} />
         </Switch>
+        <Balances />
         {/* </Web3ReactManager> */}
         <CustomNav />
       </SuspenseWithChunkError>

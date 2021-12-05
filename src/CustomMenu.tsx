@@ -3,6 +3,7 @@ import React from 'react'
 import UserMenu from 'components/Menu/UserMenu'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import ChainIdSelector from 'ChainIdSelector'
+import CustomNav from 'CustomNav'
 
 const CustomMenu: React.FC = () => {
   const { t } = useTranslation()
@@ -21,6 +22,9 @@ const CustomMenu: React.FC = () => {
         paddingRight: 15,
       }}
     >
+      <div style={{ marginRight: 10 }}>
+        <CustomNav />
+      </div>
       <GlobalSettings />
       <div style={{ marginRight: 10 }}>
         <ChainIdSelector />

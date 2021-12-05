@@ -77,6 +77,17 @@ export function getTokenAmounts(chainId: number, balances: { [address: string]: 
   return [...[WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId]], ...STABLECOINS[chainId]].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
 
 }
+
+export function getStableAmounts(chainId: number, balances: { [address: string]: string }) {
+  return STABLECOINS[chainId].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
+
+}
+
+export function getMainAmounts(chainId: number, balances: { [address: string]: string }) {
+  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId]].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
+
+}
+
 /**
  * Returns a map of the given addresses to their eventually consistent Network CCy balances.
  */

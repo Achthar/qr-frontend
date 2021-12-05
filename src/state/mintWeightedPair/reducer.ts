@@ -1,45 +1,82 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { Field, resetMintState, typeInput } from './actions'
+import { WeightedField, resetMintState, typeInput, typeInputWeight, typeInputFee } from './actions'
 
-export interface MintState {
-  readonly independentField: Field
+export interface MintWeightedPairState {
+  readonly independentField: WeightedField
   readonly typedValue: string
   readonly otherTypedValue: string // for the case when there's no liquidity
+  readonly independentWeightField: WeightedField
+  readonly typedWeight: string
+  readonly typedFee:string
 }
 
-// const initialState: MintState = {
-//   independentField: Field.CURRENCY_A,
-//   typedValue: '',
-//   otherTypedValue: '',
-// }
+const initialState: MintWeightedPairState = {
+  independentField: WeightedField.CURRENCY_A,
+  typedValue: '',
+  otherTypedValue: '',
+  independentWeightField: WeightedField.WEIGHT_A,
+  typedWeight: '50',
+  typedFee: '30'
+}
 
-// export default createReducer<MintState>(initialState, (builder) =>
-//   builder
-//     .addCase(resetMintState, () => initialState)
-//     .addCase(typeInput, (state, { payload: { field, typedValue, noLiquidity } }) => {
-//       if (noLiquidity) {
-//         // they're typing into the field they've last typed in
-//         if (field === state.independentField) {
-//           return {
-//             ...state,
-//             independentField: field,
-//             typedValue,
-//           }
-//         }
-//         // they're typing into a new field, store the other value
+export default createReducer<MintWeightedPairState>(initialState, (builder) =>
+  builder
+    .addCase(resetMintState, () => initialState)
+    .addCase(typeInput, (state, { payload: { field, typedValue, noLiquidity } }) => {
+      if (noLiquidity) {
+        // they're typing into the field they've last typed in
+        if (field === state.independentField) {
+          return {
+            ...state,
+            independentField: field,
+            typedValue,
+          }
+        }
+        // they're typing into a new field, store the other value
 
-//         return {
-//           ...state,
-//           independentField: field,
-//           typedValue,
-//           otherTypedValue: state.typedValue,
-//         }
-//       }
-//       return {
-//         ...state,
-//         independentField: field,
-//         typedValue,
-//         otherTypedValue: '',
-//       }
-//     }),
-// )
+        return {
+          ...state,
+          independentField: field,
+          typedValue,
+          otherTypedValue: state.typedValue,
+        }
+      }
+      return {
+        ...state,
+        independentField: field,
+        typedValue,
+        otherTypedValue: '',
+      }
+    }).addCase(typeInputWeight, (state, { payload: { field, typedValue, noLiquidity } }) => {
+      if (noLiquidity) {
+        // they're typing into the field they've last typed in
+        if (field === state.independentWeightField) {
+          return {
+            ...state,
+            independentWeightField: field,
+            typedWeight: typedValue,
+          }
+        }
+        // they're typing into a new field, store the other value
+
+        return {
+          ...state,
+          independentWeightField: field,
+          typedWeight: typedValue,
+          otherTypedValue: state.typedValue,
+        }
+      }
+      return {
+        ...state,
+        independentWeightField: field,
+        typedWeight: typedValue,
+        otherTypedValue: '',
+      }
+    }).addCase(typeInputFee, (state, { payload: { typedValue } }) => {
+        // just the Fee input
+        return {
+          ...state,
+          typedFee: typedValue,
+        }
+    }),
+)

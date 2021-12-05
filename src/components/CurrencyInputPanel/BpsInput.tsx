@@ -40,7 +40,7 @@ const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: s
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
 
-export const PercentageInput = React.memo(function InnerInput({
+export const Input = React.memo(function InnerInput({
   value,
   onUserInput,
   placeholder,
@@ -70,18 +70,18 @@ export const PercentageInput = React.memo(function InnerInput({
       }}
       // universal input options
       inputMode="decimal"
-      title='Percentage'
+      title={t('Fee in Bps')}
       autoComplete="off"
       autoCorrect="off"
       // text-specific options
       type="text"
       pattern="^[0-9]*[.,]?[0-9]*$"
-      placeholder={placeholder || '50'}
+      placeholder={placeholder || '0.0'}
       minLength={1}
-      maxLength={2}
+      maxLength={4}
       spellCheck="false"
     />
   )
 })
 
-export default PercentageInput
+export default Input
