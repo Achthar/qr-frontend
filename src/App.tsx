@@ -52,6 +52,7 @@ const AddLiquidityV2 = lazy(() => import('./views/AddLiquidityV2'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
+const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
 const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
 const RemoveStableLiquidity = lazy(() => import('./views/RemoveStableLiquidity'))
 
@@ -98,6 +99,7 @@ const App: React.FC = () => {
           <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
           <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
           <Route exact strict path="/find" component={PoolFinder} />
+          <Route exact strict path="/findV2" component={WeightedPairFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/add" component={AddLiquidity} />

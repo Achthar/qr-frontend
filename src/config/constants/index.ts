@@ -28,7 +28,7 @@ export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
   [ChainId.MATIC_TESTNET]: '0x4e8848da06E40E866b82f6b52417494936c9509b'
 }
 
-export const AGGREGATOR_ADDRESS ={
+export const AGGREGATOR_ADDRESS = {
   43113: '0x5726fa73f24Fac131c44282e17917A6a13C8307e'
 }
 
@@ -259,6 +259,13 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
   ],
 }
 
+// tokenA, tokenB, weightA, fee
+export const PINNED_WEIGHTED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token, number, number][] } = {
+  [ChainId.AVAX_TESTNET]: [
+    [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], REQT[ChainId.AVAX_TESTNET], 20, 25],
+  ],
+}
+
 export const NetworkContextName = 'NETWORK'
 
 // default allowed slippage, in bips
@@ -303,3 +310,7 @@ export const BLOCKED_ADDRESSES: string[] = [
 export { farmList as farmsConfig } from './farms'
 export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'
+
+// data for weighted pools
+export const STANDARD_FEES =  [5, 10, 15, 20, 25, 30, 35]
+export const STANDARD_WEIGHTS =  [10, 20, 30, 40, 50, 60, 70, 80]

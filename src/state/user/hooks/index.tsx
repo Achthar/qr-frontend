@@ -1,13 +1,14 @@
-import { /* ChainId, */ Pair, Token } from '@requiemswap/sdk'
+import { /* ChainId, */ Pair, Token, WeightedPair } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from 'config/constants'
+import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
 import { AppDispatch, AppState } from '../../index'
 import {
   addSerializedPair,
+  addSerializedWeightedPair,
   addSerializedToken,
   FarmStakedOnly,
   muteAudio,
@@ -21,6 +22,7 @@ import {
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
   updateGasPrice,
+  SerializedWeightedPair
 } from '../actions'
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 import { ChainId } from '../../../config/index'
@@ -264,6 +266,92 @@ export function useTrackedTokenPairs(): [Token, Token][] {
       const key = sorted ? `${tokenA.address}:${tokenB.address}` : `${tokenB.address}:${tokenA.address}`
       if (memo[key]) return memo
       memo[key] = sorted ? [tokenA, tokenB] : [tokenB, tokenA]
+      return memo
+    }, {})
+
+    return Object.keys(keyed).map((key) => keyed[key])
+  }, [combinedList])
+}
+
+
+function serializeWeightedPair(weightedPair: WeightedPair): SerializedWeightedPair {
+  return {
+    token0: serializeToken(weightedPair.token0),
+    token1: serializeToken(weightedPair.token1),
+    weight0: Number(weightedPair.weight0.toString()),
+    fee: Number(weightedPair.fee0.toString())
+  }
+}
+
+export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
+  const dispatch = useDispatch<AppDispatch>()
+
+  return useCallback(
+    (pair: WeightedPair) => {
+      dispatch(addSerializedWeightedPair({ serializedWeightedPair: serializeWeightedPair(pair) }))
+    },
+    [dispatch],
+  )
+}
+
+/**
+ * Returns all the pairs of tokens that are tracked by the user for the current chain ID.
+ */
+ export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][] {
+  const { chainId } = useNetworkState()
+  const tokens = useAllTokens()
+
+  // pinned pairs
+  const pinnedPairs = useMemo(() => (chainId ? PINNED_WEIGHTED_PAIRS[chainId] ?? [] : []), [chainId])
+  // pairs for every token against every base
+  const generatedPairs: [Token, Token, number, number][] = useMemo(
+    () =>
+      chainId
+        ? flatMap(Object.keys(tokens), (tokenAddress) => {
+          const token = tokens[tokenAddress]
+          // for each token on the current chain,
+          return (
+            // loop though all bases on the current chain
+            (BASES_TO_TRACK_LIQUIDITY_FOR[chainId] ?? [])
+              // to construct pairs of the given token with each base
+              .map((base) => {
+                if (base.address === token.address) {
+                  return null
+                }
+                return [base, token]
+              })
+              .filter((p): p is [Token, Token, 50, 20] => p !== null)
+          )
+        })
+        : [],
+    [tokens, chainId],
+  )
+
+  // pairs saved by users
+  const savedSerializedPairs = useSelector<AppState, AppState['user']['weightedPairs']>(({ user: { weightedPairs } }) => weightedPairs)
+
+  const userPairs: [Token, Token, number, number][] = useMemo(() => {
+    if (!chainId || !savedSerializedPairs) return []
+    const forChain = savedSerializedPairs[chainId]
+    if (!forChain) return []
+
+    return Object.keys(forChain).map((pairId) => {
+      return [deserializeToken(forChain[pairId].token0), deserializeToken(forChain[pairId].token1),forChain[pairId].weight0, forChain[pairId].fee ]
+    })
+  }, [savedSerializedPairs, chainId])
+
+  const combinedList = useMemo(
+    () => userPairs.concat(generatedPairs).concat(pinnedPairs),
+    [generatedPairs, pinnedPairs, userPairs],
+  )
+
+  return useMemo(() => {
+    // dedupes pairs of tokens in the combined list
+    const keyed = combinedList.reduce<{ [key: string]: [Token, Token, number, number] }>((memo, [tokenA, tokenB, weightA, fee]) => {
+      const sorted = tokenA.sortsBefore(tokenB)
+      const key = sorted ? `${tokenA.address}-${weightA}:${tokenB.address}-${fee}` : `${tokenB.address}-${100-weightA}:${tokenA.address}${fee}`
+      if (memo[key]) return memo
+      memo[key] = sorted ? [tokenA, tokenB, weightA, fee] : [tokenB, tokenA, 100 - weightA, fee]
       return memo
     }, {})
 

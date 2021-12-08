@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import {
@@ -11,6 +11,7 @@ import {
   WRAPPED_NETWORK_TOKENS,
   STABLE_POOL_ADDRESS,
   STABLES_INDEX_MAP,
+  REQUIEM_PAIR_MANAGER
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -26,8 +27,9 @@ import {
   Tag,
   AddIcon,
   ArrowBackIcon,
-  Box,
-  ChevronLeftIcon
+  ChevronLeftIcon,
+  ArrowUpIcon,
+  Box
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
@@ -38,6 +40,7 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { STANDARD_FEES, STANDARD_WEIGHTS } from 'config/constants'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -49,24 +52,34 @@ import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPai
 import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { LinkStyledButton } from 'theme'
-import { ROUTER_ADDRESS } from 'config/constants'
 import { PairState } from 'hooks/usePairs'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
-import { WeightedPairState } from 'hooks/useWeightedPairs'
+import { WeightedPairState, useWeightedPairsExist } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
+import { weightedPairAddresses } from 'utils/weightedPairAddresses'
 import Dots from 'components/Loader/Dots'
 import { currencyId } from 'utils/currencyId'
 import ConfirmAddModalBottom from './ConfirmAddModalBottom'
 import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
+
+const StyledButton = styled(Button)`
+  background-color: ${({ theme }) => theme.colors.input};
+  color: ${({ theme }) => theme.colors.text};
+  box-shadow: none;
+  border-radius: 16px;
+  width: 80%;
+  align: right;
+`
+
 
 export default function AddLiquidity({
   match: {
@@ -107,7 +120,13 @@ export default function AddLiquidity({
     fee
   } = useDerivedMintWeightedPairInfo(currencyA ?? undefined, currencyB ?? undefined)
 
-  const { onFieldAInput, onFieldBInput, onWeightAInput, onWeightBInput, onFeeInput } = useMintWeightedPairActionHandlers(noLiquidity)
+  const {
+    onFieldAInput,
+    onFieldBInput,
+    onWeightAInput,
+    onWeightBInput,
+    onFeeInput
+  } = useMintWeightedPairActionHandlers(noLiquidity)
 
   const isValid = !error
 
@@ -145,22 +164,23 @@ export default function AddLiquidity({
     },
     {},
   )
-
+  console.log("NL", noLiquidity)
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     chainId,
     parsedAmounts[WeightedField.CURRENCY_A],
-    ROUTER_ADDRESS[chainId],
+    REQUIEM_PAIR_MANAGER[chainId],
   )
   const [approvalB, approveBCallback] = useApproveCallback(
     chainId,
     parsedAmounts[WeightedField.CURRENCY_B],
-    ROUTER_ADDRESS[chainId],
+    REQUIEM_PAIR_MANAGER[chainId],
   )
 
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
+
     if (!chainId || !library || !account) return
     const pairManager = getPairManagerContract(chainId, library, account)
 
@@ -178,33 +198,69 @@ export default function AddLiquidity({
     let method: (...args: any) => Promise<TransactionResponse>
     let args: Array<string | string[] | number>
     let value: BigNumber | null
-    if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
-      const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
-      estimate = pairManager.estimateGas.addLiquidityETH
-      method = pairManager.addLiquidityETH
-      args = [
-        wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
-        (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
-        amountsMin[tokenBIsETH ? WeightedField.CURRENCY_A : WeightedField.CURRENCY_B].toString(), // token min
-        amountsMin[tokenBIsETH ? WeightedField.CURRENCY_B : WeightedField.CURRENCY_A].toString(), // eth min
-        account,
-        deadline.toHexString(),
-      ]
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
-    } else {
-      estimate = pairManager.estimateGas.addLiquidity
-      method = pairManager.addLiquidity
-      args = [
-        wrappedCurrency(currencyA, chainId)?.address ?? '',
-        wrappedCurrency(currencyB, chainId)?.address ?? '',
-        parsedAmountA.raw.toString(),
-        parsedAmountB.raw.toString(),
-        amountsMin[WeightedField.CURRENCY_A].toString(),
-        amountsMin[WeightedField.CURRENCY_B].toString(),
-        account,
-        deadline.toHexString(),
-      ]
-      value = null
+
+    // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
+    if (!noLiquidity) {
+      // case of network CCY
+      if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
+        const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
+        estimate = pairManager.estimateGas.addLiquidityETH
+        method = pairManager.addLiquidityETH
+        args = [
+          weightedPair.liquidityToken.address ?? '',
+          wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
+          (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
+          amountsMin[tokenBIsETH ? WeightedField.CURRENCY_A : WeightedField.CURRENCY_B].toString(), // token min
+          amountsMin[tokenBIsETH ? WeightedField.CURRENCY_B : WeightedField.CURRENCY_A].toString(), // eth min
+          account,
+          deadline.toHexString(),
+        ]
+        value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
+      } else {
+        estimate = pairManager.estimateGas.addLiquidity
+        method = pairManager.addLiquidity
+        args = [
+          weightedPair.liquidityToken.address ?? '',
+          wrappedCurrency(currencyA, chainId)?.address ?? '',
+          wrappedCurrency(currencyB, chainId)?.address ?? '',
+          parsedAmountA.raw.toString(),
+          parsedAmountB.raw.toString(),
+          amountsMin[WeightedField.CURRENCY_A].toString(),
+          amountsMin[WeightedField.CURRENCY_B].toString(),
+          account,
+          deadline.toHexString(),
+        ]
+        value = null
+      }
+    } // no liquidity available - create pair
+    else {
+      // eslint-disable-next-line no-lonely-if
+      if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
+        const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
+        estimate = pairManager.estimateGas.createPairETH
+        method = pairManager.createPairETH
+        args = [
+          wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
+          (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
+          weights[tokenBIsETH ? WeightedField.WEIGHT_B : WeightedField.WEIGHT_A], // weight Token A
+          fee, // fee
+          account
+        ]
+        value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
+      } else {
+        estimate = pairManager.estimateGas.createPair
+        method = pairManager.createPair
+        args = [
+          wrappedCurrency(currencyA, chainId)?.address ?? '',
+          wrappedCurrency(currencyB, chainId)?.address ?? '',
+          parsedAmountA.raw.toString(),
+          parsedAmountB.raw.toString(),
+          weights[WeightedField.WEIGHT_A], // weight Token A
+          fee, // fee
+          account
+        ]
+        value = null
+      }
     }
 
     setAttemptingTxn(true)
@@ -234,6 +290,22 @@ export default function AddLiquidity({
       })
   }
 
+
+  const addressesRange = useMemo(
+    () =>
+      currencyA && currencyB ? weightedPairAddresses(wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId), STANDARD_WEIGHTS, STANDARD_FEES) : {}
+    ,
+    [currencyA, currencyB, chainId]
+  )
+
+  const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'], 99999)
+
+
+  const constellation = useMemo(() =>
+    Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
+    [addressesRange, allConstellations]
+  )
+  console.log("CONST", constellation)
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -347,18 +419,9 @@ export default function AddLiquidity({
     'addLiquidityModal',
   )
 
-  enum LiquidityState {
-    STANDARD,
-    STABLE,
-  }
-
-  const [liquidityState, setLiquidityState] = useState<LiquidityState>(LiquidityState.STANDARD)
-  const handleClick = (newIndex: LiquidityState) => setLiquidityState(newIndex)
-
   return (
     <Page>
       <Row width='200px' height='50px'>
-        {/* <ButtonMenu activeIndex={liquidityState} onItemClick={handleClick} scale="sm" ml="24px"> */}
         <Button
           as={Link}
           to='/add'
@@ -377,7 +440,6 @@ export default function AddLiquidity({
         >
           Stables
         </Button>
-        {/* </ButtonMenu> */}
       </Row>
       <AppBody>
         <AppHeader
@@ -439,21 +501,21 @@ export default function AddLiquidity({
             </Box>
             <ColumnCenter>
               <Box>
-              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-                <span>
-                  <AddIcon width="16px" />
-                </span>
-                <span>
-                  <BpsInputPanel
-                    borderRadius='5px'
-                    width='5%'
-                    value={fee}
-                    onUserInput={onFeeInput}
-                    label='Fee'
-                    id='weight0'
-                    onHover
-                  />
-                </span>
+                <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
+                  <span>
+                    <AddIcon width="16px" />
+                  </span>
+                  <span>
+                    <BpsInputPanel
+                      borderRadius='5px'
+                      width='5%'
+                      value={fee}
+                      onUserInput={onFeeInput}
+                      label='Fee'
+                      id='weight0'
+                      onHover
+                    />
+                  </span>
                 </Flex>
               </Box>
             </ColumnCenter>
@@ -569,7 +631,42 @@ export default function AddLiquidity({
               </AutoColumn>
             )}
           </AutoColumn>
-
+          {constellation.length > 0 && (
+            <Box>
+              <AutoColumn gap="sm" justify="center">
+                <Text bold fontSize='15px'>
+                  Available constellations
+                </Text>
+                {constellation.map((id) => (
+                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
+                    <AutoColumn>
+                      <Text fontSize='13px' width='100px'>
+                        {`${currencyA.symbol} ${id.split('-', 2)[0]}%`}
+                      </Text>
+                      <Text fontSize='13px' width='100px'>
+                        {`${currencyB.symbol} ${100 - Number(id.split('-', 2)[0])}%`}
+                      </Text>
+                    </AutoColumn>
+                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
+                      {`Fee ${id.split('-', 2)[1]}Bps`}
+                    </Text>
+                    <StyledButton
+                      height='20px'
+                      endIcon={<ArrowUpIcon />}
+                      onClick={() => {
+                        onFeeInput(id.split('-', 2)[1])
+                        onWeightAInput(id.split('-', 2)[0])
+                      }}
+                    >
+                      <Text fontSize='15px'>
+                        Set
+                      </Text>
+                    </StyledButton>
+                  </Flex>
+                ))}
+              </AutoColumn>
+            </Box>
+          )}
         </CardBody>
       </AppBody>
       {!addIsUnsupported ? (

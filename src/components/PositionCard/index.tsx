@@ -141,7 +141,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false }: PositionCar
   )
 }
 
-export default function FullPositionCard({ pair, ...props }: PositionCardProps) {
+export default function FullWeightedPositionCard({ pair, ...props }: PositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pair.token0)

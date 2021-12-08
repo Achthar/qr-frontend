@@ -57,7 +57,7 @@ interface PercentageInputPanelProps {
   label?: string
   id: string
   onHover?: boolean
-
+  alignInput?: 'left'|'right'
 }
 
 export default function PercentageInputPanel({
@@ -67,7 +67,8 @@ export default function PercentageInputPanel({
   onUserInput,
   label,
   id,
-  onHover = false
+  onHover = false,
+  alignInput = 'left'
 }: PercentageInputPanelProps) {
   return (
     <InputPanel id={id} width={width}>
@@ -88,7 +89,7 @@ export default function PercentageInputPanel({
               onUserInput={(val) => {
                 onUserInput(val)
               }}
-              align="left"
+              align={alignInput}
             />
           </>
 

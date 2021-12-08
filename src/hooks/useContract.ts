@@ -19,12 +19,13 @@ import {
   getLotteryV2Contract,
   getFarmAuctionContract,
 } from 'utils/contractHelpers'
+import { Interface } from '@ethersproject/abi'
 import { getMulticallAddress } from 'utils/addressHelpers'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
-import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { WRAPPED_NETWORK_TOKENS, REQUIEM_WEIGHTED_PAIR_FACTORY } from '@requiemswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../config/abi/ens-public-resolver.json'
 import ENS_ABI from '../config/abi/ens-registrar.json'
@@ -35,6 +36,7 @@ import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 import stableLp_AVAX from '../config/abi/avax/IERC20.json'
+import weightedFactoryABI from '../config/abi/avax/RequiemWeightedFactory.json'
 import { getContract } from '../utils'
 import { ChainId } from '../config/index'
 
@@ -197,4 +199,8 @@ export function useMulticallContract(): Contract | null {
 export function useStableLPContract(stableLpAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   console.log("useStableLPContract")
   return useContract(stableLpAddress, stableLp_AVAX, withSignerIfPossible)
+}
+
+export function useWeightedFactoryContract(chainId:number): Contract | null {
+  return useContract(chainId ? REQUIEM_WEIGHTED_PAIR_FACTORY[chainId] : undefined, new Interface(weightedFactoryABI), false)
 }

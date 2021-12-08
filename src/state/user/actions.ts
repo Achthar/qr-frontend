@@ -13,6 +13,13 @@ export interface SerializedPair {
   token1: SerializedToken
 }
 
+export interface SerializedWeightedPair {
+  token0: SerializedToken
+  token1: SerializedToken
+  weight0: number
+  fee: number
+}
+
 export enum FarmStakedOnly {
   ON_FINISHED = 'onFinished',
   TRUE = 'true',
@@ -29,6 +36,7 @@ export const updateUserDeadline = createAction<{ userDeadline: number }>('user/u
 export const addSerializedToken = createAction<{ serializedToken: SerializedToken }>('user/addSerializedToken')
 export const removeSerializedToken = createAction<{ chainId: number; address: string }>('user/removeSerializedToken')
 export const addSerializedPair = createAction<{ serializedPair: SerializedPair }>('user/addSerializedPair')
+export const addSerializedWeightedPair = createAction<{ serializedWeightedPair: SerializedWeightedPair }>('user/addSerializedWeightedPair')
 export const removeSerializedPair =
   createAction<{ chainId: number; tokenAAddress: string; tokenBAddress: string }>('user/removeSerializedPair')
 

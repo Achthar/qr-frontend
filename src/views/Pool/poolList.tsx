@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
-import { Pair } from '@requiemswap/sdk'
+import { WeightedPair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
+import { BigNumber } from 'ethers'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
-import FullPositionCard from '../../components/PositionCard'
+import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator, useTokenBalance } from '../../state/wallet/hooks'
-import { usePairs } from '../../hooks/usePairs'
-import { useStablePool } from '../../hooks/useStablePool'
+import { useWeightedPairs } from '../../hooks/useWeightedPairs'
+import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
 import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
@@ -21,7 +22,7 @@ const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
 `
 
-export default function Pool() {
+export default function PoolList() {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -50,17 +51,22 @@ export default function Pool() {
     [tokenPairsWithLiquidityTokens, v2PairsBalances],
   )
 
-  const v2Pairs = usePairs(
+  const v2Pairs = useWeightedPairs(
     liquidityTokensWithBalances.map(({ tokens }) => tokens),
   )
   const v2IsLoading =
     fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some((V2Pair) => !V2Pair)
 
-  const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
+  const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is WeightedPair => Boolean(v2Pair))
 
   // stable pool starting here
   const [stablePoolState, stablePool] = useStablePool()
-  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, stablePool?.liquidityToken)
+
+  // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
+  const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
+    account ?? undefined,
+    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
+  )
 
   const renderBody = () => {
     if (!account) {
@@ -77,30 +83,32 @@ export default function Pool() {
         </Text>
       )
     }
-    if (userPoolBalance?.toBigNumber().gt(0) || allV2PairsWithLiquidity?.length > 0) {
-      return (<Column>
-        {userPoolBalance?.toBigNumber().gt(0) && (
-          <FullStablesPositionCard
-            userLpPoolBalance={userPoolBalance}
-            stablePool={stablePool}
-          />)}
-        {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
-          <FullPositionCard
-            // chainId={chainId}
-            key={v2Pair.liquidityToken.address}
-            pair={v2Pair}
-            mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
-          />)))}
-      </Column>)
-    }
+    return (<Column>
+      {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+        <FullStablesPositionCard
+          userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
+          stablePool={stablePool}
+          mb ='20px'
+        />)}
+      {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
+        <FullWeightedPositionCard
+          key={v2Pair.liquidityToken.address}
+          weightedPair={v2Pair}
+          mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
+        />)))}
 
-
-    return (
-      <Text color="textSubtle" textAlign="center">
-        {t('No liquidity found.')}
-      </Text>
+      {(userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().eq(0) && allV2PairsWithLiquidity?.length === 0) && (
+        <Text color="textSubtle" textAlign="center">
+          {t('No liquidity found.')}
+        </Text>
+      )}
+    </Column>
     )
   }
+
+
+
+
 
   return (
     <Page>

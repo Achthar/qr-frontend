@@ -3,10 +3,12 @@ import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../confi
 import { updateVersion } from '../global/actions'
 import {
   addSerializedPair,
+  addSerializedWeightedPair,
   addSerializedToken,
   removeSerializedPair,
   removeSerializedToken,
   SerializedPair,
+  SerializedWeightedPair,
   SerializedToken,
   updateUserExpertMode,
   updateUserSlippageTolerance,
@@ -52,6 +54,14 @@ export interface UserState {
     }
   }
 
+
+  weightedPairs: {
+    [chainId: number]: {
+      // keyed by token0Address:token1Address
+      [key: string]: SerializedWeightedPair
+    }
+  }
+
   timestamp: number
   audioPlay: boolean
   isDark: boolean
@@ -71,6 +81,7 @@ export const initialState: UserState = {
   userDeadline: DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},
+  weightedPairs:{},
   timestamp: currentTimestamp(),
   audioPlay: true,
   isDark: false,
@@ -138,7 +149,17 @@ export default createReducer(initialState, (builder) =>
       }
       state.timestamp = currentTimestamp()
     })
-    .addCase(removeSerializedPair, (state, { payload: { chainId, tokenAAddress, tokenBAddress } }) => {
+    .addCase(addSerializedWeightedPair, (state, { payload: { serializedWeightedPair } }) => {
+      if (
+        serializedWeightedPair.token0.chainId === serializedWeightedPair.token1.chainId &&
+        serializedWeightedPair.token0.address !== serializedWeightedPair.token1.address
+      ) {
+        const { chainId } = serializedWeightedPair.token0
+        state.pairs[chainId] = state.pairs[chainId] || {}
+        state.pairs[chainId][pairKey(serializedWeightedPair.token0.address, serializedWeightedPair.token1.address)] = serializedWeightedPair
+      }
+      state.timestamp = currentTimestamp()
+    }).addCase(removeSerializedPair, (state, { payload: { chainId, tokenAAddress, tokenBAddress } }) => {
       if (state.pairs[chainId]) {
         // just delete both keys if either exists
         delete state.pairs[chainId][pairKey(tokenAAddress, tokenBAddress)]
