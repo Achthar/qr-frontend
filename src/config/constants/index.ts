@@ -263,6 +263,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
 export const PINNED_WEIGHTED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token, number, number][] } = {
   [ChainId.AVAX_TESTNET]: [
     [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], REQT[ChainId.AVAX_TESTNET], 20, 25],
+    [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDC[ChainId.AVAX_TESTNET], 50, 10]
   ],
 }
 

@@ -6,6 +6,7 @@ import { getAddress } from 'utils/addressHelpers'
 import { useTranslation } from 'contexts/Localization'
 import { WrappedTokenInfo } from 'state/lists/hooks'
 import SwapWarningTokensConfig from 'config/constants/swapWarningTokens'
+import SafemoonWarning from './SafemoonWarning'
 import Acknowledgement from './Acknowledgement'
 
 const StyledModalContainer = styled(ModalContainer)`
@@ -50,19 +51,23 @@ const SwapWarningModal: React.FC<SwapWarningModalProps> = ({chainId, swapCurrenc
   usePreventModalOverlayClick()
 
   const TOKEN_WARNINGS = {
+    [getAddress(chainId, SwapWarningTokensConfig.safemoon.address)]: {
+      symbol: SwapWarningTokensConfig.safemoon.symbol,
+      component: <SafemoonWarning />,
+    },
   }
 
   const SWAP_WARNING = TOKEN_WARNINGS[swapCurrency.address]
 
   return (
     <StyledModalContainer minWidth="280px">
-      {/* <ModalHeader>
+      <ModalHeader>
         <Heading p="12px 24px">{t('Notice for trading %symbol%', { symbol: SWAP_WARNING.symbol })}</Heading>
-      </ModalHeader> */}
+      </ModalHeader>
       <ModalBody p="24px">
-        {/* <MessageContainer variant="warning" mb="24px">
+        <MessageContainer variant="warning" mb="24px">
           <Box>{SWAP_WARNING.component}</Box>
-        </MessageContainer> */}
+        </MessageContainer>
         <Acknowledgement handleContinueClick={onDismiss} />
       </ModalBody>
     </StyledModalContainer>

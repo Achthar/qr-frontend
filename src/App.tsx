@@ -19,14 +19,9 @@ import PageLoader from './components/Loader/PageLoader'
 import history from './routerHistory'
 // Views included in the main bundle
 import Pools from './views/Pools'
-import Swap from './views/Swap'
-import SwapV3 from './views/SwapV3'
-
-import {
-  RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
-  RedirectToAddLiquidity,
-} from './views/AddLiquidity/redirects'
+import Swap from './views/Swap' // weighted + stable
+import SwapV2 from './views/SwapV2' // uniswapV2
+import SwapV3 from './views/SwapV3' // uniswapv2 + stable
 
 import {
   RedirectDuplicateTokenIdsV2,
@@ -34,8 +29,14 @@ import {
   RedirectToAddLiquidityV2,
 } from './views/AddLiquidityV2/redirects'
 
-import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidity/redirects'
-import { RedirectPathToSwapOnly, RedirectToSwap } from './views/Swap/redirects'
+import {
+  RedirectDuplicateTokenIds,
+  RedirectOldAddLiquidityPathStructure,
+  RedirectToAddLiquidity,
+} from './views/AddLiquidity/redirects'
+
+import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidityV2/redirects'
+import { RedirectPathToSwapOnly, RedirectToSwap } from './views/SwapV2/redirects'
 import CustomMenu from './CustomNav'
 import CustomNav from './CustomMenu'
 import Balances from './Balances'
@@ -50,10 +51,11 @@ const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const AddLiquidityV2 = lazy(() => import('./views/AddLiquidityV2'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
-const Liquidity = lazy(() => import('./views/Pool'))
+const Liquidity = lazy(() => import('./views/Pool/poolList'))
+const LiquidityV2 = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
 const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
-const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
+const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidityV2'))
 const RemoveStableLiquidity = lazy(() => import('./views/RemoveStableLiquidity'))
 
 // This config is required for number formatting
@@ -94,13 +96,14 @@ const App: React.FC = () => {
               <Ifos />
             </Route> */}
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-          <Route exact strict path="/exchangeOld" component={Swap} />
-          <Route exact strict path="/exchange" component={SwapV3} />
+          <Route exact strict path="/exchangeOld" component={SwapV3} />
+          <Route exact strict path="/exchange" component={Swap} />
           <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
           <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
-          <Route exact strict path="/find" component={PoolFinder} />
-          <Route exact strict path="/findV2" component={WeightedPairFinder} />
+          <Route exact strict path="/findV2" component={PoolFinder} />
+          <Route exact strict path="/find" component={WeightedPairFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
+          <Route exact strict path="/liquidityV2" component={LiquidityV2} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/add" component={AddLiquidity} />
           <Route exact path="/addV2" component={AddLiquidityV2} />

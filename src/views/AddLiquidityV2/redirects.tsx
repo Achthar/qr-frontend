@@ -3,7 +3,7 @@ import { Redirect, RouteComponentProps } from 'react-router-dom'
 import AddLiquidity from './index'
 
 export function RedirectToAddLiquidityV2() {
-  return <Redirect to="/add/" />
+  return <Redirect to="/addV2/" />
 }
 
 const OLD_PATH_STRUCTURE = /^(0x[a-fA-F0-9]{40}|BNB)-(0x[a-fA-F0-9]{40}|BNB)$/

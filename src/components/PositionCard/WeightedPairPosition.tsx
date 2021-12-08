@@ -130,7 +130,7 @@ export function MinimalWeightedPositionCard({ weightedPair, showUnwrapped = fals
       ) : (
         <LightCard>
           <Text fontSize="14px" style={{ textAlign: 'center' }}>
-            <span role="img" aria-label="pancake-icon"/>
+            <span role="img" aria-label="pancake-icon" />
             {t(
               "By adding liquidity you'll earn 0.17% of all trades on this weightedPair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.",
             )}
@@ -176,7 +176,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
           <Flex alignItems="center" mb="4px">
             <DoubleCurrencyLogo chainId={chainId} currency0={currency0} currency1={currency1} size={20} />
             <Text bold ml="8px">
-              {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
+              {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${weightedPair.weight0}% ${currency0.symbol} + ${weightedPair?.weight1}% ${currency1.symbol} @ ${weightedPair.fee0.toString()}bps Fee`}
             </Text>
           </Flex>
           <Text fontSize="14px" color="textSubtle">

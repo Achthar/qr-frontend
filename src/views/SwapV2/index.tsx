@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CurrencyAmount, JSBI, Token, TradeV3 } from '@requiemswap/sdk'
+import { CurrencyAmount, JSBI, Token, Trade } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
@@ -11,13 +11,13 @@ import { getAddress } from 'utils/addressHelpers'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
 import Column, { AutoColumn } from '../../components/Layout/Column'
-import ConfirmSwapV3Modal from './components/ConfirmSwapV3Modal'
+import ConfirmSwapModal from './components/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { AutoRow, RowBetween } from '../../components/Layout/Row'
 import AdvancedSwapDetailsDropdown from './components/AdvancedSwapDetailsDropdown'
 import confirmPriceImpactWithoutFee from './components/confirmPriceImpactWithoutFee'
 import { ArrowWrapper, SwapCallbackError, Wrapper } from './components/styleds'
-import TradePrice from './components/TradeV3Price'
+import TradePrice from './components/TradePrice'
 import ImportTokenWarningModal from './components/ImportTokenWarningModal'
 import ProgressSteps from './components/ProgressSteps'
 import { AppHeader, AppBody } from '../../components/App'
@@ -26,19 +26,19 @@ import ConnectWalletButton from '../../components/ConnectWalletButton'
 import { INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency, useAllTokens } from '../../hooks/Tokens'
-import { ApprovalState, useApproveCallbackFromTradeV3 } from '../../hooks/useApproveCallback'
-import { useSwapV3Callback } from '../../hooks/useSwapV3Callback'
+import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
+import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
-import { Field } from '../../state/swapV3/actions'
+import { Field } from '../../state/swap/actions'
 import {
   useDefaultsFromURLSearch,
-  useDerivedSwapV3Info,
-  useSwapV3ActionHandlers,
-  useSwapV3State,
-} from '../../state/swapV3/hooks'
+  useDerivedSwapInfo,
+  useSwapActionHandlers,
+  useSwapState,
+} from '../../state/swap/hooks'
 import { useExpertModeManager, useUserSlippageTolerance, useUserSingleHopOnly } from '../../state/user/hooks'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
-import { computeTradeV3PriceBreakdown, warningSeverity } from '../../utils/pricesV3'
+import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import CircleLoader from '../../components/Loader/CircleLoader'
 import Page from '../Page'
 import SwapWarningModal from './components/SwapWarningModal'
@@ -49,7 +49,7 @@ const Label = styled(Text)`
   color: ${({ theme }) => theme.colors.secondary};
 `
 
-export default function SwapV3({ history }: RouteComponentProps) {
+export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
@@ -79,16 +79,14 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue, recipient } = useSwapV3State()
-
+  const { independentField, typedValue, recipient } = useSwapState()
   const {
-    v3Trade,
+    v2Trade,
     currencyBalances,
     parsedAmount,
     currencies,
     inputError: swapInputError,
-  } = useDerivedSwapV3Info(chainId)
-
+  } = useDerivedSwapInfo(chainId)
   const {
     wrapType,
     execute: onWrap,
@@ -96,7 +94,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
-  const trade = showWrap ? undefined : v3Trade
+  const trade = showWrap ? undefined : v2Trade
 
   const parsedAmounts = showWrap
     ? {
@@ -108,9 +106,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
       [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
     }
 
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapV3ActionHandlers(chainId)
-
-
+  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers(chainId)
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -128,8 +124,8 @@ export default function SwapV3({ history }: RouteComponentProps) {
   )
 
   // modal and loading
-  const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapV3State] = useState<{
-    tradeToConfirm: TradeV3 | undefined
+  const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
+    tradeToConfirm: Trade | undefined
     attemptingTxn: boolean
     swapErrorMessage: string | undefined
     txHash: string | undefined
@@ -155,7 +151,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTradeV3(chainId, trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallbackFromTrade(chainId, trade, allowedSlippage)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -171,9 +167,9 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(trade, allowedSlippage, recipient)
+  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage, recipient)
 
-  const { priceImpactWithoutFee } = computeTradeV3PriceBreakdown(trade)
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const [singleHopOnly] = useUserSingleHopOnly()
 
@@ -184,13 +180,13 @@ export default function SwapV3({ history }: RouteComponentProps) {
     if (!swapCallback) {
       return
     }
-    setSwapV3State({ attemptingTxn: true, tradeToConfirm, swapErrorMessage: undefined, txHash: undefined })
+    setSwapState({ attemptingTxn: true, tradeToConfirm, swapErrorMessage: undefined, txHash: undefined })
     swapCallback()
       .then((hash) => {
-        setSwapV3State({ attemptingTxn: false, tradeToConfirm, swapErrorMessage: undefined, txHash: hash })
+        setSwapState({ attemptingTxn: false, tradeToConfirm, swapErrorMessage: undefined, txHash: hash })
       })
       .catch((error: any) => {
-        setSwapV3State({
+        setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
           swapErrorMessage: error.message,
@@ -215,7 +211,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     !(priceImpactSeverity > 3 && !isExpertMode)
 
   const handleConfirmDismiss = useCallback(() => {
-    setSwapV3State({ tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
+    setSwapState({ tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.INPUT, '')
@@ -223,7 +219,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash])
 
   const handleAcceptChanges = useCallback(() => {
-    setSwapV3State({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn })
+    setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn })
   }, [attemptingTxn, swapErrorMessage, trade, txHash])
 
   // swap warning state
@@ -297,7 +293,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   }, [importTokensNotInDefault.length])
 
   const [onPresentConfirmModal] = useModal(
-    <ConfirmSwapV3Modal
+    <ConfirmSwapModal
       trade={trade}
       originalTrade={tradeToConfirm}
       onAcceptChanges={handleAcceptChanges}
@@ -311,7 +307,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     />,
     true,
     true,
-    'confirmSwapV3Modal',
+    'confirmSwapModal',
   )
 
   return (
@@ -445,7 +441,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
                     if (isExpertMode) {
                       handleSwap()
                     } else {
-                      setSwapV3State({
+                      setSwapState({
                         tradeToConfirm: trade,
                         attemptingTxn: false,
                         swapErrorMessage: undefined,
@@ -474,7 +470,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
                   if (isExpertMode) {
                     handleSwap()
                   } else {
-                    setSwapV3State({
+                    setSwapState({
                       tradeToConfirm: trade,
                       attemptingTxn: false,
                       swapErrorMessage: undefined,

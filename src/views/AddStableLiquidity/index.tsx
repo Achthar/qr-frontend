@@ -66,11 +66,6 @@ export default function AddStableLiquidity({
 
   const addTransaction = useTransactionAdder()
 
-  enum LiquidityState {
-    STANDARD,
-    STABLE,
-  }
-
   // const [liquidityState, setLiquidityState] = useState<LiquidityState>(LiquidityState.STABLE)
   // const handleClick = (newIndex: LiquidityState) => setLiquidityState(newIndex)
 

@@ -1,19 +1,19 @@
 import React from 'react'
-import { TradeV3, TradeType } from '@requiemswap/sdk'
+import { Trade, TradeType } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { Field } from 'state/swap/actions'
 import { useUserSlippageTolerance } from 'state/user/hooks'
-import { computeSlippageAdjustedAmountsV3, computeTradeV3PriceBreakdown } from 'utils/pricesV3'
+import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown } from 'utils/prices'
 import { AutoColumn } from 'components/Layout/Column'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Layout/Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
-import SwapV3Route from './SwapV3Route'
+import SwapRoute from './SwapRoute'
 
-function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSlippage: number }) {
-  const { priceImpactWithoutFee, realizedLPFee } = computeTradeV3PriceBreakdown(trade)
+function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippage: number }) {
+  const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
-  const slippageAdjustedAmounts = computeSlippageAdjustedAmountsV3(trade, allowedSlippage)
+  const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(trade, allowedSlippage)
 
   return (
     <AutoColumn style={{ padding: '0 16px' }}>
@@ -31,7 +31,7 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSli
           <Text fontSize="14px">
             {isExactIn
               ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
-              '-'
+                '-'
               : `${slippageAdjustedAmounts[Field.INPUT]?.toSignificant(4)} ${trade.inputAmount.currency.symbol}` ?? '-'}
           </Text>
         </RowFixed>
@@ -74,21 +74,20 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSli
   )
 }
 
-export interface AdvancedSwapV3DetailsProps {
-  trade?: TradeV3
+export interface AdvancedSwapDetailsProps {
+  trade?: Trade
 }
 
-export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
+export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const showRoute = Boolean(trade && trade.route.path.length > 2)
 
   return (
-
     <AutoColumn gap="0px">
       {trade && (
         <>
-          <TradeV3Summary trade={trade} allowedSlippage={allowedSlippage} />
+          <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
           {showRoute && (
             <>
               <RowBetween style={{ padding: '0 16px' }}>
@@ -101,10 +100,9 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
                     ml="4px"
                   />
                 </span>
-                {trade && (<SwapV3Route trade={trade} />)}
+                <SwapRoute trade={trade} />
               </RowBetween>
             </>
-
           )}
         </>
       )}

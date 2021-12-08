@@ -5,7 +5,8 @@ import { WeightedPair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } 
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
-import { BigNumber } from 'ethers'
+import { ethers } from 'ethers'
+import { PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
@@ -13,7 +14,7 @@ import FullStablesPositionCard from '../../components/PositionCard/StablesPositi
 import { useTokenBalancesWithLoadingIndicator, useTokenBalance } from '../../state/wallet/hooks'
 import { useWeightedPairs } from '../../hooks/useWeightedPairs'
 import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
-import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
+import { toV2LiquidityToken, useTrackedTokenPairs, toWeightedLiquidityToken } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
@@ -28,10 +29,10 @@ export default function PoolList() {
   const { theme } = useTheme()
 
   // fetch the user's balances of all tracked V2 LP tokens
-  const trackedTokenPairs = useTrackedTokenPairs()
+  // const trackedTokenPairs = useTrackedTokenPairs()
   const tokenPairsWithLiquidityTokens = useMemo(
-    () => trackedTokenPairs.map((tokens) => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [trackedTokenPairs],
+    () => PINNED_WEIGHTED_PAIRS[chainId].map((entry) => ({ liquidityToken: toWeightedLiquidityToken(entry), entry })),
+    [chainId],
   )
   const liquidityTokens = useMemo(
     () => tokenPairsWithLiquidityTokens.map((tpwlt) => tpwlt.liquidityToken),
@@ -52,7 +53,9 @@ export default function PoolList() {
   )
 
   const v2Pairs = useWeightedPairs(
-    liquidityTokensWithBalances.map(({ tokens }) => tokens),
+    liquidityTokensWithBalances.map(({ entry }) => [entry[0], entry[1]]),
+    liquidityTokensWithBalances.map(({ entry }) => [entry[2]]),
+    liquidityTokensWithBalances.map(({ entry }) => [entry[3]]),
   )
   const v2IsLoading =
     fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some((V2Pair) => !V2Pair)
@@ -88,7 +91,7 @@ export default function PoolList() {
         <FullStablesPositionCard
           userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
           stablePool={stablePool}
-          mb ='20px'
+          mb='20px'
         />)}
       {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
         <FullWeightedPositionCard

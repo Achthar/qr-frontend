@@ -33,15 +33,19 @@ const Home: React.FC = () => {
     zindex: 5;
     opacity: 1;
   `
-
-  const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading']
+  const intro = 'Requiem is a decentralized platform that will give traders easy access to the most powerful tools in DeFi. At its core, it is a decentralized exchange with a stable swap built-in -ensuring traders get access to the best pricing. We already have a beta of our DEX  deployed on the AVAX testnet on requiem.finance. However, this is just the beginning. The following features are on our immediate release roadmap:'
+  const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading', 'Farm Swap', 'Yield swap']
   const steps = [
     'Regular product based swap structure is implemented',
     'Stable swap liquidity is set up, trading and integration with product structure to come.',
     'Lending and collateralizable liquidity',
-    'Leveraged trading - trade loan and collateral positions directly on Requiem DEX',
+    'Traders will have access to loans with a wide range of accepted collateral for trading on margin. To ensure that margin trading, and especially margin calls, stay efficient for both sides, loans will be directly tradable against their collateral -meaning a trader can sell their collateral to repay their loan in just 1 transaction, or vise-versa.',
+    'This will enable users to swap rewards/yields from farming on foreign LPs (e.g. Pangolin) against the ones from Requiem LPs.',
+    'Which are analog to interest rate swaps in CeFi. Users will be able to draw a collateralized loan (that then is instantly locked for providing liquidity/lending over a fixed time) versus a similar collateral (e.g. USDT vs. USDC) to directly and efficiently benefit from different yields (also between multiple platforms) without being required to bring the collateral upfront. This will also keep our borrowing and lending rates competitive.'
   ]
-  const status: Status[] = ['past', 'current', 'future', 'future']
+
+  const outlook = 'These features are the ones we have chosen to tackle first, however, we aim to continuously innovate to be the most sophisticated trading platform DeFi has to offer. At the moment, we are a small team of engineers and ex-CeFi employees but we hope that with your support, we can attract additional experienced individuals to join us on our journey.'
+  const status: Status[] = ['past', 'past', 'current', 'future']
 
   const titleFont = {
     lineHeight: 1.2,
@@ -82,7 +86,9 @@ const Home: React.FC = () => {
               alt="REQT"
             />
           </Row>
-
+          <Text fontSize="24px" color='white'>
+            {intro}
+          </Text>
           <Stepper>
             {steps.map((step, index) => (
               <Step key={step} index={index} status={status[index]}>
@@ -97,6 +103,9 @@ const Home: React.FC = () => {
               </Step>
             ))}
           </Stepper>
+          <Text fontSize="24px" color='white'>
+            {outlook}
+          </Text>
         </Container>
 
         {/* <ReactMarkdown children={getText()} /> */}
