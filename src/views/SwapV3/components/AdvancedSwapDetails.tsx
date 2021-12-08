@@ -1,5 +1,5 @@
 import React from 'react'
-import { TradeV3, TradeType } from '@requiemswap/sdk'
+import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { Field } from 'state/swap/actions'
 import { useUserSlippageTolerance } from 'state/user/hooks'
@@ -10,7 +10,7 @@ import { RowBetween, RowFixed } from 'components/Layout/Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapV3Route from './SwapV3Route'
 
-function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSlippage: number }) {
+function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV4; allowedSlippage: number }) {
   const { priceImpactWithoutFee, realizedLPFee } = computeTradeV3PriceBreakdown(trade)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmountsV3(trade, allowedSlippage)
@@ -57,10 +57,7 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSli
           <QuestionHelper
             text={
               <>
-                <Text mb="12px">For each trade a 0.25% fee is paid</Text>
-                <Text>- 0.17% to LP token holders</Text>
-                <Text>- 0.03% to the Treasury</Text>
-                <Text>- 0.05% towards CAKE buyback and burn</Text>
+                <Text mb="12px">For each trade a pool-dependent fee is paid</Text>
               </>
             }
             ml="4px"
@@ -75,7 +72,7 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV3; allowedSli
 }
 
 export interface AdvancedSwapV3DetailsProps {
-  trade?: TradeV3
+  trade?: TradeV4
 }
 
 export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {

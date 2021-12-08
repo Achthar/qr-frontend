@@ -1,4 +1,4 @@
-import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, TradeV3 } from '@requiemswap/sdk'
+import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, TradeV4 } from '@requiemswap/sdk'
 import {
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
   ALLOWED_PRICE_IMPACT_HIGH,
@@ -14,7 +14,7 @@ const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000))
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE)
 
 // computes price breakdown for the trade
-export function computeTradeV3PriceBreakdown(trade?: TradeV3 | null): {
+export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
   priceImpactWithoutFee: Percent | undefined
   realizedLPFee: CurrencyAmount | undefined | null
 } {
@@ -23,7 +23,7 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV3 | null): {
   const realizedLPFee = !trade
     ? undefined
     : ONE_HUNDRED_PERCENT.subtract(
-      trade.route.sources.reduce<Fraction>(
+      trade.route.pools.reduce<Fraction>(
         (currentFee: Fraction): Fraction => currentFee.multiply(INPUT_FRACTION_AFTER_FEE),
         ONE_HUNDRED_PERCENT,
       ),
@@ -50,7 +50,7 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV3 | null): {
 
 // computes the minimum amount out and maximum amount in for a trade given a user specified allowed slippage in bips
 export function computeSlippageAdjustedAmountsV3(
-  trade: TradeV3 | undefined,
+  trade: TradeV4 | undefined,
   allowedSlippage: number,
 ): { [field in Field]?: CurrencyAmount } {
   const pct = basisPointsToPercent(allowedSlippage)
@@ -68,7 +68,7 @@ export function warningSeverity(priceImpact: Percent | undefined): 0 | 1 | 2 | 3
   return 0
 }
 
-export function formatExecutionPriceV3(trade?: TradeV3, inverted?: boolean): string {
+export function formatExecutionPriceV3(trade?: TradeV4, inverted?: boolean): string {
   if (!trade) {
     return ''
   }

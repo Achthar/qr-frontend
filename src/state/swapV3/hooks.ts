@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, TradeV3, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -100,10 +100,10 @@ const BAD_RECIPIENT_ADDRESSES: string[] = [
  * @param trade to check for the given address
  * @param checksummedAddress address to check in the pairs and tokens
  */
-function involvesAddress(trade: TradeV3, checksummedAddress: string): boolean {
+function involvesAddress(trade: TradeV4, checksummedAddress: string): boolean {
   return (
     trade.route.path.some((token) => token.address === checksummedAddress) ||
-    trade.route.sources.some((source) => source.liquidityToken.address === checksummedAddress)
+    trade.route.pools.some((source) => source.liquidityToken.address === checksummedAddress)
   )
 }
 
@@ -112,7 +112,7 @@ export function useDerivedSwapV3Info(chainId: number): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
-  v3Trade: TradeV3 | undefined
+  v3Trade: TradeV4 | undefined
   inputError?: string
 } {
   const { account } = useActiveWeb3React()

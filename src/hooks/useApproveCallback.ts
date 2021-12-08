@@ -1,9 +1,9 @@
 import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Trade, TokenAmount, CurrencyAmount, NETWORK_CCY, TradeV3 } from '@requiemswap/sdk'
+import { Trade, TokenAmount, CurrencyAmount, NETWORK_CCY, TradeV4 } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS } from '../config/constants'
+import { ROUTER_ADDRESS, REQUIEMQROUTER_ADDRESS } from '../config/constants'
 import useTokenAllowance from './useTokenAllowance'
 import { Field } from '../state/swap/actions'
 import { useTransactionAdder, useHasPendingApproval } from '../state/transactions/hooks'
@@ -119,12 +119,15 @@ export function useApproveCallbackFromTrade(chainId: number, trade?: Trade, allo
 
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTradeV3(chainId: number, tradeV3?: TradeV3, allowedSlippage = 0) {
+export function useApproveCallbackFromTradeV3(chainId: number, tradeV3?: TradeV4, allowedSlippage = 0) {
   const amountToApprove = useMemo(
     () => (tradeV3 ? computeSlippageAdjustedAmountsV3(tradeV3, allowedSlippage)[Field.INPUT] : undefined),
     [tradeV3, allowedSlippage],
   )
 
-  return useApproveCallback(chainId, amountToApprove,
-    (tradeV3?.route.pathMatrix.length === 1 && tradeV3?.route.routerIds[0] === 1) ? ROUTER_ADDRESS[chainId] : AGGREGATOR_ADDRESS[chainId])
+  return useApproveCallback(
+    chainId,
+    amountToApprove,
+    REQUIEMQROUTER_ADDRESS[chainId]
+  )
 }

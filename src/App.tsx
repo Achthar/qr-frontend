@@ -19,7 +19,7 @@ import PageLoader from './components/Loader/PageLoader'
 import history from './routerHistory'
 // Views included in the main bundle
 import Pools from './views/Pools'
-import Swap from './views/Swap' // weighted + stable
+// import Swap from './views/Swap' // weighted + stable
 import SwapV2 from './views/SwapV2' // uniswapV2
 import SwapV3 from './views/SwapV3' // uniswapv2 + stable
 
@@ -96,8 +96,8 @@ const App: React.FC = () => {
               <Ifos />
             </Route> */}
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-          <Route exact strict path="/exchangeOld" component={SwapV3} />
-          <Route exact strict path="/exchange" component={Swap} />
+          <Route exact strict path="/exchangeOld" component={SwapV2} />
+          <Route exact strict path="/exchange" component={SwapV3} />
           <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
           <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
           <Route exact strict path="/findV2" component={PoolFinder} />

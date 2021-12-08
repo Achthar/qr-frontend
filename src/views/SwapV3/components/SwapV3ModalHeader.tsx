@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { TradeV3, TradeType } from '@requiemswap/sdk'
+import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Button, Text, ErrorIcon, ArrowDownIcon } from '@requiemswap/uikit'
 import { Field } from 'state/swap/actions'
 import { isAddress, shortenAddress } from 'utils'
@@ -16,7 +16,7 @@ export default function SwapV3ModalHeader({
   showAcceptChanges,
   onAcceptChanges,
 }: {
-  trade: TradeV3
+  trade: TradeV4
   allowedSlippage: number
   recipient: string | null
   showAcceptChanges: boolean

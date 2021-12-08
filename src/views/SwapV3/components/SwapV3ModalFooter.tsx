@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { TradeV3, TradeType } from '@requiemswap/sdk'
+import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Button, Text, AutoRenewIcon } from '@requiemswap/uikit'
 import { Field } from 'state/swap/actions'
 import {
@@ -30,7 +30,7 @@ export default function SwapV3ModalFooter({
   swapErrorMessage,
   disabledConfirm,
 }: {
-  trade: TradeV3
+  trade: TradeV4
   allowedSlippage: number
   onConfirm: () => void
   swapErrorMessage: string | undefined
@@ -102,10 +102,7 @@ export default function SwapV3ModalFooter({
             <QuestionHelper
               text={
                 <>
-                  <Text mb="12px">For each trade a 0.25% fee is paid</Text>
-                  <Text>- 0.17% to LP token holders</Text>
-                  <Text>- 0.03% to the Treasury</Text>
-                  <Text>- 0.05% towards REQT buyback and burn</Text>
+                  <Text mb="12px">For each trade a fee depending on the pool routing is paid</Text>
                 </>
               }
               ml="4px"

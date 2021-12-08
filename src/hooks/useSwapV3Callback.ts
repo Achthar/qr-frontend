@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { JSBI, Percent, RouterV3, SwapParameters, TradeV3, TradeType } from '@requiemswap/sdk'
+import { JSBI, Percent, RouterV4, SwapParameters, TradeV4, TradeType } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'
@@ -41,7 +41,7 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall
  * @param recipientAddressOrName
  */
 function useSwapV3CallArguments(
-  trade: TradeV3 | undefined, // trade to execute, required
+  trade: TradeV4 | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapV3Call[] {
@@ -54,7 +54,7 @@ function useSwapV3CallArguments(
   return useMemo(() => {
     if (!trade || !recipient || !library || !account || !chainId || !deadline) return []
 
-    const multiSwap = !(trade.route.pathMatrix.length === 1 && trade.route.routerIds[0] === 1)
+    const multiSwap = true
 
     const contract: Contract | null = !multiSwap
       ? getRouterContract(chainId, library, account)
@@ -64,12 +64,10 @@ function useSwapV3CallArguments(
       return []
     }
 
-    // console.log("CONTRACT", contract)
-    console.log("MS", multiSwap)
     const swapMethods = []
 
     swapMethods.push(
-      RouterV3.swapCallParameters(trade, {
+      RouterV4.swapCallParameters(trade, {
         feeOnTransfer: false,
         allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
         recipient,
@@ -80,7 +78,7 @@ function useSwapV3CallArguments(
 
     if (trade.tradeType === TradeType.EXACT_INPUT) {
       swapMethods.push(
-        RouterV3.swapCallParameters(trade, {
+        RouterV4.swapCallParameters(trade, {
           feeOnTransfer: true,
           allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
           recipient,
@@ -98,7 +96,7 @@ function useSwapV3CallArguments(
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapV3Callback(
-  trade: TradeV3 | undefined, // trade to execute, required
+  trade: TradeV4 | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapV3CallbackState; callback: null | (() => Promise<string>); error: string | null } {
