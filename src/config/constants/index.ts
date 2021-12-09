@@ -33,7 +33,7 @@ export const AGGREGATOR_ADDRESS = {
 }
 
 export const REQUIEMQROUTER_ADDRESS = {
-  43113: '0x96835701766b9c05FeF8C3F66c66337feBA08b42'
+  43113: '0x3f7590B78a5d285A98C88Ab7b7d8E05d79842543'
 }
 
 export const L1_CHAIN_IDS = [
@@ -202,6 +202,18 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
 }
 
+// used to construct intermediary pairs for trading
+export const BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED: ChainTokenList = {
+  [ChainId.BSC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_MAINNET], CAKE[ChainId.BSC_MAINNET], BUSD[ChainId.BSC_MAINNET], USDT[ChainId.BSC_MAINNET], BTCB, UST, ETH[ChainId.BSC_MAINNET], USDC[ChainId.BSC_MAINNET]],
+  [ChainId.BSC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.BSC_TESTNET], CAKE[ChainId.BSC_TESTNET], BUSD[ChainId.BSC_TESTNET], ETH[ChainId.BSC_TESTNET]],
+  [ChainId.ARBITRUM_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.ARBITRUM_MAINNET]],
+  [ChainId.ARBITRUM_TETSNET_RINKEBY]: [WRAPPED_NETWORK_TOKENS[ChainId.ARBITRUM_TETSNET_RINKEBY]],
+  [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
+  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], REQT[ChainId.AVAX_TESTNET], USDC[ChainId.AVAX_TESTNET]],
+  [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
+}
+
 /**
  * Addittional bases for specific tokens
  * @example { [WBTC.address]: [renBTC], [renBTC.address]: [WBTC] }
@@ -217,6 +229,7 @@ export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]
  */
 export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
   [ChainId.BSC_MAINNET]: {},
+  [ChainId.AVAX_TESTNET]: {},
 }
 
 // used for display in the default list when adding liquidity
@@ -226,7 +239,7 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.ARBITRUM_MAINNET]: [],
   [ChainId.ARBITRUM_TETSNET_RINKEBY]: [],
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
-  [ChainId.AVAX_TESTNET]: [USDT[ChainId.AVAX_TESTNET]],
+  [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET], USDC[ChainId.MATIC_MAINNET]],
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]]
 }
@@ -317,5 +330,5 @@ export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'
 
 // data for weighted pools
-export const STANDARD_FEES =  [5, 10, 15, 20, 25, 30, 35]
-export const STANDARD_WEIGHTS =  [10, 20, 30, 40, 50, 60, 70, 80]
+export const STANDARD_FEES = [5, 10, 15, 20, 25, 30, 35]
+export const STANDARD_WEIGHTS = [10, 20, 30, 40, 50, 60, 70, 80]

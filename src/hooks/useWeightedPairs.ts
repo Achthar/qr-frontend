@@ -29,7 +29,7 @@ export function useWeightedPairs(currencies: [Currency | undefined, Currency | u
       ]),
     [chainId, currencies],
   )
-      console.log("WPAIRS ARGS", currencies, weightA, fee)
+  
   const pairAddresses = useMemo(
     () =>
       tokens.map(([tokenA, tokenB], i) => {
