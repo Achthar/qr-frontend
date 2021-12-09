@@ -1,5 +1,5 @@
 import { ChainId, Token, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
-import { chain } from 'lodash'
+
 
 export const WETH = {
   [ChainId.BSC_MAINNET]: new Token(

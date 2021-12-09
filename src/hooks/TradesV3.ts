@@ -2,10 +2,11 @@
 import { isTradeV3Better } from 'utils/tradesV3'
 import { Currency, CurrencyAmount, Pair, Token, TradeV4, StablePool, StablePairWrapper, WeightedPair, TokenAmount, JSBI, Pool } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
+import { WeightedPairShell } from 'config/constants'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { Interface } from '@ethersproject/abi'
-import { weightedPairAddresses, weightedPairShellGenerator, WeightedPairShell, weightedPairShellGeneratorAll } from 'utils/weightedPairAddresses'
+import { weightedPairAddresses, weightedPairShellGenerator, weightedPairShellGeneratorAll } from 'utils/weightedPairAddresses'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { StablePoolState } from 'hooks/useStablePool'
 import { useUserSingleHopOnly } from 'state/user/hooks'
@@ -129,53 +130,6 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
   const aInBases = false // currencyA && bases.filter((base) => base.address === wrappedCurrency(currencyA, chainId).address)[0] !== undefined
   const bInBases = false // currencyB && bases.filter((base) => base.address === wrappedCurrency(currencyB, chainId).address)[0] !== undefined
 
-  // keys are id-tokenIndex-weight-fee
-  // const addressesRangeA = useMemo(
-  //   () =>
-  //     !aInBases && tokenA && bases ?
-  //       weightedPairShellGenerator(
-  //         tokenA,
-  //         bases,
-  //         STANDARD_WEIGHTS,
-  //         STANDARD_FEES,
-  //         'in'
-  //       )
-  //       : []
-  //   ,
-  //   [tokenA, bases, chainId, aInBases]
-  // )
-
-  // const addressesRangeB = useMemo(
-  //   () =>
-  //     !bInBases && tokenB && bases ? weightedPairShellGenerator(
-  //       tokenB,
-  //       bases,
-  //       STANDARD_WEIGHTS,
-  //       STANDARD_FEES,
-  //       'out'
-  //     )
-  //       : []
-  //   ,
-  //   [tokenB, chainId, bases, bInBases]
-  // )
-
-  // const direct = useMemo(
-  //   () =>
-  //     !aInBases && !bInBases && currencyA &&
-  //       currencyB &&
-  //       !bases.filter((base) => base.address === wrappedCurrency(currencyA, chainId).address) &&
-  //       !bases.filter((base) => base.address === wrappedCurrency(currencyB, chainId).address) ?
-  //       weightedPairShellGenerator(
-  //         wrappedCurrency(currencyA, chainId),
-  //         [wrappedCurrency(currencyB, chainId)],
-  //         STANDARD_WEIGHTS, STANDARD_FEES,
-  //         'dir'
-  //       )
-  //       : []
-  //   ,
-  //   [currencyB, currencyA, chainId, bases, aInBases, bInBases]
-  // )
-
   const basePairs: [Token, Token][] = useMemo(
     () => flatMap(bases, (base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])),
     [bases],
@@ -214,6 +168,8 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
     [tokenA, tokenB, bases, basePairs, chainId],
   )
 
+  console.log("AP", allPairCombinations)
+
   const allWeightedPairs = useMemo(
     () =>
       currencyB && currencyA ?
@@ -235,7 +191,7 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
   const allConstellations = useWeightedPairsExist(
     chainId,
     allWeightedPairs.map(x => x.address) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'],
-    99999
+    5
   )
 
   // get only existing pairs

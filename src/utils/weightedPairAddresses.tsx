@@ -1,15 +1,8 @@
 
 import { JSBI, Token, WeightedPair } from '@requiemswap/sdk'
+import { WeightedPairShell } from 'config/constants/index'
 
 
-export interface WeightedPairShell {
-    tokenA: Token,
-    tokenB: Token,
-    weightA: number,
-    fee: number,
-    address: string
-
-}
 // calculates the addresses for pair over a variety of weights an fees
 export function weightedPairAddresses(tokenA: Token, tokenB: Token, weightsA: number[], fees: number[]): { [id: string]: string } {
     const dict = {}

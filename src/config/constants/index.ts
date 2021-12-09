@@ -1,9 +1,17 @@
-import { JSBI, Percent, Token, WETH, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@requiemswap/sdk'
+import { JSBI, Percent, Token, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@requiemswap/sdk'
 import ms from 'ms.macro'
 
-import { BUSD, DAI, USDT, BTCB, CAKE, WBNB, UST, ETH, USDC, REQT } from './tokens'
+import { BUSD, DAI, USDT, BTCB, CAKE, UST, ETH, USDC, REQT } from './tokens'
 
 export const LANDING_PAGE = 'https://requiem.finance/'
+
+export interface WeightedPairShell {
+  tokenA: Token,
+  tokenB: Token,
+  weightA: number,
+  fee: number,
+  address: string
+}
 
 export const AVALANCHE_CHAIN_PARAMS = {
   chainId: '0xa86a', // A 0x-prefixed hexadecimal chainId
@@ -330,5 +338,5 @@ export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'
 
 // data for weighted pools
-export const STANDARD_FEES = [5, 10, 15, 20, 25, 30, 35]
-export const STANDARD_WEIGHTS = [10, 20, 30, 40, 50, 60, 70, 80]
+export const STANDARD_FEES = [5, 10, 15, 20, 25]
+export const STANDARD_WEIGHTS = [20, 50, 80]

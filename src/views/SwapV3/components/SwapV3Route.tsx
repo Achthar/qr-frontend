@@ -12,7 +12,7 @@ export default memo(function SwapV3Route({ trade }: { trade: TradeV4 }) {
     // <AutoColumn style={{ flex: '1' }} gap='2px' >
     <Flex flexWrap="wrap" width="100%" justifyContent="flex-end" alignItems="center">
       {trade.route.path.map((currency, j) => {
-        const isLastItem: boolean = j === trade.route.pools.length - 1
+        const isLastItem: boolean = j === trade.route.path.length - 1
         return (
           // eslint-disable-next-line react/no-array-index-key
           <Fragment key={j}>
@@ -21,18 +21,22 @@ export default memo(function SwapV3Route({ trade }: { trade: TradeV4 }) {
                 <Row>
                   <Flex alignItems="end">
                     <AutoColumn style={{ flex: '1' }} gap='2px' >
-                      <CurrencyLogo chainId={trade.route.chainId} currency={currency} size='17px' style={{ marginLeft: "0.125rem", marginRight: "0.125rem" }} />
-                      <Text fontSize="7px" ml="0.125rem" mr="0.125rem">
+                      <CurrencyLogo chainId={trade.route.chainId} currency={currency} size='20px' style={{ marginLeft: "0.125rem", marginRight: "0.125rem" }} />
+                      {/* <Text fontSize="7px" ml="0.125rem" mr="0.125rem">
                         {currency.symbol}
-                      </Text>
+                      </Text> */}
                     </AutoColumn>
                   </Flex>
-                  {!isLastItem && <ChevronRightIcon width="12px" />}
+                  <AutoColumn gap='0px' >
+                    {!isLastItem && <ChevronRightIcon width="12px" marginRight='3px' marginLeft='3px' marginBottom='1px' />}
+
+                    {!isLastItem && trade.route.pools[j] && (
+                      <Text fontSize="10px" textAlign='center' marginTop='1px'>
+                        {trade.route.pools[j].type === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
+                      </Text>)}
+                  </AutoColumn>
                 </Row>
 
-                {!isLastItem && trade.route.pools[j] && (<Text fontSize="10px" textAlign='center'>
-                  {trade.route.pools[j].type === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
-                </Text>)}
               </AutoColumn>
             </Flex>
           </Fragment>

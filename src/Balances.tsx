@@ -9,7 +9,7 @@ import {
 import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, Text, Box } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, Text, Box, CurrencyIcon } from '@requiemswap/uikit'
 import { useWeb3React } from "@web3-react/core";
 import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
@@ -207,6 +207,15 @@ const CloseIcon = styled.div`
   }
 `
 
+const StyledButton = styled(Button) <{ mB: string, width: string }>`
+  background-color:none;
+  color: none;
+  box-shadow: none;
+  border-radius: 20px;
+  width: ${({ width }) => width};
+  align: right;
+  marginBottom: ${({ mB }) => mB};
+`
 
 const Balances = () => {
   // global network chainId
@@ -218,14 +227,19 @@ const Balances = () => {
   return (
     <AppFooterContainer>
       <div style={{ zIndex: 15 }}>
-        <Button
-          onClick={handleClick}
-          variant="primary"
-          width="7px"
-          mb="8px"
-        >
-          Balance
-        </Button>
+        <StyledButton
+          marginBottom={balanceShown && account ? '80px' : '0px'}
+          width='0px'
+          height='0px'
+          endIcon={<CurrencyIcon width='30px' />}
+          onClick={
+            handleClick
+          }
+        />
+        {/* <Text fontSize='15px'>
+            Balances
+          </Text>
+        </StyledButton> */}
       </div>
       <RowBetween align='left'>
         <BalanceContainer balanceShown={balanceShown}>
