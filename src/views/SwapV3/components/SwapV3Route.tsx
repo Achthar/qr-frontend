@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { Fragment, memo } from 'react'
 import { TradeV4, PoolType } from '@requiemswap/sdk'
-import { Text, Flex, ChevronRightIcon } from '@requiemswap/uikit'
+import { Text, Flex, ChevronRightIcon, ArrowForwardIcon } from '@requiemswap/uikit'
 import { unwrappedToken } from 'utils/wrappedCurrency'
 import { CurrencyLogo } from 'components/Logo'
 import { AutoColumn } from 'components/Column'
@@ -21,20 +21,20 @@ export default memo(function SwapV3Route({ trade }: { trade: TradeV4 }) {
                 <Row>
                   <Flex alignItems="end">
                     <AutoColumn style={{ flex: '1' }} gap='2px' >
-                      <CurrencyLogo chainId={trade.route.chainId} currency={currency} size='20px' style={{ marginLeft: "0.125rem", marginRight: "0.125rem" }} />
+                      <CurrencyLogo chainId={trade.route.chainId} currency={currency} size='25px' style={{ marginLeft: "0.125rem", marginRight: "0.125rem" }} />
                       {/* <Text fontSize="7px" ml="0.125rem" mr="0.125rem">
                         {currency.symbol}
                       </Text> */}
                     </AutoColumn>
                   </Flex>
-                  <AutoColumn gap='0px' >
-                    {!isLastItem && <ChevronRightIcon width="12px" marginRight='3px' marginLeft='3px' marginBottom='1px' />}
+                  <Flex flexDirection="column" justifyContent='space-between' alignItems="center" grid-row-gap='0px' marginRight='1px' marginLeft='1px'>
+                    {!isLastItem && <ArrowForwardIcon height='10px' width="10px" marginBottom='0px' />}
 
                     {!isLastItem && trade.route.pools[j] && (
-                      <Text fontSize="10px" textAlign='center' marginTop='1px'>
+                      <Text fontSize="10px" textAlign='center' marginTop='0px'>
                         {trade.route.pools[j].type === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
                       </Text>)}
-                  </AutoColumn>
+                  </Flex>
                 </Row>
 
               </AutoColumn>

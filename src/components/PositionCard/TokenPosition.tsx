@@ -13,14 +13,7 @@ import {
 } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import useTotalSupply from '../../hooks/useTotalSupply'
-
-import { useTokenBalance } from '../../state/wallet/hooks'
-import { currencyId } from '../../utils/currencyId'
-import { unwrappedToken } from '../../utils/wrappedCurrency'
-
+import { BigNumber } from 'ethers'
 import { LightCard } from '../Card'
 import { AutoColumn } from '../Layout/Column'
 import CurrencyLogo from '../Logo/CurrencyLogo'
@@ -40,6 +33,18 @@ interface TokenPositionCardProps extends CardProps {
   showSymbol: boolean
 }
 
+function formatAmount(tokenAmount?: TokenAmount) {
+  return tokenAmount && (
+    Number(tokenAmount?.toSignificant(6)) > 1e6 ?
+      `${String(Math.round(Number(tokenAmount?.toSignificant(6)) / 1e5) / 10)}M`
+      : Number(tokenAmount?.toSignificant(6)) > 1e3 ?
+        `${String(Math.round(Number(tokenAmount?.toSignificant(6)) / 1e2) / 10)}K`
+        : Number(tokenAmount?.toSignificant(6)) > 1e2 ?
+          `${String(Math.round(Number(tokenAmount?.toSignificant(6)) * 10) / 10)}`
+          : Number(tokenAmount?.toSignificant(6)) > 1e-2 ?
+            `${String(Math.round(Number(tokenAmount?.toSignificant(6)) * 1000) / 1000)}`
+            : tokenAmount?.toSignificant(6)) // .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
 
 export default function TokenPositionCard({ tokenAmount, gap, padding, showSymbol, ...props }: TokenPositionCardProps,) {
 
@@ -56,7 +61,9 @@ export default function TokenPositionCard({ tokenAmount, gap, padding, showSymbo
           </RowFixed>
           {tokenAmount ? (
             <RowFixed>
-              <Text ml="6px">{tokenAmount?.toSignificant(6).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
+              <Text ml="6px">
+                {formatAmount(tokenAmount)}
+              </Text>
             </RowFixed>
           ) : (
             '-'
