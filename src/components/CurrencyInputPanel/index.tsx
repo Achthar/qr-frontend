@@ -4,13 +4,12 @@ import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uiki
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { useWeb3React } from '@web3-react/core'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { RowBetween } from '../Layout/Row'
+import { Input as NumericalInput } from './NumericalInput'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
-
-
-import { RowBetween } from '../Layout/Row'
-import { Input as NumericalInput } from './NumericalInput'
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -80,7 +79,8 @@ export default function CurrencyInputPanel({
   id,
   showCommonBases,
 }: CurrencyInputPanelProps) {
-  const { account, chainId } = useWeb3React()
+  const { account } = useWeb3React()
+  const { chainId } = useNetworkState()
   const selectedCurrencyBalance = useCurrencyBalance(chainId, account ?? undefined, currency ?? undefined)
   const { t } = useTranslation()
   const translatedLabel = label || t('Input')

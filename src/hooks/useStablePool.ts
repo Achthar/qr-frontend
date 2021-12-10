@@ -30,7 +30,7 @@ export function useStablePool(): [StablePoolState, StablePool | null] {
   const {chainId} = useNetworkState()
   const { slowRefresh } = useRefresh()
 
-  console.log("SPC")
+  // console.log("SPC")
 
   // for now we only load the supply once on thos 
   const supplyResult = useSingleCallResult(

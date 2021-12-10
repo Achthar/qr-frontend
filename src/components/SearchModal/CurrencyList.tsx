@@ -7,6 +7,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { LightGreyCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import { useTranslation } from 'contexts/Localization'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 // import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useWeb3React } from '@web3-react/core'
 import { useCombinedActiveList } from '../../state/lists/hooks'
@@ -20,7 +21,7 @@ import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 
 function currencyKey(chainId: number, currency: Currency): string {
-  return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId] ? NETWORK_CCY[chainId].symbol : ''
+  return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId ?? 43113] ? NETWORK_CCY[chainId ?? 43113].symbol : ''
 }
 
 const StyledBalanceText = styled(Text)`
@@ -90,9 +91,9 @@ function CurrencyRow({
     >
       <CurrencyLogo chainId={chainId} currency={currency} size="24px" />
       <Column>
-        <Text bold>{currency.symbol}</Text>
+        <Text bold>{currency?.symbol}</Text>
         <Text color="textSubtle" small ellipsis maxWidth="200px">
-          {!isOnSelectedList && customAdded && 'Added by user •'} {currency.name}
+          {!isOnSelectedList && customAdded && 'Added by user •'} {currency?.name}
         </Text>
       </Column>
       <RowFixed style={{ justifySelf: 'flex-end' }}>
@@ -125,7 +126,8 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const { chainId, account } = useWeb3React()
+  const {  account } = useWeb3React()
+  const {chainId} = useNetworkState()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies
