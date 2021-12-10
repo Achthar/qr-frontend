@@ -80,6 +80,7 @@ export interface L1ChainInfo {
     symbol: string // 'gorETH',
     decimals: number // 18,
   }
+  readonly faucet?: string
 }
 export interface L2ChainInfo extends L1ChainInfo {
   readonly bridge: string
@@ -157,6 +158,7 @@ export const CHAIN_INFO: ChainInfo = {
     rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/AVAX.svg',
     nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
+    faucet: 'https://faucet.avax-test.network/'
   },
   [ChainId.MATIC_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,

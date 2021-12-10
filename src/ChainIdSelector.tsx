@@ -219,7 +219,7 @@ const ExplorerText = ({ chainId }: { chainId: SupportedL2ChainId }) => {
 
 const ChainIdSelector = () => {
   // global network chainId
-  const {onChainChange, onAccountChange} =useGlobalNetworkActionHandlers()
+  const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
 
   const { chainId, library, account } = useWeb3React()
 
@@ -244,6 +244,7 @@ const ChainIdSelector = () => {
       toggle()
       //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)
     }
+    const faucetLink = CHAIN_INFO[targetChain as SupportedL2ChainId].faucet
     const active = chainId === targetChain
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
     const rowText = `${CHAIN_INFO[targetChain].label}`
@@ -261,6 +262,7 @@ const ChainIdSelector = () => {
        </FlyoutRow> */
     )
     const helpCenterLink = "https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum"
+
     if (active && hasExtendedInfo) {
       return (
         <ActiveRowWrapper>
@@ -272,14 +274,23 @@ const ChainIdSelector = () => {
             <StyledLink href={CHAIN_INFO[targetChain].explorer}>
               <ExplorerText chainId={chainId} /> <LinkOutCircle />
             </StyledLink>
-            <StyledLink href={helpCenterLink}>
+
+            {/* <StyledLink href={helpCenterLink}>
               <div>Help Center</div> <LinkOutCircle />
-            </StyledLink>
+            </StyledLink> */}
           </ActiveRowLinkList>
         </ActiveRowWrapper>
       )
     }
-    return <RowContent />
+    return (
+      <>
+        <RowContent />
+        {faucetLink && (<ActiveRowLinkList>
+          <StyledLink href={faucetLink}>
+            <div>Testnet Faucet</div> <LinkOutCircle />
+          </StyledLink>
+        </ActiveRowLinkList>)}
+      </>)
   }
 
   // const activatorRef = React.useRef<HTMLButtonElement | null>(null);
@@ -309,9 +320,9 @@ const ChainIdSelector = () => {
       </FlyoutHeader>
       <Row targetChain={ChainId.AVAX_MAINNET} />
       <Row targetChain={ChainId.AVAX_TESTNET} />
-      {/* <Row targetChain={ChainId.BSC_MAINNET} />
+      {/* <Row targetChain={ChainId.BSC_MAINNET} /> */}
       <Row targetChain={ChainId.BSC_TESTNET} />
-      <Row targetChain={ChainId.MATIC_TESTNET} /> */}
+      <Row targetChain={ChainId.MATIC_TESTNET} />
       {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
 
     </UIKitUserMenu>
