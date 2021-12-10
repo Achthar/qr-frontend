@@ -2980,7 +2980,7 @@
 
 "@requiemswap/sdk@https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master":
   version "2.4.0"
-  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#f0e98666f352cf7b3cef74bee4fd3ce41357a35d"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#e8896faebeb0a0658480fe31b91091de65b03317"
   dependencies:
     "@pancakeswap-libs/pancake-swap-core" "^0.1.0"
     big.js "^5.2.2"

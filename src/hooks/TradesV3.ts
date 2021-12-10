@@ -168,7 +168,7 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
     [tokenA, tokenB, bases, basePairs, chainId],
   )
 
-  console.log("AP", allPairCombinations)
+  // console.log("AP", allPairCombinations)
 
   const allWeightedPairs = useMemo(
     () =>
@@ -187,7 +187,7 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
   // const allPairsDirty = useMemo(() => { return [...addressesRangeA, ...addressesRangeB, ...direct] },
   //   [addressesRangeA, addressesRangeB, direct]
   // )
-  console.log("APDIRTY", allWeightedPairs)
+  // console.log("APDIRTY", allWeightedPairs)
   const allConstellations = useWeightedPairsExist(
     chainId,
     allWeightedPairs.map(x => x.address) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'],
@@ -199,7 +199,7 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
 
   // fetch data from chain via MultiCall
   const results = useMultipleContractSingleData(filtered.map(pair => pair.address), PAIR_INTERFACE, 'getReserves')
-  console.log("AC", allConstellations, "FILTERED", filtered, "RES", results)
+  // console.log("AC", allConstellations, "FILTERED", filtered, "RES", results)
   // generate Weighted Pairs
   const weightedPairs = useMemo(() => {
     return results.map((result, i) => {

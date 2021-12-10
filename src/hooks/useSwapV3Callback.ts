@@ -102,7 +102,7 @@ export function useSwapV3Callback(
   const gasPrice = useGasPrice(chainId)
 
   const swapCalls = useSwapV3CallArguments(trade, allowedSlippage, recipientAddressOrName)
-  console.log("SWAPCALLS", swapCalls)
+  // console.log("SWAPCALLS", swapCalls)
   const addTransaction = useTransactionAdder()
 
   // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
@@ -156,7 +156,7 @@ export function useSwapV3Callback(
               })
           }),
         )
-        console.log("HERE 1", estimatedCalls)
+        // console.log("HERE 1", estimatedCalls)
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const successfulEstimation = estimatedCalls.find(
@@ -164,12 +164,12 @@ export function useSwapV3Callback(
             'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
         )
 
-        // if (!successfulEstimation) {
-        //   const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
-        //   if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
-        //   throw new Error('Unexpected error. Please contact support: none of the calls threw an error')
-        // }
-        console.log("HERE 2", successfulEstimation)
+        if (!successfulEstimation) {
+          const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
+          if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
+          throw new Error('Unexpected error. Please contact support: none of the calls threw an error')
+        }
+        // console.log("HERE 2", successfulEstimation)
         const {
           call: {
             contract,
@@ -177,7 +177,7 @@ export function useSwapV3Callback(
           },
           gasEstimate,
         } = successfulEstimation
-        console.log("HERE CONTRACT", contract)
+        // console.log("HERE CONTRACT", contract)
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           gasPrice,
