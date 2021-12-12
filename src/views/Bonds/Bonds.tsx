@@ -145,7 +145,7 @@ const Bonds: React.FC = () => {
 
   // const [stakedOnly, setStakedOnly] = useUserBondStakedOnly(isActive)
 
-  const activeBonds = bondsLP.filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
+  const activeBonds = bondsLP // .filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
   const inactiveBonds = bondsLP.filter((bond) => bond.bondId !== 0  && !isArchivedPid(bond.bondId))
   const archivedBonds = bondsLP.filter((bond) => isArchivedPid(bond.bondId))
 
@@ -283,7 +283,11 @@ const Bonds: React.FC = () => {
 
     const tokenAddress = token.address
     const quoteTokenAddress = quoteToken.address
-    const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('PANCAKE', '')
+
+    const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
+    const price = 213.3
+    const roi = 32.213
+    const purchased = 7002000
 
     const row: RowProps = {
       apr: {
@@ -310,9 +314,12 @@ const Bonds: React.FC = () => {
         liquidity: bond.liquidity,
       },
       multiplier: {
-        multiplier: 'bond.multiplier',
+        multiplier: '12x',
       },
       details: bond,
+      price,
+      roi,
+      purchased
     }
     
     return row

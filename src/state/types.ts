@@ -82,6 +82,7 @@ export interface Bond extends BondConfig {
   lpTotalSupply?: SerializedBigNumber
   tokenPriceVsQuote?: SerializedBigNumber
   poolWeight?: SerializedBigNumber,
+  price?:  SerializedBigNumber,
   userData?: {
     allowance: string
     tokenBalance: string

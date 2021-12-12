@@ -25,6 +25,9 @@ export interface RowProps {
   multiplier: MultiplierProps
   liquidity: LiquidityProps
   details: BondWithStakedValue
+  price: number
+  roi: number
+  purchased: number
 }
 
 interface RowPropsWithLoading extends RowProps {
