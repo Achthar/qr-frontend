@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, Pair, Percent } from '@requiemswap/sdk'
+import { JSBI, Pair, Percent, WeightedPair } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -34,7 +34,7 @@ const FixedHeightRow = styled(RowBetween)`
 `
 
 interface PositionCardProps extends CardProps {
-  pair: Pair
+  pair: Pair | WeightedPair
   showUnwrapped?: boolean
 }
 

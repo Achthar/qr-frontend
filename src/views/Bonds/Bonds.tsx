@@ -111,12 +111,12 @@ const StyledImage = styled(Image)`
 `
 const NUMBER_OF_BONDS_VISIBLE = 12
 
-const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
-  if (cakeRewardsApr && lpRewardsApr) {
-    return (cakeRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
+const getDisplayApr = (reqtRewardsApr?: number, lpRewardsApr?: number) => {
+  if (reqtRewardsApr && lpRewardsApr) {
+    return (reqtRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
   }
-  if (cakeRewardsApr) {
-    return cakeRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
+  if (reqtRewardsApr) {
+    return reqtRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
   }
   return null
 }
@@ -128,7 +128,7 @@ const Bonds: React.FC = () => {
   const { data: bondsLP, userDataLoaded } = useBonds()
   const reqtPrice = usePriceReqtUsd()
   const [query, setQuery] = useState('')
-  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'pancake_bond_view' })
+  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'panreqt_bond_view' })
   const { account, chainId } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
@@ -168,11 +168,11 @@ const Bonds: React.FC = () => {
           return bond
         }
         const totalLiquidity = new BigNumber(123123) // new BigNumber(bond.lpTotalInQuoteToken).times(bond.quoteToken.busdPrice)
-        const { cakeRewardsApr, lpRewardsApr } = isActive
+        const { reqtRewardsApr, lpRewardsApr } = isActive
           ? getBondApr(new BigNumber(bond.poolWeight), reqtPrice, totalLiquidity, bond.reserveAddress[chainId])
-          : { cakeRewardsApr: 0, lpRewardsApr: 0 }
+          : { reqtRewardsApr: 0, lpRewardsApr: 0 }
 
-        return { ...bond, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
+        return { ...bond, apr: reqtRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
 
       if (query) {
@@ -464,7 +464,7 @@ const Bonds: React.FC = () => {
           </Flex>
         )}
         <div ref={loadMoreRef} />
-        {/* <StyledImage src="/images/decorations/3dpan.png" alt="Pancake illustration" width={120} height={103} /> */}
+        {/* <StyledImage src="/images/decorations/3dpan.png" alt="Panreqt illustration" width={120} height={103} /> */}
       </Page>
     </>
   )

@@ -1,15 +1,15 @@
-import { Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, WeightedPair, Pair, Percent, TokenAmount } from '@requiemswap/sdk'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import { usePair } from 'hooks/usePairs'
+import { useWeightedPair } from 'hooks/useWeightedPairs'
 import useTotalSupply from 'hooks/useTotalSupply'
 
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swapV3/hooks'
 import { useTokenBalances } from '../wallet/hooks'
-import { Field, typeInput } from './actions'
+import { Field, typeInput, setFee, setWeight } from './actions'
 
 export function useBurnState(): AppState['burn'] {
   return useSelector<AppState, AppState['burn']>((state) => state.burn)
@@ -18,14 +18,18 @@ export function useBurnState(): AppState['burn'] {
 export function useDerivedBurnInfo(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
+  weightFieldA:string,
+  fee:string
 ): {
-  pair?: Pair | null
+  pair?: WeightedPair | Pair | null
   parsedAmounts: {
     [Field.LIQUIDITY_PERCENT]: Percent
     [Field.LIQUIDITY]?: TokenAmount
     [Field.CURRENCY_A]?: CurrencyAmount
     [Field.CURRENCY_B]?: CurrencyAmount
   }
+  weightFieldA: string
+  fee: string
   error?: string
 } {
   const { account, chainId } = useActiveWeb3React()
@@ -33,8 +37,9 @@ export function useDerivedBurnInfo(
   const { independentField, typedValue } = useBurnState()
 
   // pair + totalsupply
-  const [, pair] = usePair(currencyA, currencyB)
-
+  const [, pair] = useWeightedPair(currencyA, currencyB, Number(weightFieldA), Number(fee))
+//   console.log("PAIR ARGS", currencyA, currencyB, Number(weightFieldA), Number(fee))
+//  console.log("PAIR", pair)
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
@@ -124,11 +129,13 @@ export function useDerivedBurnInfo(
     error = error ?? 'Enter an amount'
   }
 
-  return { pair, parsedAmounts, error }
+  return { pair, parsedAmounts, error, weightFieldA, fee }
 }
 
 export function useBurnActionHandlers(): {
   onUserInput: (field: Field, typedValue: string) => void
+  onSetFee: (typedFee: string) => void
+  onSetWeightA: (typedWeight: string) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -139,7 +146,23 @@ export function useBurnActionHandlers(): {
     [dispatch],
   )
 
+  const onSetFee = useCallback(
+    (typedFee: string) => {
+      dispatch(setFee({ typedFee }))
+    },
+    [dispatch],
+  )
+
+  const onSetWeightA = useCallback(
+    (typedWeight: string) => {
+      dispatch(setWeight({ typedWeight }))
+    },
+    [dispatch],
+  )
+
   return {
     onUserInput,
+    onSetFee,
+    onSetWeightA
   }
 }

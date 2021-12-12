@@ -371,9 +371,9 @@ export default function AddLiquidity({
     (currencyA_: Currency) => {
       const newCurrencyIdA = currencyId(chainId, currencyA_)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/addV2/${currencyIdB}/${currencyIdA}`)
+        history.push(`/add/${currencyIdB}/${currencyIdA}`)
       } else {
-        history.push(`/addV2/${newCurrencyIdA}/${currencyIdB}`)
+        history.push(`/add/${newCurrencyIdA}/${currencyIdB}`)
       }
     },
     [chainId, currencyIdB, history, currencyIdA],
@@ -383,12 +383,12 @@ export default function AddLiquidity({
       const newCurrencyIdB = currencyId(chainId, currencyB_)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/addV2/${currencyIdB}/${newCurrencyIdB}`)
+          history.push(`/add/${currencyIdB}/${newCurrencyIdB}`)
         } else {
-          history.push(`/addV2/${newCurrencyIdB}`)
+          history.push(`/add/${newCurrencyIdB}`)
         }
       } else {
-        history.push(`/addV2/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
+        history.push(`/add/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
       }
     },
     [chainId, currencyIdA, history, currencyIdB],

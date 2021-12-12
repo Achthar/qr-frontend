@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, NETWORK_CCY, Percent, WETH, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { Currency, currencyEquals, ETHER, NETWORK_CCY, Percent, WETH, WRAPPED_NETWORK_TOKENS, REQUIEM_PAIR_MANAGER } from '@requiemswap/sdk'
 import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -26,7 +26,7 @@ import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import StyledInternalLink from '../../components/Links'
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from '../../utils'
 import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
@@ -47,9 +47,9 @@ const BorderCard = styled.div`
 export default function RemoveLiquidity({
   history,
   match: {
-    params: { currencyIdA, currencyIdB },
+    params: { weightA, weightB, fee, currencyIdA, currencyIdB },
   },
-}: RouteComponentProps<{ currencyIdA: string; currencyIdB: string }>) {
+}: RouteComponentProps<{ weightA: string, weightB, fee: string, currencyIdA: string; currencyIdB: string }>) {
 
   const { account, chainId, library } = useActiveWeb3React()
   const [currencyA, currencyB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]
@@ -63,7 +63,13 @@ export default function RemoveLiquidity({
 
   // burn state
   const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
+  // console.log("PAIR STATE", independentField, typedValue, weightA, fee)
+  const {
+    pair,
+    parsedAmounts,
+    error
+  } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined, weightA, fee)
+
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
@@ -97,7 +103,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS[chainId])
+  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], REQUIEM_PAIR_MANAGER[chainId])
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -114,18 +120,20 @@ export default function RemoveLiquidity({
 
   // tx sending
   const addTransaction = useTransactionAdder()
+
   async function onRemove() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
-    const router = getRouterContract(chainId, library, account)
+    const pairManager = getPairManagerContract(chainId, library, account)
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
     }
+    console.log("AM MIN", Object.values(amountsMin).map(am => am.toString()))
 
     if (!currencyA || !currencyB) throw new Error('missing tokens')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
@@ -144,6 +152,7 @@ export default function RemoveLiquidity({
       if (oneCurrencyIsETH) {
         methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
         args = [
+          pair.liquidityToken.address,
           currencyBIsETH ? tokenA.address : tokenB.address,
           liquidityAmount.raw.toString(),
           amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
@@ -156,6 +165,7 @@ export default function RemoveLiquidity({
       else {
         methodNames = ['removeLiquidity']
         args = [
+          pair.liquidityToken.address,
           tokenA.address,
           tokenB.address,
           liquidityAmount.raw.toString(),
@@ -172,6 +182,7 @@ export default function RemoveLiquidity({
       if (oneCurrencyIsETH) {
         methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
         args = [
+          pair.liquidityToken.address,
           currencyBIsETH ? tokenA.address : tokenB.address,
           liquidityAmount.raw.toString(),
           amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
@@ -188,6 +199,7 @@ export default function RemoveLiquidity({
       else {
         methodNames = ['removeLiquidityWithPermit']
         args = [
+          pair.liquidityToken.address,
           tokenA.address,
           tokenB.address,
           liquidityAmount.raw.toString(),
@@ -207,7 +219,7 @@ export default function RemoveLiquidity({
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
       methodNames.map((methodName) =>
-        router.estimateGas[methodName](...args)
+        pairManager.estimateGas[methodName](...args)
           .then(calculateGasMargin)
           .catch((err) => {
             console.error(`estimateGas failed`, methodName, args, err)
@@ -228,7 +240,7 @@ export default function RemoveLiquidity({
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
       setAttemptingTxn(true)
-      await router[methodName](...args, {
+      await pairManager[methodName](...args, {
         gasLimit: safeGasEstimate,
         gasPrice,
       })
@@ -343,22 +355,22 @@ export default function RemoveLiquidity({
   const handleSelectCurrencyA = useCallback(
     (currency: Currency) => {
       if (currencyIdB && currencyId(chainId, currency) === currencyIdB) {
-        history.push(`/remove/${currencyId(chainId, currency)}/${currencyIdA}`)
+        history.push(`/remove/${weightB}-${currencyId(chainId, currency)}/${weightA}-${currencyIdA}/${fee}`)
       } else {
-        history.push(`/remove/${currencyId(chainId, currency)}/${currencyIdB}`)
+        history.push(`/remove/${weightA}-${currencyId(chainId, currency)}/${weightB}-${currencyIdB}/${fee}`)
       }
     },
-    [chainId, currencyIdA, currencyIdB, history],
+    [chainId, currencyIdA, currencyIdB, history, fee, weightA, weightB],
   )
   const handleSelectCurrencyB = useCallback(
     (currency: Currency) => {
       if (currencyIdA && currencyId(chainId, currency) === currencyIdA) {
-        history.push(`/remove/${currencyIdB}/${currencyId(chainId, currency)}`)
+        history.push(`/remove/${weightB}-${currencyIdB}/${weightA}-${currencyId(chainId, currency)}/${fee}`)
       } else {
-        history.push(`/remove/${currencyIdA}/${currencyId(chainId, currency)}`)
+        history.push(`/remove/${weightA}-${currencyIdA}/${weightB}-${currencyId(chainId, currency)}/${fee}`)
       }
     },
-    [chainId, currencyIdA, currencyIdB, history],
+    [chainId, currencyIdA, currencyIdB, history, fee, weightA, weightB],
   )
 
   const handleDismissConfirmation = useCallback(() => {
@@ -394,10 +406,7 @@ export default function RemoveLiquidity({
       <AppBody>
         <AppHeader
           backTo="/pool"
-          title={t('Remove %assetA%-%assetB% liquidity', {
-            assetA: currencyA?.symbol ?? '',
-            assetB: currencyB?.symbol ?? '',
-          })}
+          title={`Remove\n ${weightA}-${currencyA?.symbol ?? ''}/${weightB}-${currencyB?.symbol ?? ''}@${fee}bps\nliquidity`}
           subtitle={`To receive ${currencyA?.symbol} and ${currencyB?.symbol}`}
           noConfig
         />

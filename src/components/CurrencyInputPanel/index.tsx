@@ -1,5 +1,5 @@
 import React from 'react'
-import { Currency, Pair } from '@requiemswap/sdk'
+import { Currency, Pair, WeightedPair } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -55,7 +55,7 @@ interface CurrencyInputPanelProps {
   currency?: Currency | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
-  pair?: Pair | null
+  pair?: Pair | WeightedPair | null
   hideInput?: boolean
   otherCurrency?: Currency | null
   id: string

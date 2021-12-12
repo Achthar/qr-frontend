@@ -15,6 +15,8 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+
+import { useBurnActionHandlers } from 'state/burn/hooks'
 import useTotalSupply from '../../hooks/useTotalSupply'
 
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -42,6 +44,7 @@ export function MinimalWeightedPositionCard({ weightedPair, showUnwrapped = fals
   const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
+
 
   const currency0 = showUnwrapped ? weightedPair.token0 : unwrappedToken(weightedPair.token0)
   const currency1 = showUnwrapped ? weightedPair.token1 : unwrappedToken(weightedPair.token1)
@@ -146,6 +149,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
 
   const currency0 = unwrappedToken(weightedPair.token0)
   const currency1 = unwrappedToken(weightedPair.token1)
+  const {onSetFee, onSetWeightA} = useBurnActionHandlers()
 
   const [showMore, setShowMore] = useState(false)
 
@@ -233,7 +237,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
             <Flex flexDirection="column">
               <Button
                 as={Link}
-                to={`/remove/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}
+                to={`/remove/${weightedPair.weight0}-${currencyId(chainId, currency0)}/${weightedPair.weight1}-${currencyId(chainId, currency1)}/${weightedPair.fee0}`}
                 variant="primary"
                 width="100%"
                 mb="8px"
@@ -242,6 +246,10 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
               </Button>
               <Button
                 as={Link}
+                // onClick={()=>{
+                //   onSetFee(weightedPair?.fee0.toString())
+                //   onSetWeightA(weightedPair?.weight0.toString())
+                // }}
                 to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
