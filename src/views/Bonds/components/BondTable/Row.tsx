@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
-import { useMatchBreakpoints } from '@requiemswap/uikit'
+import { useMatchBreakpoints, Text } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
 import { useBondUser } from 'state/bonds/hooks'
@@ -41,6 +41,7 @@ const cells = {
   details: Details,
   multiplier: Multiplier,
   liquidity: Liquidity,
+
 }
 
 const CellInner = styled.div`
@@ -125,6 +126,30 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     </CellInner>
                   </td>
                 )
+              case 'price':
+                return (
+                  <td key={key}>
+                    <CellInner>
+                      <CellLayout label={t('Price')}>
+                        <Text>
+                          {props.price}
+                        </Text>
+                      </CellLayout>
+                    </CellInner>
+                  </td>
+                )
+                case 'purchased':
+                  return (
+                    <td key={key}>
+                      <CellInner>
+                        <CellLayout label={t('Purchased')}>
+                          <Text>
+                            {props.purchased}
+                          </Text>
+                        </CellLayout>
+                      </CellInner>
+                    </td>
+                  )
               default:
                 return (
                   <td key={key}>

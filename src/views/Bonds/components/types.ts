@@ -87,10 +87,23 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
   },
   {
     id: 6,
+    name: 'price',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 7,
+    name: 'purchased',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 8,
     name: 'details',
     sortable: true,
     label: '',
   },
+
 ]
 
 
