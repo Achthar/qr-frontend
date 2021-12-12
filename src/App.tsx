@@ -10,11 +10,10 @@ import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
 import Web3ReactManager from 'components/Web3ReactManager'
 import Popups from 'components/Popups'
-// import Menu from './components/Menu'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
 import { ToastListener } from './contexts/ToastsContext'
 import PageLoader from './components/Loader/PageLoader'
-// import EasterEgg from './components/EasterEgg'
+
 import history from './routerHistory'
 // Views included in the main bundle
 // import Swap from './views/Swap' // weighted + stable
@@ -44,7 +43,7 @@ const Liquidity = lazy(() => import('./views/Pool/poolList'))
 const LiquidityV2 = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
 const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
-const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidityV2'))
+const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
 const RemoveStableLiquidity = lazy(() => import('./views/RemoveStableLiquidity'))
 
 // This config is required for number formatting
