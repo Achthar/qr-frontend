@@ -2,16 +2,13 @@ import { configureStore } from '@reduxjs/toolkit'
 import { save, load } from 'redux-localstorage-simple'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import application from './application/reducer'
-import farmsReducer from './farms'
-import poolsReducer from './pools'
+import bondReducer from './bonds'
 import blockReducer from './block'
 import votingReducer from './voting'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
-import swap from './swap/reducer'
 import swapV3 from './swapV3/reducer'
-import mint from './mint/reducer'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
@@ -29,17 +26,14 @@ const store = configureStore({
     globalNetwork,
     application,
     block: blockReducer,
-    farms: farmsReducer,
-    pools: poolsReducer,
+    bonds: bondReducer,
     voting: votingReducer,
     userBalances,
  
     // Exchange
     user,
     transactions,
-    swap,
     swapV3,
-    mint,
     mintStables,
     mintWeightedPair,
     burn,

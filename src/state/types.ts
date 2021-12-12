@@ -11,7 +11,8 @@ import {
   PoolConfig,
   Team,
   SerializedBigNumber,
-  TranslatableText
+  TranslatableText,
+  BondConfig
 } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
@@ -21,26 +22,7 @@ export interface BigNumberToJson {
   hex: string
 }
 
-
-
 // export type SerializedBigNumber = string
-
-export interface Farm extends FarmConfig {
-  tokenAmountMc?: SerializedBigNumber
-  quoteTokenAmountMc?: SerializedBigNumber
-  tokenAmountTotal?: SerializedBigNumber
-  quoteTokenAmountTotal?: SerializedBigNumber
-  lpTotalInQuoteToken?: SerializedBigNumber
-  lpTotalSupply?: SerializedBigNumber
-  tokenPriceVsQuote?: SerializedBigNumber
-  poolWeight?: SerializedBigNumber
-  userData?: {
-    allowance: string
-    tokenBalance: string
-    stakedBalance: string
-    earnings: string
-  }
-}
 
 export interface Pool extends PoolConfig {
   totalStaked?: BigNumber
@@ -73,6 +55,47 @@ export interface Profile {
 }
 
 // Slices states
+
+export interface Farm extends FarmConfig {
+  tokenAmountMc?: SerializedBigNumber
+  quoteTokenAmountMc?: SerializedBigNumber
+  tokenAmountTotal?: SerializedBigNumber
+  quoteTokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber
+  userData?: {
+    allowance: string
+    tokenBalance: string
+    stakedBalance: string
+    earnings: string
+  }
+}
+
+export interface Bond extends BondConfig {
+  tokenAmountMc?: SerializedBigNumber
+  quoteTokenAmountMc?: SerializedBigNumber
+  tokenAmountTotal?: SerializedBigNumber
+  quoteTokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber,
+  userData?: {
+    allowance: string
+    tokenBalance: string
+    stakedBalance: string
+    earnings: string
+  }
+}
+
+export interface BondsState {
+  data: Bond[]
+  loadArchivedBondsData: boolean
+  userDataLoaded: boolean
+}
+
 
 export interface FarmsState {
   data: Farm[]
@@ -498,8 +521,8 @@ export type UserTicketsResponse = [ethers.BigNumber[], number[], boolean[]]
 export interface State {
   achievements: AchievementState
   block: BlockState
-  farms: FarmsState
-  pools: PoolsState
+  bonds: BondsState
+  // pools: PoolsState
   predictions: PredictionsState
   profile: ProfileState
   teams: TeamsState

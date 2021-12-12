@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Button, Text, AutoRenewIcon } from '@requiemswap/uikit'
-import { Field } from 'state/swap/actions'
+import { Field } from 'state/swapV3/actions'
 import {
   computeSlippageAdjustedAmountsV3,
   computeTradeV3PriceBreakdown,

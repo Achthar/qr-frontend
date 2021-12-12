@@ -1,4 +1,7 @@
 import BigNumber from 'bignumber.js'
+import { ChainId } from '@requiemswap/sdk'
+import { ethers } from 'ethers'
+import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 
 export type TranslatableText =
   | string
@@ -122,6 +125,88 @@ export interface FarmConfig {
     endBlock: number
   }
 }
+
+// ------- bond interfaces 
+
+interface BondOpts {
+  bondId: string
+  name: string; // Internal name used for references
+  displayName: string; // Displayname on UI
+  isBondable: Available; // aka isBondable => set false to hide
+  isClaimable: Available; // set false to hide
+  bondIconSvg: React.ReactNode; //  SVG path for icons
+  bondContractABI: ethers.ContractInterface; // ABI for contract
+  reserveAddress: Address;
+  bondAddress: Address;
+  bondToken: string; // Unused, but native token to buy the bond.
+  payoutToken: string; // Token the user will receive - currently OHM on ethereum, wsOHM on arbitrum
+}
+
+export enum BondType {
+  StableAsset,
+  LP,
+}
+
+
+export interface Available {
+  [ChainId.AVAX_MAINNET]: boolean;
+  [ChainId.AVAX_TESTNET]: boolean;
+}
+
+export interface BondConfig {
+  bondId: number;
+  name: string;
+  displayName: string;
+  isBondable: Available;
+  isClaimable: Available;
+  type: BondType;
+  bondIconSvg: React.ReactNode;
+  // bondContractABI: ethers.ContractInterface; // Bond ABI
+  reserveAddress: Address;
+  bondAddress: Address;
+  bondToken: string;
+  payoutToken: string;
+  // The following two fields will differ on how they are set depending on bond type
+  isLP: boolean;
+  // reserveContract: ethers.ContractInterface; // Token ABI
+  displayUnits: string;
+}
+
+
+// Keep all LP specific fields/logic within the LPBond class
+export interface LPBondOpts extends BondOpts {
+  reserveContract: ethers.ContractInterface;
+  lpUrl: string;
+}
+
+
+export interface StableBondConfig extends BondConfig {
+  // readonly isLP = false;
+  reserveContract: ethers.ContractInterface;
+  displayUnits: string;
+
+}
+
+export interface CustomBondConfig extends BondConfig {
+  isLP: boolean;
+  reserveContract: ethers.ContractInterface;
+  displayUnits: string;
+  lpUrl: string;
+}
+
+// These are special bonds that have different valuation methods
+export interface CustomBondOpts extends BondOpts {
+  reserveContract: ethers.ContractInterface;
+  bondType: number;
+  lpUrl: string;
+  customTreasuryBalanceFunc: (
+    this: CustomBondConfig,
+    chainId: number,
+    provider: StaticJsonRpcProvider,
+  ) => Promise<number>;
+}
+
+
 
 export interface PoolConfig {
   sousId: number

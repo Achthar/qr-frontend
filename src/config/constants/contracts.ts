@@ -163,6 +163,12 @@ export const addresses = {
   },
   stableLp: {
     43113: '0x6a3a5f06aaa453b56ac44e84d87d9e3e3a3d6ab2'
+  },
+  bond:{
+    43113: ''
+  },
+  reserve:{
+    43113:''
   }
 }
 

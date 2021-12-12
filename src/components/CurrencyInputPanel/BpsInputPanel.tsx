@@ -25,11 +25,11 @@ const InputRow = styled.div<{ selected: boolean }>`
 const LabelRow = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  align-items: right;
+  align-items: left;
   color: ${({ theme }) => theme.colors.text};
   font-size: 0.75rem;
   line-height: 1rem;
-  padding: 0.75rem 1rem 0 1rem;
+  margin-left: 5px;
 `
 const InputPanel = styled.div<{ width: string }>`
   display: flex;
@@ -46,6 +46,7 @@ const Container = styled.div<{ hideInput: boolean, onHover: boolean, borderRadiu
   border-radius: ${(props) => props.borderRadius};
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
+  width: 80px;
   &:hover 
   ${({ onHover }) => (onHover ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
 `
@@ -72,27 +73,20 @@ export default function BpsInputPanel({
   return (
     <InputPanel id={id} width={width}>
       <Container hideInput={false} onHover={onHover} borderRadius={borderRadius}>
-        <LabelRow >
-          {label}
-        </LabelRow>
-
-        <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
-
-          <>
-            <BpsInput
-              style={{ paddingLeft: 30 }}
-              className="fee-bps-input"
-              value={value}
-              onUserInput={(val) => {
-                onUserInput(val)
-              }}
-              align="left"
-            />
-          </>
-
-
-        </InputRow>
-
+        <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
+          <LabelRow >
+            {label}
+          </LabelRow>
+          <BpsInput
+            style={{ paddingLeft: 2, paddingRight: 2 }}
+            className="fee-bps-input"
+            value={value}
+            onUserInput={(val) => {
+              onUserInput(val)
+            }}
+            align="right"
+          />
+        </Flex>
       </Container>
     </InputPanel >
   )

@@ -7,7 +7,7 @@ import { BigNumber } from 'ethers'
 
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
-import { tryParseAmount } from '../swap/hooks'
+import { tryParseAmount } from '../swapV3/hooks'
 
 import {
   StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputLp, setTypeSingleInputs,

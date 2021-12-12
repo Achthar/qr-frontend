@@ -7,7 +7,7 @@ import useTotalSupply from 'hooks/useTotalSupply'
 
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
-import { tryParseAmount } from '../swap/hooks'
+import { tryParseAmount } from '../swapV3/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { WeightedField, typeInput, typeInputWeight, typeInputFee } from './actions'
 

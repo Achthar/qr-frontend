@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Text, PancakeToggle, Toggle, Flex, Modal, InjectedModalProps } from '@requiemswap/uikit'
 import { useAudioModeManager, useExpertModeManager, useUserSingleHopOnly } from 'state/user/hooks'
 import { useTranslation } from 'contexts/Localization'
-import { useSwapActionHandlers } from 'state/swap/hooks'
+import { useSwapV3ActionHandlers } from 'state/swapV3/hooks'
 import usePersistState from 'hooks/usePersistState'
 import useTheme from 'hooks/useTheme'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -28,7 +28,7 @@ const SettingsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
   const [expertMode, toggleExpertMode] = useExpertModeManager()
   const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly()
   const [audioPlay, toggleSetAudioMode] = useAudioModeManager()
-  const { onChangeRecipient } = useSwapActionHandlers(chainId)
+  const { onChangeRecipient } = useSwapV3ActionHandlers(chainId)
 
   const { t } = useTranslation()
   const { theme } = useTheme()

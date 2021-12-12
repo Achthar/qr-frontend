@@ -1,7 +1,7 @@
 import { Currency, currencyEquals, ETHER, WETH, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { tryParseAmount } from '../state/swap/hooks'
+import { tryParseAmount } from '../state/swapV3/hooks'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { useCurrencyBalance } from '../state/wallet/hooks'
 import { useWETHContract } from './useContract'

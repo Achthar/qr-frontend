@@ -36,7 +36,7 @@ interface RoiCalculatorModalProps {
   multiplier?: string
   autoCompoundFrequency?: number
   performanceFee?: number
-  isFarm?: boolean
+  isBond?: boolean
   initialValue?: string
 }
 
@@ -82,7 +82,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
   earningTokenSymbol = 'CAKE',
   autoCompoundFrequency = 0,
   performanceFee = 0,
-  isFarm = false,
+  isBond = false,
 }) => {
   const { t } = useTranslation()
   const { account } = useActiveWeb3React()
@@ -118,7 +118,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
   }, [initialValue, setPrincipalFromTokenValue])
 
   const { targetRef, tooltip, tooltipVisible } = useTooltip(
-    isFarm
+    isBond
       ? t('“My Balance” here includes both LP Tokens in your wallet, and LP Tokens already staked in this farm.')
       : t(
           '“My Balance” here includes both %assetSymbol% in your wallet, and %assetSymbol% already staked in this pool.',
@@ -237,7 +237,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
         </Flex>
       </ScrollableContainer>
       <RoiCalculatorFooter
-        isFarm={isFarm}
+        isBond={isBond}
         apr={apr}
         displayApr={displayApr}
         autoCompoundFrequency={autoCompoundFrequency}

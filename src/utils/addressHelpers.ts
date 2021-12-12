@@ -80,6 +80,14 @@ export const getStableLpAddress = (chainId:number) => {
   return getAddress(chainId, addresses.stableLp)
 } 
 
+export const getAddressForBond = (chainId: number) =>{
+  return getAddress(chainId, addresses.bond);
+}
+
+export const getAddressForReserve = (chainId: number) => {
+  return getAddress(chainId, addresses.reserve)
+}
+
 /*
 export const getCakeAddress = () => {
   return tokens.cake.address

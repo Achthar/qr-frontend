@@ -63,7 +63,6 @@ export default function WeightedPairFinder() {
 
   const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange), 99999)
 
-
   const constellation = useMemo(() =>
     Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
     [addressesRange, allConstellations]
@@ -133,7 +132,7 @@ export default function WeightedPairFinder() {
           <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
             <PercentageInputPanel
               width='10px'
-              borderRadius='2px'
+              borderRadius='13px'
               value={String(weight0)}
               onUserInput={value => setWeight0(Number(value))}
               label='Weight'
@@ -163,7 +162,7 @@ export default function WeightedPairFinder() {
 
               <BpsInputPanel
                 width='20px'
-                borderRadius='2px'
+                borderRadius='16px'
                 value={String(fee)}
                 onUserInput={value => setFee(Number(value))}
                 label='fee'
@@ -176,7 +175,7 @@ export default function WeightedPairFinder() {
           <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
             <PercentageInputPanel
               width='10px'
-              borderRadius='2px'
+              borderRadius='16px'
               value={String(100 - weight0)}
               onUserInput={value => null}
               label='Weight'

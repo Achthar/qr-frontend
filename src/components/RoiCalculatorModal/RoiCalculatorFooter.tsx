@@ -28,7 +28,7 @@ const BulletList = styled.ul`
 `
 
 interface RoiCalculatorFooterProps {
-  isFarm: boolean
+  isBond: boolean
   apr: number
   displayApr: string
   autoCompoundFrequency: number
@@ -39,7 +39,7 @@ interface RoiCalculatorFooterProps {
 }
 
 const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
-  isFarm,
+  isBond,
   apr,
   displayApr,
   autoCompoundFrequency,
@@ -69,7 +69,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
     { placement: 'top-end', tooltipOffset: [20, 10] },
   )
 
-  const gridRowCount = isFarm ? 4 : 2
+  const gridRowCount = isBond ? 4 : 2
   const apy = (getApy(apr, autoCompoundFrequency > 0 ? autoCompoundFrequency : 1, 365, performanceFee) * 100).toFixed(2)
 
   return (
@@ -80,7 +80,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
       {isExpanded && (
         <Box px="8px">
           <Grid gridTemplateColumns="2.5fr 1fr" gridRowGap="8px" gridTemplateRows={`repeat(${gridRowCount}, auto)`}>
-            {isFarm && (
+            {isBond && (
               <>
                 <Text color="textSubtle" small>
                   {t('APR (incl. LP rewards)')}
@@ -91,7 +91,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
               </>
             )}
             <Text color="textSubtle" small>
-              {isFarm ? t('Base APR (CAKE yield only)') : t('APR')}
+              {isBond ? t('Base APR (CAKE yield only)') : t('APR')}
             </Text>
             <Text small textAlign="right">
               {apr.toFixed(2)}%
@@ -104,7 +104,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
             <Text small textAlign="right">
               {apy}%
             </Text>
-            {isFarm && (
+            {isBond && (
               <>
                 <Text color="textSubtle" small>
                   {t('Farm Multiplier')}
@@ -127,7 +127,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
                 {t('Calculated based on current rates.')}
               </Text>
             </li>
-            {isFarm && (
+            {isBond && (
               <li>
                 <Text fontSize="12px" textAlign="center" color="textSubtle" display="inline">
                   {t('LP rewards: 0.17% trading fees, distributed proportionally among LP token holders.')}

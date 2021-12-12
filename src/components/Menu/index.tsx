@@ -3,7 +3,6 @@ import { Menu as UikitMenu } from '@requiemswap/uikit'
 import { languageList } from 'config/localization/languages'
 import { useTranslation } from 'contexts/Localization'
 import useTheme from 'hooks/useTheme'
-import { usePriceCakeBusd } from 'state/farms/hooks'
 import config from './config'
 import UserMenu from './UserMenu'
 import GlobalSettings from './GlobalSettings'
@@ -12,7 +11,7 @@ import { useCakeBusdPriceNumber } from '../../hooks/useBUSDPrice'
 
 const Menu = (props) => {
   const { isDark, toggleTheme } = useTheme()
-  const cakePriceUsd = useCakeBusdPriceNumber(5)
+  const reqtPriceUsd = useCakeBusdPriceNumber(5)
   const  profile  = null
   const { currentLanguage, setLanguage, t } = useTranslation()
 
@@ -25,7 +24,7 @@ const Menu = (props) => {
       currentLang={currentLanguage.code}
       langs={[]}
       setLang={undefined}
-      cakePriceUsd={cakePriceUsd}
+      reqtPriceUsd={reqtPriceUsd}
       links={config(t)}
       profile={{
         username: profile?.username,

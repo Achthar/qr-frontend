@@ -4,7 +4,7 @@ import { Button, Text } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { RowBetween, RowFixed } from '../../components/Layout/Row'
 import { CurrencyLogo } from '../../components/Logo'
-import { Field } from '../../state/mint/actions'
+import { WeightedField } from '../../state/mintWeightedPair/actions'
 
 function ConfirmAddModalBottom({
   chainId,
@@ -18,8 +18,8 @@ function ConfirmAddModalBottom({
   chainId: number,
   noLiquidity?: boolean
   price?: Fraction
-  currencies: { [field in Field]?: Currency }
-  parsedAmounts: { [field in Field]?: CurrencyAmount }
+  currencies: { [field in WeightedField]?: Currency }
+  parsedAmounts: { [field in WeightedField]?: CurrencyAmount }
   poolTokenPercentage?: Percent
   onAdd: () => void
 }) {
@@ -27,29 +27,29 @@ function ConfirmAddModalBottom({
   return (
     <>
       <RowBetween>
-        <Text>{t('%asset% Deposited', { asset: currencies[Field.CURRENCY_A]?.symbol })}</Text>
+        <Text>{t('%asset% Deposited', { asset: currencies[WeightedField.CURRENCY_A]?.symbol })}</Text>
         <RowFixed>
-          <CurrencyLogo chainId={chainId} currency={currencies[Field.CURRENCY_A]} style={{ marginRight: '8px' }} />
-          <Text>{parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}</Text>
+          <CurrencyLogo chainId={chainId} currency={currencies[WeightedField.CURRENCY_A]} style={{ marginRight: '8px' }} />
+          <Text>{parsedAmounts[WeightedField.CURRENCY_A]?.toSignificant(6)}</Text>
         </RowFixed>
       </RowBetween>
       <RowBetween>
-        <Text>{t('%asset% Deposited', { asset: currencies[Field.CURRENCY_B]?.symbol })}</Text>
+        <Text>{t('%asset% Deposited', { asset: currencies[WeightedField.CURRENCY_B]?.symbol })}</Text>
         <RowFixed>
-          <CurrencyLogo chainId={chainId} currency={currencies[Field.CURRENCY_B]} style={{ marginRight: '8px' }} />
-          <Text>{parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}</Text>
+          <CurrencyLogo chainId={chainId} currency={currencies[WeightedField.CURRENCY_B]} style={{ marginRight: '8px' }} />
+          <Text>{parsedAmounts[WeightedField.CURRENCY_B]?.toSignificant(6)}</Text>
         </RowFixed>
       </RowBetween>
       <RowBetween>
         <Text>{t('Rates')}</Text>
         <Text>
-          {`1 ${currencies[Field.CURRENCY_A]?.symbol} = ${price?.toSignificant(4)} ${currencies[Field.CURRENCY_B]?.symbol
+          {`1 ${currencies[WeightedField.CURRENCY_A]?.symbol} = ${price?.toSignificant(4)} ${currencies[WeightedField.CURRENCY_B]?.symbol
             }`}
         </Text>
       </RowBetween>
       <RowBetween style={{ justifyContent: 'flex-end' }}>
         <Text>
-          {`1 ${currencies[Field.CURRENCY_B]?.symbol} = ${price?.invert().toSignificant(4)} ${currencies[Field.CURRENCY_A]?.symbol
+          {`1 ${currencies[WeightedField.CURRENCY_B]?.symbol} = ${price?.invert().toSignificant(4)} ${currencies[WeightedField.CURRENCY_A]?.symbol
             }`}
         </Text>
       </RowBetween>

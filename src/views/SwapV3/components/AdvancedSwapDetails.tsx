@@ -1,7 +1,7 @@
 import React from 'react'
 import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
-import { Field } from 'state/swap/actions'
+import { Field } from 'state/swapV3/actions'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { computeSlippageAdjustedAmountsV3, computeTradeV3PriceBreakdown } from 'utils/pricesV3'
 import { AutoColumn } from 'components/Layout/Column'

@@ -6,7 +6,6 @@ import BigNumber from 'bignumber.js'
 import { useTranslation } from 'contexts/Localization'
 import useEagerConnect from 'hooks/useEagerConnect'
 import { usePollBlockNumber } from 'state/block/hooks'
-import { usePollCoreFarmData } from 'state/farms/hooks'
 import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
 import Web3ReactManager from 'components/Web3ReactManager'
@@ -18,16 +17,9 @@ import PageLoader from './components/Loader/PageLoader'
 // import EasterEgg from './components/EasterEgg'
 import history from './routerHistory'
 // Views included in the main bundle
-import Pools from './views/Pools'
 // import Swap from './views/Swap' // weighted + stable
-import SwapV2 from './views/SwapV2' // uniswapV2
 import SwapV3 from './views/SwapV3' // uniswapv2 + stable
 
-import {
-  RedirectDuplicateTokenIdsV2,
-  RedirectOldAddLiquidityPathStructureV2,
-  RedirectToAddLiquidityV2,
-} from './views/AddLiquidityV2/redirects'
 
 import {
   RedirectDuplicateTokenIds,
@@ -35,8 +27,6 @@ import {
   RedirectToAddLiquidity,
 } from './views/AddLiquidity/redirects'
 
-import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidityV2/redirects'
-import { RedirectPathToSwapOnly, RedirectToSwap } from './views/SwapV2/redirects'
 import CustomMenu from './CustomNav'
 import CustomNav from './CustomMenu'
 import Balances from './Balances'
@@ -46,10 +36,9 @@ import GlobalStyle from './style/Global'
 // Only pool is included in the main bundle because of it's the most visited page
 const Home = lazy(() => import('./views/Home'))
 // const Balances = lazy(() => import('./views/Balances'))
-const Farms = lazy(() => import('./views/Farms'))
+const Bonds = lazy(() => import('./views/Bonds'))
 const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
-const AddLiquidityV2 = lazy(() => import('./views/AddLiquidityV2'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool/poolList'))
 const LiquidityV2 = lazy(() => import('./views/Pool'))
@@ -68,7 +57,6 @@ const App: React.FC = () => {
   usePollBlockNumber()
   useEagerConnect()
   useFetchProfile()
-  usePollCoreFarmData()
 
   return (
     <Router history={history}>
@@ -86,29 +74,17 @@ const App: React.FC = () => {
           <Route path="/" exact>
             <Home />
           </Route>
-          <Route path="/farms">
-            <Farms />
+          <Route path="/bonds">
+            <Bonds />
           </Route>
-          <Route path="/pools">
-            <Pools />
-          </Route>
-          {/* <Route path="/ifo">
-              <Ifos />
-            </Route> */}
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-          <Route exact strict path="/exchangeOld" component={SwapV2} />
           <Route exact strict path="/exchange" component={SwapV3} />
-          <Route exact strict path="/exchange/:outputCurrency" component={RedirectToSwap} />
-          <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
           <Route exact strict path="/findV2" component={PoolFinder} />
           <Route exact strict path="/find" component={WeightedPairFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
           <Route exact strict path="/liquidityV2" component={LiquidityV2} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/add" component={AddLiquidity} />
-          <Route exact path="/addV2" component={AddLiquidityV2} />
-          <Route exact path="/addV2/:currencyIdA" component={RedirectOldAddLiquidityPathStructureV2} />
-          <Route exact path="/addV2/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIdsV2} />
           <Route exact path="/add/stable" component={AddStableLiquidity} />
           <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
           <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />

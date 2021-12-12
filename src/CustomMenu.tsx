@@ -25,7 +25,7 @@ const CustomMenu: React.FC = () => {
       <div style={{ marginRight: 10 }}>
         <CustomNav />
       </div>
-      <GlobalSettings />
+      {/* <GlobalSettings /> */}
       <div style={{ marginRight: 10 }}>
         <ChainIdSelector />
       </div>

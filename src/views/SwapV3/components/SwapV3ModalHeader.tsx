@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { TradeV4, TradeType } from '@requiemswap/sdk'
 import { Button, Text, ErrorIcon, ArrowDownIcon } from '@requiemswap/uikit'
-import { Field } from 'state/swap/actions'
+import { Field } from 'state/swapV3/actions'
 import { isAddress, shortenAddress } from 'utils'
 import { computeSlippageAdjustedAmountsV3, computeTradeV3PriceBreakdown, warningSeverity } from 'utils/pricesV3'
 import { AutoColumn } from 'components/Layout/Column'

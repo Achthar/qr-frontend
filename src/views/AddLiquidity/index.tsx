@@ -472,7 +472,7 @@ export default function AddLiquidity({
                 <span>
                   <CurrencyInputPanel
                     borderRadius='5px'
-                    width='300px'
+                    width='250px'
                     value={formattedAmounts[WeightedField.CURRENCY_A]}
                     onUserInput={onFieldAInput}
                     onMax={() => {
@@ -508,7 +508,7 @@ export default function AddLiquidity({
                   <span>
                     <BpsInputPanel
                       borderRadius='5px'
-                      width='5%'
+                      width='30pxs'
                       value={fee}
                       onUserInput={onFeeInput}
                       label='Fee'
@@ -523,7 +523,7 @@ export default function AddLiquidity({
               <span>
                 <CurrencyInputPanel
                   borderRadius='5px'
-                  width='300px'
+                  width='250px'
                   value={formattedAmounts[WeightedField.CURRENCY_B]}
                   onUserInput={onFieldBInput}
                   onCurrencySelect={handleCurrencyBSelect}

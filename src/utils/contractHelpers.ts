@@ -20,7 +20,9 @@ import {
   getFarmAuctionAddress,
   getRequiemAddress,
   getStableSwapAddress,
-  getStableLpAddress
+  getStableLpAddress,
+  getAddressForReserve,
+  getAddressForBond
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -151,4 +153,16 @@ export const getStableSwapContract = (chainId: number, signer?: ethers.Signer | 
 export const getStableLpContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, new Interface(IERC20), getStableLpAddress(chainId), signer) as StableLpContract
   // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
+}
+
+export const getContractForReserve = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getAddressForReserve(chainId) || "";
+  const ABI = ''
+  return new ethers.Contract(bondAddress, ABI, signer);
+}
+
+export const getContractForBond = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getAddressForBond(chainId) || "";
+  const ABI = ''
+  return new ethers.Contract(bondAddress, ABI, signer);
 }

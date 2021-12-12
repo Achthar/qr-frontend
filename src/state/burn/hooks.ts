@@ -7,7 +7,7 @@ import { usePair } from 'hooks/usePairs'
 import useTotalSupply from 'hooks/useTotalSupply'
 
 import { AppDispatch, AppState } from '../index'
-import { tryParseAmount } from '../swap/hooks'
+import { tryParseAmount } from '../swapV3/hooks'
 import { useTokenBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
 

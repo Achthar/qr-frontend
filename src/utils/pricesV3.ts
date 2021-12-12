@@ -1,4 +1,5 @@
-import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, TradeV4 } from '@requiemswap/sdk'
+import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, TradeV4, WeightedPair } from '@requiemswap/sdk'
+import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import {
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
   ALLOWED_PRICE_IMPACT_HIGH,
@@ -6,7 +7,7 @@ import {
   ALLOWED_PRICE_IMPACT_MEDIUM,
 } from '../config/constants'
 
-import { Field } from '../state/swap/actions'
+import { Field } from '../state/swapV3/actions'
 import { basisPointsToPercent } from './index'
 
 const BASE_FEE = new Percent(JSBI.BigInt(25), JSBI.BigInt(10000))
@@ -29,9 +30,22 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
       ),
     )
 
-  // remove lp fees from price impact
-  const priceImpactWithoutFeeFraction = trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
-
+  let priceImpactWithoutFeeFraction;
+  if (
+    trade &&
+    trade.route &&
+    trade.route.pools[trade.route.pools.length - 1] instanceof WeightedPair  &&
+     !JSBI.equal((trade.route.pools[trade.route.pools.length - 1] as WeightedPair).weight0, JSBI.BigInt(50))
+  ) {
+    const weightedPair = trade.route.pools[trade.route.pools.length - 1] as WeightedPair
+    const outToken = wrappedCurrency(trade.route.output, trade.route.chainId)
+    const reserveOut = weightedPair.reserveOf(outToken)
+    priceImpactWithoutFeeFraction = reserveOut.subtract(wrappedCurrencyAmount(trade.outputAmount, trade.route.chainId)).divide(reserveOut.raw)
+  }
+  else {
+    // remove lp fees from price impact
+    priceImpactWithoutFeeFraction = trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
+  }
   // the x*y=k impact
   const priceImpactWithoutFeePercent = priceImpactWithoutFeeFraction
     ? new Percent(priceImpactWithoutFeeFraction?.numerator, priceImpactWithoutFeeFraction?.denominator)

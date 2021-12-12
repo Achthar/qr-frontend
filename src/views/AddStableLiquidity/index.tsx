@@ -30,7 +30,6 @@ import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
-import { Field } from 'state/mint/actions'
 import { StablesField } from 'state/mintStables/actions'
 import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
@@ -139,7 +138,7 @@ export default function AddStableLiquidity({
     }
   }, {})
 
-  const atMaxAmountsStables: { [field in Field]?: StablesField } = [
+  const atMaxAmountsStables: { [field in StablesField]?: StablesField } = [
     StablesField.CURRENCY_1,
     StablesField.CURRENCY_2,
     StablesField.CURRENCY_3,
