@@ -19,12 +19,6 @@ export const Wrapper = styled.div`
   position: relative;
 `;
 
-const SelectorWrapper = styled.div`
-  @media screen and (min-width: 720px) {
-    position: relative;
-  }
-`
-
 export const ActivatorButton = styled.button`
   height: 33px;
   background-color: ${({ theme }) => theme.colors.primary};
@@ -56,18 +50,7 @@ const Logo = styled.img`
   width: 20px;
   margin-right: 8px;
 `;
-const FlyoutRow = styled.div<{ active: boolean }>`
-  align-items: center;
-  background-color: ${({ active, theme }) => (active ? theme.colors.contrast : 'transparent')};
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  font-weight: 500;
-  justify-content: space-between;
-  padding: 6px 8px;
-  text-align: left;
-  width: 100%;
-`;
+
 const NetworkLabel = styled.div`
   flex: 1 1 auto;
   color: #c7c7c7;
@@ -102,7 +85,6 @@ const StyledLink = styled.a`
 const ActiveRowWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: 8px;
-  cursor: pointer;
   padding: 8px 0 8px 0;
   width: 100%;
 `;
@@ -130,48 +112,12 @@ const ActiveRowLinkList = styled.div`
   }
 `;
 
-const SelectorControls = styled.div<{ interactive: boolean }>`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.background};
-  border: 2px solid ${({ theme }) => theme.colors.cardBorder};
-  border-radius: 12px;
-  color: ${({ theme }) => theme.colors.text};
-  cursor: ${({ interactive }) => (interactive ? 'pointer' : 'auto')};
-  display: flex;
-  font-weight: 500;
-  justify-content: space-between;
-  padding: 6px 8px;
-`
 
 const LinkOutCircle = styled(ArrowDownCircle)`
   transform: rotate(230deg);
   width: 16px;
   height: 16px;
 `;
-
-
-const FlyoutMenu = styled.div`
-  align-items: flex-start;
-  background-color: ${({ theme }) => theme.colors.secondary};
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  font-size: 16px;
-  overflow: auto;
-  padding: 16px;
-  position: absolute;
-  top: 1px;
-  width: 272px;
-  z-index: 99;
-  & > *:not(:last-child) {
-    margin-bottom: 12px;
-  }
-  @media screen and (min-width: 720px) {
-    top: 50px;
-  }
-`
 
 const FlyoutHeader = styled.div`
   color: white;
@@ -261,7 +207,6 @@ const ChainIdSelector = () => {
          {chainId === targetChain && <FlyoutRowActiveIndicator />}
        </FlyoutRow> */
     )
-    const helpCenterLink = "https://help.uniswap.org/en/collections/3137787-uniswap-on-arbitrum"
 
     if (active && hasExtendedInfo) {
       return (
@@ -295,7 +240,7 @@ const ChainIdSelector = () => {
 
   // const activatorRef = React.useRef<HTMLButtonElement | null>(null);
   // const listRef = React.useRef<HTMLUListElement | null>(null);
-  // // const [isOpen, setIsOpen] = React.useState(false);
+  // const [isOpen, setIsOpen] = React.useState(false);
   // const [activeIndex, setActiveIndex] = React.useState(-1);
 
   // const handleClick = () => {
@@ -315,15 +260,20 @@ const ChainIdSelector = () => {
           chainId === 43113 ? 'Avalanche Testnet' : 'no Network'
   return (
     <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
+
+
+      {/* <Wrapper> */}
+
       <FlyoutHeader>
         Select a network
       </FlyoutHeader>
       <Row targetChain={ChainId.AVAX_MAINNET} />
       <Row targetChain={ChainId.AVAX_TESTNET} />
+
       {/* <Row targetChain={ChainId.BSC_MAINNET} /> */}
       <Row targetChain={ChainId.BSC_TESTNET} />
       <Row targetChain={ChainId.MATIC_TESTNET} />
-      {/* <Row targetChain={ChainId.ARBITRUM_TETSNET_RINKEBY} /> */}
+      {/* </Wrapper> */}
 
     </UIKitUserMenu>
   );
