@@ -35,7 +35,7 @@ const CustomNav: React.FC = () => {
     <div
       style={{
         position: 'relative',
-        top: '15px',
+        // top: '15px',
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
