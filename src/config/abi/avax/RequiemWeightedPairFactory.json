@@ -213,6 +213,30 @@
   {
     "inputs": [
       {
+        "internalType": "contract IERC20",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "token1",
+        "type": "address"
+      }
+    ],
+    "name": "getPairs",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "_tokenPairs",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "pair",
         "type": "address"

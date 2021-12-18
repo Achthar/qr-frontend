@@ -22,10 +22,10 @@ import {
 import { Interface } from '@ethersproject/abi'
 import { getMulticallAddress } from 'utils/addressHelpers'
 import { useNetworkState } from 'state/globalNetwork/hooks'
-
+import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
-import { WRAPPED_NETWORK_TOKENS, REQUIEM_WEIGHTED_PAIR_FACTORY } from '@requiemswap/sdk'
+import { WRAPPED_NETWORK_TOKENS, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../config/abi/ens-public-resolver.json'
 import ENS_ABI from '../config/abi/ens-registrar.json'
@@ -33,10 +33,11 @@ import { ERC20_BYTES32_ABI } from '../config/abi/erc20'
 import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
 import WAVAX_ABI from '../config/abi/avax/wavax.json'
+import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 import stableLp_AVAX from '../config/abi/avax/IERC20.json'
-import weightedFactoryABI from '../config/abi/avax/RequiemWeightedFactory.json'
+import weightedFactoryABI from '../config/abi/avax/RequiemWeightedPairFactory.json'
 import { getContract } from '../utils'
 import { ChainId } from '../config/index'
 
@@ -201,6 +202,10 @@ export function useStableLPContract(stableLpAddress?: string, withSignerIfPossib
   return useContract(stableLpAddress, stableLp_AVAX, withSignerIfPossible)
 }
 
-export function useWeightedFactoryContract(chainId:number): Contract | null {
-  return useContract(chainId ? REQUIEM_WEIGHTED_PAIR_FACTORY[chainId] : undefined, new Interface(weightedFactoryABI), false)
+export function useWeightedFactoryContract(chainId: number): Contract | null {
+  return useContract(chainId ? WEIGHTED_FACTORY_ADDRESS[chainId] : undefined, new Interface(weightedFactoryABI), false)
+}
+
+export function useWeightedFormulaContract(chainId: number): Contract | null {
+  return useContract(chainId ? REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId] : undefined, new Interface(WEIGHTED_FORMULA_ABI), false)
 }

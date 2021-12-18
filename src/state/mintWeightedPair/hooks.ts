@@ -85,7 +85,7 @@ export function useDerivedMintWeightedPairInfo(
     liquidityMinted?: TokenAmount
     poolTokenPercentage?: Percent
     error?: string
-    fee:string
+    fee: string
 } {
     const { account, chainId } = useActiveWeb3React()
 
@@ -111,10 +111,10 @@ export function useDerivedMintWeightedPairInfo(
         [WeightedField.WEIGHT_B]: independentWeightField === WeightedField.WEIGHT_A ? String(dependentWeight) : typedWeight,
     }
 
-    console.log("WPAIRS",         currencies[WeightedField.CURRENCY_A],
-    currencies[WeightedField.CURRENCY_B],
-    Number(weights[WeightedField.WEIGHT_A]),
-    Number(typedFee))
+    // console.log("WPAIRS", currencies[WeightedField.CURRENCY_A],
+    //     currencies[WeightedField.CURRENCY_B],
+    //     Number(weights[WeightedField.WEIGHT_A]),
+    //     Number(typedFee))
     // pair
     const [weightedPairState, weightedPair] = useWeightedPair(
         currencies[WeightedField.CURRENCY_A],
@@ -123,11 +123,11 @@ export function useDerivedMintWeightedPairInfo(
         Number(typedFee)
     )
 
-    console.log( "WPLOG",       currencies[WeightedField.CURRENCY_A],
-        currencies[WeightedField.CURRENCY_B],
-        Number(weights[WeightedField.WEIGHT_A]),
-        Number(typedFee))
-        console.log("WP",weightedPair)
+    // console.log("WPLOG", currencies[WeightedField.CURRENCY_A],
+    //     currencies[WeightedField.CURRENCY_B],
+    //     Number(weights[WeightedField.WEIGHT_A]),
+    //     Number(typedFee))
+    // console.log("WP", weightedPair)
     const totalSupply = useTotalSupply(weightedPair?.liquidityToken)
 
     const noLiquidity: boolean =

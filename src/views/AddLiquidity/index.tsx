@@ -58,7 +58,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
-import { WeightedPairState, useWeightedPairsExist } from 'hooks/useWeightedPairs'
+import { WeightedPairState, useWeightedPairsExist, useGetWeightedPairs, useWeightedPairsData, useWeightedPairsDataLite } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from 'utils'
@@ -298,16 +298,36 @@ export default function AddLiquidity({
     [currencyA, currencyB, chainId]
   )
 
-  const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'], 99999)
+  // const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'], 99999)
 
+  const addressesRaw = useGetWeightedPairs([[currencyA, currencyB]], chainId)
+  // console.log("RES", addressesRaw)
 
-  const constellation = useMemo(() =>
-    Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
-    [addressesRange, allConstellations]
+  const validatedAddresses = useMemo(
+    () =>
+      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => !data[0] && data[1]) : []
+    ,
+    [addressesRaw]
   )
+  // const addresses = useMemo(
+  //   () =>
+  //   addressesRaw && addressesRaw.results ? weightedPairAddresses(wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId), STANDARD_WEIGHTS, STANDARD_FEES) : {}
+  //   ,
+  //   [currencyA, currencyB, chainId]
+  // )
+
+  const tA = wrappedCurrency(currencyA, chainId)
+  const tB = wrappedCurrency(currencyB, chainId)
+  console.log("tokens", tA, tB)
+  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], [validatedAddresses?.[0]?.[1]], chainId, 20)
+
+  // const constellation = useMemo(() =>
+  //   Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
+  //   [addressesRange, allConstellations]
+  // )
 
   // console.log("constellations", constellation)
-
+  console.log("NL", noLiquidity, isValid, error)
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -462,6 +482,9 @@ export default function AddLiquidity({
     'addLiquidityModal',
   )
 
+  const aIs0 = tA && tB && tA?.sortsBefore(tB ?? undefined)
+
+  console.log("PAIR", weightedPair)
   return (
     <Page>
       <Row width='200px' height='50px'>
@@ -676,38 +699,40 @@ export default function AddLiquidity({
               </AutoColumn>
             )}
           </AutoColumn>
-          {constellation.length > 0 && (
+          {weightedPairsAvailable.length > 0 && (
             <Box>
               <AutoColumn gap="sm" justify="center">
                 <Text bold fontSize='15px'>
                   Available constellations
                 </Text>
-                {constellation.map((id) => (
-                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                    <AutoColumn>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currencyA.symbol} ${id.split('-', 2)[0]}%`}
+                {weightedPairsAvailable.map((pairData) => (
+
+                  pairData[0] === WeightedPairState.EXISTS && (
+                    <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
+                      <AutoColumn>
+                        <Text fontSize='13px' width='100px'>
+                          {`${currencyA.symbol} ${aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString()}%`}
+                        </Text>
+                        <Text fontSize='13px' width='100px'>
+                          {`${currencyB.symbol} ${aIs0 ? pairData[1].weight1.toString() : pairData[1].weight0.toString()}%`}
+                        </Text>
+                      </AutoColumn>
+                      <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
+                        {`Fee ${pairData[1].fee0.toString()}Bps`}
                       </Text>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currencyB.symbol} ${100 - Number(id.split('-', 2)[0])}%`}
-                      </Text>
-                    </AutoColumn>
-                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                      {`Fee ${id.split('-', 2)[1]}Bps`}
-                    </Text>
-                    <StyledButton
-                      height='20px'
-                      endIcon={<ArrowUpIcon />}
-                      onClick={() => {
-                        feeInput(id.split('-', 2)[1])
-                        weightAInput(id.split('-', 2)[0])
-                      }}
-                    >
-                      <Text fontSize='15px'>
-                        Set
-                      </Text>
-                    </StyledButton>
-                  </Flex>
+                      <StyledButton
+                        height='20px'
+                        endIcon={<ArrowUpIcon />}
+                        onClick={() => {
+                          feeInput(pairData[1].fee0.toString())
+                          weightAInput(aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString())
+                        }}
+                      >
+                        <Text fontSize='15px'>
+                          Set
+                        </Text>
+                      </StyledButton>
+                    </Flex>)
                 ))}
               </AutoColumn>
             </Box>

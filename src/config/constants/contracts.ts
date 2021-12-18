@@ -159,10 +159,10 @@ export const addresses = {
     97: '0x3F9602593b4f7C67ab045DB51BbDEa94E40fA9Fe',
   },
   stableSwap: {
-    43113: '0xb76c5C977F48C45d3f3234798D0051bdcA6dc656'
+    43113: '0x1420e95763c97D8A8fA6AA32d1715074765812CD'
   },
   stableLp: {
-    43113: '0x6a3a5f06aaa453b56ac44e84d87d9e3e3a3d6ab2'
+    43113: '0x5a42f231cb718a646cec2f73882760b4e67128b3'
   },
   bond:{
     43113: ''
