@@ -88,65 +88,6 @@ export const getAddressForReserve = (chainId: number) => {
   return getAddress(chainId, addresses.reserve)
 }
 
-/*
-export const getCakeAddress = () => {
-  return tokens.cake.address
+export const getAddressForBondingCalculator = (chainId: number) =>{
+  return getAddress(chainId, addresses.bondingCalculator);
 }
-export const getMasterChefAddress = () => {
-  return addresses.masterChef
-}
-export const getMulticallAddress = () => {
-  return addresses.multiCall
-}
-export const getWbnbAddress = () => {
-  return tokens.wbnb.address
-}
-export const getLotteryV2Address = () => {
-  return addresses.lotteryV2
-}
-export const getPancakeProfileAddress = () => {
-  return addresses.pancakeProfile
-}
-export const getPancakeRabbitsAddress = () => {
-  return addresses.pancakeRabbits
-}
-export const getBunnyFactoryAddress = () => {
-  return addresses.bunnyFactory
-}
-export const getClaimRefundAddress = () => {
-  return addresses.claimRefund
-}
-export const getPointCenterIfoAddress = () => {
-  return addresses.pointCenterIfo
-}
-export const getBunnySpecialAddress = () => {
-  return addresses.bunnySpecial
-}
-export const getTradingCompetitionAddress = () => {
-  return addresses.tradingCompetition
-}
-export const getEasterNftAddress = () => {
-  return addresses.easterNft
-}
-export const getCakeVaultAddress = () => {
-  return addresses.cakeVault
-}
-export const getPredictionsAddress = () => {
-  return addresses.predictions
-}
-export const getChainlinkOracleAddress = () => {
-  return addresses.chainlinkOracle
-}
-export const getBunnySpecialCakeVaultAddress = () => {
-  return addresses.bunnySpecialCakeVault
-}
-export const getBunnySpecialPredictionAddress = () => {
-  return addresses.bunnySpecialPrediction
-}
-export const getBunnySpecialLotteryAddress = () => {
-  return addresses.bunnySpecialLottery
-}
-export const getFarmAuctionAddress = () => {
-  return addresses.farmAuction
-}
-*/

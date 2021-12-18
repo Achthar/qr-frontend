@@ -12,12 +12,12 @@ import ReactDom from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 // import * as fs from 'fs';
 // import { readFile } from 'fs'
-// import { swapSectionData, earnSectionData, cakeSectionData } from './components/SalesSection/data'
+// import { swapSectionData, earnSectionData, REQTSectionData } from './components/SalesSection/data'
 // import MetricsSection from './components/MetricsSection'
 // import SalesSection from './components/SalesSection'
 // import FarmsPoolsRow from './components/FarmsPoolsRow'
 // import Footer from './components/Footer'
-// import CakeDataRow from './components/CakeDataRow'
+// import REQTDataRow from './components/REQTDataRow'
 import Row from 'components/Row'
 import Column from 'components/Column'
 
@@ -143,8 +143,8 @@ const Home: React.FC = () => {
         index={2}
         hasCurvedDivider={false}
       >
-        <SalesSection {...cakeSectionData} />
-        <CakeDataRow />
+        <SalesSection {...REQTSectionData} />
+        <REQTDataRow />
       </PageSection> */}
       </PageSection>
     </>

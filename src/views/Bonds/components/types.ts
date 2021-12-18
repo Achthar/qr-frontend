@@ -42,9 +42,9 @@ export const MobileColumnSchema: ColumnsDefTypes[] = [
   },
   {
     id: 3,
-    name: 'apr',
+    name: 'roi',
     sortable: true,
-    label: 'APR',
+    label: 'ROI',
   },
   {
     id: 6,
@@ -62,25 +62,7 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
     label: '',
   },
   {
-    id: 2,
-    name: 'earned',
-    sortable: true,
-    label: 'Earned',
-  },
-  {
     id: 3,
-    name: 'apr',
-    sortable: true,
-    label: 'APR',
-  },
-  {
-    id: 4,
-    name: 'liquidity',
-    sortable: true,
-    label: 'Liquidity',
-  },
-  {
-    id: 5,
     name: 'multiplier',
     sortable: true,
     label: 'Multiplier',
@@ -99,6 +81,12 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
   },
   {
     id: 8,
+    name: 'roi',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 9,
     name: 'details',
     sortable: true,
     label: '',

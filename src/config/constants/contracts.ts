@@ -169,6 +169,9 @@ export const addresses = {
   },
   reserve:{
     43113:''
+  },
+  bondingCalculator:{
+    43113:''
   }
 }
 

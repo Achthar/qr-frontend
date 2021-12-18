@@ -7,7 +7,7 @@ import { useMatchBreakpoints, Text } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
 import { useBondUser } from 'state/bonds/hooks'
-
+import Roi, { RoiProps } from './Roi'
 import Apr, { AprProps } from './Apr'
 import Bond, { BondProps } from './Bond'
 import Earned, { EarnedProps } from './Earned'
@@ -19,14 +19,12 @@ import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
 
 export interface RowProps {
-  apr: AprProps
   bond: BondProps
   earned: EarnedProps
   multiplier: MultiplierProps
-  liquidity: LiquidityProps
   details: BondWithStakedValue
   price: number
-  roi: number
+  roi: RoiProps
   purchased: number
 }
 
@@ -35,12 +33,12 @@ interface RowPropsWithLoading extends RowProps {
 }
 
 const cells = {
-  apr: Apr,
   bond: Bond,
   earned: Earned,
   details: Details,
   multiplier: Multiplier,
   liquidity: Liquidity,
+  roi:Roi
 
 }
 
@@ -116,16 +114,16 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     </CellInner>
                   </td>
                 )
-              case 'apr':
-                return (
-                  <td key={key}>
-                    <CellInner>
-                      <CellLayout label={t('APR')}>
-                        <Apr {...props.apr} hideButton={isSmallerScreen} />
-                      </CellLayout>
-                    </CellInner>
-                  </td>
-                )
+              // case 'apr':
+              //   return (
+              //     <td key={key}>
+              //       <CellInner>
+              //         <CellLayout label={t('APR')}>
+              //           <Apr {...props.apr} hideButton={isSmallerScreen} />
+              //         </CellLayout>
+              //       </CellInner>
+              //     </td>
+              //   )
               case 'price':
                 return (
                   <td key={key}>
@@ -150,6 +148,18 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                       </CellInner>
                     </td>
                   )
+                  case 'roi':
+                    return (
+                      <td key={key}>
+                        <CellInner>
+                          <CellLayout label={t('ROI')}>
+                            <Text>
+                            <Roi {...props.roi} hideButton={isSmallerScreen} />
+                            </Text>
+                          </CellLayout>
+                        </CellInner>
+                      </td>
+                    )
               default:
                 return (
                   <td key={key}>
@@ -183,8 +193,8 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
               </CellLayout>
             </EarnedMobileCell>
             <AprMobileCell>
-              <CellLayout label={t('APR')}>
-                <Apr {...props.apr} hideButton />
+              <CellLayout label={t('ROI')}>
+                <Roi {...props.roi} hideButton />
               </CellLayout>
             </AprMobileCell>
           </tr>

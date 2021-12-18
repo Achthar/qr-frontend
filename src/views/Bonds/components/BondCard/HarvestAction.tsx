@@ -44,7 +44,7 @@ const HarvestAction: React.FC<BondCardActionsProps> = ({ earnings, bondId }) => 
             await onReward()
             toastSuccess(
               `${t('Harvested')}!`,
-              t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'CAKE' }),
+              t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'REQT' }),
             )
           } catch (e) {
             toastError(

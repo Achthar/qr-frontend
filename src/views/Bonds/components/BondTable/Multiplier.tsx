@@ -35,11 +35,11 @@ const Multiplier: React.FunctionComponent<MultiplierProps> = ({ multiplier }) =>
     <>
       <Text>
         {t(
-          'The Multiplier represents the proportion of CAKE rewards each farm receives, as a proportion of the CAKE produced each block.',
+          'The Multiplier represents the proportion of REQT rewards each farm receives, as a proportion of the REQT produced each block.',
         )}
       </Text>
       <Text my="24px">
-        {t('For example, if a 1x farm received 1 CAKE per block, a 40x farm would receive 40 CAKE per block.')}
+        {t('For example, if a 1x farm received 1 REQT per block, a 40x farm would receive 40 REQT per block.')}
       </Text>
       <Text>{t('This amount is already included in all APR calculations for the farm.')}</Text>
     </>

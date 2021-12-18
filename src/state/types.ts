@@ -74,7 +74,7 @@ export interface Farm extends FarmConfig {
 }
 
 export interface Bond extends BondConfig {
-  tokenAmountMc?: SerializedBigNumber
+  tokenAmount?: SerializedBigNumber
   quoteTokenAmountMc?: SerializedBigNumber
   tokenAmountTotal?: SerializedBigNumber
   quoteTokenAmountTotal?: SerializedBigNumber

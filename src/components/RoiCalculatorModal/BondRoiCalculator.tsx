@@ -21,11 +21,11 @@ import RoiCard from './RoiCard'
 import useRoiCalculatorReducer, { CalculatorMode, EditingCurrency } from './useRoiCalculatorReducer'
 import AnimatedArrow from './AnimatedArrow'
 
-interface RoiCalculatorModalProps {
+interface BondRoiCalculatorModalProps {
   onDismiss?: () => void
   onBack?: () => void
   earningTokenPrice: number
-  apr: number
+  roi: number
   displayApr?: string
   linkLabel: string
   linkHref: string
@@ -66,11 +66,11 @@ const FullWidthButtonMenu = styled(ButtonMenu)<{ disabled?: boolean }>`
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `
 
-const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
+const BondRoiCalculatorModal: React.FC<BondRoiCalculatorModalProps> = ({
   onDismiss,
   onBack,
   earningTokenPrice,
-  apr,
+  roi,
   displayApr,
   linkLabel,
   linkHref,
@@ -98,7 +98,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
     setCompoundingFrequency,
     setCalculatorMode,
     setTargetRoi,
-  } = useRoiCalculatorReducer(stakingTokenPrice, earningTokenPrice, apr, autoCompoundFrequency, performanceFee)
+  } = useRoiCalculatorReducer(stakingTokenPrice, earningTokenPrice, roi, autoCompoundFrequency, performanceFee)
 
   const { compounding, activeCompoundingIndex, stakingDuration, editingCurrency } = state.controls
   const { principalAsUSD, principalAsToken } = state.data
@@ -238,7 +238,7 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
       </ScrollableContainer>
       <RoiCalculatorFooter
         isBond={isBond}
-        apr={apr}
+        apr={roi}
         displayApr={displayApr}
         autoCompoundFrequency={autoCompoundFrequency}
         multiplier={multiplier}
@@ -250,4 +250,4 @@ const RoiCalculatorModal: React.FC<RoiCalculatorModalProps> = ({
   )
 }
 
-export default RoiCalculatorModal
+export default BondRoiCalculatorModal

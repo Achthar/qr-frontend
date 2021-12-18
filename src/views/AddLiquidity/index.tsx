@@ -83,10 +83,10 @@ const StyledButton = styled(Button)`
 
 export default function AddLiquidity({
   match: {
-    params: { currencyIdA, currencyIdB },
+    params: { weightA, weightB, fee, currencyIdA, currencyIdB },
   },
   history,
-}: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
+}: RouteComponentProps<{ weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
@@ -117,7 +117,7 @@ export default function AddLiquidity({
     liquidityMinted,
     poolTokenPercentage,
     error,
-    fee
+    fee: _fee
   } = useDerivedMintWeightedPairInfo(currencyA ?? undefined, currencyB ?? undefined)
 
   const {
@@ -243,7 +243,7 @@ export default function AddLiquidity({
           wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           weights[tokenBIsETH ? WeightedField.WEIGHT_B : WeightedField.WEIGHT_A], // weight Token A
-          fee, // fee
+          _fee, // _fee
           account
         ]
         value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
@@ -256,7 +256,7 @@ export default function AddLiquidity({
           parsedAmountA.raw.toString(),
           parsedAmountB.raw.toString(),
           weights[WeightedField.WEIGHT_A], // weight Token A
-          fee, // fee
+          _fee, // _fee
           account
         ]
         value = null
@@ -305,6 +305,8 @@ export default function AddLiquidity({
     Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
     [addressesRange, allConstellations]
   )
+
+  // console.log("constellations", constellation)
 
   const modalHeader = () => {
     return noLiquidity ? (
@@ -371,28 +373,69 @@ export default function AddLiquidity({
     (currencyA_: Currency) => {
       const newCurrencyIdA = currencyId(chainId, currencyA_)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/add/${currencyIdB}/${currencyIdA}`)
+        history.push(`/add/${weightB}-${currencyId(chainId, currencyA_)}/${weightA}-${currencyIdA}/${_fee}`)
       } else {
-        history.push(`/add/${newCurrencyIdA}/${currencyIdB}`)
+        history.push(`/add/${weightA}-${newCurrencyIdA}/${weightB}-${currencyIdB}/${_fee}`)
       }
     },
-    [chainId, currencyIdB, history, currencyIdA],
+    [chainId, currencyIdB, history, currencyIdA, weightA, weightB, _fee],
   )
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {
       const newCurrencyIdB = currencyId(chainId, currencyB_)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/add/${currencyIdB}/${newCurrencyIdB}`)
+          history.push(`/add/${weightB}-${currencyIdB}/${weightA}-${newCurrencyIdB}/${_fee}`)
         } else {
-          history.push(`/add/${newCurrencyIdB}`)
+          history.push(`/add/${weightB}-${newCurrencyIdB}/${_fee}`)
         }
       } else {
-        history.push(`/add/${currencyIdA || NETWORK_CCY[chainId].symbol}/${newCurrencyIdB}`)
+        history.push(`/add/${weightA}-${currencyIdA || NETWORK_CCY[chainId].symbol}/${weightB}-${newCurrencyIdB}/${_fee}`)
       }
     },
-    [chainId, currencyIdA, history, currencyIdB],
+    [chainId, currencyIdA, history, currencyIdB, weightA, weightB, _fee],
   )
+
+  const handleWeightASelect = useCallback(
+    (weight: string) => {
+
+      history.push(`/add/${weight}-${currencyIdA}/${String(100 - Number(weight))}-${currencyIdB}/${_fee}`)
+    },
+    [currencyIdA, currencyIdB, history, _fee],
+  )
+
+  const handleWeightBSelect = useCallback(
+    (weight: string) => {
+
+      history.push(`/add/${String(100 - Number(weight))}-${currencyIdA}/${weight}-${currencyIdB}/${_fee}`)
+    },
+    [currencyIdA, currencyIdB, history, _fee],
+  )
+
+  const handleFeeSelect = useCallback(
+    (fee_: string) => {
+      history.push(`/add/${weightA}-${currencyIdA}/${weightB}-${currencyIdB}/${fee_ === '' ? '-' : fee_}`)
+    },
+    [currencyIdA, currencyIdB, history, weightA, weightB],
+  )
+
+
+  const weightAInput
+    = (typedValue_: string) => {
+      onWeightAInput(typedValue_)
+      handleWeightASelect(typedValue_)
+    }
+
+  const weightBInput
+    = (typedValue_: string) => {
+      onWeightBInput(typedValue_)
+      handleWeightBSelect(typedValue_)
+    }
+
+  const feeInput = (typedValue_: string) => {
+    handleFeeSelect(typedValue_)
+    onFeeInput(typedValue_)
+  }
 
   const handleDismissConfirmation = useCallback(() => {
     // if there was a tx hash, we want to clear the input
@@ -491,7 +534,9 @@ export default function AddLiquidity({
                     borderRadius='5px'
                     width='30%'
                     value={weights[WeightedField.WEIGHT_A]}
-                    onUserInput={onWeightAInput}
+                    onUserInput={
+                      weightAInput
+                    }
                     label={`Weight ${currencies[WeightedField.CURRENCY_A]?.symbol ?? ''}`}
                     id='weight0'
                     onHover
@@ -509,8 +554,8 @@ export default function AddLiquidity({
                     <BpsInputPanel
                       borderRadius='5px'
                       width='30pxs'
-                      value={fee}
-                      onUserInput={onFeeInput}
+                      value={fee === '-' ? '' : fee}
+                      onUserInput={feeInput}
                       label='Fee'
                       id='weight0'
                       onHover
@@ -542,7 +587,7 @@ export default function AddLiquidity({
                   borderRadius='5px'
                   width='30%'
                   value={weights[WeightedField.WEIGHT_B]}
-                  onUserInput={onWeightBInput}
+                  onUserInput={weightBInput}
                   label={`Weight ${currencies[WeightedField.CURRENCY_B]?.symbol ?? ''}`}
                   id='weight0'
                   onHover
@@ -654,8 +699,8 @@ export default function AddLiquidity({
                       height='20px'
                       endIcon={<ArrowUpIcon />}
                       onClick={() => {
-                        onFeeInput(id.split('-', 2)[1])
-                        onWeightAInput(id.split('-', 2)[0])
+                        feeInput(id.split('-', 2)[1])
+                        weightAInput(id.split('-', 2)[0])
                       }}
                     >
                       <Text fontSize='15px'>

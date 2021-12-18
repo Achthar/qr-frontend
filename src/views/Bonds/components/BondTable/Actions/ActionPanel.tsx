@@ -10,15 +10,14 @@ import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import HarvestAction from './HarvestAction'
 import StakedAction from './StakedAction'
-import Apr, { AprProps } from '../Apr'
+import Roi, { RoiProps } from '../Roi'
 import Multiplier, { MultiplierProps } from '../Multiplier'
 import Liquidity, { LiquidityProps } from '../Liquidity'
 
 
 export interface ActionPanelProps {
-  apr: AprProps
+  roi: RoiProps
   multiplier: MultiplierProps
-  liquidity: LiquidityProps
   details: BondWithStakedValue
   userDataReady: boolean
   expanded: boolean
@@ -133,9 +132,8 @@ const ValueWrapper = styled.div`
 
 const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   details,
-  apr,
+  roi,
   multiplier,
-  liquidity,
   userDataReady,
   expanded,
 }) => {
@@ -152,7 +150,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   })
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const bsc = getNetworkExplorerLink(lpAddress, 'address')
-  const info = `https://pancakeswap.info/pool/${lpAddress}`
+  const info = `https://requiem.info/pool/${lpAddress}`
 
   return (
     <Container expanded={expanded}>
@@ -172,21 +170,17 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
       </InfoContainer>
       <ValueContainer>
         <ValueWrapper>
-          <Text>{t('APR')}</Text>
-          <Apr {...apr} />
+          <Text>{t('Roi')}</Text>
+          <Roi {...roi} />
         </ValueWrapper>
         <ValueWrapper>
           <Text>{t('Multiplier')}</Text>
           <Multiplier {...multiplier} />
         </ValueWrapper>
-        <ValueWrapper>
-          <Text>{t('Liquidity')}</Text>
-          <Liquidity {...liquidity} />
-        </ValueWrapper>
       </ValueContainer>
       <ActionContainer>
         <HarvestAction {...bond} userDataReady={userDataReady} />
-        <StakedAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={apr.value} />
+        <StakedAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
       </ActionContainer>
     </Container>
   )

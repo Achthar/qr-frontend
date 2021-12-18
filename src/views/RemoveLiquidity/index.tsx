@@ -49,7 +49,7 @@ export default function RemoveLiquidity({
   match: {
     params: { weightA, weightB, fee, currencyIdA, currencyIdB },
   },
-}: RouteComponentProps<{ weightA: string, weightB, fee: string, currencyIdA: string; currencyIdB: string }>) {
+}: RouteComponentProps<{ weightA: string, weightB: string, fee: string, currencyIdA: string; currencyIdB: string }>) {
 
   const { account, chainId, library } = useActiveWeb3React()
   const [currencyA, currencyB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]

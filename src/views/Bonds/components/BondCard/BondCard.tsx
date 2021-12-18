@@ -122,7 +122,7 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
           <DetailsSection
             removed={removed}
             bscScanAddress={getNetworkExplorerLink(lpAddress, 'address')}
-            infoAddress={`https://pancakeswap.info/pool/${lpAddress}`}
+            infoAddress={`https://requiem.info/pool/${lpAddress}`}
             totalValueFormatted={totalValueFormatted}
             lpLabel={lpLabel}
             addLiquidityUrl={addLiquidityUrl}

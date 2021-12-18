@@ -21,7 +21,7 @@ import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
-
+// import { BigNumber } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRefresh from 'hooks/useRefresh'
 
@@ -128,7 +128,7 @@ const Bonds: React.FC = () => {
   const { data: bondsLP, userDataLoaded } = useBonds()
   const reqtPrice = usePriceReqtUsd()
   const [query, setQuery] = useState('')
-  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'panreqt_bond_view' })
+  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
   const { account, chainId } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
@@ -279,7 +279,7 @@ const Bonds: React.FC = () => {
   const rowData = chosenBondsMemoized.map((bond) => {
     // const { token, quoteToken } = bond
     const  token = tokens.reqt
-    const quoteToken  = tokens.usdc
+    const quoteToken  = tokens.tusd
 
     const tokenAddress = token.address
     const quoteTokenAddress = quoteToken.address
@@ -290,16 +290,16 @@ const Bonds: React.FC = () => {
     const purchased = 7002000
 
     const row: RowProps = {
-      apr: {
-        value: getDisplayApr(bond.apr, bond.lpRewardsApr),
-        bondId: bond.bondId,
-        // multiplier: bond.multiplier,
-        lpLabel,
-        tokenAddress,
-        quoteTokenAddress,
-        reqtPrice,
-        originalValue: bond.apr,
-      },
+      // apr: {
+      //   value: getDisplayApr(bond.apr, bond.lpRewardsApr),
+      //   bondId: bond.bondId,
+      //   // multiplier: bond.multiplier,
+      //   lpLabel,
+      //   tokenAddress,
+      //   quoteTokenAddress,
+      //   reqtPrice,
+      //   originalValue: bond.apr,
+      // },
       bond: {
         label: bond.name,
         bondId: bond.bondId,
@@ -310,15 +310,19 @@ const Bonds: React.FC = () => {
         earnings: getBalanceNumber(new BigNumber(bond.userData.earnings)),
         bondId: bond.bondId,
       },
-      liquidity: {
-        liquidity: bond.liquidity,
-      },
       multiplier: {
         multiplier: '12x',
       },
       details: bond,
       price,
-      roi,
+      roi:{
+        value: '213',
+        bondId: 1,
+        lpLabel: 'string',
+        reqtPrice: new BigNumber(1),
+        originalValue: 3
+
+      },
       purchased
     }
     
@@ -337,12 +341,12 @@ const Bonds: React.FC = () => {
           switch (column.name) {
             case 'bond':
               return b.id - a.id
-            case 'apr':
-              if (a.original.apr.value && b.original.apr.value) {
-                return Number(a.original.apr.value) - Number(b.original.apr.value)
-              }
+            // case 'apr':
+            //   if (a.original.apr.value && b.original.apr.value) {
+            //     return Number(a.original.apr.value) - Number(b.original.apr.value)
+            //   }
 
-              return 0
+            //   return 0
             case 'earned':
               return a.original.earned.earnings - b.original.earned.earnings
             default:

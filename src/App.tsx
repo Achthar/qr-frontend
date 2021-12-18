@@ -22,7 +22,6 @@ import SwapV3 from './views/SwapV3' // uniswapv2 + stable
 
 import {
   RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
   RedirectToAddLiquidity,
 } from './views/AddLiquidity/redirects'
 
@@ -85,10 +84,8 @@ const App: React.FC = () => {
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/add" component={AddLiquidity} />
           <Route exact path="/add/stable" component={AddStableLiquidity} />
-          <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-          <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+          <Route exact path="/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
           <Route exact path="/create" component={AddLiquidity} />
-          <Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
           <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
           {/* <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} /> */}
           <Route exact strict path="/remove/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RemoveLiquidity} />

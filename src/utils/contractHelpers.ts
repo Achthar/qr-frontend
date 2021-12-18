@@ -22,6 +22,7 @@ import {
   getStableSwapAddress,
   getStableLpAddress,
   getAddressForReserve,
+  getAddressForBondingCalculator,
   getAddressForBond
 } from 'utils/addressHelpers'
 
@@ -166,3 +167,13 @@ export const getContractForBond = (chainId: number, signer?: ethers.Signer | eth
   const ABI = ''
   return new ethers.Contract(bondAddress, ABI, signer);
 }
+
+export const getBondCalculatorContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const BondCalcContractABI = ''
+  const bondingCalculatorAddress = getAddressForBondingCalculator(chainId) || "";
+  return new ethers.Contract(
+    bondingCalculatorAddress,
+    BondCalcContractABI,
+    signer,
+  ) 
+};
