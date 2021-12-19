@@ -13,7 +13,7 @@ import { CurrencyLogo } from '../../components/Logo'
 import { MinimalWeightedPositionCard } from '../../components/PositionCard/WeightedPairPosition'
 import Row from '../../components/Layout/Row'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
-import { WeightedPairState, useWeightedPair, useWeightedPairsExist } from '../../hooks/useWeightedPairs'
+import { WeightedPairState, useWeightedPair, useWeightedPairsExist, useGetWeightedPairs, useWeightedPairsDataLite } from '../../hooks/useWeightedPairs'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useWeightedPairAdder } from '../../state/user/hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -54,19 +54,18 @@ export default function WeightedPairFinder() {
   const [currency1, setCurrency1] = useState<Currency | null>(STABLECOINS[chainId][0])
 
 
-  const addressesRange = useMemo(
+  const addressesRaw = useGetWeightedPairs([[currency0, currency1]], chainId)
+
+  const validatedAddresses = useMemo(
     () =>
-      weightedPairAddresses(wrappedCurrency(currency0, chainId), wrappedCurrency(currency1, chainId), STANDARD_WEIGHTS, STANDARD_FEES)
-    ,
-    [currency0, currency1, chainId]
+      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => data[1]) : [],
+    [addressesRaw]
   )
 
-  const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange), 99999)
+  const tA = wrappedCurrency(currency0, chainId)
+  const tB = wrappedCurrency(currency1, chainId)
 
-  const constellation = useMemo(() =>
-    Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
-    [addressesRange, allConstellations]
-  )
+  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId, 20)
 
   // console.log("FILTERED", constellation)
 
@@ -123,6 +122,8 @@ export default function WeightedPairFinder() {
     true,
     'selectCurrencyModal',
   )
+
+  const aIs0 = tA && tB && tA?.sortsBefore(tB ?? undefined)
 
   return (
     <Page>
@@ -254,38 +255,40 @@ export default function WeightedPairFinder() {
             prerequisiteMessage
           )}
 
-          {constellation.length > 0 && (
+          {weightedPairsAvailable.length > 0 && (
             <Box>
               <AutoColumn gap="sm" justify="center">
                 <Text bold fontSize='15px'>
                   Available constellations
                 </Text>
-                {constellation.map((id) => (
-                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                    <AutoColumn>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currency0.symbol} ${id.split('-', 2)[0]}%`}
+                {weightedPairsAvailable.map((pairData) => (
+
+                  pairData[0] === WeightedPairState.EXISTS && (
+                    <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
+                      <AutoColumn>
+                        <Text fontSize='13px' width='100px'>
+                          {`${currency0.symbol} ${aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString()}%`}
+                        </Text>
+                        <Text fontSize='13px' width='100px'>
+                          {`${currency1.symbol} ${aIs0 ? pairData[1].weight1.toString() : pairData[1].weight0.toString()}%`}
+                        </Text>
+                      </AutoColumn>
+                      <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
+                        {`Fee ${pairData[1].fee0.toString()}Bps`}
                       </Text>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currency1.symbol} ${100 - Number(id.split('-', 2)[0])}%`}
-                      </Text>
-                    </AutoColumn>
-                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                      {`Fee ${id.split('-', 2)[1]}Bps`}
-                    </Text>
-                    <StyledButton
-                      height='20px'
-                      endIcon={<ArrowUpIcon />}
-                      onClick={() => {
-                        setFee(Number(id.split('-', 2)[1]))
-                        setWeight0(Number(id.split('-', 2)[0]))
-                      }}
-                    >
-                      <Text fontSize='15px'>
-                        Set
-                      </Text>
-                    </StyledButton>
-                  </Flex>
+                      <StyledButton
+                        height='20px'
+                        endIcon={<ArrowUpIcon />}
+                        onClick={() => {
+                          setFee(Number(pairData[1].fee0.toString()))
+                          setWeight0(aIs0 ? Number(pairData[1].weight0.toString()) : Number(pairData[1].weight1.toString()))
+                        }}
+                      >
+                        <Text fontSize='15px'>
+                          Set
+                        </Text>
+                      </StyledButton>
+                    </Flex>)
                 ))}
               </AutoColumn>
             </Box>

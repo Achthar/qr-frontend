@@ -290,44 +290,19 @@ export default function AddLiquidity({
       })
   }
 
-
-  const addressesRange = useMemo(
-    () =>
-      currencyA && currencyB ? weightedPairAddresses(wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId), STANDARD_WEIGHTS, STANDARD_FEES) : {}
-    ,
-    [currencyA, currencyB, chainId]
-  )
-
-  // const allConstellations = useWeightedPairsExist(chainId, Object.values(addressesRange) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'], 99999)
-
   const addressesRaw = useGetWeightedPairs([[currencyA, currencyB]], chainId)
-  // console.log("RES", addressesRaw)
 
   const validatedAddresses = useMemo(
     () =>
-      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => !data[0] && data[1]) : []
-    ,
+      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => data[1]) : [],
     [addressesRaw]
   )
-  // const addresses = useMemo(
-  //   () =>
-  //   addressesRaw && addressesRaw.results ? weightedPairAddresses(wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId), STANDARD_WEIGHTS, STANDARD_FEES) : {}
-  //   ,
-  //   [currencyA, currencyB, chainId]
-  // )
 
   const tA = wrappedCurrency(currencyA, chainId)
   const tB = wrappedCurrency(currencyB, chainId)
-  console.log("tokens", tA, tB)
-  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], [validatedAddresses?.[0]?.[1]], chainId, 20)
 
-  // const constellation = useMemo(() =>
-  //   Object.keys(addressesRange).filter(x => { return allConstellations[addressesRange[x]] === 1 }),
-  //   [addressesRange, allConstellations]
-  // )
+  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId, 20)
 
-  // console.log("constellations", constellation)
-  console.log("NL", noLiquidity, isValid, error)
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -484,7 +459,6 @@ export default function AddLiquidity({
 
   const aIs0 = tA && tB && tA?.sortsBefore(tB ?? undefined)
 
-  console.log("PAIR", weightedPair)
   return (
     <Page>
       <Row width='200px' height='50px'>

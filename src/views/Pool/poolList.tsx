@@ -1,3 +1,4 @@
+/* eslint no-continue: 0 */
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
@@ -6,13 +7,14 @@ import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
-import { PINNED_WEIGHTED_PAIRS } from 'config/constants'
+import { PINNED_WEIGHTED_PAIRS, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
+import flatMap from 'lodash/flatMap'
 import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator, useTokenBalance } from '../../state/wallet/hooks'
-import { useWeightedPairs } from '../../hooks/useWeightedPairs'
+import { useWeightedPairs, WeightedPairState, useWeightedPairsDataLite, useGetWeightedPairs } from '../../hooks/useWeightedPairs'
 import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
 import { toV2LiquidityToken, useTrackedTokenPairs, toWeightedLiquidityToken } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
@@ -23,52 +25,111 @@ const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
 `
 
+function useRelevantWeightedPairs(chainId: number): WeightedPair[] {
+
+  const basePairs = useMemo(() => {
+    const basePairList: [Token, Token][] = []
+    for (let i = 0; i < BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId].length; i++) {
+      for (let k = i; k < BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId].length; k++) {
+        basePairList.push(
+          [
+            BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId][i],
+            BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId][k]
+          ]
+        )
+      }
+    }
+    return basePairList
+  }, [chainId])
+
+  const allPairCombinations: [Token, Token][] = useMemo(
+    () =>
+      basePairs
+        .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
+        .filter(([t0, t1]) => t0.address !== t1.address),
+    [basePairs],
+  )
+
+  const addressesRaw = useGetWeightedPairs(allPairCombinations, chainId)
+
+  const pairData = useMemo(
+    () =>
+      addressesRaw
+        ? addressesRaw
+          .map((addressData, index) => [addressData[0], allPairCombinations[index], addressData[1]])
+          .filter(x => x[0] === WeightedPairState.EXISTS)
+        : [],
+    [addressesRaw, allPairCombinations]
+  )
+
+  const [relevantPairs, addressList] = useMemo(() => {
+    const data: [Token, Token][] = []
+    const dataAddress: string[] = []
+    for (let j = 0; j < pairData.length; j++) {
+      for (let k = 0; k < (pairData[j][2] as string[]).length; k++) {
+        data.push(pairData[j][1] as [Token, Token])
+        dataAddress.push(pairData[j][2][k])
+      }
+    }
+    return [data, dataAddress]
+  }, [pairData])
+
+  const weightedPairsData = useWeightedPairsDataLite(
+    relevantPairs,
+    addressList,
+    chainId, 5)
+
+
+  return useMemo(
+    () => {
+      return weightedPairsData.filter(x => x[0] === WeightedPairState.EXISTS).map(entry => entry[1])
+    },
+    [weightedPairsData]
+  )
+}
+
 export default function PoolList() {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
 
-  // fetch the user's balances of all tracked V2 LP tokens
-  // const trackedTokenPairs = useTrackedTokenPairs()
-  const tokenPairsWithLiquidityTokens = useMemo(
-    () => PINNED_WEIGHTED_PAIRS[chainId].map((entry) => ({ liquidityToken: toWeightedLiquidityToken(entry), entry })),
-    [chainId],
+  const pairs = useRelevantWeightedPairs(chainId)
+
+  const lpTokens = useMemo(
+    () => pairs && pairs.map((entry) => entry.liquidityToken),
+    [pairs],
   )
-  const liquidityTokens = useMemo(
-    () => tokenPairsWithLiquidityTokens.map((tpwlt) => tpwlt.liquidityToken),
-    [tokenPairsWithLiquidityTokens],
-  )
-  const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
+
+  const [weightedPairsBalances, fetchingweightedPairBalances] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
-    liquidityTokens,
+    lpTokens,
   )
 
   // fetch the reserves for all V2 pools in which the user has a balance
-  const liquidityTokensWithBalances = useMemo(
+  const lpWithBalances = useMemo(
     () =>
-      tokenPairsWithLiquidityTokens.filter(({ liquidityToken }) =>
-        v2PairsBalances[liquidityToken.address]?.greaterThan('0'),
+      pairs.filter(({ liquidityToken }) =>
+        weightedPairsBalances[liquidityToken.address]?.greaterThan('0'),
       ),
-    [tokenPairsWithLiquidityTokens, v2PairsBalances],
+    [weightedPairsBalances, pairs],
   )
 
-  const v2Pairs = useWeightedPairs(
-    liquidityTokensWithBalances.map(({ entry }) => [entry[0], entry[1]]),
-    liquidityTokensWithBalances.map(({ entry }) => [entry[2]]),
-    liquidityTokensWithBalances.map(({ entry }) => [entry[3]]),
-  )
-  const v2IsLoading =
-    fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some((V2Pair) => !V2Pair)
+  const weightedIsLoading =
+    fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
 
-  const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is WeightedPair => Boolean(v2Pair))
+  const allWeightedPairsWithLiquidity = pairs.filter((pair): pair is WeightedPair => Boolean(pair))
 
   // stable pool starting here
   const [stablePoolState, stablePool] = useStablePool()
 
-  // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
   const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
     [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
+  )
+
+  const stablePoolBalance = useMemo(() =>
+    Object.values(userPoolBalance)[0],
+    [userPoolBalance]
   )
 
   const renderBody = () => {
@@ -79,28 +140,35 @@ export default function PoolList() {
         </Text>
       )
     }
-    if (v2IsLoading) {
+    if (weightedIsLoading) {
       return (
         <Text color="textSubtle" textAlign="center">
           <Dots>{t('Loading')}</Dots>
         </Text>
       )
     }
+    if (!pairs || pairs.length === 0) {
+      return (
+        <Text color="textSubtle" textAlign="center">
+          <Dots>Finding Pairs</Dots>
+        </Text>
+      )
+    }
     return (<Column>
-      {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+      {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
         <FullStablesPositionCard
-          userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
+          userLpPoolBalance={stablePoolBalance}
           stablePool={stablePool}
           mb='20px'
         />)}
-      {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
+      {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedPairsWithLiquidity.map((v2Pair, index) => (
         <FullWeightedPositionCard
           key={v2Pair.liquidityToken.address}
           weightedPair={v2Pair}
-          mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
+          mb={index < allWeightedPairsWithLiquidity.length - 1 ? '16px' : 0}
         />)))}
 
-      {(userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().eq(0) && allV2PairsWithLiquidity?.length === 0) && (
+      {(stablePoolBalance?.toBigNumber().eq(0) && allWeightedPairsWithLiquidity?.length === 0) && (
         <Text color="textSubtle" textAlign="center">
           {t('No liquidity found.')}
         </Text>
@@ -119,7 +187,7 @@ export default function PoolList() {
         <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />
         <Body>
           {renderBody()}
-          {account && !v2IsLoading && (
+          {account && !weightedIsLoading && (
             <Flex flexDirection="column" alignItems="center" mt="24px">
               <Text color="textSubtle" mb="8px">
                 {t("Don't see a pool you joined?")}

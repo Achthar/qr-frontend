@@ -23,7 +23,7 @@ import {
   STANDARD_WEIGHTS
 } from '../config/constants'
 import { PairState, usePairs } from './usePairs'
-import { WeightedPairState, useWeightedPairs, useWeightedPairsExist, useGetWeightedPairs, useWeightedPairsData } from './useWeightedPairs'
+import { WeightedPairState, useWeightedPairs, useWeightedPairsExist, useGetWeightedPairs, useWeightedPairsData, useWeightedPairsDataLite } from './useWeightedPairs'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens } from './Tokens'
@@ -103,6 +103,15 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   )
 }
 
+function containsToken(token: Token, list: Token[]) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].equals(token)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // funtion to get all relevant weighted pairs
 // requires two calls if ccys are not in base
@@ -115,155 +124,90 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
     : [undefined, undefined]
 
-  const bases: Token[] = useMemo(() => {
-    if (!chainId) return []
+  const [aInBase, bInBase] = useMemo(() =>
+    [
+      tokenA ? containsToken(tokenA, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false,
+      tokenB ? containsToken(tokenB, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false
+    ],
+    [chainId, tokenA, tokenB])
 
-    const common = BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId] ?? []
-    // const additionalA = tokenA ? ADDITIONAL_BASES[chainId]?.[tokenA.address] ?? [] : []
-    // const additionalB = tokenB ? ADDITIONAL_BASES[chainId]?.[tokenB.address] ?? [] : []
+  const expandedTokenList = useMemo(() => {
+    if (aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && bInBase) {
+      return [...[tokenA], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (aInBase && bInBase) {
+      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+    }
+    return []
+  },
+    [chainId, tokenA, tokenB, aInBase, bInBase])
 
-    return common
-  }, [chainId,
-    // tokenA, tokenB
-  ])
-
-  const aInBases = false // currencyA && bases.filter((base) => base.address === wrappedCurrency(currencyA, chainId).address)[0] !== undefined
-  const bInBases = false // currencyB && bases.filter((base) => base.address === wrappedCurrency(currencyB, chainId).address)[0] !== undefined
-
-  const basePairs: [Token, Token][] = useMemo(
-    () => flatMap(bases, (base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])),
-    [bases],
-  )
+  const basePairs = useMemo(() => {
+    const basePairList: [Token, Token][] = []
+    for (let i = 0; i < expandedTokenList.length; i++) {
+      for (let k = i; k < expandedTokenList.length; k++) {
+        basePairList.push(
+          [
+            expandedTokenList[i],
+            expandedTokenList[k]
+          ]
+        )
+      }
+    }
+    return basePairList
+  }, [expandedTokenList])
 
   const allPairCombinations: [Token, Token][] = useMemo(
     () =>
-      tokenA && tokenB
-        ? [
-          // the direct pair
-          [tokenA, tokenB],
-          // token A against all bases
-          ...bases.map((base): [Token, Token] => [tokenA, base]),
-          // token B against all bases
-          ...bases.map((base): [Token, Token] => [tokenB, base]),
-          // each base against all bases
-          ...basePairs,
-        ]
-          .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
-          .filter(([t0, t1]) => t0.address !== t1.address)
-          .filter(([tokenA_, tokenB_]) => {
-            if (!chainId) return true
-            const customBases = CUSTOM_BASES[chainId]
-
-            const customBasesA: Token[] | undefined = customBases?.[tokenA_.address]
-            const customBasesB: Token[] | undefined = customBases?.[tokenB_.address]
-
-            if (!customBasesA && !customBasesB) return true
-
-            if (customBasesA && !customBasesA.find((base) => tokenB_.equals(base))) return false
-            if (customBasesB && !customBasesB.find((base) => tokenA_.equals(base))) return false
-
-            return true
-          })
-        : [],
-    [tokenA, tokenB, bases, basePairs, chainId],
+      basePairs
+        .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
+        .filter(([t0, t1]) => t0.address !== t1.address),
+    [basePairs],
   )
 
-  // console.log("AP", allPairCombinations)
+  const addressesRaw = useGetWeightedPairs(allPairCombinations, chainId)
 
-  // const allWeightedPairs = useMemo(
-  //   () =>
-  //     currencyB && currencyA ?
+  const pairData = useMemo(
+    () =>
+      addressesRaw
+        ? addressesRaw
+          .map((addressData, index) => [addressData[0], allPairCombinations[index], addressData[1]])
+          .filter(x => x[0] === WeightedPairState.EXISTS)
+        : [],
+    [addressesRaw, allPairCombinations]
+  )
 
-  //       weightedPairShellGeneratorAll(
-  //         allPairCombinations,
-  //         STANDARD_WEIGHTS, STANDARD_FEES
-  //       )
-  //       : []
-  //   ,
-  //   [currencyB, currencyA, allPairCombinations]
-  // )
-
-  // array conaining [id, address]
-  // const allPairsDirty = useMemo(() => { return [...addressesRangeA, ...addressesRangeB, ...direct] },
-  //   [addressesRangeA, addressesRangeB, direct]
-  // )
-  // console.log("APDIRTY", allWeightedPairs)
-  // const allConstellations = useWeightedPairsExist(
-  //   chainId,
-  //   allWeightedPairs.map(x => x.address) ?? ['0xfcD5aB89AFB2280a9ff98DAaa2749C6D11aB4161'],
-  //   5
-  // )
-
-  const allAddresses = useGetWeightedPairs(allPairCombinations, chainId)
-
-  const [pairs, addresses] = useMemo(() => {
-    const expandedPairArray = []
-    const addressArray = []
-    for (let i = 0; i < allAddresses.length; i++) {
-
-      if (!allAddresses[i][0]) {
-        const currentPair = allPairCombinations[i]
-        for (let j = 0; j < allAddresses[i][1].length; j++) {
-          expandedPairArray.push(currentPair)
-          addressArray.push(allAddresses[i][1][j])
-        }
-
+  const [relevantPairs, addressList] = useMemo(() => {
+    const data: [Token, Token][] = []
+    const dataAddress: string[] = []
+    for (let j = 0; j < pairData.length; j++) {
+      for (let k = 0; k < (pairData[j][2] as string[]).length; k++) {
+        data.push(pairData[j][1] as [Token, Token])
+        dataAddress.push(pairData[j][2][k])
       }
     }
-    return [expandedPairArray, addressArray]
-  }, [allAddresses, allPairCombinations])
+    return [data, dataAddress]
+  }, [pairData])
 
-  const allWeightedPairs = useWeightedPairsData(pairs, addresses, chainId, 20)
-
-  // // get only existing pairs
-  // const filtered = allWeightedPairs.filter((pairShell) => allConstellations[pairShell.address] === 1);
-
-  // // fetch data from chain via MultiCall
-  // const results = useMultipleContractSingleData(filtered.map(pair => pair.address), PAIR_INTERFACE, 'getReserves')
-  // // console.log("AC", allConstellations, "FILTERED", filtered, "RES", results)
-  // // generate Weighted Pairs
-  // const weightedPairs = useMemo(() => {
-  //   return results.map((result, i) => {
-
-  //     const { result: reserves, loading } = result
-  //     const _tokenA = filtered[i].tokenA
-  //     const _tokenB = filtered[i].tokenB
-
-  //     if (loading) return [WeightedPairState.LOADING, null]
-  //     if (!_tokenA || !_tokenB || _tokenA.equals(_tokenB)) return [WeightedPairState.INVALID, null]
-  //     if (!reserves) return [WeightedPairState.NOT_EXISTS, null]
-  //     const { _reserve0: reserve0, _reserve1: reserve1 } = reserves
-  //     const [token0, token1] = _tokenA.sortsBefore(_tokenB) ? [_tokenA, _tokenB] : [_tokenB, _tokenA]
-  //     const weight0 = _tokenA.sortsBefore(_tokenB) ? JSBI.BigInt(filtered[i].weightA) : JSBI.BigInt(100 - filtered[i].weightA)
-  //     return [
-  //       WeightedPairState.EXISTS,
-  //       new WeightedPair(
-  //         new TokenAmount(token0, reserve0.toString()),
-  //         new TokenAmount(token1, reserve1.toString()),
-  //         weight0,
-  //         JSBI.BigInt(filtered[i].fee))
-  //     ]
-
-  //   })
-  // }, [results, filtered])
+  const weightedPairsData = useWeightedPairsDataLite(
+    relevantPairs,
+    addressList,
+    chainId, 5)
 
 
-  const existingPairs = useMemo(
-    () => {
-      return allWeightedPairs.filter(x => x[0] === WeightedPairState.EXISTS)
-    },
-    [
-      allWeightedPairs
-    ]
-  )
-  // only pass along valid pairs, non-duplicated pairs
   return useMemo(
-    () =>
-      existingPairs.map(pairData => pairData[1]),
-    [
-      existingPairs
-    ]
+    () => {
+      return weightedPairsData.filter(x => x[0] === WeightedPairState.EXISTS).map(entry => entry[1])
+    },
+    [weightedPairsData]
   )
+
 }
 
 const MAX_HOPS = 4

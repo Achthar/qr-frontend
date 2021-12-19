@@ -116,12 +116,13 @@ export function useGetWeightedPairs(currencies: [Currency | undefined, Currency 
     return resultsPairs.map((result) => {
 
       const { result: resultLocal, loading } = result
-
+      // console.log("res local", resultLocal)
       if (loading) return [WeightedPairState.LOADING, null]
-      if (!resultLocal || resultLocal.length === 0) return [WeightedPairState.INVALID, null]
+      if (!resultLocal) return [WeightedPairState.INVALID, null]
+      if (resultLocal[0].length === 0) return [WeightedPairState.INVALID, null]
       return [
         WeightedPairState.EXISTS,
-        resultLocal._tokenPairs,
+        resultLocal[0],
       ]
     })
   }, [resultsPairs])
@@ -186,8 +187,8 @@ export function useWeightedPairsDataLite(tokens: [Token, Token][], pairAddresses
   const resultsStatic = useSingleContractMultipleData(
     factoryContract,
     'getWeightsAndSwapFee',
-    pairAddresses.map(address => [address ?? '0x6f21d456e5832e0b35c2c09a610dba691e8fb684']),
-    { blocksPerFetch: 9999999 }
+    pairAddresses?.map(address => [address ?? '0x6f21d456e5832e0b35c2c09a610dba691e8fb684']) ?? [['0x6f21d456e5832e0b35c2c09a610dba691e8fb684']],
+    // { blocksPerFetch: 1 }
   )
 
 
@@ -204,6 +205,8 @@ export function useWeightedPairsDataLite(tokens: [Token, Token][], pairAddresses
     return resultsStatic.map((result, i) => {
 
       const { result: data, loading } = result
+      if (loading) return [WeightedPairState.LOADING, null]
+      if (resultsReserves[i] === undefined) return [WeightedPairState.LOADING, null]
       const { result: dataReserves, loading: loadingReserves } = resultsReserves[i]
       const tokenA = tokens[i][0]
       const tokenB = tokens[i][1]
