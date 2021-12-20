@@ -39,7 +39,7 @@ export const REQT: { [chainId: number]: Token } = {
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x78e418385153177cB1c49e58eAB5997192998bf7',
+    '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
     18,
     'REQT',
     'Requiem Token',
@@ -222,8 +222,8 @@ const tokens = {
       56: '',
       97: '',
       80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8',
-      43113: '0x78e418385153177cB1c49e58eAB5997192998bf7',
-      43114: '0x78e418385153177cB1c49e58eAB5997192998bf7'
+      43113: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
+      43114: '0x2d90e6d9368b2838a9558B0a609750243C5C4679'
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',

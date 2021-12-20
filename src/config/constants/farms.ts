@@ -209,7 +209,7 @@ export const farmList: { [chainId in ChainId]: FarmConfig[] } = {
       pid: 0,
       lpSymbol: 'REQT',
       lpAddresses: {
-        43113: '0x78e418385153177cB1c49e58eAB5997192998bf7',
+        43113: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
       },
       token: tokens.reqt,
       quoteToken: tokens.wavax,

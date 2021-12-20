@@ -164,14 +164,20 @@ export const addresses = {
   stableLp: {
     43113: '0x5a42f231cb718a646cec2f73882760b4e67128b3'
   },
-  bond:{
-    43113: ''
+  bond: {
+    43113: '0x95e7415e619d6D3ae4a140C23137DAaF3Acf7608' // depository contract
   },
-  reserve:{
-    43113:''
+  reserve: {
+    43113: '0xaea51e4fee50a980928b4353e852797b54deacd8' // DAI address
   },
-  bondingCalculator:{
-    43113:''
+  bondingCalculator: {
+    43113: '0x2A03A0B4e33B922d381B9f7DF16111cd2C77b4b3'
+  },
+  reserveLp: {
+    43113: '0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c' // 80reqt 20dai 25bps LP address
+  },
+  treasury:{
+    43113: '0x2fD7c6a9466e20a91aBbb31849C081B8288030B2'
   }
 }
 
