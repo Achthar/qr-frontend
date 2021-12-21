@@ -217,7 +217,7 @@ export const CHAIN_INFO: ChainInfo = {
     docs: 'https://docs.oasis.dev/general/developer-resources/emerald-paratime',
     explorer: 'https://testnet.oasisscan.com/',
     infoLink: 'https://oasisprotocol.org/',
-    label: 'Oasis Mainnet',
+    label: 'Oasis Testnet',
     rpcUrls: ['https://testnet.emerald.oasis.dev/'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg',
     nativeCurrency: { name: 'Oasis', symbol: 'ROSE', decimals: 18 },
