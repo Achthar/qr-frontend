@@ -41,6 +41,7 @@ import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { STANDARD_FEES, STANDARD_WEIGHTS, REQUIEM_PAIR_MANAGER } from 'config/constants'
 
+import { getTokenAmounts } from 'state/userBalances/hooks'
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
@@ -457,6 +458,8 @@ export default function AddLiquidity({
   )
 
   const aIs0 = tA && tB && tA?.sortsBefore(tB ?? undefined)
+
+  // const balances = getTokenAmounts()
 
   return (
     <Page>

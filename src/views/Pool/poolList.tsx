@@ -150,12 +150,12 @@ export default function PoolList() {
     if (!pairs || pairs.length === 0) {
       return (
         <Text color="textSubtle" textAlign="center">
-          <Dots>Finding Pairs</Dots>
+          <Dots>Finding Pools</Dots>
         </Text>
       )
     }
     return (<Column>
-      {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+      {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && (
         <FullStablesPositionCard
           userLpPoolBalance={stablePoolBalance}
           stablePool={stablePool}

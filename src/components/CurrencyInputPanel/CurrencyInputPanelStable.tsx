@@ -83,65 +83,65 @@ export default function CurrencyInputPanelStable({
   onHover = false
 }: CurrencyInputPanelStable) {
   // const { account, chainId } = useActiveWeb3React("CurrencyInputPanelStable")
-  const selectedCurrencyBalance = balances[stableCurrency?.address] ?? undefined// useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
+  const selectedCurrencyBalance = balances[stableCurrency?.address] ?? undefined // useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
   const { t } = useTranslation()
   const { chainId } = useNetworkState()
   return (
     <InputPanel id={id} width={width}>
       <Container hideInput={false} onHover={onHover}>
 
-      <RowBetween>
-        <LabelRow >
-          {!hideBalance && account && (
-            <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
-              {!hideBalance && !!stableCurrency && selectedCurrencyBalance
-                ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
-                : ' -'}
-            </Text>)
-            // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
-          }
-        </LabelRow>
+        <RowBetween>
+          <LabelRow >
+            {!hideBalance && account && (
+              <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
+                {!hideBalance && !!stableCurrency && selectedCurrencyBalance
+                  ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                  : ' -'}
+              </Text>)
+              // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
+            }
+          </LabelRow>
 
-      </RowBetween>
-      <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
-        <>
-          <NumericalInput
-            style={{ paddingLeft: 30 }}
-            className="token-amount-input"
-            value={value}
-            onUserInput={(val) => {
-              onUserInput(val)
-            }}
-            align="left"
-          />
-          {account && stableCurrency && showMaxButton && label !== 'To' && (
-            <Button onClick={onMax} scale="sm" variant="text">
-              MAX
-            </Button>
-          )}
-          <Flex alignItems="center" justifyContent="space-between" paddingRight={30}>
-            {stablePool ? (
-              <Row>
-                <AutoColumn gap="4px">
-                  <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={20} margin />
-                  <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={20} margin />
-                </AutoColumn>
-                <Text mr='5px' width='30px' >Stable LP</Text>
-              </Row>
-            ) : stableCurrency ? (
-              <Row>
-                <ColumnCenter >
-                  <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
-                </ColumnCenter>
-                <Text mr='5px' width='30px'>{stableCurrency.symbol}</Text>
-              </Row>
-            ) : null}
-          </Flex>
-        </>
+        </RowBetween>
+        <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
+          <>
+            <NumericalInput
+              style={{ paddingLeft: 30 }}
+              className="token-amount-input"
+              value={value}
+              onUserInput={(val) => {
+                onUserInput(val)
+              }}
+              align="left"
+            />
+            {account && stableCurrency && showMaxButton && label !== 'To' && (
+              <Button onClick={onMax} scale="sm" variant="text">
+                MAX
+              </Button>
+            )}
+            <Flex alignItems="center" justifyContent="space-between" paddingRight={30}>
+              {stablePool ? (
+                <Row>
+                  <AutoColumn gap="4px">
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={20} margin />
+                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={20} margin />
+                  </AutoColumn>
+                  <Text mr='5px' width='30px' >Stable LP</Text>
+                </Row>
+              ) : stableCurrency ? (
+                <Row>
+                  <ColumnCenter >
+                    <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
+                  </ColumnCenter>
+                  <Text mr='5px' width='30px'>{stableCurrency.symbol}</Text>
+                </Row>
+              ) : null}
+            </Flex>
+          </>
 
 
-      </InputRow>
-    </Container>
+        </InputRow>
+      </Container>
     </InputPanel >
   )
 }

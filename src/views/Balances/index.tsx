@@ -53,7 +53,7 @@ export default function Balances() {
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [allBalances, fetchingAllBalances] = useTokenBalancesWithLoadingIndicator(account, [...getMainTokens(chainId), ...getStables(chainId)])
 
-  const [allBalances1, fetchingAllBalances1] = xD(account, [...getMainTokens(chainId), ...getStables(chainId)])
+  // const [allBalances1, fetchingAllBalances1] = xD(account, [...getMainTokens(chainId), ...getStables(chainId)])
   // console.log(allBalances1, fetchingAllBalances1)
   // console.log(allBalances1.map())
   refreshBalances({
