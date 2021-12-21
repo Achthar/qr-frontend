@@ -31,7 +31,7 @@ if (typeof INFURA_KEY === 'undefined') {
   throw new Error(`REACT_APP_INFURA_KEY must be a defined environment variable`)
 }
 
-const NETWORK_URLS: { [key in ChainId]: string } = {
+const NETWORK_URLS: { [key in ChainId]?: string } = {
   [ChainId.BSC_MAINNET]: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
   [ChainId.BSC_MAINNET]: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
   [ChainId.BSC_TESTNET]: `https://ropsten.infura.io/v3/${INFURA_KEY}`,

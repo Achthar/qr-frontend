@@ -35,7 +35,7 @@ export async function switchToNetwork({ library, chainId }: SwitchNetworkArgumen
       // metamask (only known implementer) automatically switches after a network is added
       // the second call is done here because that behavior is not a part of the spec and cannot be relied upon in the future
       // metamask's behavior when switching to the current network is just to return null (a no-op)
-      
+      console.log("chainId ERROR", chainId, error)
       await addNetwork({ library, chainId, info })
      // await setupNetwork(chainId, library)
       await switchToNetwork({ library, chainId })

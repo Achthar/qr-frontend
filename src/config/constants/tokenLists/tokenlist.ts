@@ -348,4 +348,69 @@ export const tokenList = {
             }
         ]
     },
+    42261: {
+        "name": "RequiemSwap Default List OASIS",
+        "timestamp": "2021-09-29T00:00:00Z",
+        "version": {
+            "major": 3,
+            "minor": 0,
+            "patch": 0
+        },
+        "tags": {},
+        "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png",
+        "keywords": [
+            "pancake",
+            "default"
+        ],
+        "tokens": [
+            {
+                "name": "WROSE Token",
+                "symbol": "WROSE",
+                "address": "0xfb40cd35C0cF322fA3cfB8D67b533Bd9ad7df056",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ROSE.png"
+            },
+            {
+                "name": "Requiem Token",
+                "symbol": "REQT",
+                "address": "0x00c9ac8d414Ea3C7466F27431133dD989d8f20Df",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
+            },
+            {
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "address": "0xfA0D8065755Fb3b6520149e86Ac5A3Dc3ee5Dc92",
+                "chainId": 42261,
+                "decimals": 6,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+            },
+            {
+                "name": "Dai Stablecoin",
+                "symbol": "DAI",
+                "address": "0xf10Bd0dA1f0e69c3334D7F8116C9082746EBC1B4",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+            },
+            {
+                "name": "USD coin",
+                "symbol": "USDC",
+                "address": "0x9aEeeD65aE87e3b28793aefAeED59c3f10ef956b",
+                "chainId": 42261,
+                "decimals": 6,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+            },
+            {
+                "name": "True USD",
+                "symbol": "TUSD",
+                "address": "0x4e8848da06E40E866b82f6b52417494936c9509b",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.svg"
+            },
+        ]
+    },
 }

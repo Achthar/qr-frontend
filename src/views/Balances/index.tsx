@@ -47,8 +47,8 @@ export const BodyWrapper = styled(Card)`
 `
 
 export default function Balances() {
-  const { chainId } = useNetworkState()
-  const { account } = useActiveWeb3React()
+  // const { chainId } = useNetworkState()
+  const { account, chainId } = useActiveWeb3React()
 
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [allBalances, fetchingAllBalances] = useTokenBalancesWithLoadingIndicator(account, [...getMainTokens(chainId), ...getStables(chainId)])

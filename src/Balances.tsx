@@ -6,12 +6,14 @@ import {
   L2_CHAIN_IDS,
   SupportedL2ChainId,
 } from 'config/constants/index'
+import { useDispatch } from 'react-redux'
 import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, Text, Box, CurrencyIcon } from '@requiemswap/uikit'
 import { useWeb3React } from "@web3-react/core";
-import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
+import { AppDispatch } from 'state'
+import { useGlobalNetworkActionHandlers, useNetworkState } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useToggleModal } from 'state/application/hooks'
 import UserBalances from 'views/Balances'
@@ -220,8 +222,12 @@ const StyledButton = styled(Button) <{ mB: string, width: string }>`
 const Balances = () => {
   // global network chainId
   const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
-
+  const{ chainId: chainIdState} = useNetworkState()
   const { chainId, library, account } = useWeb3React()
+  // const dispatch = useDispatch<AppDispatch>()
+  // if(chainIdState !== chainId){
+  //  onChainChange(chainId)
+  // }
   const [balanceShown, showBalance] = useState<boolean>(false)
   const handleClick = () => showBalance(!balanceShown)
   return (

@@ -25,7 +25,7 @@ export const AVALANCHE_CHAIN_PARAMS = {
   blockExplorerUrls: ['https://cchain.explorer.avax.network/']
 }
 
-export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
+export const ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.BSC_MAINNET]: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
   [ChainId.BSC_TESTNET]: '0x149dA9015BdaccdCb06209B7EbE095c0303333c4',
   [ChainId.ARBITRUM_MAINNET]: '',
@@ -33,7 +33,9 @@ export const ROUTER_ADDRESS: { [chainId in ChainId] } = {
   [ChainId.AVAX_MAINNET]: '',
   [ChainId.AVAX_TESTNET]: '0x2a90276992ddC21C3585FE50f5B43D0Cf62aDe03',
   [ChainId.MATIC_MAINNET]: '',
-  [ChainId.MATIC_TESTNET]: '0x4e8848da06E40E866b82f6b52417494936c9509b'
+  [ChainId.MATIC_TESTNET]: '0x4e8848da06E40E866b82f6b52417494936c9509b',
+  [ChainId.OASIS_MAINNET]: '',
+  [ChainId.OASIS_TESTNET]: ''
 }
 
 export const AGGREGATOR_ADDRESS = {
@@ -41,19 +43,27 @@ export const AGGREGATOR_ADDRESS = {
 }
 
 export const REQUIEMQROUTER_ADDRESS = {
-  43113: '0xA347881832b1e2b73d39dD78b7eF2278019507dB'
+  43113: '0xA347881832b1e2b73d39dD78b7eF2278019507dB',
+  42261: '0x9d303a83F8a918a60dbA506A4401f688B37142cb'
 }
 
+export const REQUIEM_PAIR_MANAGER: { [chainId: number]: string } = {
+  43113: '0x4de697f41A2Da1c5a6a6905a95438E0aFbBa2382',
+  42261: '0xc00d9cf36e1d223A815c8446694A165858B973Db'
+}
 
 export const REQUIEM_WEIGHTED_FORMULA_ADDRESS ={
-  43113:'0x27b18F4aad3223d5A92F1aF0C4798f996aC78968'
+  43113:'0x27b18F4aad3223d5A92F1aF0C4798f996aC78968',
+  42261: '0xb3a65e1bF6884eC96fdA1e8F09e477d203357BF0'
 }
 
 export const L1_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
   ChainId.BSC_TESTNET,
   ChainId.AVAX_MAINNET,
-  ChainId.AVAX_TESTNET
+  ChainId.AVAX_TESTNET,
+  ChainId.OASIS_MAINNET,
+  ChainId.OASIS_TESTNET
 ] as const
 
 export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number]
@@ -189,6 +199,30 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
     statusPage: 'https://optimism.io/status',
   },
+  [ChainId.OASIS_MAINNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    // bridge: 'https://gateway.optimism.io/',
+    docs: 'https://docs.oasis.dev/general/developer-resources/emerald-paratime',
+    explorer: 'https://oasisscan.com/',
+    infoLink: 'https://oasisprotocol.org/',
+    label: 'Oasis Mainnet',
+    rpcUrls: ['https://emerald.oasis.dev/'],
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg',
+    nativeCurrency: { name: 'Oasis', symbol: 'ROSE', decimals: 18 },
+    // statusPage: 'https://optimism.io/status',
+  },
+  [ChainId.OASIS_TESTNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    // bridge: 'https://gateway.optimism.io/',
+    docs: 'https://docs.oasis.dev/general/developer-resources/emerald-paratime',
+    explorer: 'https://testnet.oasisscan.com/',
+    infoLink: 'https://oasisprotocol.org/',
+    label: 'Oasis Mainnet',
+    rpcUrls: ['https://testnet.emerald.oasis.dev/'],
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg',
+    nativeCurrency: { name: 'Oasis', symbol: 'ROSE', decimals: 18 },
+    // statusPage: 'https://optimism.io/status',
+  },
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS = [
@@ -214,7 +248,10 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
   [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], REQT[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET], DAI[ChainId.AVAX_TESTNET], USDC[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
-  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]],
+  [ChainId.OASIS_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_MAINNET]],
+  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], REQT[ChainId.OASIS_TESTNET], USDT[ChainId.OASIS_TESTNET], DAI[ChainId.OASIS_TESTNET], USDC[ChainId.OASIS_TESTNET]],
+
 }
 
 // used to construct intermediary pairs for trading
@@ -226,7 +263,10 @@ export const BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED: ChainTokenList = {
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
   [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], REQT[ChainId.AVAX_TESTNET], USDC[ChainId.AVAX_TESTNET], DAI[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
-  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]]
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]],
+  [ChainId.OASIS_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_MAINNET]],
+  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], REQT[ChainId.OASIS_TESTNET], USDC[ChainId.OASIS_TESTNET], DAI[ChainId.OASIS_TESTNET]],
+  
 }
 
 /**
@@ -256,7 +296,9 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.AVAX_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_MAINNET]],
   [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET], USDC[ChainId.MATIC_MAINNET]],
-  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]]
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]],
+  [ChainId.OASIS_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_MAINNET]],
+  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], USDT[ChainId.OASIS_TESTNET]],
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
@@ -268,7 +310,9 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.AVAX_MAINNET]: [],
   [ChainId.AVAX_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.AVAX_TESTNET], USDT[ChainId.AVAX_TESTNET]],
   [ChainId.MATIC_MAINNET]: [],
-  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]]
+  [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], USDC[ChainId.MATIC_TESTNET]],
+  [ChainId.OASIS_MAINNET]: [],
+  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], USDT[ChainId.OASIS_TESTNET]],
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {

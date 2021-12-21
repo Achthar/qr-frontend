@@ -10,8 +10,7 @@ import {
   WETH,
   WRAPPED_NETWORK_TOKENS,
   STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP,
-  REQUIEM_PAIR_MANAGER
+  STABLES_INDEX_MAP
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -40,7 +39,7 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { STANDARD_FEES, STANDARD_WEIGHTS } from 'config/constants'
+import { STANDARD_FEES, STANDARD_WEIGHTS, REQUIEM_PAIR_MANAGER } from 'config/constants'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'

@@ -69,7 +69,7 @@ export const farms: FarmConfig[] = [
 ]
 
 
-export const farmList: { [chainId in ChainId]: FarmConfig[] } = {
+export const farmList: { [chainId in ChainId]?: FarmConfig[] } = {
   /**
    * These 3 farms (PID 0, 251, 252) should always be at the top of the file.
    */

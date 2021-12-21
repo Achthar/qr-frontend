@@ -184,7 +184,7 @@ const ChainIdSelector = () => {
   function Row({ targetChain }: { targetChain: number }) {
     const handleRowClick = () => {
       switchToNetwork({ library, chainId: targetChain })
-      onChainChange(chainId)
+      onChainChange(targetChain)
       onAccountChange(account)
       // useToggleModal()
       toggle()
@@ -252,12 +252,13 @@ const ChainIdSelector = () => {
   //     setActiveIndex(-1);
   //   }
   // }, [isOpen]);
-
+// console.log("chainID chainIDselector", chainId)
   const buttonText = chainId === 56 ? 'Binance' :
     chainId === 97 ? 'Binance Testnet' :
       chainId === 80001 ? 'Polygon Mumbai' :
         chainId === 43114 ? 'Avalanche' :
-          chainId === 43113 ? 'Avalanche Testnet' : 'no Network'
+          chainId === 43113 ? 'Avalanche Testnet' :
+            chainId === 42261 ? 'Oasis Testnet' : 'no Network'
   return (
     <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
 
@@ -269,7 +270,7 @@ const ChainIdSelector = () => {
       </FlyoutHeader>
       <Row targetChain={ChainId.AVAX_MAINNET} />
       <Row targetChain={ChainId.AVAX_TESTNET} />
-
+      <Row targetChain={ChainId.OASIS_TESTNET} />
       {/* <Row targetChain={ChainId.BSC_MAINNET} /> */}
       <Row targetChain={ChainId.BSC_TESTNET} />
       <Row targetChain={ChainId.MATIC_TESTNET} />
