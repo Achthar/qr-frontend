@@ -48,11 +48,12 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
   lpLabel,
 }) => {
   const { t } = useTranslation()
-  const { onStake } = useStakeBonds(bondId)
-  const { onUnstake } = useUnstakeBonds(bondId)
+  const { account, chainId } = useWeb3React()
+  const { onStake } = useStakeBonds(chainId, bondId)
+  const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+
   const lpPrice = useLpTokenPrice(tokenName)
 
   const handleStake = async (amount: string) => {

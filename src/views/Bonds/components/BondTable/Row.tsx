@@ -20,7 +20,7 @@ import { DesktopColumnSchema, MobileColumnSchema } from '../types'
 
 export interface RowProps {
   bond: BondProps
-  earned: EarnedProps
+  // earned: EarnedProps
   multiplier: MultiplierProps
   details: BondWithStakedValue
   price: number
@@ -34,7 +34,7 @@ interface RowPropsWithLoading extends RowProps {
 
 const cells = {
   bond: Bond,
-  earned: Earned,
+  // earned: Earned,
   details: Details,
   multiplier: Multiplier,
   liquidity: Liquidity,
@@ -187,11 +187,11 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
             </BondMobileCell>
           </tr>
           <tr>
-            <EarnedMobileCell>
+            {/* <EarnedMobileCell>
               <CellLayout label={t('Earned')}>
                 <Earned {...props.earned} userDataReady={userDataReady} />
               </CellLayout>
-            </EarnedMobileCell>
+            </EarnedMobileCell> */}
             <AprMobileCell>
               <CellLayout label={t('ROI')}>
                 <Roi {...props.roi} hideButton />

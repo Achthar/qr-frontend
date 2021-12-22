@@ -1,13 +1,13 @@
 import { useCallback } from 'react'
 import { harvestBond } from 'utils/calls'
-import { useMasterchef } from 'hooks/useContract'
+import { useBondContract } from 'hooks/useContract'
 
-const useHarvestBond = (bondPid: number) => {
-  const masterChefContract = useMasterchef()
+const useHarvestBond = (chainId: number, bondPid: number) => {
+  const bondContract = useBondContract(chainId)
 
   const handleHarvest = useCallback(async () => {
-    await harvestBond(masterChefContract, bondPid)
-  }, [bondPid, masterChefContract])
+    await harvestBond(bondContract, bondPid)
+  }, [bondPid, bondContract])
 
   return { onReward: handleHarvest }
 }

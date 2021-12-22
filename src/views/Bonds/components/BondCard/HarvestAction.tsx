@@ -17,11 +17,11 @@ interface BondCardActionsProps {
 }
 
 const HarvestAction: React.FC<BondCardActionsProps> = ({ earnings, bondId }) => {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
-  const { onReward } = useHarvestBond(bondId)
+  const { onReward } = useHarvestBond(chainId, bondId)
   const reqtPrice = '243'
   const dispatch = useAppDispatch()
   const rawEarningsBalance = account ? getBalanceAmount(earnings) : BIG_ZERO

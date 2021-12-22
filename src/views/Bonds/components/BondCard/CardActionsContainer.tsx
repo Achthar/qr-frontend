@@ -32,7 +32,7 @@ interface BondCardActionsProps {
 
 const CardActions: React.FC<BondCardActionsProps> = ({ bond, account, addLiquidityUrl, reqtPrice, lpLabel }) => {
   const { t } = useTranslation()
-  const{chainId} = useNetworkState()
+  const { chainId } = useNetworkState()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { bondId, reserveAddress } = bond
   const {
@@ -51,7 +51,7 @@ const CardActions: React.FC<BondCardActionsProps> = ({ bond, account, addLiquidi
 
   const lpContract = useERC20(lpAddress)
 
-  const { onApprove } = useApproveBond(lpContract)
+  const { onApprove } = useApproveBond(chainId, lpContract)
 
   const handleApprove = useCallback(async () => {
     try {

@@ -46,8 +46,8 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const { account, chainId } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
-  const { onStake } = useStakeBonds(bondId)
-  const { onUnstake } = useUnstakeBonds(bondId)
+  const { onStake } = useStakeBonds(chainId, bondId)
+  const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
   const reqtPrice = usePriceReqtUsd()
@@ -103,7 +103,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const lpContract = useERC20(lpAddress)
   const dispatch = useAppDispatch()
-  const { onApprove } = useApproveBond(lpContract)
+  const { onApprove } = useApproveBond(chainId, lpContract)
 
   const handleApprove = useCallback(async () => {
     try {

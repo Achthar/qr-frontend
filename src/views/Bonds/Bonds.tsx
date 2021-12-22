@@ -306,10 +306,10 @@ const Bonds: React.FC = () => {
         token,
         quoteToken
       },
-      earned: {
-        earnings: getBalanceNumber(new BigNumber(bond.userData.earnings)),
-        bondId: bond.bondId,
-      },
+      // earned: {
+      //   earnings: getBalanceNumber(new BigNumber(bond.userData.earnings)),
+      //   bondId: bond.bondId,
+      // },
       multiplier: {
         multiplier: '12x',
       },
@@ -347,8 +347,8 @@ const Bonds: React.FC = () => {
             //   }
 
             //   return 0
-            case 'earned':
-              return a.original.earned.earnings - b.original.earned.earnings
+            // case 'earned':
+            //   return a.original.earned.earnings - b.original.earned.earnings
             default:
               return 1
           }

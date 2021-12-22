@@ -21,7 +21,7 @@ import {
 } from 'utils/contractHelpers'
 import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
-import { getMulticallAddress } from 'utils/addressHelpers'
+import { getAddressForBond, getMulticallAddress } from 'utils/addressHelpers'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
@@ -35,6 +35,8 @@ import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
 import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
+
+import BOND_DEPO_AVAX from '../config/abi/avax/RequiemQBondDepository.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 // import multiCallAbi_OASIS from '../config/abi/oasis/Multicall.json'
@@ -224,3 +226,9 @@ export function useWeightedFactoryContract(chainId: number): Contract | null {
 export function useWeightedFormulaContract(chainId: number): Contract | null {
   return useContract(chainId ? REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId] : undefined, new Interface(WEIGHTED_FORMULA_ABI), false)
 }
+
+
+export function useBondContract(chainId: number): Contract | null {
+  return useContract(chainId ? getAddressForBond(chainId) : undefined, new Interface(BOND_DEPO_AVAX), false)
+}
+

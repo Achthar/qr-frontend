@@ -2,13 +2,13 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getAddressForBond, getMasterChefAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getContractForReserve } from 'utils/contractHelpers'
 
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = getMasterChefAddress(chainId)
+  const masterChefAddress = getAddressForBond(chainId)
 
   const calls = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
@@ -53,7 +53,7 @@ export const fetchBondUserTokenBalances = async (chainId: number, account: strin
 }
 
 export const fetchBondUserStakedBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = getMasterChefAddress(chainId)
+  const masterChefAddress = getAddressForBond(chainId)
 
   const calls = bondsToFetch.map((bond) => {
     return {

@@ -1,15 +1,15 @@
 import { useCallback } from 'react'
 import { unstakeBond } from 'utils/calls'
-import { useMasterchef } from 'hooks/useContract'
+import { useBondContract } from 'hooks/useContract'
 
-const useUnstakeBonds = (bondId: number) => {
-  const masterChefContract = useMasterchef()
+const useUnstakeBonds = (chainId: number, bondId: number) => {
+  const bondContract = useBondContract(chainId)
 
   const handleUnstake = useCallback(
     async (amount: string) => {
-      await unstakeBond(masterChefContract, bondId, amount)
+      await unstakeBond(bondContract, bondId, amount)
     },
-    [masterChefContract, bondId],
+    [bondContract, bondId],
   )
 
   return { onUnstake: handleUnstake }

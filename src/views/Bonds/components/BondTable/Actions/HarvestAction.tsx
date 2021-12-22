@@ -10,9 +10,10 @@ import { useAppDispatch } from 'state'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
-import useHarvestBond from '../../../hooks/useHarvestBond'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 import { ActionContainer, ActionTitles, ActionContent } from './styles'
+import useHarvestBond from '../../../hooks/useHarvestBond'
 
 interface HarvestActionProps extends BondWithStakedValue {
   userDataReady: boolean
@@ -34,10 +35,12 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ bondId, us
   }
 
   const [pendingTx, setPendingTx] = useState(false)
-  const { onReward } = useHarvestBond(bondId)
+
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
+  const { chainId } = useNetworkState()
+  const { onReward } = useHarvestBond(chainId, bondId)
 
   return (
     <ActionContainer>
