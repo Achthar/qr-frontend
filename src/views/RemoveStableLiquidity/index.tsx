@@ -944,6 +944,8 @@ export default function RemoveStableLiquidity({
       title={t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
+      chainId={chainId}
+      library={library}
       hash={txHash || ''}
       content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />}
       pendingText={pendingText}
@@ -958,6 +960,8 @@ export default function RemoveStableLiquidity({
       title={t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
+      chainId={chainId}
+      library={library}
       hash={txHash || ''}
       content={() => <ConfirmationModalContent topContent={modalHeaderSingle} bottomContent={modalBottomSingle} />}
       pendingText={pendingTextSingle}
@@ -1109,6 +1113,8 @@ export default function RemoveStableLiquidity({
           {stableRemovalState === StableRemovalState.BY_TOKENS && (
             <Box my="16px">
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width="100%"
                 value={formattedAmounts[StablesField.LIQUIDITY]}
                 onUserInput={(value) => {
@@ -1123,7 +1129,6 @@ export default function RemoveStableLiquidity({
                 stablePool={stablePool}
                 hideBalance={false}
                 balances={relevantTokenBalances}
-                account={account}
               />
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="5px" />
@@ -1132,6 +1137,8 @@ export default function RemoveStableLiquidity({
               <BorderCard>
                 <AutoColumn gap="3px">
                   <CurrencyInputPanelStable
+                    chainId={chainId}
+                    account={account}
                     width="100%"
                     hideBalance
                     value={formattedAmounts[StablesField.CURRENCY_1]}
@@ -1147,9 +1154,10 @@ export default function RemoveStableLiquidity({
                     label={t('Output')}
                     id="remove-liquidity-token1"
                     balances={relevantTokenBalances}
-                    account={account}
                   />
                   <CurrencyInputPanelStable
+                    chainId={chainId}
+                    account={account}
                     width="100%"
                     hideBalance
                     value={formattedAmounts[StablesField.CURRENCY_2]}
@@ -1171,9 +1179,10 @@ export default function RemoveStableLiquidity({
                     label={t('Output')}
                     id="remove-liquidity-token2"
                     balances={relevantTokenBalances}
-                    account={account}
                   />
                   <CurrencyInputPanelStable
+                    chainId={chainId}
+                    account={account}
                     width="100%"
                     hideBalance
                     value={formattedAmounts[StablesField.CURRENCY_3]}
@@ -1189,9 +1198,10 @@ export default function RemoveStableLiquidity({
                     label={t('Output')}
                     id="remove-liquidity-token3"
                     balances={relevantTokenBalances}
-                    account={account}
                   />
                   <CurrencyInputPanelStable
+                    chainId={chainId}
+                    account={account}
                     width="100%"
                     hideBalance
                     value={formattedAmounts[StablesField.CURRENCY_4]}
@@ -1207,7 +1217,6 @@ export default function RemoveStableLiquidity({
                     label={t('Output')}
                     id="remove-liquidity-token4"
                     balances={relevantTokenBalances}
-                    account={account}
                   />
                 </AutoColumn>
               </BorderCard>
@@ -1217,6 +1226,8 @@ export default function RemoveStableLiquidity({
           {stableRemovalState === StableRemovalState.BY_SINGLE_TOKEN && (
             <Box my="16px">
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width="100%"
                 value={formattedAmounts[StablesField.LIQUIDITY]}
                 onUserInput={(value) => {
@@ -1232,12 +1243,13 @@ export default function RemoveStableLiquidity({
                 hideBalance={false}
                 label='Select LP Amount to Burn'
                 balances={relevantTokenBalances}
-                account={account}
               />
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <SingleStableInputPanel
+                chainId={chainId}
+                account={account}
                 value={formattedAmounts[StablesField.CURRENCY_SINGLE]}
                 onUserInput={(_: string) => null}
                 onCurrencySelect={(ccy: Currency) => {

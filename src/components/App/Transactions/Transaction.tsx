@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { CheckmarkIcon, CloseIcon, LinkExternal } from '@requiemswap/uikit'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { getNetworkExplorerLink } from 'utils'
 import { TransactionDetails } from 'state/transactions/reducer'
 import CircleLoader from '../../Loader/CircleLoader'

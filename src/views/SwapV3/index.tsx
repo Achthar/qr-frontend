@@ -318,6 +318,8 @@ export default function SwapV3({ history }: RouteComponentProps) {
 
   const [onPresentConfirmModal] = useModal(
     <ConfirmSwapV3Modal
+      chainId={chainId}
+      library={library}
       trade={trade}
       originalTrade={tradeToConfirm}
       onAcceptChanges={handleAcceptChanges}

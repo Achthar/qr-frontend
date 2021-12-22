@@ -31,7 +31,7 @@ interface TransactionModalProps extends InjectedModalProps{
 
 
 const TransactionsModal: React.FC<TransactionModalProps> = ({ onDismiss, chainId, account }) => {
-  // const { account, chainId } = useActiveWeb3React()
+
   const dispatch = useDispatch<AppDispatch>()
   const allTransactions = useAllTransactions()
 

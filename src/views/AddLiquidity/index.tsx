@@ -4,13 +4,14 @@ import { TransactionResponse } from '@ethersproject/providers'
 import {
   Currency,
   currencyEquals,
-
+  CurrencyAmount,
   NETWORK_CCY,
   TokenAmount,
   WETH,
   WRAPPED_NETWORK_TOKENS,
   STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP
+  STABLES_INDEX_MAP,
+  JSBI
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -31,6 +32,7 @@ import {
   Box
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
+import { useUserBalancesState } from 'state/userBalances/hooks'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
@@ -41,11 +43,10 @@ import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { STANDARD_FEES, STANDARD_WEIGHTS, REQUIEM_PAIR_MANAGER } from 'config/constants'
 
-import { getTokenAmounts } from 'state/userBalances/hooks'
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
-import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { DoubleCurrencyLogo } from 'components/Logo'
 import { AppHeader, AppBody } from 'components/App'
 import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPairPosition'
@@ -53,7 +54,7 @@ import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { LinkStyledButton } from 'theme'
 import { PairState } from 'hooks/usePairs'
-import { useCurrency } from 'hooks/Tokens'
+import { useCurrency, useAllTokens } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
@@ -119,6 +120,25 @@ export default function AddLiquidity({
     error,
     fee: _fee
   } = useDerivedMintWeightedPairInfo(currencyA ?? undefined, currencyB ?? undefined)
+
+  // use balances from the balance state instead of manually loading them
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings } = useUserBalancesState()
+
+  const defaultTokens = useAllTokens()
+  const tokenBalances = useMemo(
+    () => Object.assign({},
+      ...Object.values(defaultTokens).map(
+        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0')) })
+      )
+    ),
+    [defaultTokens, tokenBalancesStrings]
+  )
+
+  const networkCcyBalance = useMemo(
+    () => CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(networkCcyBalanceString ?? '0')),
+    [chainId, networkCcyBalanceString]
+  )
+
 
   const {
     onFieldAInput,
@@ -449,6 +469,8 @@ export default function AddLiquidity({
       title={noLiquidity ? t('You are creating a pool') : t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
+      chainId={chainId}
+      library={library}
       hash={txHash}
       content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />}
       pendingText={pendingText}
@@ -516,7 +538,11 @@ export default function AddLiquidity({
             <Box>
               <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
                 <span>
-                  <CurrencyInputPanel
+                  <CurrencyInputPanelExpanded
+                    chainId={chainId}
+                    account={account}
+                    balances={tokenBalances}
+                    networkCcyBalance={networkCcyBalance}
                     borderRadius='5px'
                     width='250px'
                     value={formattedAmounts[WeightedField.CURRENCY_A]}
@@ -569,7 +595,11 @@ export default function AddLiquidity({
             </ColumnCenter>
             <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' >
               <span>
-                <CurrencyInputPanel
+                <CurrencyInputPanelExpanded
+                  chainId={chainId}
+                  account={account}
+                  balances={tokenBalances}
+                  networkCcyBalance={networkCcyBalance}
                   borderRadius='5px'
                   width='250px'
                   value={formattedAmounts[WeightedField.CURRENCY_B]}

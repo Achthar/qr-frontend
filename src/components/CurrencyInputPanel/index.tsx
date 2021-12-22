@@ -47,6 +47,8 @@ interface CurrencyInputPanelProps {
   borderRadius?: string
   width?: string
   value: string
+  chainId: number
+  account: string
   onUserInput: (value: string) => void
   onMax?: () => void
   showMaxButton: boolean
@@ -65,6 +67,8 @@ export default function CurrencyInputPanel({
   borderRadius = '16px',
   width = '100%',
   value,
+  chainId,
+  account,
   onUserInput,
   onMax,
   showMaxButton,
@@ -79,8 +83,7 @@ export default function CurrencyInputPanel({
   id,
   showCommonBases,
 }: CurrencyInputPanelProps) {
-  const { account } = useWeb3React()
-  const { chainId } = useNetworkState()
+  // const { account chainId, library } = useWeb3React()
   const selectedCurrencyBalance = useCurrencyBalance(chainId, account ?? undefined, currency ?? undefined)
   const { t } = useTranslation()
   const translatedLabel = label || t('Input')

@@ -286,6 +286,8 @@ export default function AddStableLiquidity({
           <AutoColumn gap="5px">
             <Row>
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width={account && approval1 !== ApprovalState.APPROVED ? '300px' : '100%'}
                 value={typedValue1}
                 onUserInput={onField1Input}
@@ -295,7 +297,6 @@ export default function AddStableLiquidity({
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_1]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][0]}
                 balances={balances}
-                account={account}
                 id="add-liquidity-input-token1"
               />
 
@@ -318,6 +319,8 @@ export default function AddStableLiquidity({
             </Row>
             <Row>
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width={account && approval2 !== ApprovalState.APPROVED ? '300px' : '100%'}
                 value={typedValue2}
                 onUserInput={onField2Input}
@@ -327,7 +330,6 @@ export default function AddStableLiquidity({
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_2]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][1]}
                 balances={balances}
-                account={account}
                 id="add-liquidity-input-token2"
               />
               {account && (approval2 !== ApprovalState.APPROVED && (
@@ -346,6 +348,8 @@ export default function AddStableLiquidity({
             </Row>
             <Row>
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width={account && approval3 !== ApprovalState.APPROVED ? '300px' : '100%'}
                 value={typedValue3}
                 onUserInput={onField3Input}
@@ -355,7 +359,6 @@ export default function AddStableLiquidity({
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_3]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][2]}
                 balances={balances}
-                account={account}
                 id="add-liquidity-input-token3"
               />
               {account && (approval3 !== ApprovalState.APPROVED && (
@@ -374,6 +377,8 @@ export default function AddStableLiquidity({
             </Row>
             <Row>
               <CurrencyInputPanelStable
+                chainId={chainId}
+                account={account}
                 width={account && approval4 !== ApprovalState.APPROVED ? '300px' : '100%'}
                 value={typedValue4}
                 onUserInput={onField4Input}
@@ -383,7 +388,6 @@ export default function AddStableLiquidity({
                 showMaxButton={!atMaxAmountsStables[StablesField.CURRENCY_4]}
                 stableCurrency={STABLES_INDEX_MAP[chainId][3]}
                 balances={balances}
-                account={account}
                 id="add-liquidity-input-token4"
               />
               {account && (approval4 !== ApprovalState.APPROVED && (

@@ -227,7 +227,6 @@ export default function AccountDetails({
   ENSName,
   openOptions
 }: AccountDetailsProps) {
-  // const { chainId, account, connector } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()

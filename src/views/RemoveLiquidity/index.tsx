@@ -393,6 +393,8 @@ export default function RemoveLiquidity({
       title={t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
+      chainId={chainId}
+      library={library}
       hash={txHash || ''}
       content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />}
       pendingText={pendingText}
@@ -507,6 +509,8 @@ export default function RemoveLiquidity({
           {showDetailed && (
             <Box my="16px">
               <CurrencyInputPanel
+                chainId={chainId}
+                account={account}
                 value={formattedAmounts[Field.LIQUIDITY]}
                 onUserInput={onLiquidityInput}
                 onMax={() => {
@@ -523,6 +527,8 @@ export default function RemoveLiquidity({
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
+                chainId={chainId}
+                account={account}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_A]}
                 onUserInput={onCurrencyAInput}
@@ -537,6 +543,8 @@ export default function RemoveLiquidity({
                 <AddIcon width="24px" my="16px" />
               </ColumnCenter>
               <CurrencyInputPanel
+                chainId={chainId}
+                account={account}
                 hideBalance
                 value={formattedAmounts[Field.CURRENCY_B]}
                 onUserInput={onCurrencyBInput}

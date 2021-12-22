@@ -4,7 +4,6 @@ import { Token, StablePool, TokenAmount } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column, { ColumnCenter, AutoColumn } from 'components/Column'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import Row from 'components/Row'
@@ -58,6 +57,7 @@ interface CurrencyInputPanelStable {
   hideBalance?: boolean
   stablePool?: StablePool | null
   hideInput?: boolean
+  chainId: number
   account: string
   balances: { [address: string]: TokenAmount }
   id: string
@@ -75,6 +75,7 @@ export default function CurrencyInputPanelStable({
   label,
   stableCurrency,
   balances,
+  chainId,
   account,
   hideBalance = false,
   stablePool = null, // used for double token logo
@@ -82,10 +83,9 @@ export default function CurrencyInputPanelStable({
   id,
   onHover = false
 }: CurrencyInputPanelStable) {
-  // const { account, chainId } = useActiveWeb3React("CurrencyInputPanelStable")
+  
   const selectedCurrencyBalance = balances[stableCurrency?.address] ?? undefined // useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
   const { t } = useTranslation()
-  const { chainId } = useNetworkState()
   return (
     <InputPanel id={id} width={width}>
       <Container hideInput={false} onHover={onHover}>
