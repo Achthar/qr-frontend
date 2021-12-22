@@ -1,21 +1,38 @@
 import BigNumber from 'bignumber.js'
 import masterchefABI from 'config/abi/masterchef.json'
+import bondABI from 'config/abi/avax/RequiemQBondDepository.json'
 import erc20 from 'config/abi/erc20.json'
-import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getAddressForBond, getMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import multicall from 'utils/multicall'
-import { SerializedBigNumber} from 'config/constants/types'
+import { SerializedBigNumber } from 'config/constants/types'
 import { Bond } from 'state/types'
+import { ethers } from 'ethers'
 
 
 export type PublicBondData = {
   bond: string
   price: SerializedBigNumber
+  priceUsd: SerializedBigNumber
+  currentDebt: SerializedBigNumber
   roi: number
 }
 
 const fetchPublicBondData = async (chainId: number, bond: Bond): Promise<PublicBondData> => {
-  const { bondToken} = bond
+  const { bondToken } = bond
+  const calls = [
+    {
+      address: getAddressForBond(chainId),
+      name: 'getBondData',
+      params: []
+    }
+  ]
+
+  const [
+    _bondPrice_, // uint256 _bondPrice_,
+    _bondPriceInUsd_, // uint256 _bondPriceInUsd_,
+    _currentDebt_ // uint256 _currentDebt_
+  ] = await multicall(chainId, [new ethers.utils.Interface(bondABI)], calls)
   // const lpAddress = getAddress(chainId, lpAddresses)
   // const calls = [
   //   // Balance of token in the LP contract
@@ -88,10 +105,16 @@ const fetchPublicBondData = async (chainId: number, bond: Bond): Promise<PublicB
 
   // const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
   // const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO
+  console.log("FETCH BOND",
+    _bondPrice_.toString(),
+    _bondPriceInUsd_.toString(),
+    _currentDebt_.toString())
 
   return {
     bond: 'REQT',
-    price: '143.12',
+    price: _bondPrice_.toString(),
+    priceUsd: _bondPriceInUsd_.toString(),
+    currentDebt: _currentDebt_.toString(),
     roi: 0.01243
   }
 }

@@ -105,9 +105,9 @@ export const useLpTokenPrice = (symbol: string) => {
 
 // /!\ Deprecated , use the BUSD hook in /hooks
 
-export const usePricenetworkCCYUsd = (): BigNumber => {
+export const usePriceNetworkCCYUsd = (): BigNumber => {
   const bnbUsdBond = useBondFromBondId(1)
-  return  new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
+  return new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
 }
 
 export const usePriceReqtUsd = (): BigNumber => {
@@ -165,7 +165,7 @@ export const usePriceRequiemDollar = (): BigNumber => {
 // const initialBondArray = allBonds;
 // const initialExpiredArray = allExpiredBonds;
 // // Slaps together bond data within the account & bonding states
-// function useBonds(networkId: number) {
+// export function useBondsGeneric(chainId: number) {
 //   const bondLoading = useSelector((state: IBondingStateView) => !state.bonding.loading);
 //   const bondState = useSelector((state: IBondingStateView) => state.bonding);
 //   const accountBondsState = useSelector((state: IBondingStateView) => state.account.bonds);
@@ -173,7 +173,7 @@ export const usePriceRequiemDollar = (): BigNumber => {
 //   const [expiredBonds, setExpiredBonds] = useState<Bond[] | IAllBondData[]>(initialExpiredArray);
 
 //   useEffect(() => {
-//     let bondDetails: IAllBondData[];
+//     let bondDetails: Bond[];
 //     bondDetails = allBonds
 //       .flatMap(bond => {
 //         if (bondState[bond.name] && bondState[bond.name].bondDiscount) {
@@ -189,8 +189,8 @@ export const usePriceRequiemDollar = (): BigNumber => {
 //       });
 
 //     const mostProfitableBonds = bondDetails.concat().sort((a, b) => {
-//       if (!a.getBondability(networkId)) return 1;
-//       if (!b.getBondability(networkId)) return -1;
+//       if (!getBondability(chainId, a)) return 1;
+//       if (!getBondability(chainId, b)) return -1;
 //       return a["bondDiscount"] > b["bondDiscount"] ? -1 : b["bondDiscount"] > a["bondDiscount"] ? 1 : 0;
 //     });
 //     setBonds(mostProfitableBonds);
@@ -217,5 +217,9 @@ export const usePriceRequiemDollar = (): BigNumber => {
 //   // console.log(bonds);
 //   return { bonds, loading: bondLoading, expiredBonds };
 // }
+
+function getBondability(chainId: number, bond: Bond) {
+  return bond.isBondable[chainId];
+}
 
 // export default useBonds;

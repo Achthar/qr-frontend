@@ -52,7 +52,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
   return useMemo(() => {
 
     // when loading return signal
-    if (tokenReservesResult.loading || aResult.loading || supplyResult.loading) {
+    if (tokenReservesResult.loading || aResult.loading || supplyResult.loading || !tokenReservesResult?.result?.[0]) {
       return [
         StablePoolState.LOADING,
         null
@@ -71,7 +71,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
 
     const stablePool = new StablePool(
       STABLES_INDEX_MAP[chainId],
-      tokenReservesResult.result?.[0],
+      tokenReservesResult.result?.[0], // ?? Object.values(STABLES_INDEX_MAP[chainId]).map(x => new TokenAmount(x, '0')),
       aResult.result?.[0], // we add the value of A later
       swapStorage,
       currentBlock, // block timestamp to be set later
