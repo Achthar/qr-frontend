@@ -26,8 +26,7 @@ export enum StablePoolState {
   INVALID,
 }
 
-export function useStablePool(): [StablePoolState, StablePool | null] {
-  const {chainId} = useNetworkState()
+export function useStablePool(chainId: number): [StablePoolState, StablePool | null] {
   const { slowRefresh } = useRefresh()
 
   // console.log("SPC")

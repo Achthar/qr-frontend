@@ -53,7 +53,7 @@ const Label = styled(Text)`
 
 export default function SwapV3({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
 
   // token warning stuff
@@ -80,7 +80,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0') )})
+        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0')) })
       )
     ),
     [defaultTokens, tokenBalancesStrings]
@@ -91,7 +91,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     [chainId, networkCcyBalanceString]
   )
 
-  console.log("BALANCES", networkCcyBalanceString, tokenBalancesStrings)
+
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
 
@@ -107,7 +107,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     parsedAmount,
     currencies,
     inputError: swapInputError,
-  } = useDerivedSwapV3Info(chainId)
+  } = useDerivedSwapV3Info(chainId, account)
 
   const {
     wrapType,
@@ -175,7 +175,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTradeV3(chainId, trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallbackFromTradeV3(chainId, account, trade, allowedSlippage)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -191,7 +191,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(trade, allowedSlippage, recipient)
+  const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(chainId, account, library, trade, allowedSlippage, recipient)
 
   const { priceImpactWithoutFee } = computeTradeV3PriceBreakdown(trade)
 
@@ -337,7 +337,11 @@ export default function SwapV3({ history }: RouteComponentProps) {
   return (
     <Page>
       <AppBody>
-        <AppHeader title={t('Exchange')} subtitle={t('Trade tokens in an instant')} />
+        <AppHeader
+          chainId={chainId}
+          account={account}
+          title={t('Exchange')}
+          subtitle={t('Trade tokens in an instant')} />
         <Wrapper id="swap-page">
           <AutoColumn gap="md">
             <CurrencyInputPanelExpanded
@@ -346,6 +350,8 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
               networkCcyBalance={networkCcyBalance}
+              chainId={chainId}
+              account={account}
               balances={tokenBalances}
               onUserInput={handleTypeInput}
               onMax={handleMaxInput}
@@ -379,6 +385,8 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={false}
               currency={currencies[Field.OUTPUT]}
               networkCcyBalance={networkCcyBalance}
+              chainId={chainId}
+              account={account}
               balances={tokenBalances}
               onCurrencySelect={handleOutputSelect}
               otherCurrency={currencies[Field.INPUT]}

@@ -37,7 +37,6 @@ const IconWrapper = styled.div<{ pending: boolean; success?: boolean }>`
 `
 
 export default function Transaction({ chainId, hash }: { chainId: number, hash: string }) {
-  // const { chainId } = useActiveWeb3React()
   const allTransactions = useAllTransactions()
 
   const tx = allTransactions?.[hash]

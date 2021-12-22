@@ -11,6 +11,7 @@ import isZero from '../utils/isZero'
 import useTransactionDeadline from './useTransactionDeadline'
 import useENS from './ENS/useENS'
 
+
 export enum SwapV3CallbackState {
   INVALID,
   LOADING,
@@ -41,11 +42,13 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall
  * @param recipientAddressOrName
  */
 function useSwapV3CallArguments(
+  chainId: number,
+  account: string,
+  library: any,
   trade: TradeV4 | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapV3Call[] {
-  const { account, chainId, library } = useActiveWeb3React()
 
   // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
   const recipient = recipientAddressOrName ?? account // recipientAddressOrName === null ? account : recipientAddress
@@ -94,14 +97,17 @@ function useSwapV3CallArguments(
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapV3Callback(
+  chainId: number,
+  account: string,
+  library: any,
   trade: TradeV4 | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapV3CallbackState; callback: null | (() => Promise<string>); error: string | null } {
-  const { account, chainId, library } = useActiveWeb3React()
+
   const gasPrice = useGasPrice(chainId)
 
-  const swapCalls = useSwapV3CallArguments(trade, allowedSlippage, recipientAddressOrName)
+  const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, allowedSlippage, recipientAddressOrName)
   // console.log("SWAPCALLS", swapCalls)
   const addTransaction = useTransactionAdder()
 

@@ -38,6 +38,7 @@ const StyledModalBody = styled(ModalBody)`
 
 interface CurrencySearchModalExpandedProps extends InjectedModalProps {
   chainId: number
+  account: string
   networkCcyAmount: CurrencyAmount
   tokenAmounts: TokenAmount[]
   selectedCurrency?: Currency | null
@@ -46,8 +47,9 @@ interface CurrencySearchModalExpandedProps extends InjectedModalProps {
   showCommonBases?: boolean
 }
 
-export default function CurrencySearchModal({
+export default function CurrencySearchModalExpanded({
   chainId,
+  account,
   networkCcyAmount,
   tokenAmounts,
   onDismiss = () => null,
@@ -102,6 +104,7 @@ export default function CurrencySearchModal({
         {modalView === CurrencyModalView.search ? (
           <CurrencySearchExpanded
             chainId={chainId ?? 43113}
+            account={account}
             networkCcyAmount={networkCcyAmount}
             tokenAmounts={tokenAmounts}
             onCurrencySelect={handleCurrencySelect}

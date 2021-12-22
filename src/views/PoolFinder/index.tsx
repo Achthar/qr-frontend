@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Currency,  JSBI, TokenAmount, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, JSBI, TokenAmount, NETWORK_CCY } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -93,7 +93,12 @@ export default function PoolFinder() {
   return (
     <Page>
       <AppBody>
-        <AppHeader title={t('Import Pool')} subtitle={t('Import an existing pool')} backTo="/pool" />
+        <AppHeader
+          chainId={chainId}
+          account={account}
+          title={t('Import Pool')}
+          subtitle={t('Import an existing pool')}
+          backTo="/pool" />
         <AutoColumn style={{ padding: '1rem' }} gap="md">
           <StyledButton
             endIcon={<ChevronDownIcon />}

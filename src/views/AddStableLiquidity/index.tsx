@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import {
   Currency,
   currencyEquals,
-  
+
   NETWORK_CCY,
   TokenAmount,
   WETH,
@@ -84,7 +84,7 @@ export default function AddStableLiquidity({
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
 
   // we separate loading the stavblepool to avoid rerendering on every input
-  const [stablePoolState, stablePool] = useStablePool()
+  const [stablePoolState, stablePool] = useStablePool(chainId)
 
   const {
     stableCurrencies,
@@ -106,21 +106,25 @@ export default function AddStableLiquidity({
 
   const [approval1, approve1Callback] = useApproveCallback(
     chainId,
+    account,
     formattedStablesAmounts[StablesField.CURRENCY_1],
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval2, approve2Callback] = useApproveCallback(
     chainId,
+    account,
     formattedStablesAmounts[StablesField.CURRENCY_2],
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval3, approve3Callback] = useApproveCallback(
     chainId,
+    account,
     formattedStablesAmounts[StablesField.CURRENCY_3],
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval4, approve4Callback] = useApproveCallback(
     chainId,
+    account,
     formattedStablesAmounts[StablesField.CURRENCY_4],
     STABLE_POOL_ADDRESS[chainId],
   )
@@ -267,6 +271,8 @@ export default function AddStableLiquidity({
       </Row>
       <AppBody>
         <AppHeader
+          chainId={chainId}
+          account={account}
           title='Add Stablecoin Liquidity'
           subtitle='Receive collateralizable StableSwap LP Tokens'
 

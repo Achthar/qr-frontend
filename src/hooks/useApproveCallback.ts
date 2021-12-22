@@ -23,10 +23,11 @@ export enum ApprovalState {
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useApproveCallback(
   chainId: number,
+  account: string,
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  const { account } = useActiveWeb3React()
+  
   const { callWithGasPrice } = useCallWithGasPrice()
   const token = amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined
   const currentAllowance = useTokenAllowance(chainId, token, account ?? undefined, spender)
@@ -108,18 +109,18 @@ export function useApproveCallback(
 }
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTrade(chainId: number, trade?: Trade, allowedSlippage = 0) {
+export function useApproveCallbackFromTrade(chainId: number, account: string, trade?: Trade, allowedSlippage = 0) {
   const amountToApprove = useMemo(
     () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
     [trade, allowedSlippage],
   )
 
-  return useApproveCallback(chainId, amountToApprove, ROUTER_ADDRESS[chainId])
+  return useApproveCallback(chainId, account, amountToApprove, ROUTER_ADDRESS[chainId])
 }
 
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTradeV3(chainId: number, tradeV3?: TradeV4, allowedSlippage = 0) {
+export function useApproveCallbackFromTradeV3(chainId: number, account: string, tradeV3?: TradeV4, allowedSlippage = 0) {
   const amountToApprove = useMemo(
     () => (tradeV3 ? computeSlippageAdjustedAmountsV3(tradeV3, allowedSlippage)[Field.INPUT] : undefined),
     [tradeV3, allowedSlippage],
@@ -127,6 +128,7 @@ export function useApproveCallbackFromTradeV3(chainId: number, tradeV3?: TradeV4
 
   return useApproveCallback(
     chainId,
+    account,
     amountToApprove,
     REQUIEMQROUTER_ADDRESS[chainId]
   )

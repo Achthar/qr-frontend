@@ -24,16 +24,12 @@ import {
   getStableAmounts,
   getMainAmounts
 } from '../../state/userBalances/hooks'
-import { useTokenBalancesWithLoadingIndicator as xD } from '../../state/wallet/hooks'
+// import { useTokenBalancesWithLoadingIndicator as xD } from '../../state/wallet/hooks'
 import {
   refreshBalances,
   refreshNetworkCcyBalance
 } from '../../state/userBalances/actions'
-import { usePairs } from '../../hooks/usePairs'
-import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
-import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
-import { AppHeader, AppBody } from '../../components/App'
 import { AppDispatch, AppState } from '../../state'
 import Page from '../Page'
 
@@ -56,10 +52,7 @@ export default function Balances() {
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [allBalances, fetchingAllBalances] = useTokenBalancesWithLoadingIndicator(account, [...getMainTokens(chainId), ...getStables(chainId)])
   const dispatch = useDispatch<AppDispatch>()
-  // const [allBalances1, fetchingAllBalances1] = xD(account, [...getMainTokens(chainId), ...getStables(chainId)])
-  // console.log(allBalances1, fetchingAllBalances1)
-  // console.log(allBalances1.map())
-  console.log("ALL BALANCES", allBalances)
+
   useEffect(
     () => {
       dispatch(refreshBalances({

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals,  NETWORK_CCY, Percent, WETH, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { Currency, currencyEquals, NETWORK_CCY, Percent, WETH, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -52,6 +52,7 @@ export default function RemoveLiquidity({
 }: RouteComponentProps<{ weightA: string, weightB: string, fee: string, currencyIdA: string; currencyIdB: string }>) {
 
   const { account, chainId, library } = useActiveWeb3React()
+
   const [currencyA, currencyB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]
   const [tokenA, tokenB] = useMemo(
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
@@ -68,7 +69,7 @@ export default function RemoveLiquidity({
     pair,
     parsedAmounts,
     error
-  } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined, weightA, fee)
+  } = useDerivedBurnInfo(chainId, account, currencyA ?? undefined, currencyB ?? undefined, weightA, fee)
 
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
@@ -103,7 +104,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, parsedAmounts[Field.LIQUIDITY], REQUIEM_PAIR_MANAGER[chainId])
+  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.LIQUIDITY], REQUIEM_PAIR_MANAGER[chainId])
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -405,6 +406,8 @@ export default function RemoveLiquidity({
     <Page>
       <AppBody>
         <AppHeader
+          chainId={chainId}
+          account={account}
           backTo="/pool"
           title={`Remove\n ${weightA}-${currencyA?.symbol ?? ''}/${weightB}-${currencyB?.symbol ?? ''}@${fee}bps\nliquidity`}
           subtitle={`To receive ${currencyA?.symbol} and ${currencyB?.symbol}`}

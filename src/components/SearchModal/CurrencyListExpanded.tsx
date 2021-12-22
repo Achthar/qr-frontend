@@ -1,5 +1,5 @@
 import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
-import { Currency, CurrencyAmount, currencyEquals,  Token, NETWORK_CCY, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, currencyEquals, Token, NETWORK_CCY, TokenAmount } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { FixedSizeList } from 'react-window'
@@ -68,7 +68,7 @@ function CurrencyRowExpanded({
 }: {
   chainId: number
   account: string
-  currencyAmount:CurrencyAmount
+  currencyAmount: CurrencyAmount
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
@@ -107,6 +107,8 @@ export default function CurrencyListExpanded({
   height,
   networkCcyAmount,
   tokenAmounts,
+  chainId,
+  account,
   selectedCurrency,
   onCurrencySelect,
   otherCurrency,
@@ -117,8 +119,10 @@ export default function CurrencyListExpanded({
   breakIndex,
 }: {
   height: number
-  networkCcyAmount:CurrencyAmount
+  networkCcyAmount: CurrencyAmount
   tokenAmounts: TokenAmount[]
+  chainId: number
+  account: string
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherCurrency?: Currency | null
@@ -128,16 +132,14 @@ export default function CurrencyListExpanded({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const {  account } = useWeb3React()
-  const {chainId} = useNetworkState()
-  // const tokens = tokenAmounts.map((tAmount)=> tAmount.token)
+
   const itemData: (CurrencyAmount | undefined)[] = useMemo(() => {
     let formatted: (CurrencyAmount | undefined)[] = showETH ? [networkCcyAmount, ...tokenAmounts] : tokenAmounts
     if (breakIndex !== undefined) {
       formatted = [...formatted.slice(0, breakIndex), undefined, ...formatted.slice(breakIndex, formatted.length)]
     }
     return formatted
-  }, [chainId, breakIndex, tokenAmounts, showETH])
+  }, [breakIndex, tokenAmounts, showETH, networkCcyAmount])
 
 
   const { t } = useTranslation()

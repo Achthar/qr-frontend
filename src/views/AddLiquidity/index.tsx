@@ -4,7 +4,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import {
   Currency,
   currencyEquals,
-  
+
   NETWORK_CCY,
   TokenAmount,
   WETH,
@@ -168,11 +168,13 @@ export default function AddLiquidity({
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(
     chainId,
+    account,
     parsedAmounts[WeightedField.CURRENCY_A],
     REQUIEM_PAIR_MANAGER[chainId],
   )
   const [approvalB, approveBCallback] = useApproveCallback(
     chainId,
+    account,
     parsedAmounts[WeightedField.CURRENCY_B],
     REQUIEM_PAIR_MANAGER[chainId],
   )
@@ -485,6 +487,8 @@ export default function AddLiquidity({
       </Row>
       <AppBody>
         <AppHeader
+          chainId={chainId}
+          account={account}
           title={t('Add Liquidity')}
           subtitle={
             t('Add liquidity to receive LP tokens')

@@ -207,6 +207,9 @@ function renderTransactions(chainId: number, transactions: string[]) {
 }
 
 interface AccountDetailsProps {
+  chainId: number
+  account: string
+  connector: any // shall be abstract connector
   toggleWalletModal: () => void
   pendingTransactions: string[]
   confirmedTransactions: string[]
@@ -215,13 +218,16 @@ interface AccountDetailsProps {
 }
 
 export default function AccountDetails({
+  chainId,
+  account,
+  connector,
   toggleWalletModal,
   pendingTransactions,
   confirmedTransactions,
   ENSName,
   openOptions
 }: AccountDetailsProps) {
-  const { chainId, account, connector } = useActiveWeb3React()
+  // const { chainId, account, connector } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()

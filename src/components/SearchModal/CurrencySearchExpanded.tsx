@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { Currency,  Token, NETWORK_CCY, CurrencyAmount, TokenAmount } from '@requiemswap/sdk'
+import { Currency, Token, NETWORK_CCY, CurrencyAmount, TokenAmount } from '@requiemswap/sdk'
 import { Text, Input, Box } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
@@ -17,9 +17,10 @@ import useTokenComparator from './sorting'
 import ImportRow from './ImportRow'
 
 interface CurrencySearchExpandedProps {
-  chainId:number
-  networkCcyAmount?:CurrencyAmount
-  tokenAmounts:TokenAmount[]
+  chainId: number
+  account: string
+  networkCcyAmount?: CurrencyAmount
+  tokenAmounts: TokenAmount[]
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -32,6 +33,7 @@ const swapSound = new Audio('swap.mp3')
 
 function CurrencySearchExpanded({
   chainId,
+  account,
   networkCcyAmount,
   tokenAmounts,
   selectedCurrency,
@@ -156,6 +158,8 @@ function CurrencySearchExpanded({
               showETH={showETH}
               networkCcyAmount={networkCcyAmount}
               tokenAmounts={tokenAmounts}
+              chainId={chainId}
+              account={account}
               // currencies={
               //   filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
               // }

@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import MetamaskIcon from 'assets/images/metamask.png'
 import { ReactComponent as Close } from 'assets/images/x.svg'
-import { injected, SUPPORTED_WALLETS  } from 'connectors'
+import { injected, SUPPORTED_WALLETS } from 'connectors'
 import { LANDING_PAGE, AVALANCHE_CHAIN_PARAMS } from 'config/constants'
 import usePrevious from 'hooks/usePrevious'
 import { ButtonLight } from 'components/Button'
@@ -128,7 +128,7 @@ export default function WalletModal({
   ENSName?: string
 }) {
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, error } = useWeb3React()
+  const { chainId, active, account, connector, activate, error } = useWeb3React()
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
 
@@ -324,6 +324,9 @@ export default function WalletModal({
     if (account && walletView === WALLET_VIEWS.ACCOUNT) {
       return (
         <AccountDetails
+          chainId={chainId}
+          account={account}
+          connector={connector}
           toggleWalletModal={toggleWalletModal}
           pendingTransactions={pendingTransactions}
           confirmedTransactions={confirmedTransactions}

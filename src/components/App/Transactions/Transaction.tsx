@@ -23,8 +23,7 @@ const IconWrapper = styled.div<{ pending: boolean; success?: boolean }>`
     pending ? theme.colors.primary : success ? theme.colors.success : theme.colors.failure};
 `
 
-export default function Transaction({ tx }: { tx: TransactionDetails }) {
-  const { chainId } = useActiveWeb3React()
+export default function Transaction({ chainId, tx }: { chainId: number, tx: TransactionDetails }) {
 
   const summary = tx?.summary
   const pending = !tx?.receipt

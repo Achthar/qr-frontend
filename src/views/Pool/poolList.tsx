@@ -120,7 +120,7 @@ export default function PoolList() {
   const allWeightedPairsWithLiquidity = pairs.filter((pair): pair is WeightedPair => Boolean(pair))
 
   // stable pool starting here
-  const [stablePoolState, stablePool] = useStablePool()
+  const [stablePoolState, stablePool] = useStablePool(chainId)
 
   const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
@@ -184,7 +184,11 @@ export default function PoolList() {
   return (
     <Page>
       <AppBody>
-        <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />
+        <AppHeader
+          chainId={chainId}
+          account={account}
+          title={t('Your Liquidity')}
+          subtitle={t('Remove liquidity to receive tokens back')} />
         <Body>
           {renderBody()}
           {account && !weightedIsLoading && (

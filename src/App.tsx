@@ -8,7 +8,6 @@ import useEagerConnect from 'hooks/useEagerConnect'
 import { usePollBlockNumber } from 'state/block/hooks'
 import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
-import Web3ReactManager from 'components/Web3ReactManager'
 import Popups from 'components/Popups'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
 import { ToastListener } from './contexts/ToastsContext'
@@ -39,7 +38,6 @@ const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool/poolList'))
-const LiquidityV2 = lazy(() => import('./views/Pool'))
 const PoolFinder = lazy(() => import('./views/PoolFinder'))
 const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
 const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
@@ -80,7 +78,6 @@ const App: React.FC = () => {
           <Route exact strict path="/findV2" component={PoolFinder} />
           <Route exact strict path="/find" component={WeightedPairFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
-          <Route exact strict path="/liquidityV2" component={LiquidityV2} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/add" component={AddLiquidity} />
           <Route exact path="/add/stable" component={AddStableLiquidity} />

@@ -1,6 +1,7 @@
 /* eslint default-case: 0 */
+/* eslint no-useless-return: 0 */
 import styled from "styled-components";
-import React, { HTMLProps, useCallback, useRef, useState } from 'react'
+import React, { HTMLProps, useCallback, useEffect, useRef, useState } from 'react'
 import {
   CHAIN_INFO,
   L2_CHAIN_IDS,
@@ -222,11 +223,15 @@ const StyledButton = styled(Button) <{ mB: string, width: string }>`
 const Balances = () => {
   // global network chainId
   const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
-  const{ chainId: chainIdState} = useNetworkState()
+  const { chainId: chainIdState } = useNetworkState()
   const { chainId, library, account } = useWeb3React()
-  // const dispatch = useDispatch<AppDispatch>()
-  // if(chainIdState !== chainId){
-  //  onChainChange(chainId)
+  const dispatch = useDispatch<AppDispatch>()
+  // if (chainIdState !== chainId) {
+  // useEffect(
+  //   () => {
+  //     onChainChange(chainId)
+  //     return;
+  //   }, [chainId, onChainChange])
   // }
   const [balanceShown, showBalance] = useState<boolean>(false)
   const handleClick = () => showBalance(!balanceShown)

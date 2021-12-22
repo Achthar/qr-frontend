@@ -3,12 +3,9 @@ import { Currency, Pair, WeightedPair, TokenAmount, CurrencyAmount, Token } from
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-import { useWeb3React } from '@web3-react/core'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import { RowBetween } from '../Layout/Row'
 import { Input as NumericalInput } from './NumericalInput'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
-import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
+import CurrencySearchModalExpanded from '../SearchModal/CurrencySearchModalExpanded'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
 const InputRow = styled.div<{ selected: boolean }>`
@@ -49,8 +46,10 @@ interface CurrencyInputPanelExpandedProps {
   value: string
   onUserInput: (value: string) => void
   onMax?: () => void
-  balances: {[address:string]:TokenAmount}
+  balances: { [address: string]: TokenAmount }
   networkCcyBalance?: CurrencyAmount
+  chainId: number
+  account: string
   showMaxButton: boolean
   label?: string
   onCurrencySelect: (currency: Currency) => void
@@ -71,6 +70,8 @@ export default function CurrencyInputPanelExpanded({
   onMax,
   balances,
   networkCcyBalance,
+  chainId,
+  account,
   showMaxButton,
   label,
   onCurrencySelect,
@@ -83,16 +84,18 @@ export default function CurrencyInputPanelExpanded({
   id,
   showCommonBases,
 }: CurrencyInputPanelExpandedProps) {
-  const { account } = useWeb3React()
-  const { chainId } = useNetworkState()
+
   // select based on whether ccy is token, if not it has to be the network ccy
   const selectedCurrencyBalance = currency instanceof Token ? balances[currency.address] : networkCcyBalance // useCurrencyBalance(chainId, account ?? undefined, currency ?? undefined)
   const { t } = useTranslation()
   const translatedLabel = label || t('Input')
 
   const [onPresentCurrencyModal] = useModal(
-    <CurrencySearchModal
+    <CurrencySearchModalExpanded
       chainId={chainId}
+      account={account}
+      networkCcyAmount={networkCcyBalance}
+      tokenAmounts={Object.values(balances)}
       onCurrencySelect={onCurrencySelect}
       selectedCurrency={currency}
       otherSelectedCurrency={otherCurrency}

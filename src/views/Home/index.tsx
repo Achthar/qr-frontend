@@ -23,7 +23,6 @@ import Column from 'components/Column'
 
 const Home: React.FC = () => {
   const { theme } = useTheme()
-  const { account, chainId } = useWeb3React()
   const { isMobile } = useMatchBreakpoints()
 
   const HomeSectionContainerStyles = { padding: '5px', width: '100%', maxWidth: '2000px' }

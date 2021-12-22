@@ -128,7 +128,12 @@ export default function WeightedPairFinder() {
   return (
     <Page>
       <AppBody>
-        <AppHeader title={t('Import Pool')} subtitle={t('Import an existing pool')} backTo="/pool" />
+        <AppHeader
+          chainId={chainId}
+          account={account}
+          title={t('Import Pool')}
+          subtitle={t('Import an existing pool')}
+          backTo="/pool" />
         <AutoColumn style={{ padding: '1rem' }} gap="md">
           <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
             <PercentageInputPanel

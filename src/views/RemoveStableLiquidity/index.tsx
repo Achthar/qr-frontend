@@ -100,7 +100,7 @@ export default function RemoveStableLiquidity({
     typedValueSingle,
   } = useBurnStableState()
 
-  const [stablePoolState, stablePool] = useStablePool()
+  const [stablePoolState, stablePool] = useStablePool(chainId)
 
 
   const [relevantTokenBalances, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
@@ -120,7 +120,7 @@ export default function RemoveStableLiquidity({
     calculatedValuesFormatted,
     errorSingle,
     liquidityTradeValues
-  } = useDerivedBurnStablesInfo(relevantTokenBalances, stablePool, stablePoolState, account)
+  } = useDerivedBurnStablesInfo(chainId, relevantTokenBalances, stablePool, stablePoolState, account)
 
   const {
     // onField1Input: _onField1Input,
@@ -257,51 +257,12 @@ export default function RemoveStableLiquidity({
       }
     }
 
-  // // wrapped onUserInput to clear signatures
-  // const onField1Input = useCallback(
-  //   (field: StablesField, value: string) => {
-  //     setSignatureData(null)
-  //     return _onField1Input(field, value)
-  //   },
-  //   [_onField1Input],
-  // )
-
-  // const onField2Input = useCallback(
-  //   (field: StablesField, value: string) => {
-  //     setSignatureData(null)
-  //     return _onField2Input(field, value)
-  //   },
-  //   [_onField2Input],
-  // )
-
-  // const onField3Input = useCallback(
-  //   (field: StablesField, value: string) => {
-  //     setSignatureData(null)
-  //     return _onField3Input(field, value)
-  //   },
-  //   [_onField3Input],
-  // )
-
-  // const onField4Input = useCallback(
-  //   (field: StablesField, value: string) => {
-  //     setSignatureData(null)
-  //     return _onField4Input(field, value)
-  //   },
-  //   [_onField4Input],
-  // )
-
-  // const onLpInput = useCallback(
-  //   (field: StablesField, value: string) => {
-  //     setSignatureData(null)
-  //     return _onLpInput(field, value)
-  //   },
-  //   [_onLpInput],
-  // )
   // tx sending
   const addTransaction = useTransactionAdder()
 
   const [approval, approveCallback] = useApproveCallback(
     chainId,
+    account,
     parsedAmounts[StablesField.LIQUIDITY],
     STABLE_POOL_ADDRESS[chainId],
   )
@@ -1010,6 +971,8 @@ export default function RemoveStableLiquidity({
     <Page>
       <AppBody>
         <AppHeader
+          chainId={chainId}
+          account={account}
           backTo="/pool"
           title="Remove Stable Swap Liquidity"
           subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${STABLES_INDEX_MAP[chainId ?? 43113][1].symbol

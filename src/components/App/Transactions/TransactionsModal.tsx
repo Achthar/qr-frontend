@@ -15,18 +15,23 @@ function newTransactionsFirst(a: TransactionDetails, b: TransactionDetails) {
   return b.addedTime - a.addedTime
 }
 
-function renderTransactions(transactions: TransactionDetails[]) {
+function renderTransactions(chainId:number, transactions: TransactionDetails[]) {
   return (
     <Flex flexDirection="column">
       {transactions.map((tx) => {
-        return <Transaction key={tx.hash + tx.addedTime} tx={tx} />
+        return <Transaction key={tx.hash + tx.addedTime} tx={tx} chainId={chainId} />
       })}
     </Flex>
   )
 }
+interface TransactionModalProps extends InjectedModalProps{
+  account:string
+  chainId:number
+}
 
-const TransactionsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
-  const { account, chainId } = useActiveWeb3React()
+
+const TransactionsModal: React.FC<TransactionModalProps> = ({ onDismiss, chainId, account }) => {
+  // const { account, chainId } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
   const allTransactions = useAllTransactions()
 
@@ -56,8 +61,8 @@ const TransactionsModal: React.FC<InjectedModalProps> = ({ onDismiss }) => {
                   {t('clear all')}
                 </Button>
               </AutoRow>
-              {renderTransactions(pending)}
-              {renderTransactions(confirmed)}
+              {renderTransactions(chainId, pending)}
+              {renderTransactions(chainId, confirmed)}
             </>
           ) : (
             <Text>{t('No recent transactions')}</Text>

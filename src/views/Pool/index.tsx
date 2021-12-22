@@ -60,7 +60,7 @@ export default function Pool() {
   const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
 
   // stable pool starting here
-  const [stablePoolState, stablePool] = useStablePool()
+  const [stablePoolState, stablePool] = useStablePool(chainId)
 
   // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
   const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
@@ -89,7 +89,7 @@ export default function Pool() {
         <FullStablesPositionCard
           userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
           stablePool={stablePool}
-          mb ='20px'
+          mb='20px'
         />)}
       {allV2PairsWithLiquidity?.length > 0 && (allV2PairsWithLiquidity.map((v2Pair, index) => (
         <FullPositionCard
@@ -115,7 +115,11 @@ export default function Pool() {
   return (
     <Page>
       <AppBody>
-        <AppHeader title={t('Your Liquidity')} subtitle={t('Remove liquidity to receive tokens back')} />
+        <AppHeader
+          chainId={chainId}
+          account={account}
+          title={t('Your Liquidity')}
+          subtitle={t('Remove liquidity to receive tokens back')} />
         <Body>
           {renderBody()}
           {account && !v2IsLoading && (

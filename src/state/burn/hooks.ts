@@ -16,6 +16,8 @@ export function useBurnState(): AppState['burn'] {
 }
 
 export function useDerivedBurnInfo(
+  chainId:number,
+  account:string,
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
   weightFieldA:string,
@@ -32,7 +34,6 @@ export function useDerivedBurnInfo(
   fee: string
   error?: string
 } {
-  const { account, chainId } = useActiveWeb3React()
 
   const { independentField, typedValue } = useBurnState()
 

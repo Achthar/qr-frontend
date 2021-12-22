@@ -20,6 +20,7 @@ export function useBurnStableState(): AppState['burnStables'] {
 }
 
 export function useDerivedBurnStablesInfo(
+  chainId:number,
   relevantTokenBalances: {
     [tokenAddress: string]: TokenAmount;
   },
@@ -64,7 +65,7 @@ export function useDerivedBurnStablesInfo(
 
   // pair + totalsupply
   // const [stablePoolState, stablePool] = useStablePool()
-  const { chainId } = useNetworkState()
+  // const { chainId } = useNetworkState()
   const lpToken = new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
   // balances
   // const relevantTokenBalances = useTokenBalances(account ?? undefined, [stablePool?.liquidityToken])

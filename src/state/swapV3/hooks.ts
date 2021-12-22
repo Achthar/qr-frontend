@@ -108,14 +108,13 @@ function involvesAddress(trade: TradeV4, checksummedAddress: string): boolean {
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapV3Info(chainId: number): {
+export function useDerivedSwapV3Info(chainId: number, account:string): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
   v3Trade: TradeV4 | undefined
   inputError?: string
 } {
-  const { account } = useActiveWeb3React()
   const { t } = useTranslation()
 
   const {
@@ -126,7 +125,7 @@ export function useDerivedSwapV3Info(chainId: number): {
     recipient,
   } = useSwapV3State()
 
-  const [stablePoolState, stablePool] = useStablePool()
+  const [stablePoolState, stablePool] = useStablePool(chainId)
 
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)

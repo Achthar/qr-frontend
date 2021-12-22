@@ -8,6 +8,8 @@ import Transactions from './Transactions'
 import QuestionHelper from '../QuestionHelper'
 
 interface Props {
+  chainId: number
+  account: string
   title: string
   subtitle: string
   helper?: string
@@ -23,7 +25,7 @@ const AppHeaderContainer = styled(Flex)`
   border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
 `
 
-const AppHeader: React.FC<Props> = ({ title, subtitle, helper, backTo, noConfig = false }) => {
+const AppHeader: React.FC<Props> = ({ chainId, account, title, subtitle, helper, backTo, noConfig = false }) => {
   const [expertMode] = useExpertModeManager()
 
   return (
@@ -51,7 +53,7 @@ const AppHeader: React.FC<Props> = ({ title, subtitle, helper, backTo, noConfig 
           <NotificationDot show={expertMode}>
             <GlobalSettings />
           </NotificationDot>
-          <Transactions />
+          {Transactions(chainId, account)}
         </Flex>
       )}
     </AppHeaderContainer>
