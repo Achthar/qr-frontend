@@ -39,8 +39,7 @@ export function useDerivedBurnInfo(
 
   // pair + totalsupply
   const [, pair] = useWeightedPair(currencyA, currencyB, Number(weightFieldA), Number(fee))
-//   console.log("PAIR ARGS", currencyA, currencyB, Number(weightFieldA), Number(fee))
-//  console.log("PAIR", pair)
+
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']

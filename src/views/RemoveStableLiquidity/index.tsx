@@ -142,7 +142,7 @@ export default function RemoveStableLiquidity({
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
-  console.log("ERROR", error)
+  
   // modal and loading
   const enum StableRemovalState {
     BY_LP,
@@ -460,16 +460,11 @@ export default function RemoveStableLiquidity({
     }
     const router = getStableRouterContract(chainId, library, account)
 
-    // console.log("LA", parsedAmounts[StablesField.LIQUIDITY].toSignificant(5))
     const liquidityAmount = parsedAmounts[StablesField.LIQUIDITY]
 
     // slippage for LP burn, takes second result from slippage calculation
     const lpAmountMax = calculateSlippageAmount(liquidityAmount, allowedSlippage)[1]
 
-    // console.log('amMax', lpAmountMax.toString())
-    // console.log('orig', liquidityAmount.toSignificant(6))
-
-    // console.log('amnt raw', liquidityAmount)
 
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
@@ -488,26 +483,6 @@ export default function RemoveStableLiquidity({
         BigNumber.from(lpAmountMax.toString()),
         deadline,
       ]
-      // console.log(
-      //   'pool amnts',
-      //   stablePool.calculateRemoveLiquidity(liquidityAmount.toBigNumber()).map((bn) => bn.toString()),
-      // )
-      // console.log(
-      //   'lp amnts',
-      //   stablePool
-      //     .getLiquidityAmount(
-      //       [
-      //         currencyAmount1.toBigNumber(),
-      //         currencyAmount2.toBigNumber(),
-      //         currencyAmount3.toBigNumber(),
-      //         currencyAmount4.toBigNumber(),
-      //       ],
-      //       false,
-      //     )
-      //     .toString(),
-      // )
-
-      // console.log('CCYS', [currencyAmount1, currencyAmount2, currencyAmount3, currencyAmount4])
     } else {
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }
@@ -906,7 +881,6 @@ export default function RemoveStableLiquidity({
       </AutoColumn>
     )
   }
-  // console.log("SS", parsedAmounts[StablesField.SELECTED_SINGLE])
 
   const pendingText = `Removing ${parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
     }, ${parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(3)} ${stablePool?.tokens[1].symbol

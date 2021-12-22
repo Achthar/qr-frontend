@@ -88,7 +88,6 @@ function useSwapV3CallArguments(
         }),
       )
     }
-    // console.log("SWAPMETHODS:", swapMethods)
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
   }, [account, allowedSlippage, chainId, deadline, library, recipient, trade])
@@ -108,7 +107,7 @@ export function useSwapV3Callback(
   const gasPrice = useGasPrice(chainId)
 
   const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, allowedSlippage, recipientAddressOrName)
-  // console.log("SWAPCALLS", swapCalls)
+
   const addTransaction = useTransactionAdder()
 
   // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
@@ -162,7 +161,6 @@ export function useSwapV3Callback(
               })
           }),
         )
-        // console.log("HERE 1", estimatedCalls)
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const successfulEstimation = estimatedCalls.find(
@@ -175,7 +173,7 @@ export function useSwapV3Callback(
           if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
           throw new Error('Unexpected error. Please contact support: none of the calls threw an error')
         }
-        // console.log("HERE 2", successfulEstimation)
+
         const {
           call: {
             contract,
@@ -183,7 +181,7 @@ export function useSwapV3Callback(
           },
           gasEstimate,
         } = successfulEstimation
-        // console.log("HERE CONTRACT", contract)
+        
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           gasPrice,

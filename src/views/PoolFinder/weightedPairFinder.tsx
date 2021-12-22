@@ -67,10 +67,6 @@ export default function WeightedPairFinder() {
 
   const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId, 20)
 
-  // console.log("FILTERED", constellation)
-
-  // console.log("ADDRESSRANGE", addressesRange, allConstellations)
-  // console.log('hit', addressesRange['20-25'], allConstellations[addressesRange['20-25']])
   const [pairState, pair] = useWeightedPair(currency0 ?? undefined, currency1 ?? undefined, weight0, fee)
   const addPair = useWeightedPairAdder()
 

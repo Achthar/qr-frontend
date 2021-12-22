@@ -64,7 +64,7 @@ export default function RemoveLiquidity({
 
   // burn state
   const { independentField, typedValue } = useBurnState()
-  // console.log("PAIR STATE", independentField, typedValue, weightA, fee)
+  
   const {
     pair,
     parsedAmounts,
@@ -134,7 +134,6 @@ export default function RemoveLiquidity({
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
     }
-    console.log("AM MIN", Object.values(amountsMin).map(am => am.toString()))
 
     if (!currencyA || !currencyB) throw new Error('missing tokens')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]

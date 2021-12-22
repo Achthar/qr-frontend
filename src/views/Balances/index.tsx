@@ -89,9 +89,6 @@ export default function Balances() {
     [chainId, allBalances]
   )
 
-  // console.log(amounts)
-  // console.log(allBalances)
-  // console.log(networkCcyBalance)
   const renderBody = () => {
     if (!account) {
       return (

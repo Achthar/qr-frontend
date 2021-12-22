@@ -107,10 +107,6 @@ export function useGetWeightedPairs(currencies: [Currency | undefined, Currency 
     'getPairs',
     tokens.map(tokenPair => [tokenPair[0]?.address ?? REQT[chainId].address, tokenPair[1]?.address ?? DAI[chainId].address])
   )
-  console.log("resultPairs", resultsPairs)
-
-  // const addressesOut = []
-
 
   return useMemo(() => {
     return resultsPairs.map((result) => {

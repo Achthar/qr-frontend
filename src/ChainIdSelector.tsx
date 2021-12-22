@@ -10,7 +10,7 @@ import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@requiemswap/uikit'
-import { useWeb3React } from "@web3-react/core";
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useToggleModal } from 'state/application/hooks'
@@ -167,7 +167,7 @@ const ChainIdSelector = () => {
   // global network chainId
   const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
 
-  const { chainId, library, account } = useWeb3React()
+  const { chainId, library, account } = useActiveWeb3React()
 
   const open = useModalOpen(ApplicationModal.NETWORK_SELECTOR)
   const toggle = useToggleModal(ApplicationModal.NETWORK_SELECTOR)
