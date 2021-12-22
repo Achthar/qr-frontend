@@ -167,6 +167,10 @@ export const addresses = {
     43113: '0x3372de341a07418765ae12f77aee9029eaa4442a',
     42261: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04'
   },
+  weightedPairFactory:{
+    43113: '0xacd3602152763C3AAFA705D8a90C36661ecD7d46',
+    42261: '0x274B1F7F8e66B044B2DC773E017750957f70490c'
+  },
   bond: {
     43113: '0x95e7415e619d6D3ae4a140C23137DAaF3Acf7608' // depository contract
   },

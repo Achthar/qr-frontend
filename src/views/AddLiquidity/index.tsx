@@ -122,7 +122,7 @@ export default function AddLiquidity({
   } = useDerivedMintWeightedPairInfo(currencyA ?? undefined, currencyB ?? undefined)
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings } = useUserBalancesState()
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()
 
   const defaultTokens = useAllTokens()
   const tokenBalances = useMemo(
@@ -323,7 +323,7 @@ export default function AddLiquidity({
   const tA = wrappedCurrency(currencyA, chainId)
   const tB = wrappedCurrency(currencyB, chainId)
 
-  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId, 20)
+  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId)
 
   const modalHeader = () => {
     return noLiquidity ? (
@@ -469,8 +469,6 @@ export default function AddLiquidity({
       title={noLiquidity ? t('You are creating a pool') : t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
-      chainId={chainId}
-      library={library}
       hash={txHash}
       content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />}
       pendingText={pendingText}
@@ -543,6 +541,7 @@ export default function AddLiquidity({
                     account={account}
                     balances={tokenBalances}
                     networkCcyBalance={networkCcyBalance}
+                    isLoading={isLoading}
                     borderRadius='5px'
                     width='250px'
                     value={formattedAmounts[WeightedField.CURRENCY_A]}
@@ -600,6 +599,7 @@ export default function AddLiquidity({
                   account={account}
                   balances={tokenBalances}
                   networkCcyBalance={networkCcyBalance}
+                  isLoading={isLoading}
                   borderRadius='5px'
                   width='250px'
                   value={formattedAmounts[WeightedField.CURRENCY_B]}

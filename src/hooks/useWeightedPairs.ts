@@ -8,6 +8,7 @@ import { DAI, REQT } from 'config/constants/tokens'
 import { useWeightedFactoryContract, useWeightedFormulaContract } from './useContract'
 import { useMultipleContractSingleData, useSingleContractMultipleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
+import { getWeightedPairFactory } from '../utils/contractHelpers'
 
 
 
@@ -175,7 +176,11 @@ export function useWeightedPairsData(tokens: [Token, Token][], pairAddresses: st
 
 // for a list of tokenAs, pair addresses, we fetch the weighted pair list
 // assumes that all pair data exists
-export function useWeightedPairsDataLite(tokens: [Token, Token][], pairAddresses: string[], chainId: number, blocksPerFetch: number): [WeightedPairState, WeightedPair | null][] {
+export function useWeightedPairsDataLite(
+  tokens: [Token, Token][], 
+  pairAddresses: string[], 
+  chainId: number
+  ): [WeightedPairState, WeightedPair | null][] {
 
   const factoryContract = useWeightedFactoryContract(chainId)
 

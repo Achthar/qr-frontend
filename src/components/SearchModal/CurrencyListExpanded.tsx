@@ -61,6 +61,7 @@ function CurrencyRowExpanded({
   chainId,
   account,
   currencyAmount,
+  isLoading,
   onSelect,
   isSelected,
   otherSelected,
@@ -69,6 +70,7 @@ function CurrencyRowExpanded({
   chainId: number
   account: string
   currencyAmount: CurrencyAmount
+  isLoading: boolean
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
@@ -97,7 +99,7 @@ function CurrencyRowExpanded({
         </Text>
       </Column>
       <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {currencyAmount ? <Balance balance={currencyAmount} /> : account ? <CircleLoader /> : null}
+        {!isLoading ? <Balance balance={currencyAmount} /> : account ? <CircleLoader /> : null}
       </RowFixed>
     </MenuItem>
   )
@@ -107,6 +109,7 @@ export default function CurrencyListExpanded({
   height,
   networkCcyAmount,
   tokenAmounts,
+  isLoading,
   chainId,
   account,
   selectedCurrency,
@@ -121,6 +124,7 @@ export default function CurrencyListExpanded({
   height: number
   networkCcyAmount: CurrencyAmount
   tokenAmounts: TokenAmount[]
+  isLoading: boolean
   chainId: number
   account: string
   selectedCurrency?: Currency | null
@@ -188,6 +192,7 @@ export default function CurrencyListExpanded({
           account={account}
           style={style}
           currencyAmount={currencyAmount}
+          isLoading={isLoading}
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}
@@ -204,7 +209,8 @@ export default function CurrencyListExpanded({
       showImportView,
       breakIndex,
       t,
-      account
+      account,
+      isLoading
     ],
   )
 

@@ -3,6 +3,7 @@ import { Currency, Pair, WeightedPair, TokenAmount, CurrencyAmount, Token } from
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
+import CircleLoader from 'components/Loader/CircleLoader'
 import { RowBetween } from '../Layout/Row'
 import { Input as NumericalInput } from './NumericalInput'
 import CurrencySearchModalExpanded from '../SearchModal/CurrencySearchModalExpanded'
@@ -48,6 +49,7 @@ interface CurrencyInputPanelExpandedProps {
   onMax?: () => void
   balances: { [address: string]: TokenAmount }
   networkCcyBalance?: CurrencyAmount
+  isLoading: boolean
   chainId: number
   account: string
   showMaxButton: boolean
@@ -70,6 +72,7 @@ export default function CurrencyInputPanelExpanded({
   onMax,
   balances,
   networkCcyBalance,
+  isLoading,
   chainId,
   account,
   showMaxButton,
@@ -96,6 +99,7 @@ export default function CurrencyInputPanelExpanded({
       account={account}
       networkCcyAmount={networkCcyBalance}
       tokenAmounts={Object.values(balances)}
+      isLoading={isLoading}
       onCurrencySelect={onCurrencySelect}
       selectedCurrency={currency}
       otherSelectedCurrency={otherCurrency}
@@ -112,7 +116,7 @@ export default function CurrencyInputPanelExpanded({
               {account && (
                 <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                    ? isLoading ? <CircleLoader /> : t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
                     : ' -'}
                 </Text>
               )}

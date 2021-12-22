@@ -65,7 +65,7 @@ export default function WeightedPairFinder() {
   const tA = wrappedCurrency(currency0, chainId)
   const tB = wrappedCurrency(currency1, chainId)
 
-  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId, 20)
+  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId)
 
   const [pairState, pair] = useWeightedPair(currency0 ?? undefined, currency1 ?? undefined, weight0, fee)
   const addPair = useWeightedPairAdder()

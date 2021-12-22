@@ -198,7 +198,7 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
   const weightedPairsData = useWeightedPairsDataLite(
     relevantPairs,
     addressList,
-    chainId, 5)
+    chainId)
 
 
   return useMemo(

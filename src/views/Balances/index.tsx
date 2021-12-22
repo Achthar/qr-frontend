@@ -27,7 +27,8 @@ import {
 // import { useTokenBalancesWithLoadingIndicator as xD } from '../../state/wallet/hooks'
 import {
   refreshBalances,
-  refreshNetworkCcyBalance
+  refreshNetworkCcyBalance,
+  setBalanceLoadingState
 } from '../../state/userBalances/actions'
 import Dots from '../../components/Loader/Dots'
 import { AppDispatch, AppState } from '../../state'
@@ -73,6 +74,16 @@ export default function Balances() {
       return;
     },
     [networkCcyBalance, dispatch]
+  )
+
+  useEffect(
+    () => {
+      dispatch(setBalanceLoadingState({
+        newIsLoading: fetchingAllBalances
+      }))
+      return;
+    },
+    [fetchingAllBalances, dispatch]
   )
 
   const amounts = useMemo(() =>

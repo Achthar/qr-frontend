@@ -918,8 +918,6 @@ export default function RemoveStableLiquidity({
       title={t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
-      chainId={chainId}
-      library={library}
       hash={txHash || ''}
       content={() => <ConfirmationModalContent topContent={modalHeader} bottomContent={modalBottom} />}
       pendingText={pendingText}
@@ -934,8 +932,6 @@ export default function RemoveStableLiquidity({
       title={t('You will receive')}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
-      chainId={chainId}
-      library={library}
       hash={txHash || ''}
       content={() => <ConfirmationModalContent topContent={modalHeaderSingle} bottomContent={modalBottomSingle} />}
       pendingText={pendingTextSingle}

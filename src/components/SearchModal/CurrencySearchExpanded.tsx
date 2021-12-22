@@ -21,6 +21,7 @@ interface CurrencySearchExpandedProps {
   account: string
   networkCcyAmount?: CurrencyAmount
   tokenAmounts: TokenAmount[]
+  isLoading: boolean
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -36,6 +37,7 @@ function CurrencySearchExpanded({
   account,
   networkCcyAmount,
   tokenAmounts,
+  isLoading,
   selectedCurrency,
   onCurrencySelect,
   otherSelectedCurrency,
@@ -158,6 +160,7 @@ function CurrencySearchExpanded({
               showETH={showETH}
               networkCcyAmount={networkCcyAmount}
               tokenAmounts={tokenAmounts}
+              isLoading={isLoading}
               chainId={chainId}
               account={account}
               // currencies={

@@ -23,7 +23,8 @@ import {
   getStableLpAddress,
   getAddressForReserve,
   getAddressForBondingCalculator,
-  getAddressForBond
+  getAddressForBond,
+  getAddressForWeightedPairFactory
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -44,6 +45,12 @@ import predictionsAbi from 'config/abi/predictions.json'
 import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
 import MultiCallAbi from 'config/abi/Multicall.json'
 import farmAuctionAbi from 'config/abi/farmAuction.json'
+
+import weightedFactoryAVAX from 'config/abi/avax/RequiemWeightedPairFactory.json'
+import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.json'
+
+import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
+import bondingCalculatorAVAX from 'config/abi/avax/RequiemQBondingCalculator.json'
 
 // ABI polygon
 import lpTokenAbiPolygon from 'config/abi/polygon/IRequiemPair.json'
@@ -162,14 +169,20 @@ export const getContractForReserve = (chainId: number, signer?: ethers.Signer | 
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 
+export const getWeightedPairFactory = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const factoryAddress = getAddressForWeightedPairFactory(chainId) || "";
+  const ABI = new Interface(chainId === 43113 ? weightedFactoryAVAX : weightedFactoryOASIS)
+  return new ethers.Contract(factoryAddress, ABI, signer);
+}
+
 export const getContractForBond = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   const bondAddress = getAddressForBond(chainId) || "";
-  const ABI = ''
+  const ABI =  new Interface(bondReserveAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 
 export const getBondCalculatorContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const BondCalcContractABI = ''
+  const BondCalcContractABI =  new Interface(bondingCalculatorAVAX)
   const bondingCalculatorAddress = getAddressForBondingCalculator(chainId) || "";
   return new ethers.Contract(
     bondingCalculatorAddress,

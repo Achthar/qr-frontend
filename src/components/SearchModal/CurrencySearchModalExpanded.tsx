@@ -41,6 +41,7 @@ interface CurrencySearchModalExpandedProps extends InjectedModalProps {
   account: string
   networkCcyAmount: CurrencyAmount
   tokenAmounts: TokenAmount[]
+  isLoading: boolean
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -52,6 +53,7 @@ export default function CurrencySearchModalExpanded({
   account,
   networkCcyAmount,
   tokenAmounts,
+  isLoading,
   onDismiss = () => null,
   onCurrencySelect,
   selectedCurrency,
@@ -107,6 +109,7 @@ export default function CurrencySearchModalExpanded({
             account={account}
             networkCcyAmount={networkCcyAmount}
             tokenAmounts={tokenAmounts}
+            isLoading={isLoading}
             onCurrencySelect={handleCurrencySelect}
             selectedCurrency={selectedCurrency}
             otherSelectedCurrency={otherSelectedCurrency}

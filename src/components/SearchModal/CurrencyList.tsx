@@ -1,5 +1,5 @@
 import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
-import { Currency, CurrencyAmount, currencyEquals,  Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, currencyEquals, Token, NETWORK_CCY } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { FixedSizeList } from 'react-window'
@@ -126,8 +126,8 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const {  account } = useWeb3React()
-  const {chainId} = useNetworkState()
+  const { account } = useWeb3React()
+  const { chainId } = useNetworkState()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies

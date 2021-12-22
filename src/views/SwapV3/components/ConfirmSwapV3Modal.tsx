@@ -24,8 +24,6 @@ function tradeMeaningfullyDiffers(tradeA: TradeV4, tradeB: TradeV4): boolean {
   )
 }
 interface ConfirmSwapV3ModalProps {
-  chainId: number
-  library: any
   trade?: TradeV4
   originalTrade?: TradeV4
   attemptingTxn: boolean
@@ -39,8 +37,6 @@ interface ConfirmSwapV3ModalProps {
 }
 
 const ConfirmSwapModal: React.FC<InjectedModalProps & ConfirmSwapV3ModalProps> = ({
-  chainId,
-  library,
   trade,
   originalTrade,
   onAcceptChanges,
@@ -108,8 +104,6 @@ const ConfirmSwapModal: React.FC<InjectedModalProps & ConfirmSwapV3ModalProps> =
       onDismiss={onDismiss}
       customOnDismiss={customOnDismiss}
       attemptingTxn={attemptingTxn}
-      chainId={chainId}
-      library={library}
       hash={txHash}
       content={confirmationContent}
       pendingText={pendingText}

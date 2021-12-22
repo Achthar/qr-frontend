@@ -7,7 +7,7 @@ import {
   fetchingMulticallResults,
   removeMulticallListeners,
   toCallKey,
-  updateMulticallResults, BalanceField, addToken, refreshBalances, reset, refreshNetworkCcyBalance
+  updateMulticallResults, BalanceField, addToken, refreshBalances, reset, refreshNetworkCcyBalance, setBalanceLoadingState
 } from './actions'
 
 const initialChainId = 43113
@@ -16,6 +16,7 @@ export interface UserBalanceState {
   // we save all balance values as strings for each address
   readonly networkCcyBalance: string
   readonly balances: { [address: string]: string }
+  readonly isLoading: boolean
 
   callListeners?: {
     // on a per-chain basis
@@ -41,6 +42,7 @@ export interface UserBalanceState {
 
 const initialState: UserBalanceState = {
   networkCcyBalance: '0',
+  isLoading: true,
   balances: Object.assign({}, ...[...[WRAPPED_NETWORK_TOKENS[initialChainId], REQT[initialChainId]], ...STABLES[initialChainId]].map((x) => ({ [x.address]: '0' }))),
   callResults: {},
 }
@@ -60,6 +62,13 @@ export default createReducer<UserBalanceState>(initialState, (builder) =>
       return {
         ...state,
         networkCcyBalance: newBalance,
+      }
+    }
+    ).addCase(setBalanceLoadingState, (state, { payload: { newIsLoading } }) => {
+
+      return {
+        ...state,
+        isLoading: newIsLoading,
       }
     }
     ).addCase(addMulticallListeners, (state, { payload: { calls, chainId, options: { blocksPerFetch = 1 } = {} } }) => {

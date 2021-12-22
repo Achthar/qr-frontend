@@ -16,6 +16,8 @@ import {
 } from '@requiemswap/uikit'
 import { registerToken } from 'utils/wallet'
 import { useTranslation } from 'contexts/Localization'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { RowFixed } from '../Layout/Row'
 import { AutoColumn, ColumnCenter } from '../Layout/Column'
@@ -58,16 +60,15 @@ function ConfirmationPendingContent({ pendingText }: { pendingText: string }) {
 function TransactionSubmittedContent({
   onDismiss,
   chainId,
-  library,
   hash,
   currencyToAdd,
 }: {
   onDismiss: () => void
   hash: string | undefined
   chainId: ChainId
-  library: any // Web3Provider
   currencyToAdd?: Currency | undefined
 }) {
+  const { library } = useActiveWeb3React()
 
   const { t } = useTranslation()
 
@@ -144,8 +145,6 @@ export function TransactionErrorContent({ message, onDismiss }: { message: strin
 interface ConfirmationModalProps {
   title: string
   customOnDismiss?: () => void
-  chainId: number
-  library: any
   hash: string | undefined
   content: () => React.ReactNode
   attemptingTxn: boolean
@@ -158,13 +157,12 @@ const TransactionConfirmationModal: React.FC<InjectedModalProps & ConfirmationMo
   onDismiss,
   customOnDismiss,
   attemptingTxn,
-  chainId,
-  library,
   hash,
   pendingText,
   content,
   currencyToAdd,
 }) => {
+  const { chainId } = useNetworkState()
 
   const handleDismiss = useCallback(() => {
     if (customOnDismiss) {
@@ -182,7 +180,6 @@ const TransactionConfirmationModal: React.FC<InjectedModalProps & ConfirmationMo
       ) : hash ? (
         <TransactionSubmittedContent
           chainId={chainId}
-          library={library}
           hash={hash}
           onDismiss={onDismiss}
           currencyToAdd={currencyToAdd}

@@ -75,7 +75,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     })
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings } = useUserBalancesState()
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()
 
   const tokenBalances = useMemo(
     () => Object.assign({},
@@ -318,8 +318,6 @@ export default function SwapV3({ history }: RouteComponentProps) {
 
   const [onPresentConfirmModal] = useModal(
     <ConfirmSwapV3Modal
-      chainId={chainId}
-      library={library}
       trade={trade}
       originalTrade={tradeToConfirm}
       onAcceptChanges={handleAcceptChanges}
@@ -352,6 +350,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
               networkCcyBalance={networkCcyBalance}
+              isLoading={isLoading}
               chainId={chainId}
               account={account}
               balances={tokenBalances}
@@ -387,6 +386,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={false}
               currency={currencies[Field.OUTPUT]}
               networkCcyBalance={networkCcyBalance}
+              isLoading={isLoading}
               chainId={chainId}
               account={account}
               balances={tokenBalances}

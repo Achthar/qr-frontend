@@ -20,6 +20,7 @@ import {
   getFarmAuctionContract,
 } from 'utils/contractHelpers'
 import { Interface } from '@ethersproject/abi'
+import { Web3Provider } from '@ethersproject/providers'
 import { getMulticallAddress } from 'utils/addressHelpers'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
@@ -140,7 +141,7 @@ export const useFarmAuctionContract = () => {
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { library, account } = useActiveWeb3React("useContract")
-
+  console.log("useContract address", address)
   return useMemo(() => {
     if (!address || !ABI || !library) return null
     try {
@@ -151,6 +152,19 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
     }
   }, [address, ABI, library, withSignerIfPossible, account])
 }
+
+function useContractWithAccount(account: string, library: Web3Provider, address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
+  return useMemo(() => {
+    if (!address || !ABI || !library) return null
+    try {
+      return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
+    } catch (error: any) {
+      console.error('Failed to get contract', error)
+      return null
+    }
+  }, [address, ABI, library, withSignerIfPossible, account])
+}
+
 
 export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)

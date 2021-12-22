@@ -77,7 +77,7 @@ function useRelevantWeightedPairs(chainId: number): WeightedPair[] {
   const weightedPairsData = useWeightedPairsDataLite(
     relevantPairs,
     addressList,
-    chainId, 5)
+    chainId)
 
 
   return useMemo(
@@ -117,7 +117,7 @@ export default function PoolList() {
   const weightedIsLoading =
     fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
 
-  const allWeightedPairsWithLiquidity = pairs.filter((pair): pair is WeightedPair => Boolean(pair))
+  const allWeightedPairsWithLiquidity = lpWithBalances.filter((pair): pair is WeightedPair => Boolean(pair))
 
   // stable pool starting here
   const [stablePoolState, stablePool] = useStablePool(chainId)
