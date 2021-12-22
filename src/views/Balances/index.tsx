@@ -1,23 +1,15 @@
 /* eslint no-useless-return: 0 */
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
-import useTheme from 'hooks/useTheme'
-import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Card } from '@requiemswap/uikit'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'contexts/Localization'
-import { BigNumber } from 'ethers'
+import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
+
 import { useDispatch } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
-import FullStablesPositionCard from 'components/PositionCard/StablesPosition'
 import {
   useTokenBalancesWithLoadingIndicator,
-  useTokenBalance,
   useNetworkCCYBalances,
-  useUserBalancesState,
   getStables,
   getMainTokens,
   getTokenAmounts,
@@ -31,8 +23,7 @@ import {
   setBalanceLoadingState
 } from '../../state/userBalances/actions'
 import Dots from '../../components/Loader/Dots'
-import { AppDispatch, AppState } from '../../state'
-import Page from '../Page'
+import { AppDispatch } from '../../state'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -47,7 +38,6 @@ export const BodyWrapper = styled(Card)`
 `
 
 export default function Balances() {
-  // const { chainId } = useNetworkState()
   const { account, chainId } = useActiveWeb3React()
 
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
@@ -63,8 +53,6 @@ export default function Balances() {
     },
     [allBalances, dispatch]
   )
-
-  // useEffect(() => balances(), [balances])
 
   useEffect(
     () => {
@@ -86,10 +74,10 @@ export default function Balances() {
     [fetchingAllBalances, dispatch]
   )
 
-  const amounts = useMemo(() =>
-    getTokenAmounts(chainId, allBalances),
-    [chainId, allBalances]
-  )
+  // const amounts = useMemo(() =>
+  //   getTokenAmounts(chainId, allBalances),
+  //   [chainId, allBalances]
+  // )
   const stableAmounts = useMemo(() =>
     getStableAmounts(chainId, allBalances),
     [chainId, allBalances]

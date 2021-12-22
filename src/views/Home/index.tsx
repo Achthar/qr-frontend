@@ -1,15 +1,12 @@
 /* eslint react/no-children-prop: 0 */
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import PageSection from 'components/PageSection'
-import { useWeb3React } from '@web3-react/core'
 import useTheme from 'hooks/useTheme'
 import Container from 'components/Layout/Container'
 import { Text, Step, Stepper, Card, CardBody, Image, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
-import ReactDom from 'react-dom'
 
-import ReactMarkdown from 'react-markdown'
 // import * as fs from 'fs';
 // import { readFile } from 'fs'
 // import { swapSectionData, earnSectionData, REQTSectionData } from './components/SalesSection/data'

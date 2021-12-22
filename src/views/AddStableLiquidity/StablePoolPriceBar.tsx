@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Percent, Price, StablePool, STABLES_INDEX_MAP, TokenAmount } from '@requiemswap/sdk'
+import { CurrencyAmount, Percent, StablePool, STABLES_INDEX_MAP, TokenAmount } from '@requiemswap/sdk'
 import React, { useMemo } from 'react'
 import { Text } from '@requiemswap/uikit'
 import { StablesField } from 'state/mintStables/actions'

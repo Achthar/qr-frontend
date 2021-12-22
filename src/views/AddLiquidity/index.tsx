@@ -7,10 +7,7 @@ import {
   CurrencyAmount,
   NETWORK_CCY,
   TokenAmount,
-  WETH,
   WRAPPED_NETWORK_TOKENS,
-  STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP,
   JSBI
 } from '@requiemswap/sdk'
 import {
@@ -20,13 +17,7 @@ import {
   CardBody,
   Message,
   useModal,
-  ButtonMenu,
-  ButtonMenuItem,
-  IconButton,
-  ModalBackButton,
-  Tag,
   AddIcon,
-  ArrowBackIcon,
   ChevronLeftIcon,
   ArrowUpIcon,
   Box
@@ -41,7 +32,7 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { STANDARD_FEES, STANDARD_WEIGHTS, REQUIEM_PAIR_MANAGER } from 'config/constants'
+import { REQUIEM_PAIR_MANAGER } from 'config/constants'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -52,20 +43,17 @@ import { AppHeader, AppBody } from 'components/App'
 import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPairPosition'
 import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { LinkStyledButton } from 'theme'
-import { PairState } from 'hooks/usePairs'
 import { useCurrency, useAllTokens } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
-import { WeightedPairState, useWeightedPairsExist, useGetWeightedPairs, useWeightedPairsData, useWeightedPairsDataLite } from 'hooks/useWeightedPairs'
+import { WeightedPairState, useGetWeightedPairs, useWeightedPairsDataLite } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import { weightedPairAddresses } from 'utils/weightedPairAddresses'
 import Dots from 'components/Loader/Dots'
 import { currencyId } from 'utils/currencyId'
 import ConfirmAddModalBottom from './ConfirmAddModalBottom'

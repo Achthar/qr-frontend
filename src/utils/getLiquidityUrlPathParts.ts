@@ -1,7 +1,6 @@
 // Constructing the two forward-slash-separated parts of the 'Add Liquidity' URL
 // Each part of the url represents a different side of the LP pair.
 import { NETWORK_CCY } from '@requiemswap/sdk'
-import { useWeb3React } from '@web3-react/core'
 import { getWbnbAddress } from './addressHelpers'
 
 const getLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress }) => {

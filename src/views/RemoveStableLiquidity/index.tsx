@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { splitSignature } from '@ethersproject/bytes'
-import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import {
   Percent,
@@ -25,13 +23,10 @@ import {
   useModal,
   ButtonMenu,
   ButtonMenuItem,
-  TabMenu,
-  Tab,
   Table,
   Th,
   Td,
 } from '@requiemswap/uikit'
-import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
@@ -50,17 +45,12 @@ import { RowBetween, RowFixed } from '../../components/Layout/Row'
 import ConnectWalletButton from '../../components/ConnectWalletButton'
 import { LightGreyCard } from '../../components/Card'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
-import { ROUTER_ADDRESS } from '../../config/constants'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { useStableLPContract } from '../../hooks/useContract'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import StyledInternalLink from '../../components/Links'
 import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract } from '../../utils'
-import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
-import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
 import {
@@ -69,7 +59,7 @@ import {
   useBurnStableState,
 } from '../../state/burnStables/hooks'
 
-import { selectStableSingle, StablesField } from '../../state/burnStables/actions'
+import { StablesField } from '../../state/burnStables/actions'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
 
 // const function getStableIndex(token)
@@ -80,9 +70,7 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
-export default function RemoveStableLiquidity({
-  history,
-}: RouteComponentProps<{ currencyIdA: string; currencyIdB: string }>) {
+export default function RemoveStableLiquidity() {
   const { account, chainId, library } = useActiveWeb3React("RemoveStableLiquidity")
 
   const { t } = useTranslation()
@@ -96,14 +84,17 @@ export default function RemoveStableLiquidity({
     typedValue3,
     typedValue4,
     typedValueLiquidity,
-    calculatedSingleValues,
-    typedValueSingle,
+    // calculatedSingleValues,
+    // typedValueSingle,
   } = useBurnStableState()
 
   const [stablePoolState, stablePool] = useStablePool(chainId)
 
 
-  const [relevantTokenBalances, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
+  const [
+    relevantTokenBalances,
+    // fetchingUserPoolBalance
+  ] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
     [
       STABLE_POOL_LP[chainId],
@@ -117,32 +108,18 @@ export default function RemoveStableLiquidity({
   const {
     parsedAmounts,
     error,
-    calculatedValuesFormatted,
-    errorSingle,
+    // calculatedValuesFormatted,
+    // errorSingle,
     liquidityTradeValues
   } = useDerivedBurnStablesInfo(chainId, relevantTokenBalances, stablePool, stablePoolState, account)
 
   const {
-    // onField1Input: _onField1Input,
-    // onField2Input: _onField2Input,
-    // onField3Input: _onField3Input,
-    // onField4Input: _onField4Input,
-    onField1Input,
-    onField2Input,
-    onField3Input,
-    onField4Input,
-    onLpInput, // : _onLpInput,
-    onLpInputSetOthers,
-    onField1CalcInput,
-    onField2CalcInput,
-    onField3CalcInput,
-    onField4CalcInput,
-    onSingleFieldInput,
+    onLpInput,
     onSelectStableSingle
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
-  
+
   // modal and loading
   const enum StableRemovalState {
     BY_LP,
@@ -167,10 +144,6 @@ export default function RemoveStableLiquidity({
       'TUSD': 3,
     },
   }
-
-  const [stableSelectState, setStableSelectState] = useState<number>(0)
-
-  const handleSelectClick = (newIndex: number) => setStableSelectState(newIndex)
 
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
@@ -206,21 +179,12 @@ export default function RemoveStableLiquidity({
         ? typedValue4
         : parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6) ?? '',
     [StablesField.LIQUIDITY_SINGLE]:
-      // independentStablesField === StablesField.CURRENCY_SINGLE
-      //   ? typedValueLiquidity
-      //   : 
       parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6) ?? '',
     [StablesField.CURRENCY_SINGLE]:
-      // independentStablesField === StablesField.CURRENCY_SINGLE
-      //   ? typedValueLiquidity
-      //   : 
       parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(6) ?? '',
   }
 
   const atMaxAmount = parsedAmounts[StablesField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
-
-  // pair contract
-  const stableLpContract: Contract | null = useStableLPContract(stablePool?.liquidityToken?.address)
 
   const userPoolBalance = new TokenAmount(
     new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
@@ -439,11 +403,6 @@ export default function RemoveStableLiquidity({
         })
     }
   }
-
-  // console.log(
-  //   'PA',
-  //   parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)
-  // )
 
   // function for removing stable swap liquidity
   // removal with stablecoin amounts herre
@@ -748,34 +707,6 @@ export default function RemoveStableLiquidity({
         </Table>
       </>
     )
-  }
-
-  function field1Func(value: string) {
-    return independentStablesField === StablesField.LIQUIDITY ||
-      independentStablesField === StablesField.LIQUIDITY_PERCENT
-      ? onField1CalcInput(StablesField.CURRENCY_1, value, calculatedValuesFormatted)
-      : onField1Input(StablesField.CURRENCY_1, value)
-  }
-
-  function field2Func(value: string) {
-    return independentStablesField === StablesField.LIQUIDITY ||
-      independentStablesField === StablesField.LIQUIDITY_PERCENT
-      ? onField2CalcInput(StablesField.CURRENCY_2, value, calculatedValuesFormatted)
-      : onField2Input(StablesField.CURRENCY_2, value)
-  }
-
-  function field3Func(value: string) {
-    return independentStablesField === StablesField.LIQUIDITY ||
-      independentStablesField === StablesField.LIQUIDITY_PERCENT
-      ? onField3CalcInput(StablesField.CURRENCY_3, value, calculatedValuesFormatted)
-      : onField3Input(StablesField.CURRENCY_3, value)
-  }
-
-  function field4Func(value: string) {
-    return independentStablesField === StablesField.LIQUIDITY ||
-      independentStablesField === StablesField.LIQUIDITY_PERCENT
-      ? onField4CalcInput(StablesField.CURRENCY_4, value, calculatedValuesFormatted)
-      : onField4Input(StablesField.CURRENCY_4, value)
   }
 
   function modalBottom() {

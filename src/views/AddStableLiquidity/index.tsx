@@ -1,30 +1,18 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import {
-  Currency,
-  currencyEquals,
-
-  NETWORK_CCY,
   TokenAmount,
-  WETH,
-  WRAPPED_NETWORK_TOKENS,
   STABLE_POOL_ADDRESS,
   STABLES_INDEX_MAP,
 } from '@requiemswap/sdk'
 import {
   Button,
-  Text,
-  Flex,
   CardBody,
 } from '@requiemswap/uikit'
-import { RouteComponentProps, Link } from 'react-router-dom'
-// import {Svg, SvgProps} from '@requiemswap/uikit'
-import styled from 'styled-components'
-import { useIsTransactionUnsupported } from 'hooks/Trades'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
-import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { LightCard } from 'components/Card'
-import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
+import { AutoColumn } from 'components/Layout/Column'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
 import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
@@ -35,7 +23,7 @@ import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStables
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract, getStableRouterContract } from 'utils'
+import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 
@@ -44,9 +32,7 @@ import { useStablePool } from 'hooks/useStablePool'
 import StablePoolPriceBar from './StablePoolPriceBar'
 import Page from '../Page'
 
-export default function AddStableLiquidity({
-  history,
-}: RouteComponentProps<{ stable: string }>) {
+export default function AddStableLiquidity() {
   const { account, chainId, library } = useActiveWeb3React("AL")
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
@@ -64,21 +50,6 @@ export default function AddStableLiquidity({
 
 
   const addTransaction = useTransactionAdder()
-
-  // const [liquidityState, setLiquidityState] = useState<LiquidityState>(LiquidityState.STABLE)
-  // const handleClick = (newIndex: LiquidityState) => setLiquidityState(newIndex)
-
-  const LiquidityStateButtonWrapper = styled.div`
-    margin-bottom: 20px;
-  `
-  const StablesInputWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: right;
-    padding: 1px;
-  `
-
-  // get the correctly arranged stablecoins
 
   // mint state
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()

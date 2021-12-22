@@ -3,7 +3,6 @@
 import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import styled, {
-  ThemeProvider as StyledComponentsThemeProvider,
   createGlobalStyle,
   css,
   DefaultTheme

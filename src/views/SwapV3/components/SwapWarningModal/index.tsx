@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { ModalBody, ModalContainer, Message, ModalHeader, Box, Heading } from '@requiemswap/uikit'
-import useTheme from 'hooks/useTheme'
-import { getAddress } from 'utils/addressHelpers'
-import { useTranslation } from 'contexts/Localization'
+import { ModalBody, ModalContainer, Message } from '@requiemswap/uikit'
 import { WrappedTokenInfo } from 'state/lists/hooks'
-import SwapWarningTokensConfig from 'config/constants/swapWarningTokens'
 import Acknowledgement from './Acknowledgement'
 
 const StyledModalContainer = styled(ModalContainer)`
@@ -18,7 +14,7 @@ const MessageContainer = styled(Message)`
 `
 
 interface SwapWarningModalProps {
-  chainId:number
+  chainId: number
   swapCurrency: WrappedTokenInfo
   onDismiss?: () => void
 }
@@ -44,16 +40,8 @@ const usePreventModalOverlayClick = () => {
   }, [])
 }
 
-const SwapWarningModal: React.FC<SwapWarningModalProps> = ({chainId, swapCurrency, onDismiss }) => {
-  const { t } = useTranslation()
-  const { theme } = useTheme()
+const SwapWarningModal: React.FC<SwapWarningModalProps> = ({ onDismiss }) => {
   usePreventModalOverlayClick()
-
-  const TOKEN_WARNINGS = {
-  }
-
-  const SWAP_WARNING = TOKEN_WARNINGS[swapCurrency.address]
-
   return (
     <StyledModalContainer minWidth="280px">
       {/* <ModalHeader>
