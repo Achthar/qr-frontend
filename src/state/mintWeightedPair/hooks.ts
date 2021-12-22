@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount,  JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'

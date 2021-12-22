@@ -1,4 +1,4 @@
-import { Currency, currencyEquals, ETHER, WETH, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, currencyEquals,  WETH, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { tryParseAmount } from '../state/swapV3/hooks'

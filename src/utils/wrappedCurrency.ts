@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, Token, TokenAmount, WETH, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount,  Token, TokenAmount, WETH, WRAPPED_NETWORK_TOKENS, NETWORK_CCY } from '@requiemswap/sdk'
 import { ChainId } from '../config/index'
 
 export function wrappedCurrency(currency: Currency | undefined, chainId: ChainId | undefined): Token | undefined {

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CurrencyAmount, JSBI, Token, TradeV4 } from '@requiemswap/sdk'
+import { CurrencyAmount, JSBI, Token, TokenAmount, TradeV4 } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
@@ -8,11 +8,13 @@ import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import SwapWarningTokens from 'config/constants/swapWarningTokens'
 import { getAddress } from 'utils/addressHelpers'
+import { useUserBalancesState } from 'state/userBalances/hooks'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
 import Column, { AutoColumn } from '../../components/Layout/Column'
 import ConfirmSwapV3Modal from './components/ConfirmSwapV3Modal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
+import CurrencyInputPanelExpanded from '../../components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { AutoRow, RowBetween } from '../../components/Layout/Row'
 import AdvancedSwapDetailsDropdown from './components/AdvancedSwapDetailsDropdown'
 import confirmPriceImpactWithoutFee from './components/confirmPriceImpactWithoutFee'
@@ -72,6 +74,24 @@ export default function SwapV3({ history }: RouteComponentProps) {
       return !(token.address in defaultTokens)
     })
 
+  // use balances from the balance state instead of manually loading them
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings } = useUserBalancesState()
+
+  const tokenBalances = useMemo(
+    () => Object.assign({},
+      ...Object.values(defaultTokens).map(
+        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0') )})
+      )
+    ),
+    [defaultTokens, tokenBalancesStrings]
+  )
+
+  const networkCcyBalance = useMemo(
+    () => CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(networkCcyBalanceString ?? '0')),
+    [chainId, networkCcyBalanceString]
+  )
+
+  console.log("BALANCES", networkCcyBalanceString, tokenBalancesStrings)
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
 
@@ -320,11 +340,13 @@ export default function SwapV3({ history }: RouteComponentProps) {
         <AppHeader title={t('Exchange')} subtitle={t('Trade tokens in an instant')} />
         <Wrapper id="swap-page">
           <AutoColumn gap="md">
-            <CurrencyInputPanel
+            <CurrencyInputPanelExpanded
               label={independentField === Field.OUTPUT && !showWrap && trade ? t('From (estimated)') : t('From')}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
+              networkCcyBalance={networkCcyBalance}
+              balances={tokenBalances}
               onUserInput={handleTypeInput}
               onMax={handleMaxInput}
               onCurrencySelect={handleInputSelect}
@@ -350,12 +372,14 @@ export default function SwapV3({ history }: RouteComponentProps) {
                 ) : null}
               </AutoRow>
             </AutoColumn>
-            <CurrencyInputPanel
+            <CurrencyInputPanelExpanded
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
               label={independentField === Field.INPUT && !showWrap && trade ? t('To (estimated)') : t('To')}
               showMaxButton={false}
               currency={currencies[Field.OUTPUT]}
+              networkCcyBalance={networkCcyBalance}
+              balances={tokenBalances}
               onCurrencySelect={handleOutputSelect}
               otherCurrency={currencies[Field.INPUT]}
               id="swap-currency-output"

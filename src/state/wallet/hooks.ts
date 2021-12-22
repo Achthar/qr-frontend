@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, JSBI, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount,  JSBI, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import ERC20_INTERFACE from 'config/abi/erc20'

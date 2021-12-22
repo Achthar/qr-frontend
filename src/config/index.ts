@@ -35,6 +35,8 @@ export const BASE_EXPLORER_URLS = {
   [ChainId.MATIC_TESTNET]: 'https://mumbai.polygonscan.com/',
   [ChainId.AVAX_MAINNET]: [],
   [ChainId.AVAX_TESTNET]: 'https://testnet.snowtrace.io/',
+  [ChainId.OASIS_MAINNET]:'',
+  [ChainId.OASIS_TESTNET]:'https://explorer.testnet.oasis.updev.si/'
 }
 
 // CAKE_PER_BLOCK details

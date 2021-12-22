@@ -1,4 +1,4 @@
-import { Currency, ETHER, Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency,  Token, NETWORK_CCY } from '@requiemswap/sdk'
 import { BinanceIcon } from '@requiemswap/uikit'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'

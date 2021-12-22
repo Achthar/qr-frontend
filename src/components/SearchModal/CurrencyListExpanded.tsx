@@ -1,5 +1,5 @@
 import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
-import { Currency, CurrencyAmount, currencyEquals,  Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, currencyEquals,  Token, NETWORK_CCY, TokenAmount } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { FixedSizeList } from 'react-window'
@@ -57,10 +57,10 @@ const MenuItem = styled(RowBetween) <{ disabled: boolean; selected: boolean }>`
   opacity: ${({ disabled, selected }) => (disabled || selected ? 0.5 : 1)};
 `
 
-function CurrencyRow({
+function CurrencyRowExpanded({
   chainId,
   account,
-  currency,
+  currencyAmount,
   onSelect,
   isSelected,
   otherSelected,
@@ -68,17 +68,17 @@ function CurrencyRow({
 }: {
   chainId: number
   account: string
-  currency: Currency
+  currencyAmount:CurrencyAmount
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
 }) {
-  const key = currencyKey(chainId, currency)
+  const key = currencyKey(chainId, currencyAmount.currency)
   const selectedTokenList = useCombinedActiveList()
-  const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currency)
-  const customAdded = useIsUserAddedToken(currency)
-  const balance = useCurrencyBalance(chainId, account ?? undefined, currency)
+  const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currencyAmount.currency)
+  const customAdded = useIsUserAddedToken(currencyAmount.currency)
+  // const balance = useCurrencyBalance(chainId, account ?? undefined, currencyAmount.currency)
 
   // only show add or remove buttons if not on selected list
   return (
@@ -89,23 +89,24 @@ function CurrencyRow({
       disabled={isSelected}
       selected={otherSelected}
     >
-      <CurrencyLogo chainId={chainId} currency={currency} size="24px" />
+      <CurrencyLogo chainId={chainId} currency={currencyAmount.currency} size="24px" />
       <Column>
-        <Text bold>{currency?.symbol}</Text>
+        <Text bold>{currencyAmount?.currency?.symbol}</Text>
         <Text color="textSubtle" small ellipsis maxWidth="200px">
-          {!isOnSelectedList && customAdded && 'Added by user •'} {currency?.name}
+          {!isOnSelectedList && customAdded && 'Added by user •'} {currencyAmount.currency?.name}
         </Text>
       </Column>
       <RowFixed style={{ justifySelf: 'flex-end' }}>
-        {balance ? <Balance balance={balance} /> : account ? <CircleLoader /> : null}
+        {currencyAmount ? <Balance balance={currencyAmount} /> : account ? <CircleLoader /> : null}
       </RowFixed>
     </MenuItem>
   )
 }
 
-export default function CurrencyList({
+export default function CurrencyListExpanded({
   height,
-  currencies,
+  networkCcyAmount,
+  tokenAmounts,
   selectedCurrency,
   onCurrencySelect,
   otherCurrency,
@@ -116,7 +117,8 @@ export default function CurrencyList({
   breakIndex,
 }: {
   height: number
-  currencies: Currency[]
+  networkCcyAmount:CurrencyAmount
+  tokenAmounts: TokenAmount[]
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherCurrency?: Currency | null
@@ -128,14 +130,14 @@ export default function CurrencyList({
 }) {
   const {  account } = useWeb3React()
   const {chainId} = useNetworkState()
-
-  const itemData: (Currency | undefined)[] = useMemo(() => {
-    let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies
+  // const tokens = tokenAmounts.map((tAmount)=> tAmount.token)
+  const itemData: (CurrencyAmount | undefined)[] = useMemo(() => {
+    let formatted: (CurrencyAmount | undefined)[] = showETH ? [networkCcyAmount, ...tokenAmounts] : tokenAmounts
     if (breakIndex !== undefined) {
       formatted = [...formatted.slice(0, breakIndex), undefined, ...formatted.slice(breakIndex, formatted.length)]
     }
     return formatted
-  }, [chainId, breakIndex, currencies, showETH])
+  }, [chainId, breakIndex, tokenAmounts, showETH])
 
 
   const { t } = useTranslation()
@@ -146,12 +148,12 @@ export default function CurrencyList({
 
   const Row = useCallback(
     ({ data, index, style }) => {
-      const currency: Currency = data[index]
-      const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
-      const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
-      const handleSelect = () => onCurrencySelect(currency)
+      const currencyAmount: CurrencyAmount = data[index]
+      const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currencyAmount.currency))
+      const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currencyAmount.currency))
+      const handleSelect = () => onCurrencySelect(currencyAmount.currency)
 
-      const token = wrappedCurrency(currency, chainId)
+      const token = wrappedCurrency(currencyAmount.currency, chainId)
 
       const showImport = inactiveTokens && token && Object.keys(inactiveTokens).includes(token.address)
 
@@ -179,11 +181,11 @@ export default function CurrencyList({
         )
       }
       return (
-        <CurrencyRow
+        <CurrencyRowExpanded
           chainId={chainId}
           account={account}
           style={style}
-          currency={currency}
+          currencyAmount={currencyAmount}
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}

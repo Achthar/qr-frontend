@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Currency, ETHER, JSBI, TokenAmount, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency,  JSBI, TokenAmount, NETWORK_CCY } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'

@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { Currency,  Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency,  Token, NETWORK_CCY, CurrencyAmount, TokenAmount } from '@requiemswap/sdk'
 import { Text, Input, Box } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
@@ -10,14 +10,16 @@ import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
 import CommonBases from './CommonBases'
-import CurrencyList from './CurrencyList'
+import CurrencyListExpanded from './CurrencyListExpanded'
 import { filterTokens, useSortedTokensByQuery } from './filtering'
 import useTokenComparator from './sorting'
 
 import ImportRow from './ImportRow'
 
-interface CurrencySearchProps {
+interface CurrencySearchExpandedProps {
   chainId:number
+  networkCcyAmount?:CurrencyAmount
+  tokenAmounts:TokenAmount[]
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -28,15 +30,17 @@ interface CurrencySearchProps {
 
 const swapSound = new Audio('swap.mp3')
 
-function CurrencySearch({
+function CurrencySearchExpanded({
   chainId,
+  networkCcyAmount,
+  tokenAmounts,
   selectedCurrency,
   onCurrencySelect,
   otherSelectedCurrency,
   showCommonBases,
   showImportView,
   setImportToken,
-}: CurrencySearchProps) {
+}: CurrencySearchExpandedProps) {
   const { t } = useTranslation()
 
   // refs for fixed size lists
@@ -147,12 +151,14 @@ function CurrencySearch({
           </Column>
         ) : filteredSortedTokens?.length > 0 || filteredInactiveTokens?.length > 0 ? (
           <Box margin="24px -24px">
-            <CurrencyList
+            <CurrencyListExpanded
               height={390}
               showETH={showETH}
-              currencies={
-                filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
-              }
+              networkCcyAmount={networkCcyAmount}
+              tokenAmounts={tokenAmounts}
+              // currencies={
+              //   filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
+              // }
               breakIndex={inactiveTokens && filteredSortedTokens ? filteredSortedTokens.length : undefined}
               onCurrencySelect={handleCurrencySelect}
               otherCurrency={otherSelectedCurrency}
@@ -174,4 +180,4 @@ function CurrencySearch({
   )
 }
 
-export default CurrencySearch
+export default CurrencySearchExpanded

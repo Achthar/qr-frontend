@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+/* eslint no-useless-return: 0 */
+import React, { useCallback, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { Pair, Token, StablePool, TokenAmount, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
@@ -6,6 +7,7 @@ import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Card } from '@requie
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { BigNumber } from 'ethers'
+import { useDispatch } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -32,6 +34,7 @@ import { useStablePool, StablePoolState } from '../../hooks/useStablePool'
 import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
+import { AppDispatch, AppState } from '../../state'
 import Page from '../Page'
 
 const Body = styled(CardBody)`
@@ -52,17 +55,32 @@ export default function Balances() {
 
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [allBalances, fetchingAllBalances] = useTokenBalancesWithLoadingIndicator(account, [...getMainTokens(chainId), ...getStables(chainId)])
-
+  const dispatch = useDispatch<AppDispatch>()
   // const [allBalances1, fetchingAllBalances1] = xD(account, [...getMainTokens(chainId), ...getStables(chainId)])
   // console.log(allBalances1, fetchingAllBalances1)
   // console.log(allBalances1.map())
-  refreshBalances({
-    newBalances: allBalances
-  })
+  console.log("ALL BALANCES", allBalances)
+  useEffect(
+    () => {
+      dispatch(refreshBalances({
+        newBalances: allBalances
+      }))
+      return;
+    },
+    [allBalances, dispatch]
+  )
 
-  refreshNetworkCcyBalance({
-    newBalance: networkCcyBalance
-  })
+  // useEffect(() => balances(), [balances])
+
+  useEffect(
+    () => {
+      dispatch(refreshNetworkCcyBalance({
+        newBalance: networkCcyBalance
+      }))
+      return;
+    },
+    [networkCcyBalance, dispatch]
+  )
 
   const amounts = useMemo(() =>
     getTokenAmounts(chainId, allBalances),

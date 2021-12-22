@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import {
   Currency,
   currencyEquals,
-  ETHER,
+  
   NETWORK_CCY,
   TokenAmount,
   WETH,

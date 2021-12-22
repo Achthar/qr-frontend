@@ -215,7 +215,7 @@ export const CHAIN_INFO: ChainInfo = {
     blockWaitMsBeforeWarning: ms`10m`,
     // bridge: 'https://gateway.optimism.io/',
     docs: 'https://docs.oasis.dev/general/developer-resources/emerald-paratime',
-    explorer: 'https://testnet.oasisscan.com/',
+    explorer: 'https://explorer.testnet.oasis.updev.si/',
     infoLink: 'https://oasisprotocol.org/',
     label: 'Oasis Testnet',
     rpcUrls: ['https://testnet.emerald.oasis.dev/'],

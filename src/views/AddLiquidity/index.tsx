@@ -4,7 +4,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import {
   Currency,
   currencyEquals,
-  ETHER,
+  
   NETWORK_CCY,
   TokenAmount,
   WETH,
