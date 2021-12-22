@@ -19,7 +19,8 @@ export const WETH = {
 }
 
 export const STABLE_POOL_LP = {
-  [ChainId.AVAX_TESTNET]: new Token(43113, STABLE_POOL_LP_ADDRESS[43113], 18, 'RSLP', 'Requiem Stable LP')
+  [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, STABLE_POOL_LP_ADDRESS[ChainId.AVAX_TESTNET], 18, 'RSLP', 'Requiem Stable LP'),
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, STABLE_POOL_LP_ADDRESS[ChainId.OASIS_TESTNET], 18, 'RSLP', 'Requiem Stable LP')
 }
 
 export const REQT: { [chainId: number]: Token } = {

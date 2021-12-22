@@ -27,9 +27,7 @@ export enum StablePoolState {
 }
 
 export function useStablePool(chainId: number): [StablePoolState, StablePool | null] {
-  const { slowRefresh } = useRefresh()
-
-  // console.log("SPC")
+  // const { slowRefresh } = useRefresh()
 
   // for now we only load the supply once on thos 
   const supplyResult = useSingleCallResult(
@@ -40,7 +38,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
   // static data, only loaded once
   const aResult = useSingleCallResult(
     getStableSwapContract(chainId),
-    'getA', undefined, NEVER_RELOAD
+    'getA', undefined
   )
 
   // token reserves only reload them in shorter cycles
@@ -48,12 +46,6 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
     getStableSwapContract(chainId),
     'getTokenBalances'
   )
-
-  // const results = useSingleContractMultipleFunctions(
-  //   getStableSwapContract(chainId),
-  //   ['totalSupply', 'getA', 'getTokenBalances'],
-  //   []
-  // )
 
   const { currentBlock } = useBlock()
 

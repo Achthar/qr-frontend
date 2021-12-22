@@ -90,7 +90,6 @@ export default function RemoveStableLiquidity() {
 
   const [stablePoolState, stablePool] = useStablePool(chainId)
 
-
   const [
     relevantTokenBalances,
     // fetchingUserPoolBalance
