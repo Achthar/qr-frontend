@@ -9,7 +9,7 @@ import { bondList as bondsDict } from 'config/constants/bonds'
 import priceHelperLpsConfig from 'config/constants/priceHelperLps'
 import { BondConfig } from 'config/constants/types'
 import { getContractForBond, getContractForReserve, getBondCalculatorContract } from 'utils/contractHelpers';
-import { getAddressForReserve } from 'utils/addressHelpers';
+import { getAddressForBond, getAddressForReserve } from 'utils/addressHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 // import { useAppDispatch, useAppSelector } from 'state'
 import fetchBonds from './fetchBonds'
@@ -38,7 +38,13 @@ function noAccountBondConfig(chainId: number) {
   }))
 }
 
-function initialState(chainId: number): BondsState { return { data: noAccountBondConfig(chainId), loadArchivedBondsData: false, userDataLoaded: false } }
+function initialState(chainId: number): BondsState {
+  return {
+    data: noAccountBondConfig(chainId),
+    loadArchivedBondsData: false,
+    userDataLoaded: false
+  }
+}
 
 export function nonArchivedBonds(chainId: number): BondConfig[] { return bondsDict[chainId ?? 43113].filter(({ bondId }) => !isArchivedBondId(bondId)) }
 
@@ -353,6 +359,19 @@ export const bondsSlice = createSlice({
         return { ...bond, ...liveBondData }
       })
     })
+      .addCase(calculateUserBondDetails.pending, state => {
+        state.userDataLoaded = false;
+      })
+      .addCase(calculateUserBondDetails.fulfilled, (state, action) => {
+        if (!action.payload) return;
+        const bond = action.payload.bond;
+        state.data[bond] = action.payload;
+        state.userDataLoaded = true;
+      })
+      .addCase(calculateUserBondDetails.rejected, (state, { error }) => {
+        state.userDataLoaded = true;
+        console.log(error);
+      })
 
     // Update bonds with user data
     builder.addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
@@ -365,6 +384,61 @@ export const bondsSlice = createSlice({
     })
   },
 })
+
+
+export interface IUserBondDetails {
+  // bond: string;
+  allowance: number;
+  interestDue: number;
+  bondMaturationBlock: number;
+  pendingPayout: string; // Payout formatted in gwei.
+}
+export const calculateUserBondDetails = createAsyncThunk(
+  "account/calculateUserBondDetails",
+  async ({ address, bond, chainId, provider }: ICalcUserBondDetailsAsyncThunk) => {
+    if (!address) {
+      return {
+        bond: "",
+        displayName: "",
+        bondIconSvg: "",
+        isLP: false,
+        allowance: 0,
+        balance: "0",
+        interestDue: 0,
+        bondMaturationBlock: 0,
+        pendingPayout: "",
+      };
+    }
+    // dispatch(fetchBondInProgress());
+
+    // Calculate bond details.
+    const bondContract = getContractForBond(chainId, provider);
+    const reserveContract = getContractForReserve(chainId, provider);
+
+    const bondDetails = await bondContract.bondInfo(address);
+    const interestDue: BigNumberish = Number(bondDetails.payout.toString()) / (10 ** 9);
+    const bondMaturationBlock = +bondDetails.vesting + +bondDetails.lastBlock;
+    const pendingPayout = await bondContract.pendingPayoutFor(address);
+
+    let balance = BigNumber.from(0);
+    const allowance = await reserveContract.allowance(address, getAddressForBond(chainId) || "");
+    balance = await reserveContract.balanceOf(address);
+    // formatEthers takes BigNumber => String
+    const balanceVal = ethers.utils.formatEther(balance);
+    // balanceVal should NOT be converted to a number. it loses decimal precision
+    return {
+      bond: bond.name,
+      displayName: bond.displayName,
+      bondIconSvg: bond.bondIconSvg,
+      isLP: bond.isLP,
+      allowance: Number(allowance.toString()),
+      balance: balanceVal,
+      interestDue,
+      bondMaturationBlock,
+      pendingPayout: ethers.utils.formatUnits(pendingPayout, "gwei"),
+    };
+  },
+);
 
 // Actions
 export const { setLoadArchivedBondsData } = bondsSlice.actions

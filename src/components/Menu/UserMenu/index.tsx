@@ -11,7 +11,7 @@ import {
 import useAuth from 'hooks/useAuth'
 import { useProfile } from 'state/profile/hooks'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { FetchStatus, useGetBnbBalance } from 'hooks/useTokenBalance'
+import { FetchStatus, useGetNetworkCcyBalance } from 'hooks/useTokenBalance'
 import { useTranslation } from 'contexts/Localization'
 import WalletModal, { WalletView, LOW_BNB_BALANCE } from './WalletModal'
 import ProfileUserMenuItem from './ProfileUserMenutItem'
@@ -21,7 +21,7 @@ const UserMenu = () => {
   const { t } = useTranslation()
   const { account, chainId } = useWeb3React()
   const { logout } = useAuth()
-  const { balance, fetchStatus } = useGetBnbBalance()
+  const { balance, fetchStatus } = useGetNetworkCcyBalance()
   // const { isInitialized, isLoading, profile } = useProfile()
 
   const isInitialized = false

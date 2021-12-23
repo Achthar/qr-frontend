@@ -87,7 +87,7 @@ export const useBurnedBalance = (tokenAddress: string) => {
   return balance
 }
 
-export const useGetBnbBalance = () => {
+export const useGetNetworkCcyBalance = () => {
   const { account, chainId, library } = useWeb3React()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [balance, setBalance] = useState(BIG_ZERO)

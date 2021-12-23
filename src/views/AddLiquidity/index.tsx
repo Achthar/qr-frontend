@@ -93,6 +93,7 @@ export default function AddLiquidity({
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintWeightedPairState()
+  
   const {
     dependentField,
     currencies,

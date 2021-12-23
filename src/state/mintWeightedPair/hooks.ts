@@ -129,21 +129,30 @@ export function useDerivedMintWeightedPairInfo(
 
     const totalSupply = useTotalSupply(weightedPair?.liquidityToken)
 
-    const noLiquidity: boolean =
-        weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && JSBI.equal(totalSupply.raw, ZERO))
+    const noLiquidity: boolean = useMemo(() => {
+        return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && JSBI.equal(totalSupply.raw, ZERO))
+    },
+        [weightedPairState, totalSupply])
 
     // balances
     const balances = useCurrencyBalances(chainId, account ?? undefined, [
         currencies[WeightedField.CURRENCY_A],
         currencies[WeightedField.CURRENCY_B],
     ])
-    const currencyBalances: { [field in WeightedField]?: CurrencyAmount } = {
-        [WeightedField.CURRENCY_A]: balances[0],
-        [WeightedField.CURRENCY_B]: balances[1],
-    }
+    const currencyBalances: { [field in WeightedField]?: CurrencyAmount } = useMemo(() => {
+        return {
+            [WeightedField.CURRENCY_A]: balances[0],
+            [WeightedField.CURRENCY_B]: balances[1],
+        }
+    },
+        [balances])
 
     // amounts
-    const independentAmount: CurrencyAmount | undefined = tryParseAmount(chainId, typedValue, currencies[independentField])
+    const independentAmount: CurrencyAmount | undefined = useMemo(() => {
+        return tryParseAmount(chainId, typedValue, currencies[independentField])
+    },
+        [chainId, typedValue, currencies, independentField])
+
     const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
         if (noLiquidity) {
             if (otherTypedValue && currencies[dependentField]) {
