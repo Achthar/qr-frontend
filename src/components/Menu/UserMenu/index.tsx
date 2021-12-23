@@ -13,7 +13,7 @@ import { useProfile } from 'state/profile/hooks'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { FetchStatus, useGetNetworkCcyBalance } from 'hooks/useTokenBalance'
 import { useTranslation } from 'contexts/Localization'
-import WalletModal, { WalletView, LOW_BNB_BALANCE } from './WalletModal'
+import WalletModal, { WalletView, LOW_NETWORK_CCY_BALANCE } from './WalletModal'
 import ProfileUserMenuItem from './ProfileUserMenutItem'
 import WalletUserMenuItem from './WalletUserMenuItem'
 
@@ -32,7 +32,7 @@ const UserMenu = () => {
   const [onPresentTransactionModal] = useModal(<WalletModal chainId={chainId} initialView={WalletView.TRANSACTIONS} />)
   const hasProfile = isInitialized && !!profile
   const avatarSrc = profile && profile.nft ? `/images/nfts/${profile.nft.images.sm}` : undefined
-  const hasLowBnbBalance = fetchStatus === FetchStatus.SUCCESS && balance.lte(LOW_BNB_BALANCE)
+  const hasLowNetworkCcyBalance = fetchStatus === FetchStatus.SUCCESS && balance.lte(LOW_NETWORK_CCY_BALANCE)
 
   if (!account) {
     return <ConnectWalletButton scale="sm" />
@@ -40,7 +40,7 @@ const UserMenu = () => {
 
   return (
     <UIKitUserMenu account={account} avatarSrc={avatarSrc}>
-      <WalletUserMenuItem hasLowBnbBalance={hasLowBnbBalance} onPresentWalletModal={onPresentWalletModal} />
+      <WalletUserMenuItem hasLowNetworkCcyBalance={hasLowNetworkCcyBalance} onPresentWalletModal={onPresentWalletModal} />
       <UserMenuItem as="button" onClick={onPresentTransactionModal}>
         {t('Transactions')}
       </UserMenuItem>

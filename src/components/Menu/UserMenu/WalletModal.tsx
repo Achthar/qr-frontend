@@ -28,7 +28,7 @@ interface WalletModalProps extends InjectedModalProps {
   initialView?: WalletView
 }
 
-export const LOW_BNB_BALANCE = new BigNumber('2000000000') // 2 Gwei
+export const LOW_NETWORK_CCY_BALANCE = new BigNumber('2000000000') // 2 Gwei
 
 const ModalHeader = styled(UIKitModalHeader)``
 
@@ -42,7 +42,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALL
   const [view, setView] = useState(initialView)
   const { t } = useTranslation()
   const { balance, fetchStatus } = useGetNetworkCcyBalance()
-  const hasLowBnbBalance = fetchStatus === FetchStatus.SUCCESS && balance.lte(LOW_BNB_BALANCE)
+  const hasLowNetworkCcyBalance = fetchStatus === FetchStatus.SUCCESS && balance.lte(LOW_NETWORK_CCY_BALANCE)
 
   const handleClick = (newIndex: number) => {
     setView(newIndex)
@@ -65,7 +65,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALL
         </ButtonMenu>
       </Tabs>
       <ModalBody p="24px" maxWidth="400px" width="100%">
-        {view === WalletView.WALLET_INFO && <WalletInfo hasLowBnbBalance={hasLowBnbBalance} onDismiss={onDismiss} />}
+        {view === WalletView.WALLET_INFO && <WalletInfo hasLowNetworkCcyBalance={hasLowNetworkCcyBalance} onDismiss={onDismiss} />}
         {view === WalletView.TRANSACTIONS && <WalletTransactions />}
       </ModalBody>
     </ModalContainer>

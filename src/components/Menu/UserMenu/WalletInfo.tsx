@@ -11,11 +11,11 @@ import { getFullDisplayBalance } from 'utils/formatBalance'
 import CopyAddress from './CopyAddress'
 
 interface WalletInfoProps {
-  hasLowBnbBalance: boolean
+  hasLowNetworkCcyBalance: boolean
   onDismiss: InjectedModalProps['onDismiss']
 }
 
-const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowBnbBalance, onDismiss }) => {
+const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNetworkCcyBalance, onDismiss }) => {
   const { t } = useTranslation()
   const { account, chainId } = useWeb3React()
   const { balance } = useGetNetworkCcyBalance()
@@ -33,7 +33,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowBnbBalance, onDismiss }) 
         {t('Your Address')}
       </Text>
       <CopyAddress account={account} mb="24px" />
-      {hasLowBnbBalance && (
+      {hasLowNetworkCcyBalance && (
         <Message variant="warning" mb="24px">
           <Box>
             <Text fontWeight="bold">{`${NETWORK_CCY[chainId].symbol} Balance Low`}</Text>

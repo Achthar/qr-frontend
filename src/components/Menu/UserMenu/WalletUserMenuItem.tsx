@@ -3,18 +3,18 @@ import { Flex, UserMenuItem, WarningIcon } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 
 interface WalletUserMenuItemProps {
-  hasLowBnbBalance: boolean
+  hasLowNetworkCcyBalance: boolean
   onPresentWalletModal: () => void
 }
 
-const WalletUserMenuItem: React.FC<WalletUserMenuItemProps> = ({ hasLowBnbBalance, onPresentWalletModal }) => {
+const WalletUserMenuItem: React.FC<WalletUserMenuItemProps> = ({ hasLowNetworkCcyBalance, onPresentWalletModal }) => {
   const { t } = useTranslation()
 
   return (
     <UserMenuItem as="button" onClick={onPresentWalletModal}>
       <Flex alignItems="center" justifyContent="space-between" width="100%">
         {t('Wallet')}
-        {hasLowBnbBalance && <WarningIcon color="warning" width="24px" />}
+        {hasLowNetworkCcyBalance && <WarningIcon color="warning" width="24px" />}
       </Flex>
     </UserMenuItem>
   )
