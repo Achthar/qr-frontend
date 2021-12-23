@@ -126,16 +126,19 @@ const Bonds: React.FC = () => {
   const { pathname } = useLocation()
   const { t } = useTranslation()
   const { data: bondsLP, userDataLoaded } = useBonds()
-  const reqtPrice = usePriceReqtUsd()
+
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
   const { account, chainId } = useWeb3React()
+  const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
 
   const isArchived = pathname.includes('archived')
   const isInactive = pathname.includes('history')
   const isActive = !isInactive && !isArchived
+
+  console.log("PRICE", reqtPrice.toString())
 
   usePollBondsWithUserData(chainId, isArchived)
 

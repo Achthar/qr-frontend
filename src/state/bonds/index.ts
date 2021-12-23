@@ -21,6 +21,7 @@ import {
   fetchBondUserStakedBalances,
 } from './fetchBondUser'
 import { BondsState, Bond } from '../types'
+import { useReqtPrice } from 'hooks/usePrice';
 
 // import { chain } from 'lodash'
 
@@ -176,8 +177,9 @@ export interface IRedeemAllBondsAsyncThunk extends IBaseAsyncThunk {
 const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({ chainId, provider }: IBaseAsyncThunk) => {
   let marketPrice: number;
   try {
+    const price = useReqtPrice(chainId)
     // only get marketPrice from eth mainnet
-    marketPrice = 41432// await getMarketPrice({ chainId, provider });
+    marketPrice = price === '-' ? 0 : Number(price) // 41432// await getMarketPrice({ chainId, provider });
     // let mainnetProvider = (marketPrice = await getMarketPrice({ 1: NetworkID, provider }));
     marketPrice /= 10 ** 9;
   } catch (e) {

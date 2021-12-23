@@ -38,7 +38,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
   // static data, only loaded once
   const aResult = useSingleCallResult(
     getStableSwapContract(chainId),
-    'getA', undefined
+    'getA', undefined, NEVER_RELOAD
   )
 
   // token reserves only reload them in shorter cycles

@@ -50,7 +50,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
-  const reqtPrice = usePriceReqtUsd()
+  const reqtPrice = usePriceReqtUsd(chainId)
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 

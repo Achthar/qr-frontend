@@ -3,9 +3,13 @@ import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { bondsConfig as bondsDict } from 'config/constants'
+import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
+import { Price, TokenAmount } from '@requiemswap/sdk'
+import { DAI, REQT } from 'config/constants/tokens'
 import useRefresh from 'hooks/useRefresh'
 import { fetchBondsPublicDataAsync, fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
@@ -110,16 +114,21 @@ export const usePriceNetworkCCYUsd = (): BigNumber => {
   return new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
 }
 
-export const usePriceReqtUsd = (): BigNumber => {
-  const reqtnetworkCCYBond = useBondFromBondId(0)
+export const usePriceReqtUsd = (chainId: number): BigNumber => {
+  // const reqtnetworkCCYBond = useBondFromBondId(0)
+  const [pairState, pair] = useWeightedPairs([[REQT[chainId], DAI[chainId]]], [80], [25])[0]
 
-  const reqtPriceUsdAsString = '123' // reqtnetworkCCYBond.token.busdPrice
+  return useMemo(
+    () => {
+      const inAmount = new TokenAmount(REQT[chainId ?? 43113], '1000000000000000000')
 
-  const reqtPriceUsd = useMemo(() => {
-    return new BigNumber(reqtPriceUsdAsString)
-  }, [reqtPriceUsdAsString])
-
-  return reqtPriceUsd
+      const [outAmount,] = pairState === WeightedPairState.EXISTS
+        ? pair.clone().getOutputAmount(inAmount)
+        : [new TokenAmount(DAI[chainId ?? 43113], '1'),]
+      return new BigNumber(outAmount.raw.toString()) // reqtnetworkCCYBond.token.busdPrice
+    },
+    [chainId, pair, pairState]
+  )
 }
 
 
