@@ -7,7 +7,7 @@ import { useWeightedPair, WeightedPairState } from "./useWeightedPairs"
 
 export const useReqtPrice = (chainId: number): string => {
 
-    const [pairState, pair] = useWeightedPair(REQT[chainId], DAI[chainId], 80, 25)
+    const [pairState, pair] = useWeightedPair(chainId, REQT[chainId], DAI[chainId], 80, 25)
 
     const reqtPriceUsdAsString = useMemo(
 

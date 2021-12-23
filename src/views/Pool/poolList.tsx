@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
+import { REQT, DAI } from 'config/constants/tokens'
 import { WeightedPair, Token, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link } from 'react-router-dom'
@@ -203,7 +204,7 @@ export default function PoolList() {
           <Button
             id="join-pool-button"
             as={Link}
-            to="/add"
+            to={`/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
             width="100%"
             startIcon={<AddIcon color={theme.colors.backgroundAlt} />}
           >

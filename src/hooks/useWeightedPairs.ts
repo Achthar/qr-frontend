@@ -2,13 +2,14 @@ import { TokenAmount, WeightedPair, Currency, WEIGHTED_FACTORY_ADDRESS, Token } 
 import { useMemo } from 'react'
 import RequiemPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { Interface } from '@ethersproject/abi'
-import { useNetworkState } from 'state/globalNetwork/hooks'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 import JSBI from 'jsbi'
 import { DAI, REQT } from 'config/constants/tokens'
+import { useBlock } from 'state/block/hooks'
+import { useMultipleContractSingleData, useSingleContractMultipleData } from 'state/multicall/hooks'
 import { useWeightedFactoryContract, useWeightedFormulaContract } from './useContract'
-import { useMultipleContractSingleData, useSingleContractMultipleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import { getWeightedPairFactory } from '../utils/contractHelpers'
+// import { getWeightedPairFactory } from '../utils/contractHelpers'
 
 
 
@@ -22,12 +23,13 @@ export enum WeightedPairState {
 }
 
 export function useWeightedPairs(
+  chainId: number,
   currencies: [Currency | undefined, Currency | undefined][],
   weightA?: number[],
   fee?: number[]
 ): [WeightedPairState, WeightedPair | null][] {
 
-  const { chainId } = useNetworkState()
+  // const { chainId } = useNetworkState()
 
   const tokens = useMemo(
     () =>
@@ -47,7 +49,9 @@ export function useWeightedPairs(
     [tokens, weightA, fee],
   )
 
-  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
+  const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves',
+  //  useBlock
+   )
 
   return useMemo(() => {
     return results.map((result, i) => {
@@ -70,14 +74,16 @@ export function useWeightedPairs(
   }, [results, tokens, weightA, fee])
 }
 
-export function useWeightedPair(tokenA?: Currency, tokenB?: Currency, weightA?: number, fee?: number): [WeightedPairState, WeightedPair | null] {
-  return useWeightedPairs([[tokenA, tokenB]], [weightA], [fee])[0]
+export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Currency, weightA?: number, fee?: number): [WeightedPairState, WeightedPair | null] {
+  return useWeightedPairs(chainId, [[tokenA, tokenB]], [weightA], [fee])[0]
 }
 
 // a function that checks whether the address exists on the specified chain using the factory contract
 export function useWeightedPairsExist(chainId: number, addresses: string[], blocksPerFetch: number): { [address: string]: number } {
   const factoryContract = useWeightedFactoryContract(chainId)
-  const results = useSingleContractMultipleData(factoryContract, 'isPair', addresses.map(adr => [adr]), { blocksPerFetch })
+  const results = useSingleContractMultipleData(chainId, factoryContract, 'isPair', addresses.map(adr => [adr]),
+  //  useBlock, 
+   { blocksPerFetch })
 
   return useMemo(() => {
     return Object.assign({}, ...results.map((result, i) => {
@@ -104,9 +110,11 @@ export function useGetWeightedPairs(currencies: [Currency | undefined, Currency 
 
   // gets pair contract addresses for alls constellations with the provided tokens
   const resultsPairs = useSingleContractMultipleData(
+    chainId,
     factoryContract,
     'getPairs',
-    tokens.map(tokenPair => [tokenPair[0]?.address ?? REQT[chainId].address, tokenPair[1]?.address ?? DAI[chainId].address])
+    tokens.map(tokenPair => [tokenPair[0]?.address ?? REQT[chainId].address, tokenPair[1]?.address ?? DAI[chainId].address]),
+    // useBlock
   )
 
   return useMemo(() => {
@@ -131,13 +139,15 @@ export function useWeightedPairsData(tokens: [Token, Token][], pairAddresses: st
   const formulaContract = useWeightedFormulaContract(chainId)
 
   const results = useSingleContractMultipleData(
+    chainId,
     formulaContract,
     'getFactoryReserveAndWeights', // arguments: factory, pair, tokenA, 
     tokens.map((tokenPair, index) => [WEIGHTED_FACTORY_ADDRESS[chainId],
     pairAddresses?.[index] ?? '0x6F21d456E5832E0b35C2C09a610DBa691E8Fb684',
     tokenPair[0]?.address ?? '0x6f21d456e5832e0b35c2c09a610dba691e8fb684'],
       { blocksPerFetch }
-    )
+    ),
+    // useBlock,
   )
   console.log("FORMULA", results)
   // returns:
@@ -177,23 +187,28 @@ export function useWeightedPairsData(tokens: [Token, Token][], pairAddresses: st
 // for a list of tokenAs, pair addresses, we fetch the weighted pair list
 // assumes that all pair data exists
 export function useWeightedPairsDataLite(
-  tokens: [Token, Token][], 
-  pairAddresses: string[], 
+  tokens: [Token, Token][],
+  pairAddresses: string[],
   chainId: number
-  ): [WeightedPairState, WeightedPair | null][] {
+): [WeightedPairState, WeightedPair | null][] {
 
   const factoryContract = useWeightedFactoryContract(chainId)
 
   // gets pair contract addresses for alls constellations with the provided tokens
   const resultsStatic = useSingleContractMultipleData(
+    chainId,
     factoryContract,
     'getWeightsAndSwapFee',
     pairAddresses?.map(address => [address ?? '0x6f21d456e5832e0b35c2c09a610dba691e8fb684']) ?? [['0x6f21d456e5832e0b35c2c09a610dba691e8fb684']],
+    // useBlock,
+
     // { blocksPerFetch: 1 }
   )
 
 
-  const resultsReserves = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
+  const resultsReserves = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves', 
+  // useBlock
+  )
   // returns:
   // address tokenB,
   // uint256 reserveA,

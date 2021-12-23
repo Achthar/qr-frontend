@@ -116,7 +116,7 @@ export const usePriceNetworkCCYUsd = (): BigNumber => {
 
 export const usePriceReqtUsd = (chainId: number): BigNumber => {
   // const reqtnetworkCCYBond = useBondFromBondId(0)
-  const [pairState, pair] = useWeightedPairs([[REQT[chainId], DAI[chainId]]], [80], [25])[0]
+  const [pairState, pair] = useWeightedPairs(chainId, [[REQT[chainId], DAI[chainId]]], [80], [25])[0]
 
   return useMemo(
     () => {

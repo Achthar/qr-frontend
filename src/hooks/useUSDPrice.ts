@@ -11,7 +11,7 @@ const BUSD_MAINNET = BUSD[ChainId.BSC_MAINNET]
  * Returns the price in BUSD of the input currency
  * @param currency currency to compute the BUSD price of
  */
-export default function useBUSDPrice(currency?: Currency): Price {
+export default function useUSDPrice(currency?: Currency): Price {
   const { chainId } = useNetworkState()
   const wrapped = wrappedCurrency(currency, chainId)
   const tokenPairs: [Currency | undefined, Currency | undefined][] = useMemo(
@@ -26,6 +26,7 @@ export default function useBUSDPrice(currency?: Currency): Price {
     [chainId, currency, wrapped],
   )
   const [[ethPairState, ethPair], [busdPairState, busdPair], [busdEthPairState, busdEthPair]] = usePairs(
+    chainId,
     tokenPairs,
   )
 
@@ -75,7 +76,7 @@ export default function useBUSDPrice(currency?: Currency): Price {
 export const useCakeBusdPrice = (): Price => {
   const { chainId } = useNetworkState()
   const currentChaindId = chainId || ChainId.BSC_MAINNET
-  const cakeBusdPrice = useBUSDPrice(CAKE[currentChaindId])
+  const cakeBusdPrice = useUSDPrice(CAKE[currentChaindId])
   return cakeBusdPrice
 }
 
@@ -86,7 +87,7 @@ export const useCakeBusdPriceNumber = (digits?: number): number => {
 }
 
 
-export const useBUSDPriceNumber = (currency?: Currency, digits?: number): number => {
-  const price = useBUSDPrice(currency)
+export const useUSDPriceNumber = (currency?: Currency, digits?: number): number => {
+  const price = useUSDPrice(currency)
   return (price === undefined) ? NaN : Number(price.toSignificant(digits ?? 10))
 }

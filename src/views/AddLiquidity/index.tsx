@@ -113,7 +113,7 @@ export default function AddLiquidity({
   // use balances from the balance state instead of manually loading them
   const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()
 
-  const defaultTokens = useAllTokens()
+  const defaultTokens = useAllTokens(chainId)
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(

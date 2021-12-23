@@ -121,7 +121,7 @@ export default function Updater(): null {
   const debouncedListeners = useDebounce(state.callListeners, 100)
   const { currentBlock } = useBlock()
   const { chainId } = useNetworkState()
-  const multicallContract = useMulticallContract()
+  const multicallContract = useMulticallContract(chainId)
   const cancellations = useRef<{ blockNumber: number; cancellations: (() => void)[] }>()
 
   const listeningKeys: { [callKey: string]: number } = useMemo(() => {

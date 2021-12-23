@@ -66,7 +66,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   )
 
   // dismiss warning if all imported tokens are in active lists
-  const defaultTokens = useAllTokens()
+  const defaultTokens = useAllTokens(chainId)
   const importTokensNotInDefault =
     urlLoadedTokens &&
     urlLoadedTokens.filter((token: Token) => {

@@ -55,10 +55,10 @@ function CurrencySearchExpanded({
 
   const [invertSearchOrder] = useState<boolean>(false)
 
-  const allTokens = useAllTokens()
+  const allTokens = useAllTokens(chainId)
 
   // if they input an address, use it
-  const searchToken = useToken(debouncedQuery)
+  const searchToken = useToken(chainId, debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
 
   const [audioPlay] = useAudioModeManager()
@@ -126,7 +126,7 @@ function CurrencySearchExpanded({
   )
 
   // if no results on main list, show option to expand into inactive
-  const inactiveTokens = useFoundOnInactiveList(debouncedQuery)
+  const inactiveTokens = useFoundOnInactiveList(chainId, debouncedQuery)
   const filteredInactiveTokens: Token[] = useSortedTokensByQuery(inactiveTokens, debouncedQuery)
 
   return (

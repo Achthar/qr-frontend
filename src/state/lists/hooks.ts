@@ -166,8 +166,8 @@ export function useInactiveListUrls(): string[] {
 }
 
 // get all the tokens from active lists, combine with local default tokens
-export function useCombinedActiveList(): TokenAddressMap {
-  const { chainId } = useNetworkState();
+export function useCombinedActiveList(chainId: number): TokenAddressMap {
+  // const { chainId } = useNetworkState();
   const activeListUrls = useActiveListUrls()
   const activeTokens = useCombinedTokenMapFromUrls(activeListUrls)
   const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST[chainId ?? 43113]) //  DEFAULT_TOKEN_LIST[chainId as unknown as string])
@@ -181,8 +181,8 @@ export function useCombinedInactiveList(): TokenAddressMap {
 }
 
 // used to hide warnings on import for default tokens
-export function useDefaultTokenList(): TokenAddressMap {
-  const { chainId } = useNetworkState();
+export function useDefaultTokenList(chainId: number): TokenAddressMap {
+  // const { chainId } = useNetworkState();
   return listToTokenMap(DEFAULT_TOKEN_LIST[chainId]) // DEFAULT_TOKEN_LIST[chainId as unknown as string])
 }
 

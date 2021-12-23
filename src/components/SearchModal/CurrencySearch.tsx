@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, RefObject, useCallback, useMemo, useRef, useState, useEffect } from 'react'
-import { Currency,  Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, Token, NETWORK_CCY } from '@requiemswap/sdk'
 import { Text, Input, Box } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
@@ -17,7 +17,7 @@ import useTokenComparator from './sorting'
 import ImportRow from './ImportRow'
 
 interface CurrencySearchProps {
-  chainId:number
+  chainId: number
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -47,10 +47,10 @@ function CurrencySearch({
 
   const [invertSearchOrder] = useState<boolean>(false)
 
-  const allTokens = useAllTokens()
+  const allTokens = useAllTokens(chainId)
 
   // if they input an address, use it
-  const searchToken = useToken(debouncedQuery)
+  const searchToken = useToken(chainId, debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
 
   const [audioPlay] = useAudioModeManager()
@@ -118,7 +118,7 @@ function CurrencySearch({
   )
 
   // if no results on main list, show option to expand into inactive
-  const inactiveTokens = useFoundOnInactiveList(debouncedQuery)
+  const inactiveTokens = useFoundOnInactiveList(chainId, debouncedQuery)
   const filteredInactiveTokens: Token[] = useSortedTokensByQuery(inactiveTokens, debouncedQuery)
 
   return (

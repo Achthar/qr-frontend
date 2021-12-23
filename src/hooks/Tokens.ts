@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { parseBytes32String } from '@ethersproject/strings'
-import { Currency,  Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { Currency, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { arrayify } from 'ethers/lib/utils'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -54,30 +54,30 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
   }, [chainId, userAddedTokens, tokenMap, includeUserAdded])
 }
 
-export function useDefaultTokens(): { [address: string]: Token } {
-  const defaultList = useDefaultTokenList()
+export function useDefaultTokens(chainId: number): { [address: string]: Token } {
+  const defaultList = useDefaultTokenList(chainId)
   return useTokensFromMap(defaultList, false)
 }
 
-export function useAllTokens(): { [address: string]: Token } {
-  const allTokens = useCombinedActiveList()
+export function useAllTokens(chainId: number): { [address: string]: Token } {
+  const allTokens = useCombinedActiveList(chainId)
   return useTokensFromMap(allTokens, true)
 }
 
-export function useAllInactiveTokens(): { [address: string]: Token } {
+export function useAllInactiveTokens(chainId: number): { [address: string]: Token } {
   // get inactive tokens
   const inactiveTokensMap = useCombinedInactiveList()
   const inactiveTokens = useTokensFromMap(inactiveTokensMap, false)
 
   // filter out any token that are on active list
-  const activeTokensAddresses = Object.keys(useAllTokens())
+  const activeTokensAddresses = Object.keys(useAllTokens(chainId))
   const filteredInactive = activeTokensAddresses
     ? Object.keys(inactiveTokens).reduce<{ [address: string]: Token }>((newMap, address) => {
-        if (!activeTokensAddresses.includes(address)) {
-          newMap[address] = inactiveTokens[address]
-        }
-        return newMap
-      }, {})
+      if (!activeTokensAddresses.includes(address)) {
+        newMap[address] = inactiveTokens[address]
+      }
+      return newMap
+    }, {})
     : inactiveTokens
 
   return filteredInactive
@@ -89,7 +89,7 @@ export function useUnsupportedTokens(): { [address: string]: Token } {
 }
 
 export function useIsTokenActive(token: Token | undefined | null): boolean {
-  const activeTokens = useAllTokens()
+  const activeTokens = useAllTokens(token.chainId)
 
   if (!activeTokens || !token) {
     return false
@@ -99,9 +99,8 @@ export function useIsTokenActive(token: Token | undefined | null): boolean {
 }
 
 // used to detect extra search results
-export function useFoundOnInactiveList(searchQuery: string): Token[] | undefined {
-  const { chainId } = useNetworkState()
-  const inactiveTokens = useAllInactiveTokens()
+export function useFoundOnInactiveList(chainId: number, searchQuery: string): Token[] | undefined {
+  const inactiveTokens = useAllInactiveTokens(chainId)
 
   return useMemo(() => {
     if (!chainId || searchQuery === '') {
@@ -131,16 +130,16 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
     ? str
     : // need to check for proper bytes string and valid terminator
     bytes32 && BYTES32_REGEX.test(bytes32) && arrayify(bytes32)[31] === 0
-    ? parseBytes32String(bytes32)
-    : defaultValue
+      ? parseBytes32String(bytes32)
+      : defaultValue
 }
 
 // undefined if invalid or does not exist
 // null if loading
 // otherwise returns the token
-export function useToken(tokenAddress?: string): Token | undefined | null {
-  const { chainId } = useNetworkState()
-  const tokens = useAllTokens()
+export function useToken(chainId: number, tokenAddress?: string): Token | undefined | null {
+  // const { chainId } = useNetworkState()
+  const tokens = useAllTokens(chainId)
 
   const address = isAddress(tokenAddress)
 
@@ -148,16 +147,17 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
   const tokenContractBytes32 = useBytes32TokenContract(address || undefined, false)
   const token: Token | undefined = address ? tokens[address] : undefined
 
-  const tokenName = useSingleCallResult(token ? undefined : tokenContract, 'name', undefined, NEVER_RELOAD)
+  const tokenName = useSingleCallResult(chainId, token ? undefined : tokenContract, 'name', undefined, NEVER_RELOAD)
   const tokenNameBytes32 = useSingleCallResult(
+    chainId,
     token ? undefined : tokenContractBytes32,
     'name',
     undefined,
     NEVER_RELOAD,
   )
-  const symbol = useSingleCallResult(token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
-  const symbolBytes32 = useSingleCallResult(token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
-  const decimals = useSingleCallResult(token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
+  const symbol = useSingleCallResult(chainId, token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
+  const symbolBytes32 = useSingleCallResult(chainId, token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
+  const decimals = useSingleCallResult(chainId, token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
 
   return useMemo(() => {
     if (token) return token
@@ -188,8 +188,8 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
   ])
 }
 
-export function useCurrency(chainId:number, currencyId: string | undefined): Currency | null | undefined {
+export function useCurrency(chainId: number, currencyId: string | undefined): Currency | null | undefined {
   const isNetworkCCY = currencyId?.toUpperCase() === NETWORK_CCY[chainId].symbol
-  const token = useToken(isNetworkCCY ? undefined : currencyId)
+  const token = useToken(chainId, isNetworkCCY ? undefined : currencyId)
   return isNetworkCCY ? NETWORK_CCY[chainId] : token
 }

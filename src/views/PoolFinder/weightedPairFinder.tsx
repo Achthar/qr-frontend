@@ -65,7 +65,7 @@ export default function WeightedPairFinder() {
 
   const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId)
 
-  const [pairState, pair] = useWeightedPair(currency0 ?? undefined, currency1 ?? undefined, weight0, fee)
+  const [pairState, pair] = useWeightedPair(chainId, currency0 ?? undefined, currency1 ?? undefined, weight0, fee)
   const addPair = useWeightedPairAdder()
 
   useEffect(() => {

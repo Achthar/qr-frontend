@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useCakeBusdPrice } from 'hooks/useBUSDPrice'
+import { useCakeBusdPrice } from 'hooks/useUSDPrice'
 
 const useGetDocumentTitlePrice = () => {
   const reqtPriceBusd = 5 //useCakeBusdPrice()

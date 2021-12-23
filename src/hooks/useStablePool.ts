@@ -31,18 +31,21 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
 
   // for now we only load the supply once on thos 
   const supplyResult = useSingleCallResult(
+    chainId,
     getStableLpContract(chainId),
     'totalSupply',
   )
 
   // static data, only loaded once
   const aResult = useSingleCallResult(
+    chainId,
     getStableSwapContract(chainId),
     'getA', undefined, NEVER_RELOAD
   )
 
   // token reserves only reload them in shorter cycles
   const tokenReservesResult = useSingleCallResult(
+    chainId,
     getStableSwapContract(chainId),
     'getTokenBalances'
   )

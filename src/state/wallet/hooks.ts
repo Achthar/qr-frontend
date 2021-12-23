@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount,  JSBI, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import ERC20_INTERFACE from 'config/abi/erc20'
@@ -17,7 +17,7 @@ export function useNetworkCCYBalances(
 ): {
   [address: string]: CurrencyAmount | undefined
 } {
-  const multicallContract = useMulticallContract()
+  const multicallContract = useMulticallContract(chainId)
   const addresses: string[] = useMemo(
     () =>
       uncheckedAddresses
@@ -30,6 +30,7 @@ export function useNetworkCCYBalances(
   )
 
   const results = useSingleContractMultipleData(
+    chainId,
     multicallContract,
     'getEthBalance',
     addresses.map((address) => [address]),
@@ -60,7 +61,7 @@ export function useTokenBalancesWithLoadingIndicator(
   console.log("useTokenBalancesWithLoadingIndicator")
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens])
 
-  const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [
+  const balances = useMultipleContractSingleData(tokens?.[0]?.chainId ?? 43113, validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [
     address,
   ])
 
@@ -134,7 +135,7 @@ export function useCurrencyBalance(chainId: number, account?: string, currency?:
 // mimics useAllBalances
 export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {
   const { account, chainId } = useWeb3React()
-  const allTokens = useAllTokens()
+  const allTokens = useAllTokens(chainId)
   const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [allTokens])
   const balances = useTokenBalances(account ?? undefined, allTokensArray)
   return balances ?? {}

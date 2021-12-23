@@ -8,7 +8,7 @@ import { useSingleCallResult } from '../state/multicall/hooks'
 function useTotalSupply(token?: Token): TokenAmount | undefined {
   const contract = useTokenContract(token?.address, false)
 
-  const totalSupply: BigNumber = useSingleCallResult( contract, 'totalSupply')?.result?.[0]
+  const totalSupply: BigNumber = useSingleCallResult(token?.chainId ?? 43113,  contract, 'totalSupply')?.result?.[0]
 
   return token && totalSupply ? new TokenAmount(token, totalSupply.toString()) : undefined
 }

@@ -52,7 +52,7 @@ export default function ManageTokens({
   }, [])
 
   // if they input an address, use it
-  const searchToken = useToken(searchQuery)
+  const searchToken = useToken(chainId, searchQuery)
 
   // all tokens for local list
   const userAddedTokens: Token[] = useUserAddedTokens()

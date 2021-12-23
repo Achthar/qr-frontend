@@ -6,7 +6,7 @@ import useTheme from 'hooks/useTheme'
 import config from './config'
 import UserMenu from './UserMenu'
 import GlobalSettings from './GlobalSettings'
-import { useCakeBusdPriceNumber } from '../../hooks/useBUSDPrice'
+import { useCakeBusdPriceNumber } from '../../hooks/useUSDPrice'
 
 
 const Menu = (props) => {

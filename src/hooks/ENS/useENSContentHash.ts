@@ -7,7 +7,7 @@ import { useENSRegistrarContract, useENSResolverContract } from '../useContract'
 /**
  * Does a lookup for an ENS name to find its contenthash.
  */
-export default function useENSContentHash(chainId:number, ensName?: string | null): { loading: boolean; contenthash: string | null } {
+export default function useENSContentHash(chainId: number, ensName?: string | null): { loading: boolean; contenthash: string | null } {
   const ensNodeArgument = useMemo(() => {
     if (!ensName) return [undefined]
     try {
@@ -16,14 +16,14 @@ export default function useENSContentHash(chainId:number, ensName?: string | nul
       return [undefined]
     }
   }, [ensName])
-  const registrarContract = useENSRegistrarContract(false)
-  const resolverAddressResult = useSingleCallResult( registrarContract, 'resolver', ensNodeArgument)
+  const registrarContract = useENSRegistrarContract(chainId, false)
+  const resolverAddressResult = useSingleCallResult(chainId, registrarContract, 'resolver', ensNodeArgument)
   const resolverAddress = resolverAddressResult.result?.[0]
   const resolverContract = useENSResolverContract(
     resolverAddress && isZero(resolverAddress) ? undefined : resolverAddress,
     false,
   )
-  const contenthash = useSingleCallResult( resolverContract, 'contenthash', ensNodeArgument)
+  const contenthash = useSingleCallResult(chainId, resolverContract, 'contenthash', ensNodeArgument)
 
   return {
     contenthash: contenthash.result?.[0] ?? null,

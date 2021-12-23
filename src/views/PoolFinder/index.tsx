@@ -39,7 +39,7 @@ export default function PoolFinder() {
   const [currency0, setCurrency0] = useState<Currency | null>(NETWORK_CCY[chainId])
   const [currency1, setCurrency1] = useState<Currency | null>(null)
 
-  const [pairState, pair] = usePair(currency0 ?? undefined, currency1 ?? undefined)
+  const [pairState, pair] = usePair(chainId, currency0 ?? undefined, currency1 ?? undefined)
   const addPair = usePairAdder()
   useEffect(() => {
     if (pair) {

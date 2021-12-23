@@ -4,9 +4,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { ChainId } from '@requiemswap/sdk'
 import { useWeb3React } from '@web3-react/core'
+// import { useReqtPrice } from 'hooks/usePrice';
 import isArchivedBondId from 'utils/bondHelpers'
 import { bondList as bondsDict } from 'config/constants/bonds'
-import priceHelperLpsConfig from 'config/constants/priceHelperLps'
 import { BondConfig } from 'config/constants/types'
 import { getContractForBond, getContractForReserve, getBondCalculatorContract } from 'utils/contractHelpers';
 import { getAddressForBond, getAddressForReserve } from 'utils/addressHelpers';
@@ -14,6 +14,7 @@ import { ethers, BigNumber, BigNumberish } from 'ethers'
 // import { useAppDispatch, useAppSelector } from 'state'
 import fetchBonds from './fetchBonds'
 import fetchBondsPrices from './fetchBondPrices'
+// import { usePriceReqtUsd } from './hooks';
 import {
   fetchBondUserEarnings,
   fetchBondUserAllowances,
@@ -21,7 +22,6 @@ import {
   fetchBondUserStakedBalances,
 } from './fetchBondUser'
 import { BondsState, Bond } from '../types'
-import { useReqtPrice } from 'hooks/usePrice';
 
 // import { chain } from 'lodash'
 
@@ -177,9 +177,9 @@ export interface IRedeemAllBondsAsyncThunk extends IBaseAsyncThunk {
 const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({ chainId, provider }: IBaseAsyncThunk) => {
   let marketPrice: number;
   try {
-    const price = useReqtPrice(chainId)
+    const price = 0 // usePriceReqtUsd(chainId).toString()
     // only get marketPrice from eth mainnet
-    marketPrice = price === '-' ? 0 : Number(price) // 41432// await getMarketPrice({ chainId, provider });
+    marketPrice = Number(price) // 41432// await getMarketPrice({ chainId, provider });
     // let mainnetProvider = (marketPrice = await getMarketPrice({ 1: NetworkID, provider }));
     marketPrice /= 10 ** 9;
   } catch (e) {

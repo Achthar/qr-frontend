@@ -1,7 +1,6 @@
 
 /* eslint-disable camelcase */
 import { useMemo } from 'react'
-import { useWeb3React } from '@web3-react/core'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import {
   getBep20Contract,
@@ -19,14 +18,18 @@ import {
   getLotteryV2Contract,
   getFarmAuctionContract,
 } from 'utils/contractHelpers'
+
+
 import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
 import { getAddressForBond, getMulticallAddress } from 'utils/addressHelpers'
-import { useNetworkState } from 'state/globalNetwork/hooks'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
 import { WRAPPED_NETWORK_TOKENS, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk'
+
+// abis
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../config/abi/ens-public-resolver.json'
 import ENS_ABI from '../config/abi/ens-registrar.json'
@@ -177,9 +180,9 @@ export function useWETHContract(withSignerIfPossible?: boolean): Contract | null
   return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WAVAX_ABI, withSignerIfPossible)
 }
 
-export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {
+export function useENSRegistrarContract(chainId:number, withSignerIfPossible?: boolean): Contract | null {
   console.log("useENSRegistrarContract")
-  const { chainId } = useNetworkState()
+  // const { chainId } = useNetworkState()
   let address: string | undefined
   if (chainId) {
     // eslint-disable-next-line default-case
@@ -208,8 +211,8 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
   return useContract(pairAddress, IUniswapV2PairABI, withSignerIfPossible)
 }
 
-export function useMulticallContract(): Contract | null {
-  const { chainId } = useNetworkState()
+export function useMulticallContract(chainId:number): Contract | null {
+  // const { chainId } = useNetworkState()
   console.log("useMulticallContract")
   return useContract(getMulticallAddress(chainId), multiCallAbi, false)
 }

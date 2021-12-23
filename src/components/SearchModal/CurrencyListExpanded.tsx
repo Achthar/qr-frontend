@@ -77,7 +77,7 @@ function CurrencyRowExpanded({
   style: CSSProperties
 }) {
   const key = currencyKey(chainId, currencyAmount.currency)
-  const selectedTokenList = useCombinedActiveList()
+  const selectedTokenList = useCombinedActiveList(chainId)
   const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currencyAmount.currency)
   const customAdded = useIsUserAddedToken(currencyAmount.currency)
   // const balance = useCurrencyBalance(chainId, account ?? undefined, currencyAmount.currency)
@@ -150,7 +150,7 @@ export default function CurrencyListExpanded({
 
   const inactiveTokens: {
     [address: string]: Token
-  } = useAllInactiveTokens()
+  } = useAllInactiveTokens(chainId)
 
   const Row = useCallback(
     ({ data, index, style }) => {

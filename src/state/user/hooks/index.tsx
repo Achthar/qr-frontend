@@ -222,7 +222,7 @@ export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
  */
 export function useTrackedTokenPairs(): [Token, Token][] {
   const { chainId } = useNetworkState()
-  const tokens = useAllTokens()
+  const tokens = useAllTokens(chainId)
 
   // pinned pairs
   const pinnedPairs = useMemo(() => (chainId ? PINNED_PAIRS[chainId] ?? [] : []), [chainId])
@@ -308,7 +308,7 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
  */
  export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][] {
   const { chainId } = useNetworkState()
-  const tokens = useAllTokens()
+  const tokens = useAllTokens(chainId)
 
   // pinned pairs
   const pinnedPairs = useMemo(() => (chainId ? PINNED_WEIGHTED_PAIRS[chainId] ?? [] : []), [chainId])

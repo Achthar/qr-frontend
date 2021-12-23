@@ -75,7 +75,7 @@ function CurrencyRow({
   style: CSSProperties
 }) {
   const key = currencyKey(chainId, currency)
-  const selectedTokenList = useCombinedActiveList()
+  const selectedTokenList = useCombinedActiveList(chainId)
   const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
   const balance = useCurrencyBalance(chainId, account ?? undefined, currency)
@@ -142,7 +142,7 @@ export default function CurrencyList({
 
   const inactiveTokens: {
     [address: string]: Token
-  } = useAllInactiveTokens()
+  } = useAllInactiveTokens(chainId)
 
   const Row = useCallback(
     ({ data, index, style }) => {

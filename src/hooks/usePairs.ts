@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import { Interface } from '@ethersproject/abi'
-import { useNetworkState } from 'state/globalNetwork/hooks'
+// import { useNetworkState } from 'state/globalNetwork/hooks'
 
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
@@ -20,8 +20,8 @@ export enum PairState {
   INVALID,
 }
 
-export function usePairs(currencies: [Currency | undefined, Currency | undefined][]): [PairState, Pair | null][] {
-  const { chainId } = useNetworkState()
+export function usePairs(chainId:number, currencies: [Currency | undefined, Currency | undefined][]): [PairState, Pair | null][] {
+  // const { chainId } = useNetworkState()
 
   const tokens = useMemo(
     () =>
@@ -42,7 +42,7 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
 
   // const results = useMultipleContractSingleData(pairAddresses, chainId === 56 ? PAIR_INTERFACE : PAIR_INTERFACE_POLYGON, 'getReserves')
 
-  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
+  const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves')
 
   return useMemo(() => {
     return results.map((result, i) => {
@@ -63,6 +63,6 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
   }, [results, tokens])
 }
 
-export function usePair(tokenA?: Currency, tokenB?: Currency): [PairState, Pair | null] {
-  return usePairs([[tokenA, tokenB]])[0]
+export function usePair(chainId:number, tokenA?: Currency, tokenB?: Currency): [PairState, Pair | null] {
+  return usePairs(chainId, [[tokenA, tokenB]])[0]
 }

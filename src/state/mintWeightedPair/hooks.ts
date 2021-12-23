@@ -121,6 +121,7 @@ export function useDerivedMintWeightedPairInfo(
     const usedFee = typedFee === '' ? fee : typedFee
     // pair
     const [weightedPairState, weightedPair] = useWeightedPair(
+        chainId,
         currencies[WeightedField.CURRENCY_A],
         currencies[WeightedField.CURRENCY_B],
         Number(weights[WeightedField.WEIGHT_A]),
