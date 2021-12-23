@@ -15,7 +15,14 @@ export const WETH = {
     18,
     'WBNB',
     'Wrapped BNB'
-  )
+  ),
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x70dC2c5F81BC18e115759398aF197e99f228f713',
+    18,
+    'WETH',
+    'Wrapped ETH',
+  ),
 }
 
 export const STABLE_POOL_LP = {
@@ -132,6 +139,19 @@ export const USDT: { [chainId: number]: Token } = {
   [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 6, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
+
+
+export const WBTC: { [chainId: number]: Token } = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289',
+    8,
+    'WBTC',
+    'Wrapped BTC',
+  ),
+
+}
+
 export const UST = new Token(
   ChainId.BSC_MAINNET,
   '0x23396cF899Ca06c4472205fC903bDB4de249D6fC',

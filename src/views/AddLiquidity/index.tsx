@@ -107,7 +107,7 @@ export default function AddLiquidity({
     poolTokenPercentage,
     error,
     fee: _fee
-  } = useDerivedMintWeightedPairInfo(currencyA ?? undefined, currencyB ?? undefined)
+  } = useDerivedMintWeightedPairInfo(weightA, weightB, fee, currencyA ?? undefined, currencyB ?? undefined)
 
   // use balances from the balance state instead of manually loading them
   const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()

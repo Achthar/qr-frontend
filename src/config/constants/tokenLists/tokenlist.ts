@@ -311,7 +311,23 @@ export const tokenList = {
                 "address": "0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.svg"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
+            },
+            {
+                "name": "Wrapped Bitcoin",
+                "symbol": "WBTC",
+                "address": "0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289",
+                "chainId": 43113,
+                "decimals": 8,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+            },
+            {
+                "name": "Wrapped Ethereum",
+                "symbol": "WETH",
+                "address": "0x70dC2c5F81BC18e115759398aF197e99f228f713",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
             },
         ]
     },
@@ -409,8 +425,16 @@ export const tokenList = {
                 "address": "0x4e8848da06E40E866b82f6b52417494936c9509b",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.svg"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
             },
+            {
+                "name": "Wrapped Bicoin",
+                "symbol": "WBTC",
+                "address": "0x4e8848da06E40E866b82f6b52417494936c9509b",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
+            }
         ]
     },
 }

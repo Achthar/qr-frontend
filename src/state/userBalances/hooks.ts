@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import ERC20_INTERFACE from 'config/abi/erc20'
 import { getAddress } from '@ethersproject/address'
-import { REQT } from 'config/constants/tokens'
+import { REQT, WBTC, WETH } from 'config/constants/tokens'
 import { Interface, FunctionFragment } from '@ethersproject/abi'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
@@ -66,7 +66,7 @@ export function useUserBalancesState(): AppState['userBalances'] {
 // }
 
 export function getMainTokens(chainId: number): Token[] {
-  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId]]
+  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
 }
 
 export function getStables(chainId: number): Token[] {
@@ -74,17 +74,29 @@ export function getStables(chainId: number): Token[] {
 }
 
 export function getTokenAmounts(chainId: number, balances: { [address: string]: string }) {
-  return [...[WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId]], ...STABLECOINS[chainId]].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
+  return [...[
+    WRAPPED_NETWORK_TOKENS[chainId],
+    REQT[chainId],
+    WBTC[chainId],
+    WETH[chainId]
+  ],
+  ...STABLECOINS[chainId]
+  ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 
 }
 
 export function getStableAmounts(chainId: number, balances: { [address: string]: string }) {
-  return STABLECOINS[chainId].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
+  return STABLECOINS[chainId].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 
 }
 
 export function getMainAmounts(chainId: number, balances: { [address: string]: string }) {
-  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId]].map(token => new TokenAmount(token, balances[token.address] ?? '0'))
+  return [
+    WRAPPED_NETWORK_TOKENS[chainId],
+    REQT[chainId],
+    WBTC[chainId],
+    WETH[chainId]
+  ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 
 }
 

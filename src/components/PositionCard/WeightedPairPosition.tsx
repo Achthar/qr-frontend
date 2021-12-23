@@ -250,7 +250,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
                 //   onSetFee(weightedPair?.fee0.toString())
                 //   onSetWeightA(weightedPair?.weight0.toString())
                 // }}
-                to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}
+                to={`/add/${weightedPair.weight0.toString()}-${currencyId(chainId, currency0)}/${weightedPair.weight1.toString()}-${currencyId(chainId, currency1)}/${weightedPair.fee0.toString()}`}
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
                 width="100%"

@@ -15,8 +15,8 @@ const initialState: MintWeightedPairState = {
   typedValue: '',
   otherTypedValue: '',
   independentWeightField: WeightedField.WEIGHT_A,
-  typedWeight: '50',
-  typedFee: '30'
+  typedWeight: '',
+  typedFee: ''
 }
 
 export default createReducer<MintWeightedPairState>(initialState, (builder) =>

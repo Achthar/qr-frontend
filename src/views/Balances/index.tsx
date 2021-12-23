@@ -41,7 +41,14 @@ export default function Balances() {
   const { account, chainId } = useActiveWeb3React()
 
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
-  const [allBalances, fetchingAllBalances] = useTokenBalancesWithLoadingIndicator(account, [...getMainTokens(chainId), ...getStables(chainId)])
+  const [
+    allBalances,
+    fetchingAllBalances
+  ] = useTokenBalancesWithLoadingIndicator(
+    account,
+    [...getMainTokens(chainId), ...getStables(chainId)]
+  )
+
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(

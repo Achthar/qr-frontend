@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount,  JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -69,6 +69,9 @@ export function useMintWeightedPairActionHandlers(noLiquidity: boolean | undefin
 }
 
 export function useDerivedMintWeightedPairInfo(
+    weightA: string | undefined,
+    weightB: string | undefined,
+    fee: string | undefined,
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
 ): {
@@ -103,20 +106,25 @@ export function useDerivedMintWeightedPairInfo(
     )
 
     const dependentWeight: number | undefined = useMemo(() => {
-        return 100 - Number(typedWeight)
-    }, [typedWeight])
+        return 100 - Number(typedWeight === '' ? weightA : typedWeight)
+    }, [typedWeight, weightA])
 
-    const weights = {
-        [WeightedField.WEIGHT_A]: independentWeightField === WeightedField.WEIGHT_A ? typedWeight : String(dependentWeight),
-        [WeightedField.WEIGHT_B]: independentWeightField === WeightedField.WEIGHT_A ? String(dependentWeight) : typedWeight,
-    }
+    const weights = useMemo(() => {
+        return {
+            [WeightedField.WEIGHT_A]: independentWeightField === WeightedField.WEIGHT_A ? typedWeight === '' ? weightA : typedWeight : String(dependentWeight),
+            [WeightedField.WEIGHT_B]: independentWeightField === WeightedField.WEIGHT_A ? String(dependentWeight) : typedWeight === '' ? weightA : typedWeight,
+        }
+    },
+        [independentWeightField, typedWeight, dependentWeight, weightA]
+    )
 
+    const usedFee = typedFee === '' ? fee : typedFee
     // pair
     const [weightedPairState, weightedPair] = useWeightedPair(
         currencies[WeightedField.CURRENCY_A],
         currencies[WeightedField.CURRENCY_B],
         Number(weights[WeightedField.WEIGHT_A]),
-        Number(typedFee)
+        Number(usedFee)
     )
 
     const totalSupply = useTotalSupply(weightedPair?.liquidityToken)
@@ -237,6 +245,6 @@ export function useDerivedMintWeightedPairInfo(
         liquidityMinted,
         poolTokenPercentage,
         error,
-        fee: typedFee
+        fee: usedFee
     }
 }
