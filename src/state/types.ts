@@ -95,6 +95,7 @@ export interface BondsState {
   data: Bond[]
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
+  status?: string
 }
 
 

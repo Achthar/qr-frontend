@@ -77,9 +77,8 @@ export function getTokenAmounts(chainId: number, balances: { [address: string]: 
   return [...[
     WRAPPED_NETWORK_TOKENS[chainId],
     REQT[chainId],
-    WBTC[chainId],
-    WETH[chainId]
   ],
+  ...[WBTC[chainId], WETH[chainId]],
   ...STABLECOINS[chainId]
   ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 

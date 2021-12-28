@@ -215,7 +215,12 @@ const MAX_HOPS = 4
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
-export function useTradeV3ExactIn(stablePoolState: StablePoolState, stablePool: StablePool, currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): TradeV4 | null {
+export function useTradeV3ExactIn(
+  stablePoolState: StablePoolState,
+  stablePool: StablePool,
+  currencyAmountIn?: CurrencyAmount,
+  currencyOut?: Currency
+): TradeV4 | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()
   const regularPairs = useAllCommonWeightedPairs(currencyAmountIn?.currency, currencyOut) as Pool[]
@@ -228,23 +233,32 @@ export function useTradeV3ExactIn(stablePoolState: StablePoolState, stablePool: 
 
     if (currencyAmountIn && currencyOut && allowedPairs.length > 0 && stablePool !== null) {
       if (singleHopOnly) {
-        return (
-          TradeV4.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: 1, maxNumResults: 1 })[0] ??
-          null
-        )
+        try {
+          return (
+            TradeV4.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: 1, maxNumResults: 1 })[0] ??
+            null
+          )
+        }
+        catch {
+          return null
+        }
       }
       // search through trades with varying hops, find best trade out of them
       let bestTradeSoFar: TradeV4 | null = null
-      for (let i = 1; i <= MAX_HOPS; i++) {
-        const currentTrade: TradeV4 | null =
-          TradeV4.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: i, maxNumResults: 1 })[0] ??
-          null
-        // if current trade is best yet, save it
-        if (isTradeV3Better(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
-          bestTradeSoFar = currentTrade
+      try {
+        for (let i = 1; i <= MAX_HOPS; i++) {
+          const currentTrade: TradeV4 | null =
+            TradeV4.bestTradeExactIn(stablePool, allowedPairs, currencyAmountIn, currencyOut, { maxHops: i, maxNumResults: 1 })[0] ??
+            null
+          // if current trade is best yet, save it
+          if (isTradeV3Better(bestTradeSoFar, currentTrade, BETTER_TRADE_LESS_HOPS_THRESHOLD)) {
+            bestTradeSoFar = currentTrade
+          }
         }
+        return bestTradeSoFar
+      } catch {
+        return null
       }
-      return bestTradeSoFar
     }
 
     return null
@@ -254,7 +268,12 @@ export function useTradeV3ExactIn(stablePoolState: StablePoolState, stablePool: 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
-export function useTradeV3ExactOut(stablePoolState: StablePoolState, stablePool: StablePool, currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): TradeV4 | null {
+export function useTradeV3ExactOut(
+  stablePoolState: StablePoolState,
+  stablePool: StablePool,
+  currencyIn?: Currency,
+  currencyAmountOut?: CurrencyAmount
+): TradeV4 | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()
   const regularPairs = useAllCommonWeightedPairs(currencyIn, currencyAmountOut?.currency) as Pool[]

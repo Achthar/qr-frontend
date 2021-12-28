@@ -17,6 +17,7 @@ import { getBondApr } from 'utils/apr'
 import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
 import { latinise } from 'utils/latinise'
+import useDebounce from 'hooks/useDebounce'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
@@ -33,7 +34,8 @@ import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
 
 import fetchPublicBondData from '../../state/bonds/fetchPublicBondData'
-import { fetchBondsPublicDataAsync } from '../../state/bonds/index'
+import { calcBondDetails, fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
+
 
 
 
@@ -129,7 +131,7 @@ const Bonds: React.FC = () => {
 
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
-  const { account, chainId } = useWeb3React()
+  const { account, chainId, library } = useWeb3React()
   const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
@@ -149,7 +151,7 @@ const Bonds: React.FC = () => {
   // const [stakedOnly, setStakedOnly] = useUserBondStakedOnly(isActive)
 
   const activeBonds = bondsLP // .filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
-  const inactiveBonds = bondsLP.filter((bond) => bond.bondId !== 0  && !isArchivedPid(bond.bondId))
+  const inactiveBonds = bondsLP.filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
   const archivedBonds = bondsLP.filter((bond) => isArchivedPid(bond.bondId))
 
   // const stakedOnlyBonds = activeBonds.filter(
@@ -167,7 +169,7 @@ const Bonds: React.FC = () => {
   const bondsList = useCallback(
     (bondsToDisplay: Bond[]): BondWithStakedValue[] => {
       let bondsToDisplayWithAPR: BondWithStakedValue[] = bondsToDisplay.map((bond) => {
-        if (!bond.lpTotalInQuoteToken ) {
+        if (!bond.lpTotalInQuoteToken) {
           return bond
         }
         const totalLiquidity = new BigNumber(123123) // new BigNumber(bond.lpTotalInQuoteToken).times(bond.quoteToken.busdPrice)
@@ -225,13 +227,13 @@ const Bonds: React.FC = () => {
     }
 
     if (isActive) {
-      chosenBonds =bondsList(activeBonds)
+      chosenBonds = bondsList(activeBonds)
     }
     if (isInactive) {
-      chosenBonds =  bondsList(inactiveBonds)
+      chosenBonds = bondsList(inactiveBonds)
     }
     if (isArchived) {
-      chosenBonds =  bondsList(archivedBonds)
+      chosenBonds = bondsList(archivedBonds)
     }
 
     return sortBonds(chosenBonds).slice(0, numberOfBondsVisible)
@@ -250,10 +252,17 @@ const Bonds: React.FC = () => {
   ]) // end chosenBondsMemoized
 
   const dispatch = useAppDispatch()
-  
-  // workaround useEffect in hooks not working
-  dispatch(fetchBondsPublicDataAsync(bondsLP.map(bond=>bond.bondId)))
 
+  // workaround useEffect in hooks not working
+  useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
+
+  console.log("calcBondDetails")
+  const calcDebounce = useDebounce('322', 1000)
+  useEffect(() => { dispatch(calcBondDetails({ bond: bondsLP[0], value: '322', provider: library, chainId })) },
+    [calcDebounce, dispatch, bondsLP, chainId, library])
+
+  const bs = fetchPublicBondData(chainId, bondsLP[0])
+  console.log("BDATA", bs)
   chosenBondsLength.current = chosenBondsMemoized.length
 
   useEffect(() => {
@@ -281,8 +290,8 @@ const Bonds: React.FC = () => {
 
   const rowData = chosenBondsMemoized.map((bond) => {
     // const { token, quoteToken } = bond
-    const  token = tokens.reqt
-    const quoteToken  = tokens.tusd
+    const token = tokens.reqt
+    const quoteToken = tokens.tusd
 
     const tokenAddress = token.address
     const quoteTokenAddress = quoteToken.address
@@ -318,7 +327,7 @@ const Bonds: React.FC = () => {
       },
       details: bond,
       price,
-      roi:{
+      roi: {
         value: '213',
         bondId: 1,
         lpLabel: 'string',
@@ -328,7 +337,7 @@ const Bonds: React.FC = () => {
       },
       purchased
     }
-    
+
     return row
   })
 

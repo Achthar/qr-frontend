@@ -8,7 +8,7 @@ import multicall from 'utils/multicall'
 import { SerializedBigNumber } from 'config/constants/types'
 import { Bond } from 'state/types'
 import { ethers } from 'ethers'
-
+import { getContractForBond } from 'utils/contractHelpers'
 
 export type PublicBondData = {
   bond: string
@@ -20,19 +20,22 @@ export type PublicBondData = {
 
 const fetchPublicBondData = async (chainId: number, bond: Bond): Promise<PublicBondData> => {
   const { bondToken } = bond
+
+  console.log("BMULTICALL", getAddressForBond(chainId))
   const calls = [
     {
       address: getAddressForBond(chainId),
-      name: 'getBondData',
-      params: []
+      name: 'viewBondData'
     }
   ]
+  const bondContract = getContractForBond(chainId)
 
   const [
     _bondPrice_, // uint256 _bondPrice_,
     _bondPriceInUsd_, // uint256 _bondPriceInUsd_,
     _currentDebt_ // uint256 _currentDebt_
-  ] = await multicall(chainId, [new ethers.utils.Interface(bondABI)], calls)
+  ] = await  multicall(chainId, bondABI, calls)
+  // await bondContract.viewBondData() //  multicall(chainId, bondABI, calls)
   // const lpAddress = getAddress(chainId, lpAddresses)
   // const calls = [
   //   // Balance of token in the LP contract
@@ -106,15 +109,15 @@ const fetchPublicBondData = async (chainId: number, bond: Bond): Promise<PublicB
   // const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
   // const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO
   console.log("FETCH BOND",
-    _bondPrice_.toString(),
-    _bondPriceInUsd_.toString(),
-    _currentDebt_.toString())
+    _bondPrice_?.toString(),
+    _bondPriceInUsd_?.toString(),
+    _currentDebt_?.toString())
 
   return {
     bond: 'REQT',
-    price: _bondPrice_.toString(),
-    priceUsd: _bondPriceInUsd_.toString(),
-    currentDebt: _currentDebt_.toString(),
+    price: _bondPrice_?.toString(),
+    priceUsd: _bondPriceInUsd_?.toString(),
+    currentDebt: _currentDebt_?.toString(),
     roi: 0.01243
   }
 }

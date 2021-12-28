@@ -10,7 +10,7 @@ interface TradeV3PriceProps {
 }
 
 export default function TradePrice({ price, showInverted, setShowInverted }: TradeV3PriceProps) {
-  const formattedPrice = showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6)
+  const formattedPrice = !price.raw.equalTo('0') && (showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6))
 
   const show = Boolean(price?.baseCurrency && price?.quoteCurrency)
   const label = showInverted

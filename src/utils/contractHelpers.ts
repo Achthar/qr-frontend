@@ -165,7 +165,7 @@ export const getStableLpContract = (chainId: number, signer?: ethers.Signer | et
 
 export const getContractForReserve = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   const bondAddress = getAddressForReserve(chainId) || "";
-  const ABI = ''
+  const ABI = new Interface(IERC20)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 

@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { BIG_ONE, BIG_ZERO } from 'utils/bigNumber'
 import { Bond } from 'state/types'
 import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import {PublicBondData} from './fetchPublicBondData'
+import { PublicBondData } from './fetchPublicBondData'
 
 
 const getBondBaseTokenPrice = (chainId: number, bond: PublicBondData, quoteTokenBond: Bond, bnbPriceBusd: BigNumber): BigNumber => {
@@ -44,7 +44,7 @@ const getBondBaseTokenPrice = (chainId: number, bond: PublicBondData, quoteToken
   return BIG_ZERO
 }
 
-const getBondQuoteTokenPrice = (chainId:number, bond: Bond, quoteTokenBond: Bond, networkCCYPriceBusd: BigNumber): BigNumber => {
+const getBondQuoteTokenPrice = (chainId: number, bond: Bond, quoteTokenBond: Bond, networkCCYPriceBusd: BigNumber): BigNumber => {
   // if (bond.quoteToken.symbol === 'BUSD') {
   //   return BIG_ONE
   // }
@@ -68,9 +68,9 @@ const getBondQuoteTokenPrice = (chainId:number, bond: Bond, quoteTokenBond: Bond
   return BIG_ZERO
 }
 
-const fetchBondsPrices = async (chainId: number, bonds) => {
-  // const networkCCYBusdBond = bonds.find((bond: Bond) => bond.pid === 252)
-  // const networkCCYPriceBusd = networkCCYBusdBond.tokenPriceVsQuote ? BIG_ONE.div(networkCCYBusdBond.tokenPriceVsQuote) : BIG_ZERO
+const fetchBondsPrices = async (chainId: number, bonds: Bond[]) => {
+   const networkCCYBusdBond = bonds.find((bond: Bond) => bond.bondId === 0)
+   const networkCCYPriceBusd = new BigNumber(0) // networkCCYBusdBond.tokenPriceVsQuote ? BIG_ONE.div(networkCCYBusdBond.tokenPriceVsQuote) : BIG_ZERO
 
   // const bondsWithPrices = bonds.map((bond) => {
   //   const quoteTokenBond = getBondFromTokenSymbol(bonds, bond.quoteToken.symbol)
@@ -81,7 +81,7 @@ const fetchBondsPrices = async (chainId: number, bonds) => {
   //   return { ...bond, token, quoteToken }
   // })
 
-  return null; // bondsWithPrices
+  return null // bondsWithPrices
 }
 
 export default fetchBondsPrices

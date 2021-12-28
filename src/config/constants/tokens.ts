@@ -6,19 +6,26 @@ export const WETH = {
     ChainId.BSC_MAINNET,
     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     18,
-    'WBNB',
-    'Wrapped BNB'
+    'WETH',
+    'Wrapped ETH'
   ),
   [ChainId.BSC_TESTNET]: new Token(
     ChainId.BSC_TESTNET,
     '0xaE8E19eFB41e7b96815649A6a60785e1fbA84C1e',
     18,
-    'WBNB',
-    'Wrapped BNB'
+    'WETH',
+    'Wrapped ETH'
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
     '0x70dC2c5F81BC18e115759398aF197e99f228f713',
+    18,
+    'WETH',
+    'Wrapped ETH',
+  ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b',
     18,
     'WETH',
     'Wrapped ETH',
@@ -51,6 +58,13 @@ export const REQT: { [chainId: number]: Token } = {
     18,
     'REQT',
     'Requiem Token',
+  ), // not deployed yet, but dummy needed
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b',
+    18,
+    'WETH',
+    'Wrapped ETH',
   ),
 }
 
@@ -145,6 +159,13 @@ export const WBTC: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
     '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289',
+    8,
+    'WBTC',
+    'Wrapped BTC',
+  ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0xE88Cae7399bd545b9eD47aba7ec158e29e480EDb',
     8,
     'WBTC',
     'Wrapped BTC',

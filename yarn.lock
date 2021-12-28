@@ -2447,7 +2447,7 @@
 
 "@requiemswap/sdk@https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master":
   version "2.4.0"
-  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#3898b207e06306e61343ab19bb8ab856e1c053e6"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#1d270eb879ac1c796fe69886abddea70d0d0839b"
   dependencies:
     "@pancakeswap-libs/pancake-swap-core" "^0.1.0"
     big.js "^5.2.2"
@@ -3232,9 +3232,9 @@
     "@types/babel__traverse" "*"
 
 "@types/babel__generator@*":
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/@types/babel__generator/-/babel__generator-7.6.3.tgz#f456b4b2ce79137f768aa130d2423d2f0ccfaba5"
-  integrity sha512-/GWCmzJWqV7diQW54smJZzWbSFf4QYtF71WCKhcx6Ru/tFyQIY2eiiITcCAeuPbNSvT9YCGkVMqqvSk2Z0mXiA==
+  version "7.6.4"
+  resolved "https://registry.yarnpkg.com/@types/babel__generator/-/babel__generator-7.6.4.tgz#1f20ce4c5b1990b37900b63f050182d28c2439b7"
+  integrity sha512-tFkciB9j2K755yrTALxD44McOrk+gfpIpvC3sxHjRawj6PfnQxrse4Clq5y/Rq+G3mrBurMax/lG8Qn2t9mSsg==
   dependencies:
     "@babel/types" "^7.0.0"
 
@@ -3553,9 +3553,9 @@
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
 
 "@types/express-serve-static-core@^4.17.18", "@types/express-serve-static-core@^4.17.21":
-  version "4.17.26"
-  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.26.tgz#5d9a8eeecb9d5f9d7fc1d85f541512a84638ae88"
-  integrity sha512-zeu3tpouA043RHxW0gzRxwCHchMgftE8GArRsvYT0ByDMbn19olQHx5jLue0LxWY6iYtXb7rXmuVtSkhy9YZvQ==
+  version "4.17.27"
+  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.27.tgz#7a776191e47295d2a05962ecbb3a4ce97e38b401"
+  integrity sha512-e/sVallzUTPdyOTiqi8O8pMdBBphscvI6E4JYaKlja4Lm+zh7UFSSdW5VMkRbhDtmrONqOUHOXRguPsDckzxNA==
   dependencies:
     "@types/node" "*"
     "@types/qs" "*"
@@ -3639,9 +3639,9 @@
   integrity sha512-e+2rjEwK6KDaNOm5Aa9wNGgyS9oSZU/4pfSMMPYNOfjvFI0WVXm29+ITRFr6aKDvvKo7uU1jV68MW4ScsfDi7Q==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.3.tgz#4ba8ddb720221f432e443bd5f9117fd22cfd4762"
-  integrity sha512-sz7iLqvVUg1gIedBOvlkxPlc8/uVzyS5OwGz1cKjXzkl3FpL3al0crU8YGU1WoHkxn0Wxbw5tyi6hvzJKNzFsw==
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
+  integrity sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==
 
 "@types/istanbul-lib-report@*":
   version "3.0.0"
@@ -3834,9 +3834,9 @@
     "@types/react" "*"
 
 "@types/react-redux@^7.1.16", "@types/react-redux@^7.1.20":
-  version "7.1.20"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.20.tgz#42f0e61ababb621e12c66c96dda94c58423bd7df"
-  integrity sha512-q42es4c8iIeTgcnB+yJgRTTzftv3eYYvCZOh1Ckn2eX/3o5TdsQYKUWpLoLuGlcY/p+VAhV9IOEZJcWk/vfkXw==
+  version "7.1.21"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.21.tgz#f32bbaf7cbc4b93f51e10d340aa54035c084b186"
+  integrity sha512-bLdglUiBSQNzWVVbmNPKGYYjrzp3/YDPwfOH3nLEz99I4awLlaRAPWjo6bZ2POpxztFWtDDXIPxBLVykXqBt+w==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.0"
     "@types/react" "*"
@@ -3926,18 +3926,18 @@
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
 "@types/styled-components@^5.1.7":
-  version "5.1.18"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.18.tgz#1c361130f76a52f1cb4851c2a32aa328267e5b78"
-  integrity sha512-xPTYmWP7Mxk5TAD3pYsqjwA9G5fAI8e/S51QUJEl7EQD1siKCdiYXIWiH2lzoHRl+QqbQCJMcGv3YTF3OmyPdQ==
+  version "5.1.19"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.19.tgz#d76f431ee49d0a222ab4e758dcd540b01987652d"
+  integrity sha512-hNj14Oamk7Jhb/fMMQG7TUkd3e8uMMgxsCTH+ueJNGdFo/PuhlGDQTPChqyilpZP0WttgBHkc2YyT5UG+yc6Yw==
   dependencies:
     "@types/hoist-non-react-statics" "*"
     "@types/react" "*"
     csstype "^3.0.2"
 
 "@types/styled-system@^5.1.10":
-  version "5.1.13"
-  resolved "https://registry.yarnpkg.com/@types/styled-system/-/styled-system-5.1.13.tgz#9ad667534d3bd75720dd7778c94c783449cb5c14"
-  integrity sha512-RtpV6zXnnMQNcxKjC06BUM4MUER5o9uZ6b7xAc2OzhWxSsmQ3jXyW8ohuXdEJRKypEe0EqAzbSGx2Im0NXfdKA==
+  version "5.1.14"
+  resolved "https://registry.yarnpkg.com/@types/styled-system/-/styled-system-5.1.14.tgz#5ab9f7ce4ae8ee9c4d20219988a09ad9ee381b22"
+  integrity sha512-yJL0KWju8VNhKIwELAe6oLsvy03Y1ZBwfhncH7HRdj7YVR09l3wOBBpyBKh8QkFAfLQLXGQBSbfhtVgd7y9BKg==
   dependencies:
     csstype "^3.0.2"
 
@@ -8400,9 +8400,9 @@ electron-fetch@^1.7.2:
     encoding "^0.1.13"
 
 electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.17:
-  version "1.4.27"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.27.tgz#bfc6e798d8a56a17d658312f4b7ae1a7ca87724f"
-  integrity sha512-uZ95szi3zUbzRDx1zx/xnsCG+2xgZyy57pDOeaeO4r8zx5Dqe8Jv1ti8cunvBwJHVI5LzPuw8umKwZb3WKYxSQ==
+  version "1.4.28"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.28.tgz#fef0e92e281df6d568f482d8d53c34ca5374de48"
+  integrity sha512-Gzbf0wUtKfyPaqf0Plz+Ctinf9eQIzxEqBHwSvbGfeOm9GMNdLxyu1dNiCUfM+x6r4BE0xUJNh3Nmg9gfAtTmg==
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -12043,9 +12043,9 @@ istanbul-lib-source-maps@^4.0.0:
     source-map "^0.6.1"
 
 istanbul-reports@^3.0.2:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-3.1.1.tgz#7085857f17d2441053c6ce5c3b8fdf6882289397"
-  integrity sha512-q1kvhAXWSsXfMjCdNHNPKZZv94OlspKnoGv+R9RGbnqOOQ0VbNfLFgQDVgi7hHenKsndGq3/o0OBdzDXthWcNw==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-3.1.2.tgz#b80e13cbab0120e1c367ebaa099862361aed5ead"
+  integrity sha512-0gHxuT1NNC0aEIL1zbJ+MTgPbbHhU77eJPuU35WKA7TgXiSNlCAx4PENoMrH0Or6M2H80TaZcWKhM0IK6V8gRw==
   dependencies:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
@@ -20763,9 +20763,9 @@ walker@^1.0.7, walker@~1.0.5:
     makeerror "1.0.12"
 
 walletlink@^2.1.10:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.3.0.tgz#1b7ac5da78e5fa17f35dc880674cf7f6c493d2a5"
-  integrity sha512-CXPYFnWFN/2Xgf62LBhApAiqQIazH7MeRw+Y/TB6oKpdBLQSLzL6k4sqZ6VBKb7wU5HDk+ErXY0QZ9OIFB+Ifw==
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.4.0.tgz#9cfc3d038b2c40b87433fb1719dec8551aef81c1"
+  integrity sha512-JAYRdbmqEqh+kTFlhEezyGwcn3e8WiDyORXWB8odnvP9+leKIsjO3RW8VoZKR86+m4TY9OsUMcx4w+B7mYxg6g==
   dependencies:
     "@metamask/safe-event-emitter" "2.0.0"
     bind-decorator "^1.0.11"

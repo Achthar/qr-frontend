@@ -39,7 +39,7 @@ export const BodyWrapper = styled(Card)`
 
 export default function Balances() {
   const { account, chainId } = useActiveWeb3React()
-
+console.log("CID", chainId)
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [
     allBalances,

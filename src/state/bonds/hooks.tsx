@@ -23,7 +23,7 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
     const bondsToFetch = includeArchive ? bondsDict[chainId ?? 43113] : nonArchivedBonds(chainId ?? 43113)
     console.log(bondsToFetch)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
-    dispatch(fetchBondsPublicDataAsync(bondIds))
+    dispatch(fetchBondsPublicDataAsync())
   }, [includeArchive, dispatch, slowRefresh, chainId])
 }
 
@@ -36,7 +36,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     const bondsToFetch = includeArchive ? bondsDict[chainId] : nonArchivedBonds(chainId)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
 
-    dispatch(fetchBondsPublicDataAsync(bondIds))
+    dispatch(fetchBondsPublicDataAsync())
 
     if (account) {
       dispatch(fetchBondUserDataAsync({ account, bondIds }))
@@ -52,7 +52,7 @@ export const usePollCoreBondData = () => {
   const { fastRefresh } = useRefresh()
 
   useEffect(() => {
-    dispatch(fetchBondsPublicDataAsync([0]))
+    dispatch(fetchBondsPublicDataAsync())
   }, [dispatch, fastRefresh])
 }
 
