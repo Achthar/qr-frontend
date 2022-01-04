@@ -31,11 +31,12 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
     iconSelected: liquidityIconDark,
     href: '/liquidity',
   },
-  // {
-  //   label: t('Farms'),
-  //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/farms.svg',
-  //   href: '/farms',
-  // },
+  {
+    label: t('Farms'),
+    icon: exchangeIconLight,
+    iconSelected: exchangeIconDark,
+    href: '/farms',
+  },
   // {
   //   label: t('Pools'),
   //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
