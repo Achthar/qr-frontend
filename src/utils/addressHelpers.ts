@@ -22,7 +22,7 @@ export const getMulticallAddress = (chainId: number) => {
   return getAddress(chainId, addresses.multiCall)
 }
 export const getWbnbAddress = (chainId: number) => {
-  return getAddress(chainId, tokens.wbnb.address)
+  return getAddress(chainId, tokens.wavax.address)
 }
 export const getLotteryV2Address = (chainId: number) => {
   return getAddress(chainId, addresses.lotteryV2)
@@ -86,6 +86,10 @@ export const getAddressForBond = (chainId: number) => {
 
 export const getAddressForReserve = (chainId: number) => {
   return getAddress(chainId, addresses.reserve)
+}
+
+export const getAddressForLpReserve = (chainId: number) => {
+  return getAddress(chainId, addresses.reserveLp)
 }
 
 export const getAddressForBondingCalculator = (chainId: number) => {

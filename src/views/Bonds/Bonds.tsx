@@ -7,15 +7,17 @@ import { ChainId } from '@requiemswap/sdk'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
 import Page from 'components/Layout/Page'
-import tokens from 'config/constants/tokens'
+import tokens, { getSerializedToken } from 'config/constants/tokens'
 import { useBonds, usePollBondsWithUserData, usePriceReqtUsd, usePollBondsPublicData } from 'state/bonds/hooks'
 import usePersistState from 'hooks/usePersistState'
 import { Bond } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { getBondApr } from 'utils/apr'
-import { orderBy } from 'lodash'
+import { chain, orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
+
+import { serializeToken } from 'state/user/hooks/helpers'
 import { latinise } from 'utils/latinise'
 import useDebounce from 'hooks/useDebounce'
 import PageHeader from 'components/PageHeader'
@@ -25,7 +27,7 @@ import Loading from 'components/Loading'
 // import { BigNumber } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRefresh from 'hooks/useRefresh'
-
+import { calcSingleBondDetails } from 'state/bonds/calcSingleBondDetails'
 import BondCard, { BondWithStakedValue } from './components/BondCard/BondCard'
 import Table from './components/BondTable/BondTable'
 import BondTabButtons from './components/BondTabButtons'
@@ -34,7 +36,7 @@ import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
 
 import fetchPublicBondData from '../../state/bonds/fetchPublicBondData'
-import { calcBondDetails, fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
+import { fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
 
 
 
@@ -256,13 +258,20 @@ const Bonds: React.FC = () => {
   // workaround useEffect in hooks not working
   useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
 
-  console.log("calcBondDetails")
-  const calcDebounce = useDebounce('322', 1000)
-  useEffect(() => { dispatch(calcBondDetails({ bond: bondsLP[0], value: '322', provider: library, chainId })) },
-    [calcDebounce, dispatch, bondsLP, chainId, library])
+  const calcDebounce = useDebounce('1', 10)
+  useEffect(() => {
+    bondsLP.map(
+      (bond) => dispatch(calcSingleBondDetails({ bond, value: '', provider: library, chainId }))
+    )
+  },
+    [calcDebounce, dispatch, bondsLP, chainId, library]
+  )
 
-  const bs = fetchPublicBondData(chainId, bondsLP[0])
-  console.log("BDATA", bs)
+  const { bondData } = useBonds()
+  console.log("BOND DATA", bondData)
+
+  // const bs = fetchPublicBondData(chainId, bondsLP[0])
+  // console.log("BDATA", bs)
   chosenBondsLength.current = chosenBondsMemoized.length
 
   useEffect(() => {
@@ -288,18 +297,19 @@ const Bonds: React.FC = () => {
     }
   }, [chosenBondsMemoized, observerIsSet])
 
-  const rowData = chosenBondsMemoized.map((bond) => {
+  const rowData = Object.values(bondData).map((bond) => {
     // const { token, quoteToken } = bond
-    const token = tokens.reqt
-    const quoteToken = tokens.tusd
+    const token = getSerializedToken(chainId, tokens.reqt)
+    const quoteToken = getSerializedToken(chainId, tokens.tusd)
 
     const tokenAddress = token.address
     const quoteTokenAddress = quoteToken.address
 
     const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
-    const price = 213.3
+    console.log("PRIX", bond.bondPrice)
+    const price = Number(bond.bondPrice)
     const roi = 32.213
-    const purchased = 7002000
+    const purchased = bond.purchased // 7002000
 
     const row: RowProps = {
       // apr: {
@@ -436,16 +446,16 @@ const Bonds: React.FC = () => {
         </NavLink>
       </PageHeader> */}
       <Page>
-        {/* <ControlContainer>
+        <ControlContainer>
           <ViewControls>
             <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
-            <ToggleWrapper>
+            {/* <ToggleWrapper>
               <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
               <Text> {t('Staked only')}</Text>
             </ToggleWrapper>
-            <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} />
-          </ViewControls> 
-           <FilterContainer>
+            <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
+          </ViewControls>
+          {/* <FilterContainer>
             <LabelWrapper>
               <Text textTransform="uppercase">{t('Sort by')}</Text>
               <Select
@@ -478,8 +488,8 @@ const Bonds: React.FC = () => {
               <Text textTransform="uppercase">{t('Search')}</Text>
               <SearchInput onChange={handleChangeQuery} placeholder="Search Bonds" />
             </LabelWrapper>
-          </FilterContainer>
-        </ControlContainer> */}
+          </FilterContainer> */}
+        </ControlContainer>
         {renderContent()}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

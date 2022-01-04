@@ -1,6 +1,6 @@
 import { Token, ChainId } from '@requiemswap/sdk'
+import { SerializedToken } from 'config/constants/types'
 import { parseUnits } from 'ethers/lib/utils'
-import { SerializedToken } from '../actions'
 
 export function serializeToken(token: Token): SerializedToken {
   return {

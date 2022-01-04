@@ -4,14 +4,15 @@ import { useBondUser } from 'state/bonds/hooks'
 import { useTranslation } from 'contexts/Localization'
 import { Text } from '@requiemswap/uikit'
 import { getBalanceNumber } from 'utils/formatBalance'
-import { Token } from 'config/constants/types'
+import { SerializedToken } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
+import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 
 export interface BondProps {
   label: string
   bondId: number
-  token: Token
-  quoteToken: Token
+  token: SerializedToken
+  quoteToken: SerializedToken
 }
 
 const Container = styled.div`
@@ -56,8 +57,8 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
         <TokenPairImage
           chainId={56}
           variant="inverted"
-          primaryToken={token}
-          secondaryToken={quoteToken}
+          primaryToken={deserializeToken(token)}
+          secondaryToken={deserializeToken(quoteToken)}
           width={40}
           height={40}
         />

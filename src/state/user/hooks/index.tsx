@@ -22,7 +22,8 @@ import {
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
   updateGasPrice,
-  SerializedWeightedPair
+  SerializedWeightedPair,
+  ViewMode
 } from '../actions'
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 import { ChainId } from '../../../config/index'
@@ -124,6 +125,24 @@ export function useUserFarmStakedOnly(isActive: boolean): [boolean, (stakedOnly:
     setUserFarmStakedOnly,
   ]
 }
+
+
+// export function useUserFarmsViewMode(): [ViewMode, (viewMode: ViewMode) => void] {
+//   const dispatch = useDispatch<AppDispatch>()
+//   const userFarmsViewMode = useSelector<AppState, AppState['user']['userFarmsViewMode']>((state) => {
+//     return state.user.userFarmsViewMode
+//   })
+
+//   const setUserFarmsViewMode = useCallback(
+//     (viewMode: ViewMode) => {
+//       dispatch(updateUserFarmsViewMode({ userFarmsViewMode: viewMode }))
+//     },
+//     [dispatch],
+//   )
+
+//   return [userFarmsViewMode, setUserFarmsViewMode]
+// }
+
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>()

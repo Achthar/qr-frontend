@@ -10,9 +10,11 @@ import {
   Nft,
   PoolConfig,
   Team,
-  SerializedBigNumber,
+  // SerializedBigNumber,
   TranslatableText,
-  BondConfig
+  BondConfig,
+  SerializedFarmConfig,
+  DeserializedFarmConfig
 } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
@@ -22,7 +24,7 @@ export interface BigNumberToJson {
   hex: string
 }
 
-// export type SerializedBigNumber = string
+export type SerializedBigNumber = string
 
 export interface Pool extends PoolConfig {
   totalStaked?: BigNumber
@@ -73,7 +75,18 @@ export interface Farm extends FarmConfig {
   }
 }
 
-export interface Bond extends BondConfig {
+export interface IBondDetails {
+  bondDiscount?: number;
+  debtRatio?: number;
+  bondQuote?: number;
+  purchased?: number;
+  vestingTerm?: number;
+  maxBondPrice?: number;
+  bondPrice?: number;
+  marketPrice?: SerializedBigNumber;
+}
+
+export interface Bond extends BondConfig, IBondDetails {
   tokenAmount?: SerializedBigNumber
   quoteTokenAmountMc?: SerializedBigNumber
   tokenAmountTotal?: SerializedBigNumber
@@ -82,7 +95,7 @@ export interface Bond extends BondConfig {
   lpTotalSupply?: SerializedBigNumber
   tokenPriceVsQuote?: SerializedBigNumber
   poolWeight?: SerializedBigNumber,
-  price?:  SerializedBigNumber,
+  price?: SerializedBigNumber,
   userData?: {
     allowance: string
     tokenBalance: string
@@ -96,6 +109,9 @@ export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   status?: string
+  bondData: {
+    [key: string]: Bond
+  }
 }
 
 
@@ -518,12 +534,61 @@ export interface UserRound {
 
 export type UserTicketsResponse = [ethers.BigNumber[], number[], boolean[]]
 
+interface SerializedFarmUserData {
+  allowance: string
+  tokenBalance: string
+  stakedBalance: string
+  earnings: string
+}
+
+export interface DeserializedFarmUserData {
+  allowance: BigNumber
+  tokenBalance: BigNumber
+  stakedBalance: BigNumber
+  earnings: BigNumber
+}
+
+export interface DeserializedFarmsState {
+  data: DeserializedFarm[]
+  loadArchivedFarmsData: boolean
+  userDataLoaded: boolean
+}
+
+export interface SerializedFarm extends SerializedFarmConfig {
+  tokenPriceBusd?: string
+  quoteTokenPriceBusd?: string
+  tokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber
+  userData?: SerializedFarmUserData
+}
+
+export interface DeserializedFarm extends DeserializedFarmConfig {
+  tokenPriceBusd?: string
+  quoteTokenPriceBusd?: string
+  tokenAmountTotal?: BigNumber
+  lpTotalInQuoteToken?: BigNumber
+  lpTotalSupply?: BigNumber
+  tokenPriceVsQuote?: BigNumber
+  poolWeight?: BigNumber
+  userData?: DeserializedFarmUserData
+}
+
+export interface SerializedFarmsState {
+  data: SerializedFarm[]
+  loadArchivedFarmsData: boolean
+  userDataLoaded: boolean
+}
+
 // Global state
 
 export interface State {
   achievements: AchievementState
   block: BlockState
   bonds: BondsState
+  farms: SerializedFarmsState
   // pools: PoolsState
   predictions: PredictionsState
   profile: ProfileState

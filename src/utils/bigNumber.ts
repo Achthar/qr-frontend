@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { SerializedBigNumber } from 'config/constants/types'
+import { SerializedBigNumber } from 'state/types'
+// import { SerializedBigNumber } from 'config/constants/types'
+
 
 export const BIG_ZERO = new BigNumber(0)
 export const BIG_ONE = new BigNumber(1)

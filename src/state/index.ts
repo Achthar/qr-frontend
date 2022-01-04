@@ -3,6 +3,7 @@ import { save, load } from 'redux-localstorage-simple'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import application from './application/reducer'
 import blockReducer from './block'
+import farmsReducer from './farms'
 import votingReducer from './voting'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
@@ -27,6 +28,7 @@ const store = configureStore({
     application,
     block: blockReducer,
     bonds: bondReducer,
+    farms: farmsReducer,
     voting: votingReducer,
     userBalances,
  

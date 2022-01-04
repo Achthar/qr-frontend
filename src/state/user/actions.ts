@@ -1,12 +1,6 @@
 import { createAction } from '@reduxjs/toolkit'
+import { SerializedToken } from 'config/constants/types'
 
-export interface SerializedToken {
-  chainId: number
-  address: string
-  decimals: number
-  symbol?: string
-  name?: string
-}
 
 export interface SerializedPair {
   token0: SerializedToken
@@ -25,6 +19,13 @@ export enum FarmStakedOnly {
   TRUE = 'true',
   FALSE = 'false',
 }
+
+export enum ViewMode {
+  TABLE = 'TABLE',
+  CARD = 'CARD',
+}
+
+
 export const updateMatchesDarkMode = createAction<{ matchesDarkMode: boolean }>('user/updateMatchesDarkMode')
 export const updateUserDarkMode = createAction<{ userDarkMode: boolean }>('user/updateUserDarkMode')
 export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>('user/updateUserExpertMode')

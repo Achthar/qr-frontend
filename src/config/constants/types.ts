@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { ChainId } from '@requiemswap/sdk'
+import { ChainId, Token } from '@requiemswap/sdk'
 import { ethers } from 'ethers'
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 
@@ -11,7 +11,7 @@ export type TranslatableText =
       [key: string]: string | number
     }
   }
-export type SerializedBigNumber = string
+// export type SerializedBigNumber = string
 
 export const enum ChainGroup {
   BSC = 'BSC',
@@ -66,12 +66,13 @@ export interface Address {
   43113?: string
 }
 
-export interface Token {
-  symbol: string
-  address?: Address
-  decimals?: number
+export interface SerializedToken {
+  chainId: number
+  address: string
+  decimals: number
+  symbol?: string
+  name?: string
   projectLink?: string
-  busdPrice?: string
 }
 
 export enum PoolIds {
@@ -93,8 +94,8 @@ export interface Ifo {
   isActive: boolean
   address: string
   name: string
-  currency: Token
-  token: Token
+  currency: SerializedToken
+  token: SerializedToken
   releaseBlockNumber: number
   articleUrl: string
   campaignId: string
@@ -124,6 +125,31 @@ export interface FarmConfig {
     earnLabel: string
     endBlock: number
   }
+}
+
+// farm interface
+
+interface FarmConfigBaseProps {
+  pid: number
+  lpSymbol: string
+  lpAddresses: Address
+  multiplier?: string
+  isCommunity?: boolean
+  dual?: {
+    rewardPerBlock: number
+    earnLabel: string
+    endBlock: number
+  }
+}
+
+export interface SerializedFarmConfig extends FarmConfigBaseProps {
+  token: SerializedToken
+  quoteToken: SerializedToken
+}
+
+export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+  token: Token
+  quoteToken: Token
 }
 
 // ------- bond interfaces 
@@ -310,7 +336,7 @@ export interface LotteryTicket {
   status: boolean
   rewardBracket?: number
   roundId?: string
-  cakeReward?: SerializedBigNumber
+  cakeReward?: string // SerializedBigNumber
 }
 
 export interface LotteryTicketClaimData {
@@ -325,7 +351,7 @@ export interface FarmAuctionBidderConfig {
   account: string
   farmName: string
   tokenAddress: string
-  quoteToken: Token
+  quoteToken: SerializedToken
   tokenName: string
   projectSite?: string
   lpAddress?: string

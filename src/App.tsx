@@ -33,6 +33,7 @@ import GlobalStyle from './style/Global'
 const Home = lazy(() => import('./views/Home'))
 // const Balances = lazy(() => import('./views/Balances'))
 const Bonds = lazy(() => import('./views/Bonds'))
+const Farms = lazy(() => import('./views/Farms'))
 const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
@@ -71,6 +72,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/bonds">
             <Bonds />
+          </Route>
+          <Route path="/farms">
+            <Farms />
           </Route>
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
           <Route exact strict path="/exchange" component={SwapV3} />

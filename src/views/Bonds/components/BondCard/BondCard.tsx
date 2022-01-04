@@ -4,11 +4,12 @@ import styled from 'styled-components'
 import { Card, Flex, Text, Skeleton } from '@requiemswap/uikit'
 import { Bond } from 'state/types'
 import { getNetworkExplorerLink } from 'utils'
-import tokens, { REQT, USDC } from 'config/constants/tokens'
+import tokens, { getSerializedToken, REQT, USDC } from 'config/constants/tokens'
 import { useTranslation } from 'contexts/Localization'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { getAddress } from 'utils/addressHelpers'
+import { deserializeToken } from 'state/user/hooks/helpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import DetailsSection from './DetailsSection'
@@ -61,7 +62,7 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
   const earnLabel = 'Yield'
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
-    chainId: { chainId },
+    chainId,
     quoteTokenAddress: bond.reserveAddress[chainId],
     tokenAddress: bond.bondAddress[chainId],
   })
@@ -76,8 +77,8 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
           chainId={chainId}
           lpLabel={lpLabel}
           isCommunityBond={false}
-          token={tokens.reqt}
-          quoteToken={tokens.usdc}
+          token={deserializeToken(getSerializedToken(chainId, tokens.reqt))}
+          quoteToken={deserializeToken(getSerializedToken(chainId, tokens.usdc))}
         />
         {!removed && (
           <Flex justifyContent="space-between" alignItems="center">
