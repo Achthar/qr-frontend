@@ -1,9 +1,11 @@
 import { ContextApi } from 'contexts/Localization/types'
+import { Cards } from '@requiemswap/uikit'
 import logo from '../../assets/logoTransparent.svg'
 import exchangeIconLight from '../../assets/exchangeIconLight.svg'
 import exchangeIconDark from '../../assets/exchangeIconDark.svg'
 import liquidityIconLight from '../../assets/liquidityIconLight.svg'
 import liquidityIconDark from '../../assets/liquidityIconDark.svg'
+import stake from '../../assets/stake.svg'
 
 interface MenuEntry {
   label: string
@@ -33,8 +35,8 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
   },
   {
     label: t('Farms'),
-    icon: exchangeIconLight,
-    iconSelected: exchangeIconDark,
+    icon: stake,
+    iconSelected: stake,
     href: '/farms',
   },
   // {
