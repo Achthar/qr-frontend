@@ -37,6 +37,7 @@ import ifoV2Abi from 'config/abi/ifoV2.json'
 import pointCenterIfo from 'config/abi/pointCenterIfo.json'
 import lotteryV2Abi from 'config/abi/lotteryV2.json'
 import masterChef from 'config/abi/masterchef.json'
+import requiemChef from 'config/abi/avax/RequiemChef.json'
 import sousChef from 'config/abi/sousChef.json'
 import sousChefV2 from 'config/abi/sousChefV2.json'
 import sousChefBnb from 'config/abi/sousChefBnb.json'
@@ -135,7 +136,7 @@ export const getLotteryV2Contract = (chainId: number, signer?: ethers.Signer | e
   return getContract(chainId, lotteryV2Abi, getLotteryV2Address(chainId), signer)
 }
 export const getMasterchefContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, masterChef, getMasterChefAddress(chainId), signer)
+  return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getMasterChefAddress(chainId), signer)
 }
 export const getClaimRefundContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, claimRefundAbi, getClaimRefundAddress(chainId), signer)

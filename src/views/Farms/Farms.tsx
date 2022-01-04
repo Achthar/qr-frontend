@@ -20,6 +20,7 @@ import {
   useUserFarmStakedOnly,
   //  useUserFarmsViewMode 
 } from 'state/user/hooks'
+import usePersistState from 'hooks/usePersistState'
 import { ViewMode } from 'state/user/actions'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
@@ -123,7 +124,7 @@ const Farms: React.FC = () => {
   const { data: farmsLP, userDataLoaded } = useFarms()
   const cakePrice = usePriceCakeBusd()
   const [query, setQuery] = useState('')
-  // const [viewMode, setViewMode] = useUserFarmsViewMode()
+  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
   const { account, chainId } = useWeb3React()
   const [sortOption, setSortOption] = useState('hot')
   const { observerRef, isIntersecting } = useIntersectionObserver()
@@ -298,7 +299,7 @@ const Farms: React.FC = () => {
 
   const renderContent = (): JSX.Element => {
     if (
-      // viewMode === ViewMode.TABLE && 
+      viewMode === ViewMode.TABLE &&
       rowData.length) {
       const columnSchema = DesktopColumnSchema
 
@@ -386,20 +387,30 @@ const Farms: React.FC = () => {
         <Heading scale="lg" color="text">
           {t('Stake LP tokens to earn.')}
         </Heading>
-        <NavLink exact activeClassName="active" to="/farms/auction" id="lottery-pot-banner">
+        {/* <NavLink exact activeClassName="active" to="/farms/auction" id="lottery-pot-banner">
           <Button p="0" variant="text">
             <Text color="primary" bold fontSize="16px" mr="4px">
               {t('Community Auctions')}
             </Text>
             <ArrowForwardIcon color="primary" />
           </Button>
-        </NavLink>
+        </NavLink> */}
+        <ControlContainer>
+          <ViewControls>
+
+            {/* <ToggleWrapper>
+              <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
+              <Text> {t('Staked only')}</Text>
+            </ToggleWrapper>
+            <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
+          </ViewControls>
+        </ControlContainer>
       </PageHeader>
       <Page>
         <ControlContainer>
           <ViewControls>
-            {/* <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} /> */}
             <ToggleWrapper>
+              <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
               <Toggle
                 id="staked-only-farms"
                 checked={stakedOnly}
@@ -452,7 +463,6 @@ const Farms: React.FC = () => {
           </Flex>
         )}
         <div ref={observerRef} />
-        <StyledImage src="/images/decorations/3dpan.png" alt="Pancake illustration" width={120} height={103} />
       </Page>
     </>
   )

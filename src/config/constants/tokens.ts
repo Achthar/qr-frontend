@@ -330,6 +330,16 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     decimals: 18,
     projectLink: ''
   },
+  'weth': {
+    address: { 43113: '0x70dC2c5F81BC18e115759398aF197e99f228f713' },
+    decimals: 18,
+    symbol: 'WETH'
+  },
+  'wbtc': {
+    address: { 43113: '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289' },
+    decimals: 8,
+    symbol: 'WBTC',
+  }
 }
 
 // const tokenList = (): TokenList => {

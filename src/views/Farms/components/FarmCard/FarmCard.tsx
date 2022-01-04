@@ -56,8 +56,8 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
       ? `$${farm.liquidity.toNumber().toLocaleString(undefined, { maximumFractionDigits: 0 })}`
       : ''
 
-  const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('PANCAKE', '')
-  const earnLabel = farm.dual ? farm.dual.earnLabel : t('CAKE + Fees')
+  const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('REQUIEM', '')
+  const earnLabel = farm.dual ? farm.dual.earnLabel : 'REQT + Fees'
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
     chainId,
@@ -66,7 +66,7 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const lpAddress = getAddress(chainId, farm.lpAddresses)
-  const isPromotedFarm = farm.token.symbol === 'CAKE'
+  const isPromotedFarm = farm.token.symbol === 'REQT'
 
   return (
     <StyledCard isActive={isPromotedFarm}>

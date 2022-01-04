@@ -61,7 +61,7 @@ export const fetchFarmUserEarnings = async (chainId:number, account: string, far
   const calls = farmsToFetch.map((farm) => {
     return {
       address: masterChefAddress,
-      name: 'pendingCake',
+      name: 'pendingReward',
       params: [farm.pid, account],
     }
   })
