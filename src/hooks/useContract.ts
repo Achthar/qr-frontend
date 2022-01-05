@@ -235,3 +235,7 @@ export function useBondContract(chainId: number): Contract | null {
   return useContract(chainId ? getAddressForBond(chainId) : undefined, new Interface(BOND_DEPO_AVAX), false)
 }
 
+export const useRequiemChef = (chainId, library) => {
+  // const { library, chainId } = useActiveWeb3React("useMasterchef")
+  return useMemo(() => getMasterchefContract(chainId, library.getSigner()), [chainId, library])
+}
