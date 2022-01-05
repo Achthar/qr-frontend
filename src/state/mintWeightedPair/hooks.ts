@@ -169,8 +169,8 @@ export function useDerivedMintWeightedPairInfo(
                 const dependentCurrency = dependentField === WeightedField.CURRENCY_B ? currencyB : currencyA
                 const dependentTokenAmount =
                     dependentField === WeightedField.CURRENCY_B
-                        ? weightedPair.priceOf(tokenA).quote(wrappedIndependentAmount)
-                        : weightedPair.priceOf(tokenB).quote(wrappedIndependentAmount)
+                        ? weightedPair.priceRatioOf(tokenA).quote(wrappedIndependentAmount)
+                        : weightedPair.priceRatioOf(tokenB).quote(wrappedIndependentAmount)
                 return dependentCurrency === NETWORK_CCY[chainId] ? CurrencyAmount.networkCCYAmount(chainId, dependentTokenAmount.raw) : dependentTokenAmount
             }
             return undefined
