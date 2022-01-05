@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useActiveWeb3React } from 'hooks'
 
 const useHarvestFarm = (farmPid: number) => {
-  const { chainId, library, account } = useWeb3React()
+  const { chainId, account } = useWeb3React()
   const masterChefContract = useMasterchef()
 
   const handleHarvest = useCallback(async () => {

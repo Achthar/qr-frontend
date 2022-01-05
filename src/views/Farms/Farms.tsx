@@ -187,7 +187,7 @@ const Farms: React.FC = () => {
     },
     [cakePrice, query, isActive],
   )
-  console.log("FARMS LIST", farmsList(farmsLP))
+
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
   }
@@ -259,8 +259,6 @@ const Farms: React.FC = () => {
       })
     }
   }, [isIntersecting])
-
-  console.log("FARMS", chosenFarmsMemoized)
 
   const rowData = chosenFarmsMemoized.map((farm) => {
     const { token, quoteToken } = farm

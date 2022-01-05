@@ -18,7 +18,7 @@ type PublicFarmData = {
 
 const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
-  console.log("FARM IN FF", farm)
+
   const chainId = token.chainId 
   const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [

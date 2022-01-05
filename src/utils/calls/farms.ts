@@ -6,30 +6,30 @@ const options = {
   gasLimit: DEFAULT_GAS_LIMIT,
 }
 
-export const stakeFarm = async (masterChefContract, pid, amount) => {
-  const gasPrice = getGasPrice(56)
+export const stakeFarm = async (chainId, account, masterChefContract, pid, amount) => {
+  const gasPrice = getGasPrice(chainId)
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
-  if (pid === 0) {
-    const tx = await masterChefContract.enterStaking(value, { ...options, gasPrice })
-    const receipt = await tx.wait()
-    return receipt.status
-  }
+  // if (pid === 0) {
+  //   const tx = await masterChefContract.enterStaking(value, { ...options, gasPrice })
+  //   const receipt = await tx.wait()
+  //   return receipt.status
+  // }
 
-  const tx = await masterChefContract.deposit(pid, value, { ...options, gasPrice })
+  const tx = await masterChefContract.deposit(pid, value, account, { ...options, gasPrice })
   const receipt = await tx.wait()
   return receipt.status
 }
 
-export const unstakeFarm = async (masterChefContract, pid, amount) => {
-  const gasPrice = getGasPrice(56)
+export const unstakeFarm = async (chainId, account, masterChefContract, pid, amount) => {
+  const gasPrice = getGasPrice(chainId)
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
-  if (pid === 0) {
-    const tx = await masterChefContract.leaveStaking(value, { ...options, gasPrice })
-    const receipt = await tx.wait()
-    return receipt.status
-  }
+  // if (pid === 0) {
+  //   const tx = await masterChefContract.leaveStaking(value, { ...options, gasPrice })
+  //   const receipt = await tx.wait()
+  //   return receipt.status
+  // }
 
-  const tx = await masterChefContract.withdraw(pid, value, { ...options, gasPrice })
+  const tx = await masterChefContract.withdraw(pid, value, account, { ...options, gasPrice })
   const receipt = await tx.wait()
   return receipt.status
 }
