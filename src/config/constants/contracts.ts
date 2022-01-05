@@ -168,7 +168,7 @@ export const addresses = {
     43113: '0x3372de341a07418765ae12f77aee9029eaa4442a',
     42261: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04'
   },
-  weightedPairFactory:{
+  weightedPairFactory: {
     43113: '0xacd3602152763C3AAFA705D8a90C36661ecD7d46',
     42261: '0x274B1F7F8e66B044B2DC773E017750957f70490c'
   },
@@ -184,8 +184,14 @@ export const addresses = {
   reserveLp: {
     43113: '0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c' // 80reqt 20dai 25bps LP address
   },
-  treasury:{
+  treasury: {
     43113: '0x2fD7c6a9466e20a91aBbb31849C081B8288030B2'
+  },
+  reqtRewarder: {
+    43113: '0xF5d2E7bAC75673d2D1761B5B98f6209ae5B39203'
+  },
+  fundDistributer:{
+    43113: '0xEE771F8bda7958064F83d5b75A42D432B55155b4'
   }
 }
 

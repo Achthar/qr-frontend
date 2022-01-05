@@ -20,6 +20,9 @@ import {
   useUserFarmStakedOnly,
   //  useUserFarmsViewMode 
 } from 'state/user/hooks'
+import { fetchFarmsPublicDataAsync } from 'state/farms'
+import { useAppDispatch } from 'state'
+
 import usePersistState from 'hooks/usePersistState'
 import { ViewMode } from 'state/user/actions'
 import PageHeader from 'components/PageHeader'
@@ -136,14 +139,16 @@ const Farms: React.FC = () => {
 
   usePollFarmsWithUserData(isArchived)
 
+  // const dispatch = useAppDispatch()
+  // dispatch(fetchFarmsPublicDataAsync({ chainId, pids: farmsLP.map(f => f.pid) }))
   // Users with no wallet connected should see 0 as Earned amount
   // Connected users should see loading indicator until first userData has loaded
   const userDataReady = !account || (!!account && userDataLoaded)
 
   const [stakedOnly, setStakedOnly] = useUserFarmStakedOnly(isActive)
 
-  const activeFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier !== '0X' && !isArchivedPid(farm.pid))
-  const inactiveFarms = farmsLP.filter((farm) => farm.pid !== 0 && farm.multiplier === '0X' && !isArchivedPid(farm.pid))
+  const activeFarms = farmsLP.filter((farm) => farm.pid !== 99 && farm.multiplier !== '0X' && !isArchivedPid(farm.pid))
+  const inactiveFarms = farmsLP.filter((farm) => farm.pid !== 99 && farm.multiplier === '0X' && !isArchivedPid(farm.pid))
   const archivedFarms = farmsLP.filter((farm) => isArchivedPid(farm.pid))
 
   const stakedOnlyFarms = activeFarms.filter(
@@ -182,7 +187,7 @@ const Farms: React.FC = () => {
     },
     [cakePrice, query, isActive],
   )
-
+  console.log("FARMS LIST", farmsList(farmsLP))
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
   }
@@ -254,6 +259,8 @@ const Farms: React.FC = () => {
       })
     }
   }, [isIntersecting])
+
+  console.log("FARMS", chosenFarmsMemoized)
 
   const rowData = chosenFarmsMemoized.map((farm) => {
     const { token, quoteToken } = farm

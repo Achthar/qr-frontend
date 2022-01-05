@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
-import masterchefABI from 'config/abi/masterchef.json'
+// import masterchefABI_orig from 'config/abi/masterchef.json'
+import requiemChefABI from 'config/abi/avax/RequiemChef.json'
 import multicall from 'utils/multicall'
 import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { SerializedFarmConfig } from 'config/constants/types'
+
 
 export const fetchFarmUserAllowances = async (chainId: number, account: string, farmsToFetch: SerializedFarmConfig[]) => {
   const masterChefAddress = getMasterChefAddress(chainId)
@@ -48,7 +50,7 @@ export const fetchFarmUserStakedBalances = async (chainId: number, account: stri
     }
   })
 
-  const rawStakedBalances = await multicall(chainId, masterchefABI, calls)
+  const rawStakedBalances = await multicall(chainId, requiemChefABI, calls)
   const parsedStakedBalances = rawStakedBalances.map((stakedBalance) => {
     return new BigNumber(stakedBalance[0]._hex).toJSON()
   })
@@ -66,7 +68,7 @@ export const fetchFarmUserEarnings = async (chainId:number, account: string, far
     }
   })
 
-  const rawEarnings = await multicall(chainId, masterchefABI, calls)
+  const rawEarnings = await multicall(chainId, requiemChefABI, calls)
   const parsedEarnings = rawEarnings.map((earnings) => {
     return new BigNumber(earnings).toJSON()
   })

@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
-import masterchefABI from 'config/abi/masterchef.json'
+// import masterchefABI from 'config/abi/masterchef.json'
+import requiemChefABI from 'config/abi/avax/RequiemChef.json'
 import erc20 from 'config/abi/erc20.json'
 import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
@@ -17,40 +18,41 @@ type PublicFarmData = {
 
 const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
-  const chainId = token.chainId
+  console.log("FARM IN FF", farm)
+  const chainId = token.chainId 
   const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
     // Balance of token in the LP contract
     {
-      address: token.address[chainId],
+      address: token.address,
       name: 'balanceOf',
       params: [lpAddress],
     },
     // Balance of quote token on LP contract
     {
-      address: quoteToken.address[chainId],
+      address: quoteToken.address,
       name: 'balanceOf',
       params: [lpAddress],
     },
     // Balance of LP tokens in the master chef contract
     {
-      address: lpAddress[chainId],
+      address: lpAddress,
       name: 'balanceOf',
       params: [getMasterChefAddress(chainId)],
     },
     // Total supply of LP tokens
     {
-      address: lpAddress[chainId],
+      address: lpAddress,
       name: 'totalSupply',
     },
     // Token decimals
     {
-      address: token.address[chainId],
+      address: token.address,
       name: 'decimals',
     },
     // Quote token decimals
     {
-      address: quoteToken.address[chainId],
+      address: quoteToken.address,
       name: 'decimals',
     },
   ]
@@ -75,21 +77,23 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const [info, totalAllocPoint] =
     pid || pid === 0
       ? await multicall(chainId,
-        masterchefABI, [
-          {
-            address: getMasterChefAddress(chainId),
-            name: 'poolInfo',
-            params: [pid],
-          },
-          {
-            address: getMasterChefAddress(chainId),
-            name: 'totalAllocPoint',
-          },
-        ])
+        requiemChefABI, [
+        {
+          address: getMasterChefAddress(chainId),
+          name: 'poolInfo',
+          params: [pid],
+        },
+        {
+          address: getMasterChefAddress(chainId),
+          name: 'totalAllocPoint',
+        },
+      ])
       : [null, null]
 
   const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
   const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO
+
+  console.log("LP", lpTotalInQuoteToken)
 
   return {
     tokenAmountTotal: tokenAmountTotal.toJSON(),

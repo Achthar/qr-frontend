@@ -22,7 +22,7 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 
 const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   const { lpAddresses, lpSymbol, pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd } = farm
-  console.log("FARM", farm)
+  console.log("DESERIALIZED FARM:", farm)
   return {
     lpAddresses,
     lpSymbol,
@@ -72,6 +72,7 @@ export const usePollFarmsWithUserData = (includeArchive = false) => {
   }, [includeArchive, dispatch, slowRefresh, account, chainId])
 }
 
+
 /**
  * Fetches the "core" farm data used globally
  * 251 = CAKE-BNB LP
@@ -82,7 +83,7 @@ export const usePollCoreFarmData = (chainId: number) => {
   const { fastRefresh } = useRefresh()
 
   useEffect(() => {
-    dispatch(fetchFarmsPublicDataAsync({ chainId, pids: [251, 252] }))
+    dispatch(fetchFarmsPublicDataAsync({ chainId, pids: [0, 1] }))
   }, [dispatch, fastRefresh, chainId])
 }
 
@@ -145,7 +146,7 @@ export const useLpTokenPrice = (symbol: string) => {
 // /!\ Deprecated , use the BUSD hook in /hooks
 
 export const usePriceCakeBusd = (): BigNumber => {
-  const cakeBnbFarm = useFarmFromPid(251)
+  const cakeBnbFarm = useFarmFromPid(0)
 
   const cakePriceBusdAsString = cakeBnbFarm.tokenPriceBusd
 
