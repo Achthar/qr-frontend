@@ -10,7 +10,8 @@ const NETWORK_URLS: { [chainId in ChainId]?: string } = {
   [ChainId.MATIC_MAINNET]: '',
   [ChainId.MATIC_TESTNET]: 'https://rpc-mumbai.matic.today',
   [ChainId.OASIS_MAINNET]: '',
-  [ChainId.OASIS_TESTNET]: 'https://testnet.emerald.oasis.dev'
+  [ChainId.OASIS_TESTNET]: 'https://testnet.emerald.oasis.dev',
+  [ChainId.QUARKCHAIN_DEV_S0]: 'http://eth-jrpc.devnet.quarkchain.io:3990'
 }
 
 export default NETWORK_URLS

@@ -8,6 +8,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { TokenPairImage } from 'components/TokenImage'
 import { SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
+import { PoolType } from '@requiemswap/sdk'
 
 export interface FarmProps {
   chainId: number
@@ -15,6 +16,9 @@ export interface FarmProps {
   pid: number
   token: SerializedToken
   quoteToken: SerializedToken
+  poolType?: PoolType
+  token2?: SerializedToken
+  token3?: SerializedToken
 }
 
 const Container = styled.div`

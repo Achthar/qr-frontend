@@ -42,6 +42,7 @@ import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
 import BOND_DEPO_AVAX from '../config/abi/avax/RequiemQBondDepository.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
+import multiCallAbi_QKC from '../config/abi/qkc/Multicall.json'
 // import multiCallAbi_OASIS from '../config/abi/oasis/Multicall.json'
 import stableLp_AVAX from '../config/abi/avax/IERC20.json'
 import weightedFactoryABI from '../config/abi/avax/RequiemWeightedPairFactory.json'
@@ -180,7 +181,7 @@ export function useWETHContract(withSignerIfPossible?: boolean): Contract | null
   return useContract(chainId ? WRAPPED_NETWORK_TOKENS[chainId].address : undefined, WAVAX_ABI, withSignerIfPossible)
 }
 
-export function useENSRegistrarContract(chainId:number, withSignerIfPossible?: boolean): Contract | null {
+export function useENSRegistrarContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
   console.log("useENSRegistrarContract")
   // const { chainId } = useNetworkState()
   let address: string | undefined
@@ -211,10 +212,10 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
   return useContract(pairAddress, IUniswapV2PairABI, withSignerIfPossible)
 }
 
-export function useMulticallContract(chainId:number): Contract | null {
+export function useMulticallContract(chainId: number): Contract | null {
   // const { chainId } = useNetworkState()
   console.log("useMulticallContract")
-  return useContract(getMulticallAddress(chainId), multiCallAbi, false)
+  return useContract(getMulticallAddress(chainId), chainId === 110001 ? multiCallAbi_QKC : multiCallAbi, false)
 }
 
 export function useStableLPContract(stableLpAddress?: string, withSignerIfPossible?: boolean): Contract | null {

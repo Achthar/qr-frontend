@@ -81,7 +81,7 @@ export const getStableLpAddress = (chainId: number) => {
 }
 
 export const getAddressForBond = (chainId: number) => {
-  return getAddress(chainId, addresses.bond);
+  return getAddress(chainId, addresses.bondDepositoty);
 }
 
 export const getAddressForReserve = (chainId: number) => {
@@ -93,7 +93,7 @@ export const getAddressForLpReserve = (chainId: number) => {
 }
 
 export const getAddressForBondingCalculator = (chainId: number) => {
-  return getAddress(chainId, addresses.bondingCalculator);
+  return getAddress(chainId, addresses.weightedBondingCalculator);
 }
 
 export const getAddressForWeightedPairFactory = (chainId: number) => {

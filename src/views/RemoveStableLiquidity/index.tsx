@@ -142,6 +142,12 @@ export default function RemoveStableLiquidity() {
       'DAI': 2,
       'TUSD': 3,
     },
+    110001: {
+      'USDC': 0,
+      'USDT': 1,
+      'DAI': 2,
+      'TUSD': 3,
+    },
   }
 
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm

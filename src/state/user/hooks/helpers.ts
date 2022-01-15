@@ -70,6 +70,12 @@ export const GAS_PRICE_GWEI = {
     instant: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
     testnet: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
   },
+  [ChainId.QUARKCHAIN_DEV_S0]: {
+    default: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+    fast: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+    instant: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+    testnet: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+  },
   99999:{default: parseUnits('5', 'gwei').toString(),},
   default: parseUnits('5', 'gwei').toString(),
 

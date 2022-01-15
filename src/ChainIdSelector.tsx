@@ -9,7 +9,7 @@ import {
 import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
@@ -252,28 +252,55 @@ const ChainIdSelector = () => {
   //     setActiveIndex(-1);
   //   }
   // }, [isOpen]);
-// console.log("chainID chainIDselector", chainId)
+  // console.log("chainID chainIDselector", chainId)
   const buttonText = chainId === 56 ? 'Binance' :
     chainId === 97 ? 'Binance Testnet' :
       chainId === 80001 ? 'Polygon Mumbai' :
         chainId === 43114 ? 'Avalanche' :
           chainId === 43113 ? 'Avalanche Testnet' :
-            chainId === 42261 ? 'Oasis Testnet' : 'no Network'
+            chainId === 42261 ? 'Oasis Testnet' :
+              chainId === 110001 ? 'Quarkchain Dev S0' : 'no Network'
   return (
     <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
 
+      {/* <div> */}
 
       {/* <Wrapper> */}
 
-      <FlyoutHeader>
-        Select a network
-      </FlyoutHeader>
-      <Row targetChain={ChainId.AVAX_MAINNET} />
-      <Row targetChain={ChainId.AVAX_TESTNET} />
-      <Row targetChain={ChainId.OASIS_TESTNET} />
-      {/* <Row targetChain={ChainId.BSC_MAINNET} /> */}
-      <Row targetChain={ChainId.BSC_TESTNET} />
-      <Row targetChain={ChainId.MATIC_TESTNET} />
+      <UserMenuItem>
+        {/* <Flex alignItems="center" justifyContent="space-between" width="100%"> */}
+        <FlyoutHeader>
+          Select a network
+        </FlyoutHeader>
+        {/* </Flex> */}
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.AVAX_TESTNET} />
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.AVAX_MAINNET} />
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.OASIS_TESTNET} />
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.QUARKCHAIN_DEV_S0} />
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.BSC_TESTNET} />
+      </UserMenuItem>
+      <UserMenuDivider />
+      <UserMenuItem as='button'>
+        <Row targetChain={ChainId.MATIC_TESTNET} />
+      </UserMenuItem>
+      {/* </UserMenuItem> */}
+
+      {/* </div> */}
       {/* </Wrapper> */}
 
     </UIKitUserMenu>

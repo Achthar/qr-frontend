@@ -283,8 +283,11 @@ const Farms: React.FC = () => {
         chainId,
         label: lpLabel,
         pid: farm.pid,
+        poolType: farm?.poolType,
         token: farm.token,
         quoteToken: farm.quoteToken,
+        token2: farm?.token2,
+        token3: farm?.token3,
       },
       earned: {
         earnings: getBalanceNumber(new BigNumber(farm.userData.earnings)),

@@ -8,17 +8,18 @@ import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getContractForReserve } from 'utils/contractHelpers'
 
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = getAddressForBond(chainId)
+  const bondDepositoryAddress = getAddressForBond(chainId)
 
   const calls = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
-    return { address: lpContractAddress, name: 'allowance', params: [account, masterChefAddress] }
+    return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
   })
 
   const rawLpAllowances = await multicall(chainId, erc20ABI, calls)
   const parsedLpAllowances = rawLpAllowances.map((lpBalance) => {
     return new BigNumber(lpBalance).toJSON()
   })
+  console.log("ALLOWANCE FETCH", rawLpAllowances)
   return parsedLpAllowances
 }
 

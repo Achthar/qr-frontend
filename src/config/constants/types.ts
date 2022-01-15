@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { ChainId, Token } from '@requiemswap/sdk'
+import { ChainId, PoolType, Token } from '@requiemswap/sdk'
 import { ethers } from 'ethers'
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 
@@ -64,6 +64,7 @@ export interface Address {
   80001?: string
   43114?: string
   43113?: string
+  110001?: string
 }
 
 export interface SerializedToken {
@@ -116,6 +117,11 @@ export interface FarmConfig {
   pid: number
   lpSymbol: string
   lpAddresses: Address
+  lpData?: {
+    type: PoolType
+    weight?: number
+    fee?: number
+  }
   token: Token
   quoteToken: Token
   multiplier?: string
@@ -127,12 +133,18 @@ export interface FarmConfig {
   }
 }
 
+
 // farm interface
 
 interface FarmConfigBaseProps {
   pid: number
   lpSymbol: string
   lpAddresses: Address
+  lpData?: {
+    poolType: PoolType
+    weight?: number
+    fee?: number
+  }
   multiplier?: string
   isCommunity?: boolean
   dual?: {
@@ -145,11 +157,16 @@ interface FarmConfigBaseProps {
 export interface SerializedFarmConfig extends FarmConfigBaseProps {
   token: SerializedToken
   quoteToken: SerializedToken
+  token2?: SerializedToken
+  token3?: SerializedToken
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+  poolType?: PoolType
   token: Token
   quoteToken: Token
+  token2?: Token
+  token3?: Token
 }
 
 // ------- bond interfaces 

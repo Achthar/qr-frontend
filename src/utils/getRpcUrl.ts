@@ -40,13 +40,18 @@ export const nodesOASIST = [
   NETWORK_URLS[ChainId.OASIS_TESTNET]
 ]
 
+export const nodesQuarkChain = [
+  NETWORK_URLS[ChainId.QUARKCHAIN_DEV_S0]
+]
+
 
 export const nodes: { [chainId: number]: string } = {
   [ChainId.BSC_TESTNET]: sample(nodesBSCT),
   [ChainId.BSC_MAINNET]: sample(nodesBSC),
   [ChainId.MATIC_TESTNET]: nodesMATICT[0],
   [ChainId.AVAX_TESTNET]: nodesAVAXT[0],
-  [ChainId.OASIS_TESTNET]: nodesOASIST[0]
+  [ChainId.OASIS_TESTNET]: nodesOASIST[0],
+  [ChainId.QUARKCHAIN_DEV_S0]: nodesQuarkChain[0]
 }
 
 const getNodeUrl = (chainId) => {
@@ -68,6 +73,9 @@ const getNodeUrl = (chainId) => {
   }
   else if (chainId === '42261' || chainId === 42261) {
     node = nodesOASIST[0]
+  }
+  else if (chainId === '110001' || chainId === 110001) {
+    node = nodesQuarkChain[0]
   }
   else {
     node = sample(nodesBSC) // default

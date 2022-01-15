@@ -17,7 +17,6 @@ import Liquidity, { LiquidityProps } from '../Liquidity'
 
 export interface ActionPanelProps {
   roi: RoiProps
-  multiplier: MultiplierProps
   details: BondWithStakedValue
   userDataReady: boolean
   expanded: boolean
@@ -133,7 +132,6 @@ const ValueWrapper = styled.div`
 const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   details,
   roi,
-  multiplier,
   userDataReady,
   expanded,
 }) => {
@@ -173,10 +171,10 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           <Text>{t('Roi')}</Text>
           <Roi {...roi} />
         </ValueWrapper>
-        <ValueWrapper>
+        {/* <ValueWrapper>
           <Text>{t('Multiplier')}</Text>
           <Multiplier {...multiplier} />
-        </ValueWrapper>
+        </ValueWrapper> */}
       </ValueContainer>
       <ActionContainer>
         <HarvestAction {...bond} userDataReady={userDataReady} />

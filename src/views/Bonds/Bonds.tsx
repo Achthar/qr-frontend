@@ -306,10 +306,9 @@ const Bonds: React.FC = () => {
     const quoteTokenAddress = quoteToken.address
 
     const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
-    console.log("PRIX", bond.bondPrice)
     const price = Number(bond.bondPrice)
     const roi = 32.213
-    const purchased = bond.purchased // 7002000
+    const purchased = Math.round(bond.purchased * 100) / 100 // 7002000
 
     const row: RowProps = {
       // apr: {
@@ -328,15 +327,16 @@ const Bonds: React.FC = () => {
         token,
         quoteToken
       },
+      discount: bond.bondDiscount,
       // earned: {
       //   earnings: getBalanceNumber(new BigNumber(bond.userData.earnings)),
       //   bondId: bond.bondId,
       // },
-      multiplier: {
-        multiplier: '12x',
-      },
+      // multiplier: {
+      //   multiplier: '12x',
+      // },
       details: bond,
-      price,
+      price: Math.round(price * 1000) / 1000,
       roi: {
         value: '213',
         bondId: 1,

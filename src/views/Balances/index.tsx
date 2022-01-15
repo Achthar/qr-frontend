@@ -39,7 +39,7 @@ export const BodyWrapper = styled(Card)`
 
 export default function Balances() {
   const { account, chainId } = useActiveWeb3React()
-console.log("CID", chainId)
+// console.log("CID", chainId)
   const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
   const [
     allBalances,
@@ -124,7 +124,7 @@ console.log("CID", chainId)
               />))}
           </Column>
           <Column>
-            {!fetchingAllBalances && stableAmounts.slice(0, 2).map((tokenAmount, index) => (
+            {!fetchingAllBalances && stableAmounts.map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
@@ -133,7 +133,7 @@ console.log("CID", chainId)
                 showSymbol
               />))}
           </Column>
-          <Column>
+          {/* <Column>
             {!fetchingAllBalances && stableAmounts.slice(2, 4).map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
@@ -142,7 +142,7 @@ console.log("CID", chainId)
                 padding='0px'
                 showSymbol
               />))}
-          </Column>
+          </Column> */}
         </Flex >
       </div>
     )

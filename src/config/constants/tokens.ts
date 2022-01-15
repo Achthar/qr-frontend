@@ -42,11 +42,19 @@ export const WETH = {
     'WETH',
     'Wrapped ETH',
   ),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0x6116979278577af89C51f108e802569C6456fa00',
+    18,
+    'WETH',
+    'Wrapped ETH',
+  ),
 }
 
 export const STABLE_POOL_LP = {
   [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, STABLE_POOL_LP_ADDRESS[ChainId.AVAX_TESTNET], 18, 'RSLP', 'Requiem Stable LP'),
-  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, STABLE_POOL_LP_ADDRESS[ChainId.OASIS_TESTNET], 18, 'RSLP', 'Requiem Stable LP')
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, STABLE_POOL_LP_ADDRESS[ChainId.OASIS_TESTNET], 18, 'RSLP', 'Requiem Stable LP'),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(ChainId.QUARKCHAIN_DEV_S0, STABLE_POOL_LP_ADDRESS[ChainId.QUARKCHAIN_DEV_S0], 18, 'RSLP', 'Requiem Stable LP')
 }
 
 export const REQT: { [chainId: number]: Token } = {
@@ -74,6 +82,13 @@ export const REQT: { [chainId: number]: Token } = {
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
     '0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b',
+    18,
+    'WETH',
+    'Wrapped ETH',
+  ),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
     18,
     'WETH',
     'Wrapped ETH',
@@ -158,11 +173,22 @@ export const DAI: { [chainId: number]: Token } = {
     'DAI',
     'Dai Stablecoin',
   ),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
 }
 export const USDT: { [chainId: number]: Token } = {
-  [ChainId.BSC_MAINNET]: new Token(ChainId.BSC_MAINNET, '0x55d398326f99059fF775485246999027B3197955', 18, 'USDT', 'Tether USD'),
+  [ChainId.BSC_MAINNET]: new Token(
+    ChainId.BSC_MAINNET,
+    '0x55d398326f99059fF775485246999027B3197955',
+    18, 'USDT', 'Tether USD'),
   [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e', 6, 'USDT', 'Tether USD'),
   [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 6, 'USDT', 'Tether USD'),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(ChainId.QUARKCHAIN_DEV_S0, '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7', 6, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 
@@ -182,7 +208,13 @@ export const WBTC: { [chainId: number]: Token } = {
     'WBTC',
     'Wrapped BTC',
   ),
-
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0x1e32DAE021A5B2c9546a5aF148984Fa278f09D9a',
+    8,
+    'WBTC',
+    'Wrapped BTC',
+  ),
 }
 
 export const UST = new Token(
@@ -231,6 +263,13 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
 
 }
 export const TUSD: { [chainId: number]: Token } = {
@@ -240,8 +279,13 @@ export const TUSD: { [chainId: number]: Token } = {
     6,
     'TUSD',
     'True USD',
+  ), [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0xD71C821a373E16D607277DB6C1356c1209C7d866',
+    6,
+    'TUSD',
+    'True USD',
   ),
-
 }
 
 export const STABLES = {
@@ -283,7 +327,8 @@ const tokens: { [tokenId: string]: TokenEntry } = {
       97: '',
       80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8',
       43113: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
-      43114: '0x2d90e6d9368b2838a9558B0a609750243C5C4679'
+      43114: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
+      110001: '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',
@@ -308,25 +353,37 @@ const tokens: { [tokenId: string]: TokenEntry } = {
   'usdt': {
 
     symbol: 'USDT',
-    address: { 43113: '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e' },
+    address: {
+      43113: '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e',
+      110001: '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7'
+    },
     decimals: 6,
     projectLink: ''
   },
   'dai': {
     symbol: 'DAI',
-    address: { 43113: '0xaea51e4fee50a980928b4353e852797b54deacd8' },
+    address: {
+      43113: '0xaea51e4fee50a980928b4353e852797b54deacd8',
+      110001: '0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542'
+    },
     decimals: 18,
     projectLink: ''
   },
   'usdc': {
     symbol: 'USDC',
-    address: { 43113: '0xca9ec7085ed564154a9233e1e7d8fef460438eea' },
+    address: {
+      43113: '0xca9ec7085ed564154a9233e1e7d8fef460438eea',
+      110001: '0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268'
+    },
     decimals: 6,
     projectLink: ''
   },
   'tusd': {
     symbol: 'TUSD',
-    address: { 43113: '0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1' },
+    address: {
+      43113: '0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1',
+      110001: '0xD71C821a373E16D607277DB6C1356c1209C7d866'
+    },
     decimals: 18,
     projectLink: ''
   },

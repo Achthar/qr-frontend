@@ -149,7 +149,7 @@ export function useWeightedPairsData(tokens: [Token, Token][], pairAddresses: st
     ),
     // useBlock,
   )
-  console.log("FORMULA", results)
+  // console.log("FORMULA", results)
   // returns:
   // address tokenB,
   // uint256 reserveA,

@@ -1,4 +1,4 @@
-import { NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { NETWORK_CCY, PoolType, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { serializeTokens } from './tokens'
 import { SerializedFarmConfig } from './types'
@@ -33,6 +33,11 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       },
       token: serializedTokens.reqt,
       quoteToken: serializedTokens.dai,
+      lpData:{
+        weight:80,
+        fee:25,
+        poolType: PoolType.WeightedPair
+      }
     },
     {
       pid: 1,
@@ -55,6 +60,27 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       },
       token: serializedTokens.wavax,
       quoteToken: serializedTokens.usdc,
+      lpData:{
+        weight:50,
+        fee:15,
+        poolType: PoolType.WeightedPair
+      }
+    },
+    {
+      pid: 3,
+      lpSymbol: `req4-Pool`,
+      lpAddresses: {
+        97: '',
+        56: '',
+        43113: '0x3372de341a07418765ae12f77aee9029eaa4442a'
+      },
+      token: serializedTokens.usdt,
+      quoteToken: serializedTokens.usdc,
+      token2: serializedTokens.dai,
+      token3: serializedTokens.tusd,
+      lpData:{
+        poolType: PoolType.StablePairWrapper
+      }
     },
   ]
 }

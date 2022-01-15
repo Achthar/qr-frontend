@@ -72,8 +72,7 @@ export const calcSingleBondDetails = createAsyncThunk(
         bondPrice = await bondContract.bondPriceInUSD();
         console.log("BPRAW", bondPrice)
       }
-      bondDiscount = Number(marketPrice.mul(E_EIGHTEEN)
-        .sub(bondPrice).div(bondPrice).toString()) // marketPrice && bondPrice
+      bondDiscount = bnParser(marketPrice.sub(bondPrice), bondPrice) // marketPrice && bondPrice
       // ?  : 0 // (marketPrice * (10 ** 18) - Number(bondPrice.toString())) / Number(bondPrice.toString()); // 1 - bondPrice / (bondPrice * (10 ** 9));
       console.log("BDISCOUNT", marketPrice.toString(), bondPrice.toString(), bondDiscount)
     } catch (e) {

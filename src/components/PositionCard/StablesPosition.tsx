@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import Column from 'components/Column'
+import QuadCurrencyLogo from 'components/Logo/QuadLogo'
 import useTotalSupply from '../../hooks/useTotalSupply'
 
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -227,8 +228,9 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
         <Flex flexDirection="column">
           <Flex alignItems="center" mb="4px">
             <AutoColumn gap="4px">
-              <DoubleCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} size={20} />
-              <DoubleCurrencyLogo chainId={chainId} currency0={tokens[2]} currency1={tokens[3]} size={20} />
+              <QuadCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} currency2={tokens[2]} currency3={tokens[3]} size={20}/>
+              {/* <DoubleCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} size={20} />
+              <DoubleCurrencyLogo chainId={chainId} currency0={tokens[2]} currency1={tokens[3]} size={20} /> */}
             </AutoColumn>
             <Column>
               <Text bold ml="8px">

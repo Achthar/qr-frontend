@@ -62,7 +62,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
         )}
       </Text>
       <Text my="24px">
-        {t('For example, if a 1x farm received 1 CAKE per block, a 40x farm would receive 40 CAKE per block.')}
+        {t('For example, if a 1x farm received 1 CAKE per block, a 40x farm would receive 40 REQT per block.')}
       </Text>
       <Text>{t('This amount is already included in all APR calculations for the farm.')}</Text>
     </>,
@@ -91,7 +91,7 @@ const RoiCalculatorFooter: React.FC<RoiCalculatorFooterProps> = ({
               </>
             )}
             <Text color="textSubtle" small>
-              {isFarm ? t('Base APR (CAKE yield only)') : t('APR')}
+              {isFarm ? t('Base APR (REQT yield only)') : t('APR')}
             </Text>
             <Text small textAlign="right">
               {apr.toFixed(2)}%

@@ -7,6 +7,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { SerializedToken } from 'config/constants/types'
 import { TokenPairImage } from 'components/TokenImage'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
+import { DoubleCurrencyLogo } from 'components/Logo'
 
 export interface BondProps {
   label: string
@@ -51,19 +52,13 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
     return null
   }
 
+
   return (
     <Container>
       <TokenWrapper>
-        <TokenPairImage
-          chainId={56}
-          variant="inverted"
-          primaryToken={deserializeToken(token)}
-          secondaryToken={deserializeToken(quoteToken)}
-          width={40}
-          height={40}
-        />
+        <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={30} margin />
       </TokenWrapper>
-      <div>
+      <div style={{ marginLeft: 40 }}>
         {handleRenderBonding()}
         <Text bold>{label}</Text>
       </div>

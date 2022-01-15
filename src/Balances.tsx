@@ -114,7 +114,7 @@ const Balances = () => {
     <AppFooterContainer>
       <div style={{ zIndex: 15 }}>
         <StyledButton
-          marginBottom={balanceShown && account ? '80px' : '0px'}
+          marginBottom={balanceShown && account ? '160px' : '0px'}
           width='0px'
           height='0px'
           endIcon={<CurrencyIcon width='30px' />}

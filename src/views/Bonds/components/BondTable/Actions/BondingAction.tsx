@@ -100,7 +100,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const [onPresentWithdraw] = useModal(
     <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={name} />,
   )
-  console.log("IS APPROVED", isApproved)
+
   const lpContract = useERC20(lpAddress)
   const dispatch = useAppDispatch()
   const { onApprove } = useApproveBond(chainId, lpContract)

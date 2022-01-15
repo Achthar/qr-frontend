@@ -18,14 +18,14 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
         [ChainId.AVAX_MAINNET]: false
       },
       isLP: false,
-      name: "REQT",
-      displayName: "REQT",
-      bondToken: "USDC",
+      name: "80% REQT - 20% DAI",
+      displayName: "80% REQT - 20% DAI",
+      bondToken: "DAI",
       payoutToken: "REQT",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
-      type: BondType.StableAsset,
+      type: BondType.LP,
       displayUnits: '4',
       bondAddress: {
         43114: "0x767e3459A35419122e5F6274fB1223d75881E0a9",

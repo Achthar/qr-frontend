@@ -99,23 +99,23 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
 
 // account is optional
 export function getRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43113 ? IRequiemRouter02AVAX : chainId === 8001 ? IRequiemRouter02 : IUniswapV2Router02ABI
+  const ABI = IRequiemRouter02AVAX 
   return getContract(ROUTER_ADDRESS[chainId], ABI, library, account)
 }
 
 // account is optional
 export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43113 ? RequiemQPairManager : ''
+  const ABI = RequiemQPairManager 
   return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
 }
 
 export function getQRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43113 ? RequiemQRouter : ''
+  const ABI = RequiemQRouter
   return getContract(REQUIEMQROUTER_ADDRESS[chainId], ABI, library, account)
 }
 
 export function getAggregatorContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43113 ? Aggregator : Aggregator
+  const ABI = Aggregator
   return getContract(AGGREGATOR_ADDRESS[chainId ?? 43113], ABI, library, account)
 }
 

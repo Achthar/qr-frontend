@@ -445,4 +445,85 @@ export const tokenList = {
             },
         ]
     },
+    110001: {
+        "name": "RequiemSwap Default List Quarkchain",
+        "timestamp": "2021-09-29T00:00:00Z",
+        "version": {
+            "major": 3,
+            "minor": 0,
+            "patch": 0
+        },
+        "tags": {},
+        "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png",
+        "keywords": [
+            "pancake",
+            "default"
+        ],
+        "tokens": [
+            {
+                "name": "WQKC Token",
+                "symbol": "WQKC",
+                "address": "0x56fB4da0E246003DEc7dD108e47f5d8e8F4cC493",
+                "chainId": 110001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WQKC.png"
+            },
+            {
+                "name": "Requiem Token",
+                "symbol": "REQT",
+                "address": "0x00c9ac8d414Ea3C7466F27431133dD989d8f20Df",
+                "chainId": 110001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
+            },
+            {
+                "name": "Tether USD",
+                "symbol": "USDT",
+                "address": "0x1a69a6e206c680A8559c59b951527437CBCe6Ed7",
+                "chainId": 110001,
+                "decimals": 6,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+            },
+            {
+                "name": "Dai Stablecoin",
+                "symbol": "DAI",
+                "address": "0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542",
+                "chainId": 110001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+            },
+            {
+                "name": "USD coin",
+                "symbol": "USDC",
+                "address": "0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268",
+                "chainId": 110001,
+                "decimals": 6,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+            },
+            {
+                "name": "True USD",
+                "symbol": "TUSD",
+                "address": "0xD71C821a373E16D607277DB6C1356c1209C7d866",
+                "chainId": 110001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
+            },
+            {
+                "name": "Wrapped Bitcoin",
+                "symbol": "WBTC",
+                "address": "0x1e32DAE021A5B2c9546a5aF148984Fa278f09D9a",
+                "chainId": 110001,
+                "decimals": 8,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+            },
+            {
+                "name": "Wrapped Ethereum",
+                "symbol": "WETH",
+                "address": "0x6116979278577af89C51f108e802569C6456fa00",
+                "chainId": 110001,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+            },
+        ]
+    },
 }

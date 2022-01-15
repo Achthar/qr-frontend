@@ -97,7 +97,8 @@ export const addresses = {
     80001: '0x08411ADd0b5AA8ee47563b146743C13b3556c9Cc',
     43113: '0x9aEeeD65aE87e3b28793aefAeED59c3f10ef956b',
     43114: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',
-    42261: '0x5B401B711Dd9Ae54Fc1c2158bb876c1a1c8BBB0b'
+    42261: '0x5B401B711Dd9Ae54Fc1c2158bb876c1a1c8BBB0b',
+    110001: '0x47Ea91cDBF2a144b475b8cDc950e9e0E85F89E66'
 
   },
   pancakeProfile: {
@@ -162,36 +163,55 @@ export const addresses = {
   },
   stableSwap: {
     43113: '0x0Be60C571BdA7841D8F6eE68afDBa648EC710fD7',
-    42261: '0x2a90276992ddC21C3585FE50f5B43D0Cf62aDe03'
+    42261: '0x2a90276992ddC21C3585FE50f5B43D0Cf62aDe03',
+    110001: '0x211F00f4071A4af8f0cC289d9853d778047DB8Ba'
   },
   stableLp: {
     43113: '0x3372de341a07418765ae12f77aee9029eaa4442a',
-    42261: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04'
+    42261: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04',
+    110001: '0x029f9f8e2c27627341824120ee814F31a1551256'
   },
   weightedPairFactory: {
     43113: '0xacd3602152763C3AAFA705D8a90C36661ecD7d46',
-    42261: '0x274B1F7F8e66B044B2DC773E017750957f70490c'
+    42261: '0x274B1F7F8e66B044B2DC773E017750957f70490c',
+    110001: '0xe092CB3124aF36a0B851839D8EC51CaaD9a3DCD0'
   },
-  bond: {
-    43113: '0x95e7415e619d6D3ae4a140C23137DAaF3Acf7608' // depository contract
-  },
+  // bond: {
+  //   43113: '0x95e7415e619d6D3ae4a140C23137DAaF3Acf7608' // depository contract
+  // },
   reserve: {
     43113: '0xaea51e4fee50a980928b4353e852797b54deacd8' // DAI address
   },
   bondingCalculator: {
-    43113: '0x2A03A0B4e33B922d381B9f7DF16111cd2C77b4b3'
+    43113: '0x2A03A0B4e33B922d381B9f7DF16111cd2C77b4b3' // calculator for DAI-ReQT pool
+  },
+  bondingCalculatorNew: { // new calculator respecting the decimal differences
+    43113: '0x9838Be44B28dCF60d3875B5F716D39C58f2Af44b'
   },
   reserveLp: {
     43113: '0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c' // 80reqt 20dai 25bps LP address
   },
   treasury: {
-    43113: '0x2fD7c6a9466e20a91aBbb31849C081B8288030B2'
+    43113: '0x30E4242b17Cda7e6C5F05B7b2cE35A38e06BD7Ee'
   },
   reqtRewarder: {
     43113: '0xF5d2E7bAC75673d2D1761B5B98f6209ae5B39203'
   },
-  fundDistributor:{
+  fundDistributor: {
     43113: '0xA2EF3D23022d643C75816859fd7c2C52443Bfb8A'
+  },
+  sReqt: {
+    43113: '0x586462c336822F245AAee1da53fdeB49FBfa825c'
+  },
+  requiemStaking: {
+    43113: '0xa897b72505C39E2e43523966659E959827ac5C11'
+  },
+  weightedBondingCalculator: {
+    43113: '0xB9Ec202978450F962C7EA17A852F84b72e3C4AF4'
+  },
+  bondDepositoty: {
+    43113: '0x0D5Ff7e85Bf536A26CaFD411FF333c453D5ca455'
   }
+
 }
 

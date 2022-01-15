@@ -1,4 +1,4 @@
-import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem } from '@requiemswap/uikit'
 import config from 'components/Menu/config'
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'
@@ -12,6 +12,36 @@ const StyledLogo = styled(Logo) <{ size: string }>`
 `
 
 const LIQUIDITY_ROUTES = ['/add', '/find', '/remove']
+
+interface MenuProps {
+  history: any
+  current: any
+  menuItem: any
+  isMobile: boolean
+}
+
+
+const MenuItem: React.FC<MenuProps> = ({ history, current, menuItem, isMobile }) => {
+  return (
+    isMobile ? (
+      <UserMenuItem as='button' onClick={() => history.push(menuItem.href)}>
+        {/* <ButtonMenuItem key={menuItem?.label}> */}
+          <StyledLogo
+            size="24px"
+            srcs={[current?.label === menuItem?.label ? menuItem.iconSelected : menuItem.icon]}
+            alt={menuItem?.label.charAt(0)}
+          />
+        {/* </ButtonMenuItem> */}
+
+      </UserMenuItem>
+    ) 
+    : (
+      <UserMenuItem as='button' onClick={() => history.push(menuItem.href)}>
+        {menuItem.label}
+      </UserMenuItem>
+    )
+  )
+}
 
 const CustomNav: React.FC = () => {
   const { t } = useTranslation()
@@ -27,40 +57,17 @@ const CustomNav: React.FC = () => {
       : location.pathname
     return i.href.match(new RegExp(`^${pathname}`))
   })
-  const handleMenuItemClick = (index: number) => {
-    history.push(menuItems[index].href)
-  }
+
   const current = menuItems[activeIndex]
   return (
-    <div
-      style={{
-        position: 'relative',
-        // top: '15px',
-        width: '100%',
-        justifyContent: 'left',
-        alignItems: 'left',
-        display: 'flex',
-        zIndex: 9,
-      }}
+    <UIKitUserMenu
+      text={current?.label ?? 'Requiem Finance'}
+      avatarSrc={current?.icon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'}
     >
-      <UIKitUserMenu text={current?.label ?? 'Requiem Finance'} avatarSrc={current?.icon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'}>
-        <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md">
-          {menuItems.map((menuItem) =>
-            isMobile ? (
-              <ButtonMenuItem key={menuItem?.label}>
-                <StyledLogo
-                  size="24px"
-                  srcs={[current?.label === menuItem?.label ? menuItem.iconSelected : menuItem.icon]}
-                  alt={menuItem?.label.charAt(0)}
-                />
-              </ButtonMenuItem>
-            ) : (
-              <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>
-            ),
-          )}
-        </ButtonMenu>
-      </UIKitUserMenu>
-    </div>
+      {menuItems.map((menuItem) =>
+        <MenuItem history={history} current={current} isMobile={isMobile} menuItem={menuItem} />
+      )}
+    </UIKitUserMenu>
   )
 }
 

@@ -54,7 +54,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
-
+  
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(chainId, loadedUrlParams?.inputCurrencyId),
