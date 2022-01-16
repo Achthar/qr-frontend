@@ -133,7 +133,7 @@ const Bonds: React.FC = () => {
   const { data: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
-  const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
+  // const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
   const { account, chainId, library } = useWeb3React()
   const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
@@ -260,6 +260,7 @@ const Bonds: React.FC = () => {
   // useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
 
   const calcDebounce = useDebounce('1', 10)
+
   useEffect(() => {
     bondsLP.map(
       (bond) => dispatch(calcSingleBondDetails({ bond, value: '', provider: library, chainId }))
@@ -296,13 +297,14 @@ const Bonds: React.FC = () => {
   }, [chosenBondsMemoized, observerIsSet])
 
   const rowData = Object.values(bondData).map((bond) => {
-    console.log("TERM", (1 + bond.bondDiscount), (365 / blocksToDays(bond.vestingTerm, chainId)))
+    // console.log("TERM", (1 + bond.bondDiscount), (365 / blocksToDays(bond.vestingTerm, chainId)))
     // const { token, quoteToken } = bond
-    const token = getSerializedToken(chainId, tokens.reqt)
-    const quoteToken = getSerializedToken(chainId, tokens.tusd)
 
-    const tokenAddress = token.address
-    const quoteTokenAddress = quoteToken.address
+    // const token = getSerializedToken(chainId, tokens.reqt)
+    // const quoteToken = getSerializedToken(chainId, tokens.tusd)
+
+    // const tokenAddress = token.address
+    // const quoteTokenAddress = quoteToken.address
 
     const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
     const price = Number(bond.bondPrice)
@@ -322,8 +324,8 @@ const Bonds: React.FC = () => {
       bond: {
         label: bond.name,
         bondId: bond.bondId,
-        token,
-        quoteToken
+        token: bond.token,
+        quoteToken: bond.quoteToken
       },
       discount: bond.bondDiscount,
       // earned: {
@@ -351,7 +353,9 @@ const Bonds: React.FC = () => {
   })
 
   const renderContent = (): JSX.Element => {
-    if (viewMode === ViewMode.TABLE && rowData.length) {
+    // if (
+      // viewMode === ViewMode.TABLE && 
+      // rowData.length > 0) {
       const columnSchema = DesktopColumnSchema
 
       const columns = columnSchema.map((column) => ({
@@ -378,48 +382,48 @@ const Bonds: React.FC = () => {
       }))
 
       return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
-    }
+    // }
 
-    return (
-      <FlexLayout>
-        <Route exact path={`${path}`}>
-          {chosenBondsMemoized.map((bond) => (
-            <BondCard
-              key={bond.bondId}
-              bond={bond}
-              displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-              reqtPrice={reqtPrice}
-              account={account}
-              removed={false}
-            />
-          ))}
-        </Route>
-        <Route exact path={`${path}/history`}>
-          {chosenBondsMemoized.map((bond) => (
-            <BondCard
-              key={bond.bondId}
-              bond={bond}
-              displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-              reqtPrice={reqtPrice}
-              account={account}
-              removed
-            />
-          ))}
-        </Route>
-        <Route exact path={`${path}/archived`}>
-          {chosenBondsMemoized.map((bond) => (
-            <BondCard
-              key={bond.bondId}
-              bond={bond}
-              displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-              reqtPrice={reqtPrice}
-              account={account}
-              removed
-            />
-          ))}
-        </Route>
-      </FlexLayout>
-    )
+    // return (
+    //   <FlexLayout>
+    //     <Route exact path={`${path}`}>
+    //       {chosenBondsMemoized.map((bond) => (
+    //         <BondCard
+    //           key={bond.bondId}
+    //           bond={bond}
+    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
+    //           reqtPrice={reqtPrice}
+    //           account={account}
+    //           removed={false}
+    //         />
+    //       ))}
+    //     </Route>
+    //     <Route exact path={`${path}/history`}>
+    //       {chosenBondsMemoized.map((bond) => (
+    //         <BondCard
+    //           key={bond.bondId}
+    //           bond={bond}
+    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
+    //           reqtPrice={reqtPrice}
+    //           account={account}
+    //           removed
+    //         />
+    //       ))}
+    //     </Route>
+    //     <Route exact path={`${path}/archived`}>
+    //       {chosenBondsMemoized.map((bond) => (
+    //         <BondCard
+    //           key={bond.bondId}
+    //           bond={bond}
+    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
+    //           reqtPrice={reqtPrice}
+    //           account={account}
+    //           removed
+    //         />
+    //       ))}
+    //     </Route>
+    //   </FlexLayout>
+    // )
   }
 
   const handleSortOptionChange = (option: OptionProps): void => {
@@ -445,15 +449,15 @@ const Bonds: React.FC = () => {
         </NavLink>
       </PageHeader> */}
       <Page>
-        <ControlContainer>
-          <ViewControls>
-            <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} />
+        {/* <ControlContainer> */}
+          {/* <ViewControls> */}
+            {/* <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} /> */}
             {/* <ToggleWrapper>
               <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
               <Text> {t('Staked only')}</Text>
             </ToggleWrapper>
             <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
-          </ViewControls>
+          {/* </ViewControls> */}
           {/* <FilterContainer>
             <LabelWrapper>
               <Text textTransform="uppercase">{t('Sort by')}</Text>
@@ -488,7 +492,7 @@ const Bonds: React.FC = () => {
               <SearchInput onChange={handleChangeQuery} placeholder="Search Bonds" />
             </LabelWrapper>
           </FilterContainer> */}
-        </ControlContainer>
+        {/* </ControlContainer> */}
         {renderContent()}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

@@ -7,7 +7,7 @@ import { useWeb3React } from '@web3-react/core'
 // import { useReqtPrice } from 'hooks/usePrice';
 import isArchivedBondId from 'utils/bondHelpers'
 import { DAI, REQT } from 'config/constants/tokens';
-import { bondList as bondsDict } from 'config/constants/bonds'
+import { bonds as bondList, bondList as bondsDict } from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
 import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
 import { getAddressForBond, getAddressForReserve } from 'utils/addressHelpers';
@@ -35,7 +35,7 @@ import { BondsState, Bond } from '../types'
 const chainIdFromState = 43113 // useAppSelector((state) => state.application.chainId)
 
 function noAccountBondConfig(chainId: number) {
-  return bondsDict[chainId].map((bond) => ({
+  return bondList(chainId).map((bond) => ({
     ...bond,
     userData: {
       allowance: '0',
@@ -56,7 +56,7 @@ function initialState(chainId: number): BondsState {
   }
 }
 
-export function nonArchivedBonds(chainId: number): BondConfig[] { return bondsDict[chainId ?? 43113].filter(({ bondId }) => !isArchivedBondId(bondId)) }
+export function nonArchivedBonds(chainId: number): BondConfig[] { return bondList(chainId).filter(({ bondId }) => !isArchivedBondId(bondId)) }
 
 // Async thunks
 export const fetchBondsPublicDataAsync = createAsyncThunk(
@@ -91,7 +91,7 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
   async ({ chainId, account, bondIds }) => {
     // const { chainId } = useWeb3React()
     // const chainId = 43113
-    const bondsToFetch = bondsDict[chainId] // .filter((bondConfig) => bondIds.includes(bondConfig.bondId))
+    const bondsToFetch = bondList(chainId) // bondsDict[chainId] // .filter((bondConfig) => bondIds.includes(bondConfig.bondId))
     const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
     // const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
     // const userStakedBalances = await fetchBondUserStakedBalances(chainId, account, bondsToFetch)

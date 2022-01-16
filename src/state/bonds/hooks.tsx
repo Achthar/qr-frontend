@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
-import { bondsConfig as bondsDict } from 'config/constants'
+import { bonds as bondList } from 'config/constants/bonds'
 import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
 import { Price, TokenAmount } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens'
@@ -20,7 +20,7 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
-    const bondsToFetch = includeArchive ? bondsDict[chainId ?? 43113] : nonArchivedBonds(chainId ?? 43113)
+    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId ?? 43113)
     console.log(bondsToFetch)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
     dispatch(fetchBondsPublicDataAsync())
@@ -33,7 +33,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
   const { account } = useWeb3React()
 
   useEffect(() => {
-    const bondsToFetch = includeArchive ? bondsDict[chainId] : nonArchivedBonds(chainId)
+    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
 
     dispatch(fetchBondsPublicDataAsync())
@@ -62,7 +62,7 @@ export const useBonds = (): BondsState => {
 }
 
 export const useBondFromBondId = (bondId): Bond => {
-  console.log()
+  // console.log()
   const bond = useSelector((state: State) => state.bonds.data.find((f) => f.bondId === bondId))
   return bond
 }

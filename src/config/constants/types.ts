@@ -213,6 +213,8 @@ export interface BondConfig {
   isLP: boolean;
   // reserveContract: ethers.ContractInterface; // Token ABI
   displayUnits: string;
+  token?: SerializedToken
+  quoteToken?: SerializedToken
 }
 
 

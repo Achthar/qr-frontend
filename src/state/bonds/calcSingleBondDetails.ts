@@ -52,7 +52,6 @@ export const calcSingleBondDetails = createAsyncThunk(
         loadMarketPrice({ chainId, provider }),
       ).unwrap();
       marketPrice = BigNumber.from(originalPromiseResult.marketPrice)
-      console.log("MP DISPAtCH", originalPromiseResult)
     } catch (rejectedValueOrSerializedError) {
       // handle error here
       console.error("Returned a null response from dispatch(loadMarketPrice)");
@@ -62,19 +61,16 @@ export const calcSingleBondDetails = createAsyncThunk(
       // TODO (appleseed): improve this logic
       if (bond.name === "cvx") {
         const bondPriceRaw = await bondContract.bondPrice();
-        console.log("BPRAW", bondPriceRaw)
         const assetPriceUSD = 213 // await bond.getBondReservePrice(chainId, provider);
         const assetPriceBN = ethers.utils.parseUnits(assetPriceUSD.toString(), 14);
         // bondPriceRaw has 4 extra decimals, so add 14 to assetPrice, for 18 total
         bondPrice = bondPriceRaw.mul(assetPriceBN);
       } else {
-        console.log("PRICE CALC")
         bondPrice = await bondContract.bondPriceInUSD();
-        console.log("BPRAW", bondPrice)
       }
       bondDiscount = bnParser(marketPrice.sub(bondPrice), bondPrice) // marketPrice && bondPrice
       // ?  : 0 // (marketPrice * (10 ** 18) - Number(bondPrice.toString())) / Number(bondPrice.toString()); // 1 - bondPrice / (bondPrice * (10 ** 9));
-      console.log("BDISCOUNT", marketPrice.toString(), bondPrice.toString(), bondDiscount)
+
     } catch (e) {
       console.log("error getting bondPriceInUSD", bond.name, e);
     }
@@ -117,25 +113,13 @@ export const calcSingleBondDetails = createAsyncThunk(
       console.log(errorString)
       // dispatch(error(errorString));
     }
-    console.log("AM")
     // Calculate bonds purchased
     const reserveContract = getContractForLpReserve(chainId, provider)
     // console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
     const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
-    // console.log("PQUERY", purchasedQuery)
-    const purchased = bnParser(purchasedQuery, E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
 
-    console.log("RESULTS BOND FETCH",
-      bond.name,
-      bondDiscount,
-      Number(debtRatio.toString()),
-      Number(bondQuote.toString()),
-      "purchjased",
-      purchased,
-      Number(terms.vestingTerm.toString()),
-      // Number(maxBondPrice.toString()) / (10 ** 9),
-      // Number(bondPrice.toString()) / (10 ** 18),
-      marketPrice)
+    const purchased = bnParser(purchasedQuery, E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
+    console.log("ASYNC BOND", bond)
 
     return {
       ...bond,
