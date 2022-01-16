@@ -9,7 +9,8 @@ import { getNetworkExplorerLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import HarvestAction from './HarvestAction'
-import StakedAction from './StakedAction'
+import BondingAction from './BondingAction'
+import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
 import Multiplier, { MultiplierProps } from '../Multiplier'
 import Liquidity, { LiquidityProps } from '../Liquidity'
@@ -163,7 +164,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         <StyledLinkExternal href={bsc}>{t('View Contract')}</StyledLinkExternal>
         <StyledLinkExternal href={info}>{t('See Pair Info')}</StyledLinkExternal>
         <TagsContainer>
-        <CoreTag />
+          <CoreTag />
         </TagsContainer>
       </InfoContainer>
       <ValueContainer>
@@ -177,8 +178,8 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         </ValueWrapper> */}
       </ValueContainer>
       <ActionContainer>
-        <HarvestAction {...bond} userDataReady={userDataReady} />
-        <StakedAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
+        <RedemptionAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
+        <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
       </ActionContainer>
     </Container>
   )

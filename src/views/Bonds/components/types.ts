@@ -52,6 +52,12 @@ export const MobileColumnSchema: ColumnsDefTypes[] = [
     sortable: true,
     label: '',
   },
+  {
+    id: 5,
+    name: 'term',
+    sortable: true,
+    label: '',
+  },
 ]
 
 export const DesktopColumnSchema: ColumnsDefTypes[] = [
@@ -70,6 +76,12 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
   {
     id: 4,
     name: 'discount',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 5,
+    name: 'term',
     sortable: true,
     label: '',
   },
@@ -129,6 +141,12 @@ export const DesktopColumnSchemaNew: ColumnsDefTypes[] = [
   {
     id: 5,
     name: 'details',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 6,
+    name: 'term',
     sortable: true,
     label: '',
   },

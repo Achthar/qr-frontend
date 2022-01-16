@@ -21,7 +21,7 @@ const AnnualRoiDisplay = styled(Text)`
   text-overflow: ellipsis;
 `
 
-interface BondingModalProps {
+interface RedemptionModalProps {
   max: BigNumber
   stakedBalance: BigNumber
   multiplier?: string
@@ -36,7 +36,7 @@ interface BondingModalProps {
   reqtPrice?: BigNumber
 }
 
-const BondingModal: React.FC<BondingModalProps> = ({
+const RedemptionModal: React.FC<RedemptionModalProps> = ({
   max,
   stakedBalance,
   onConfirm,
@@ -90,27 +90,8 @@ const BondingModal: React.FC<BondingModalProps> = ({
     setVal(fullBalance)
   }, [fullBalance, setVal])
 
-  if (showRoiCalculator) {
-    return (
-      <RoiCalculatorModal
-        linkLabel={t('Get %symbol%', { symbol: lpLabel })}
-        stakingTokenBalance={stakedBalance.plus(max)}
-        stakingTokenSymbol={tokenName}
-        stakingTokenPrice={lpPrice.toNumber()}
-        earningTokenPrice={reqtPrice.toNumber()}
-        apr={apr}
-        multiplier={multiplier}
-        displayApr={displayApr}
-        linkHref={addLiquidityUrl}
-        isBond
-        initialValue={val}
-        onBack={() => setShowRoiCalculator(false)}
-      />
-    )
-  }
-
   return (
-    <Modal title={t('Bond LP tokens')} onDismiss={onDismiss}>
+    <Modal title={t('Redeem Bond')} onDismiss={onDismiss}>
       <ModalInput
         value={val}
         onSelectMax={handleSelectMax}
@@ -118,9 +99,9 @@ const BondingModal: React.FC<BondingModalProps> = ({
         max={fullBalance}
         symbol={tokenName}
         addLiquidityUrl={addLiquidityUrl}
-        inputTitle={t('Stake')}
+        inputTitle={t('Redeem')}
       />
-      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+      {/* <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           {t('Annual ROI at current rates')}:
         </Text>
@@ -130,6 +111,46 @@ const BondingModal: React.FC<BondingModalProps> = ({
             <CalculateIcon color="textSubtle" width="18px" />
           </IconButton>
         </AnnualRoiContainer>
+      </Flex> */}
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Pending Rewards
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          REQ
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Claimable Rewards
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          REQ
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Time until fully vested
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          days
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Debt Ratio
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          %
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Vesting Term
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          days
+        </Text>
       </Flex>
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>
@@ -144,7 +165,7 @@ const BondingModal: React.FC<BondingModalProps> = ({
             setPendingTx(true)
             try {
               await onConfirm(val)
-              toastSuccess(t('Staked!'), t('Your funds have been staked in the farm'))
+              toastSuccess(t('Redeemed!'), t('Your funds have been released'))
               onDismiss()
             } catch (e) {
               toastError(
@@ -167,4 +188,4 @@ const BondingModal: React.FC<BondingModalProps> = ({
   )
 }
 
-export default BondingModal
+export default RedemptionModal

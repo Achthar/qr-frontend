@@ -30,6 +30,10 @@ export const getCustomMeta = (path: string, t: ContextApi['t']): PageMeta => {
       return {
         title: `${t('Pools')} | ${t('Requiem Finance')}`,
       }
+    case '/bonds':
+      return {
+        title: `${t('Bonds')} | ${t('Requiem Finance')}`,
+      }
     default:
       return null
   }

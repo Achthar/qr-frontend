@@ -1,29 +1,9 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// import { useNetworkState } from 'state/globalNetwork/hooks'
 import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { ChainId, JSBI, Price, TokenAmount, WeightedPair } from '@requiemswap/sdk'
-import { useWeb3React } from '@web3-react/core'
-// import { useReqtPrice } from 'hooks/usePrice';
-import isArchivedBondId from 'utils/bondHelpers'
-import { DAI, REQT } from 'config/constants/tokens';
-import { bondList as bondsDict } from 'config/constants/bonds'
+
 import { BondConfig } from 'config/constants/types'
-import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
-import { getAddressForBond, getAddressForReserve } from 'utils/addressHelpers';
-import { ethers, BigNumber, BigNumberish } from 'ethers'
-// import { useAppDispatch, useAppSelector } from 'state'
-import { addresses } from 'config/constants/contracts';
-import fetchBonds from './fetchBonds'
-import fetchBondsPrices from './fetchBondPrices'
-// import { usePriceReqtUsd } from './hooks';
-import {
-  fetchBondUserEarnings,
-  fetchBondUserAllowances,
-  fetchBondUserTokenBalances,
-  fetchBondUserStakedBalances,
-} from './fetchBondUser'
-import fetchPublicBondData from './fetchPublicBondData';
+
 import { BondsState, Bond } from '../types'
 
 

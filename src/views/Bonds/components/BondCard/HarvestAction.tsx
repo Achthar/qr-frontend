@@ -55,7 +55,7 @@ const HarvestAction: React.FC<BondCardActionsProps> = ({ earnings, bondId }) => 
           } finally {
             setPendingTx(false)
           }
-          dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+          dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
         }}
       >
         {t('Harvest')}

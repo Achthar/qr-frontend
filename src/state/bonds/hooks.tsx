@@ -39,7 +39,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     dispatch(fetchBondsPublicDataAsync())
 
     if (account) {
-      dispatch(fetchBondUserDataAsync({ account, bondIds }))
+      dispatch(fetchBondUserDataAsync({chainId,  account, bondIds }))
     }
   }, [chainId, includeArchive, dispatch, slowRefresh, account])
 }

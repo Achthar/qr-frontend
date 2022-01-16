@@ -16,10 +16,14 @@ export const blockTimes = (chainId: number) => {
     return 3
   }
   if (chainId === 43113 || chainId === 43113) {
-    return 3
+    return 14
   }
 
   return 10
+}
+
+export const blocksToDays = (blocks: number, chainId: number) => {
+  return blockTimes(chainId) * blocks / 3600 / 24
 }
 
 export { ChainId } from '@requiemswap/sdk'

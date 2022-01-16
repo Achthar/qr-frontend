@@ -20,7 +20,7 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
       isLP: false,
       name: "80% REQT - 20% DAI",
       displayName: "80% REQT - 20% DAI",
-      bondToken: "DAI",
+      bondToken: "DAI REQT LP",
       payoutToken: "REQT",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
@@ -32,8 +32,8 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
         43113: "0xd43940687f6e76056789d00c43A40939b7a559b5"
       },
       reserveAddress: {
-        43114: "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
-        43113: "0xB2180448f8945C8Cc8AE9809E67D6bd27d8B2f2C"
+        43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
+        43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
       }
     },
     {
@@ -61,8 +61,8 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
         43113: "0xd43940687f6e76056789d00c43A40939b7a559b5"
       },
       reserveAddress: {
-        43114: "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
-        43113: "0xB2180448f8945C8Cc8AE9809E67D6bd27d8B2f2C"
+        43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
+        43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
       }
     }
   ],

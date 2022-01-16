@@ -17,7 +17,7 @@ import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
-import DepositModal from '../../DepositModal'
+import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
 import useStakeBonds from '../../../hooks/useStakeBonds'
 import useApproveBond from '../../../hooks/useApproveBond'
@@ -33,7 +33,7 @@ interface StackedActionProps extends BondWithStakedValue {
   displayApr?: string
 }
 
-const Staked: React.FunctionComponent<StackedActionProps> = ({
+const Bonded: React.FunctionComponent<StackedActionProps> = ({
   bondId,
   apr,
   name,
@@ -64,12 +64,12 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const handleStake = async (amount: string) => {
     await onStake(amount)
-    dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
   }
 
   const handleUnstake = async (amount: string) => {
     await onUnstake(amount)
-    dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
   }
 
   const displayBalance = useCallback(() => {
@@ -83,8 +83,8 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
     return stakedBalanceBigNumber.toFixed(3, BigNumber.ROUND_DOWN)
   }, [stakedBalance])
 
-  const [onPresentDeposit] = useModal(
-    <DepositModal
+  const [onPresentBonding] = useModal(
+    <BondingModal
       max={tokenBalance}
       lpPrice={lpPrice}
       lpLabel={lpLabel}
@@ -109,13 +109,13 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
 
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
     }
-  }, [onApprove, dispatch, account, bondId])
+  }, [onApprove, dispatch, account, bondId, chainId])
 
   if (!account) {
     return (
@@ -141,7 +141,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
               {name}
             </Text>
             <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-              {t('Staked')}
+              {t('Bonded')}
             </Text>
           </ActionTitles>
           <ActionContent>
@@ -164,7 +164,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
               </IconButton>
               <IconButton
                 variant="secondary"
-                onClick={onPresentDeposit}
+                onClick={onPresentBonding}
                 disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
               >
                 <AddIcon color="primary" width="14px" />
@@ -179,7 +179,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
       <ActionContainer>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px">
-            {t('Stake').toUpperCase()}
+            {t('Bond').toUpperCase()}
           </Text>
           <Text bold textTransform="uppercase" color="secondary" fontSize="12px">
             {name}
@@ -188,11 +188,11 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
         <ActionContent>
           <Button
             width="100%"
-            onClick={onPresentDeposit}
+            onClick={onPresentBonding}
             variant="secondary"
             disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
           >
-            {t('Stake LP')}
+            {t('Bond LP')}
           </Button>
         </ActionContent>
       </ActionContainer>
@@ -230,4 +230,4 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   )
 }
 
-export default Staked
+export default Bonded

@@ -61,9 +61,9 @@ const BondTable: React.FC<ITableProps> = (props) => {
   const tableWrapperEl = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const { data, columns, userDataReady } = props
-
+  console.log("ROWSSTAT", data, columns)
   const { rows } = useTable(columns, data, { sortable: true, sortColumn: 'bond' })
-
+  console.log("ROWS", rows)
   const scrollToTop = (): void => {
     tableWrapperEl.current.scrollIntoView({
       behavior: 'smooth',

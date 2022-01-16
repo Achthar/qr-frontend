@@ -18,7 +18,7 @@ import fetchBonds from './fetchBonds'
 import fetchBondsPrices from './fetchBondPrices'
 // import { usePriceReqtUsd } from './hooks';
 import {
-  fetchBondUserEarnings,
+  // fetchBondUserEarnings,
   fetchBondUserAllowances,
   fetchBondUserTokenBalances,
   fetchBondUserStakedBalances,
@@ -86,23 +86,24 @@ interface BondUserDataResponse {
 
 
 
-export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], { account: string; bondIds: number[] }>(
+export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], { chainId: number, account: string; bondIds: number[] }>(
   'bonds/fetchBondUserDataAsync',
-  async ({ account, bondIds }) => {
-    const { chainId } = useWeb3React()
-    const bondsToFetch = bondsDict[chainId].filter((bondConfig) => bondIds.includes(bondConfig.bondId))
+  async ({ chainId, account, bondIds }) => {
+    // const { chainId } = useWeb3React()
+    // const chainId = 43113
+    const bondsToFetch = bondsDict[chainId] // .filter((bondConfig) => bondIds.includes(bondConfig.bondId))
     const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
-    const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
-    const userStakedBalances = await fetchBondUserStakedBalances(chainId, account, bondsToFetch)
-    const userBondEarnings = await fetchBondUserEarnings(chainId, account, bondsToFetch)
+    // const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
+    // const userStakedBalances = await fetchBondUserStakedBalances(chainId, account, bondsToFetch)
+    // const userBondEarnings = await fetchBondUserEarnings(chainId, account, bondsToFetch)
     console.log("bTF", bondsToFetch)
     return userBondAllowances.map((bondAllowance, index) => {
       return {
         bondId: bondsToFetch[index].bondId,
         allowance: userBondAllowances[index],
-        tokenBalance: userBondTokenBalances[index],
-        stakedBalance: userStakedBalances[index],
-        earnings: userBondEarnings[index],
+        tokenBalance: 0, //  userBondTokenBalances[index],
+        stakedBalance: 0, // userStakedBalances[index],
+        earnings: 0 //  userBondEarnings[index],
       }
     })
   },
@@ -140,13 +141,14 @@ export const bondsSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Update bonds with live data
-    builder.addCase(fetchBondsPublicDataAsync.fulfilled, (state, action) => {
-      state.data = state.data.map((bond) => {
-        console.log("baba", action.payload)
-        const liveBondData = action.payload // .find((bondData) => bondData.bondId === bond.bondId)
-        return { ...bond, ...liveBondData }
-      })
-    })
+    builder
+      // .addCase(fetchBondsPublicDataAsync.fulfilled, (state, action) => {
+      //   state.data = state.data.map((bond) => {
+      //     console.log("baba", action.payload)
+      //     const liveBondData = action.payload // .find((bondData) => bondData.bondId === bond.bondId)
+      //     return { ...bond, ...liveBondData }
+      //   })
+      // })
       .addCase(calculateUserBondDetails.pending, state => {
         state.userDataLoaded = false;
       })
@@ -172,17 +174,17 @@ export const bondsSlice = createSlice({
         state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
-      });
-
-    // Update bonds with user data
-    builder.addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
-      action.payload.forEach((userDataEl) => {
-        const { bondId } = userDataEl
-        const index = state.data.findIndex((bond) => bond.bondId === bondId)
-        state.data[index] = { ...state.data[index], userData: userDataEl }
       })
-      state.userDataLoaded = true
-    })
+
+      // Update bonds with user data
+      .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
+        action.payload.forEach((userDataEl) => {
+          // const { bondId } = userDataEl
+          const index = state.data.findIndex((bond) => bond.bondId === 0)
+          state.data[index] = { ...state.data[index], userData: userDataEl }
+        })
+        state.userDataLoaded = true
+      })
   },
 })
 

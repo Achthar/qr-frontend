@@ -57,12 +57,12 @@ const CardActions: React.FC<BondCardActionsProps> = ({ bond, account, addLiquidi
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
     }
-  }, [onApprove, dispatch, account, bondId])
+  }, [onApprove, dispatch, account, bondId, chainId])
 
   const renderApprovalOrStakeButton = () => {
     return isApproved ? (
@@ -83,17 +83,32 @@ const CardActions: React.FC<BondCardActionsProps> = ({ bond, account, addLiquidi
     )
   }
 
+  const renderRedemptionButton = () => {
+    return (
+      <StakeAction
+        stakedBalance={stakedBalance}
+        tokenBalance={tokenBalance}
+        tokenName={bond.name}
+        bondId={bondId}
+        apr={bond.apr}
+        lpLabel={lpLabel}
+        reqtPrice={reqtPrice}
+        addLiquidityUrl={addLiquidityUrl}
+      />
+    )
+  }
+
   return (
     <Action>
-      <Flex>
+      {/* <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           REQT
         </Text>
         <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
           {t('Earned')}
         </Text>
-      </Flex>
-      <HarvestAction earnings={earnings} bondId={bondId} />
+      </Flex> */}
+      {!account ? <ConnectWalletButton mt="8px" width="100%" /> : renderRedemptionButton()}
       <Flex>
         <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
           {bond.name}

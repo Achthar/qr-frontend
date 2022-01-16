@@ -118,9 +118,9 @@ const BondingModal: React.FC<BondingModalProps> = ({
         max={fullBalance}
         symbol={tokenName}
         addLiquidityUrl={addLiquidityUrl}
-        inputTitle={t('Stake')}
+        inputTitle={t('Bond')}
       />
-      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+      {/* <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           {t('Annual ROI at current rates')}:
         </Text>
@@ -130,6 +130,46 @@ const BondingModal: React.FC<BondingModalProps> = ({
             <CalculateIcon color="textSubtle" width="18px" />
           </IconButton>
         </AnnualRoiContainer>
+      </Flex> */}
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Your Balance
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          LP
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          You Will Get
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          REQ
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          ROI
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          %
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Debt Ratio
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          %
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Vesting Term
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          days
+        </Text>
       </Flex>
       <ModalActions>
         <Button variant="secondary" onClick={onDismiss} width="100%" disabled={pendingTx}>

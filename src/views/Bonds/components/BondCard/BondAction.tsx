@@ -35,7 +35,7 @@ const IconButtonWrapper = styled.div`
   }
 `
 
-const StakeAction: React.FC<BondCardActionsProps> = ({
+const BondAction: React.FC<BondCardActionsProps> = ({
   stakedBalance,
   tokenBalance,
   tokenName,
@@ -140,4 +140,4 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
   )
 }
 
-export default StakeAction
+export default BondAction

@@ -6,6 +6,7 @@ import exchangeIconDark from '../../assets/exchangeIconDark.svg'
 import liquidityIconLight from '../../assets/liquidityIconLight.svg'
 import liquidityIconDark from '../../assets/liquidityIconDark.svg'
 import stake from '../../assets/stake.svg'
+import bond from '../../assets/bonds2.svg'
 
 interface MenuEntry {
   label: string
@@ -38,6 +39,12 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
     icon: stake,
     iconSelected: stake,
     href: '/farms',
+  },
+  {
+    label: t('Bonds'),
+    icon: bond,
+    iconSelected: bond,
+    href: '/bonds',
   },
   // {
   //   label: t('Pools'),

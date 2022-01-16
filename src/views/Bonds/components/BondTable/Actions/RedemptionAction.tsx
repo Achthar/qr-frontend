@@ -17,7 +17,7 @@ import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
-import DepositModal from '../../BondingModal'
+import RedemptionModal from '../../RedemptionModal'
 import WithdrawModal from '../../WithdrawModal'
 import useStakeBonds from '../../../hooks/useStakeBonds'
 import useApproveBond from '../../../hooks/useApproveBond'
@@ -33,7 +33,7 @@ interface StackedActionProps extends BondWithStakedValue {
   displayApr?: string
 }
 
-const Staked: React.FunctionComponent<StackedActionProps> = ({
+const Redemption: React.FunctionComponent<StackedActionProps> = ({
   bondId,
   apr,
   name,
@@ -84,7 +84,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   }, [stakedBalance])
 
   const [onPresentDeposit] = useModal(
-    <DepositModal
+    <RedemptionModal
       max={tokenBalance}
       lpPrice={lpPrice}
       lpLabel={lpLabel}
@@ -141,7 +141,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
               {name}
             </Text>
             <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-              {t('Staked')}
+              {t('Redemption')}
             </Text>
           </ActionTitles>
           <ActionContent>
@@ -179,7 +179,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
       <ActionContainer>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px">
-            {t('Stake').toUpperCase()}
+            {t('Redeem').toUpperCase()}
           </Text>
           <Text bold textTransform="uppercase" color="secondary" fontSize="12px">
             {name}
@@ -192,7 +192,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
             variant="secondary"
             disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
           >
-            {t('Stake LP')}
+            {t('Redeem Bond')}
           </Button>
         </ActionContent>
       </ActionContainer>
@@ -230,4 +230,4 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   )
 }
 
-export default Staked
+export default Redemption

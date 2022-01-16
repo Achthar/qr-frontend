@@ -71,20 +71,20 @@ export const fetchBondUserStakedBalances = async (chainId: number, account: stri
   return parsedStakedBalances
 }
 
-export const fetchBondUserEarnings = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = getMasterChefAddress(chainId)
+// export const fetchBondUserEarnings = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
+//   const masterChefAddress = getMasterChefAddress(chainId)
 
-  const calls = bondsToFetch.map((bond) => {
-    return {
-      address: masterChefAddress,
-      name: 'pendingReqt',
-      params: [bond.bondId, account],
-    }
-  })
+//   const calls = bondsToFetch.map((bond) => {
+//     return {
+//       address: masterChefAddress,
+//       name: 'pendingReqt',
+//       params: [bond.bondId, account],
+//     }
+//   })
 
-  const rawEarnings = await multicall(chainId, masterchefABI, calls)
-  const parsedEarnings = rawEarnings.map((earnings) => {
-    return new BigNumber(earnings).toJSON()
-  })
-  return parsedEarnings
-}
+//   const rawEarnings = await multicall(chainId, masterchefABI, calls)
+//   const parsedEarnings = rawEarnings.map((earnings) => {
+//     return new BigNumber(earnings).toJSON()
+//   })
+//   return parsedEarnings
+// }

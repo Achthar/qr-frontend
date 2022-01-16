@@ -25,6 +25,7 @@ export interface RowProps {
   price: number
   roi: RoiProps
   purchased: number
+  term: number
 }
 
 interface RowPropsWithLoading extends RowProps {
@@ -128,7 +129,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label='Discount'>
                         <Text>
-                          {`${Math.round(props.discount*100000)/1000}%`}
+                          {`${Math.round(props.discount * 100000) / 1000}%`}
                         </Text>
                       </CellLayout>
                     </CellInner>
@@ -153,6 +154,18 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                       <CellLayout label={t('Purchased')}>
                         <Text>
                           {props.purchased}
+                        </Text>
+                      </CellLayout>
+                    </CellInner>
+                  </td>
+                )
+              case 'term':
+                return (
+                  <td key={key}>
+                    <CellInner>
+                      <CellLayout label={t('Vesting Term')}>
+                        <Text>
+                          {`${Math.round(props.term * 100) / 100} days`}
                         </Text>
                       </CellLayout>
                     </CellInner>

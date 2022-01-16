@@ -16,7 +16,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { getBondApr } from 'utils/apr'
 import { chain, orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
-
+import { blocksToDays } from 'config'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { latinise } from 'utils/latinise'
 import useDebounce from 'hooks/useDebounce'
@@ -37,6 +37,7 @@ import { DesktopColumnSchema, ViewMode } from './components/types'
 
 import fetchPublicBondData from '../../state/bonds/fetchPublicBondData'
 import { fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
+
 
 
 
@@ -256,7 +257,7 @@ const Bonds: React.FC = () => {
   const dispatch = useAppDispatch()
 
   // workaround useEffect in hooks not working
-  useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
+  // useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
 
   const calcDebounce = useDebounce('1', 10)
   useEffect(() => {
@@ -268,10 +269,7 @@ const Bonds: React.FC = () => {
   )
 
   const { bondData } = useBonds()
-  console.log("BOND DATA", bondData)
 
-  // const bs = fetchPublicBondData(chainId, bondsLP[0])
-  // console.log("BDATA", bs)
   chosenBondsLength.current = chosenBondsMemoized.length
 
   useEffect(() => {
@@ -298,6 +296,7 @@ const Bonds: React.FC = () => {
   }, [chosenBondsMemoized, observerIsSet])
 
   const rowData = Object.values(bondData).map((bond) => {
+    console.log("TERM", (1 + bond.bondDiscount), (365 / blocksToDays(bond.vestingTerm, chainId)))
     // const { token, quoteToken } = bond
     const token = getSerializedToken(chainId, tokens.reqt)
     const quoteToken = getSerializedToken(chainId, tokens.tusd)
@@ -307,7 +306,6 @@ const Bonds: React.FC = () => {
 
     const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
     const price = Number(bond.bondPrice)
-    const roi = 32.213
     const purchased = Math.round(bond.purchased * 100) / 100 // 7002000
 
     const row: RowProps = {
@@ -337,8 +335,9 @@ const Bonds: React.FC = () => {
       // },
       details: bond,
       price: Math.round(price * 1000) / 1000,
+      term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
-        value: '213',
+        value: String(Math.round(((1 + bond.bondDiscount / blocksToDays(bond.vestingTerm, chainId)) ** (365 / blocksToDays(bond.vestingTerm, chainId)) - 1) * 100) / 100),
         bondId: 1,
         lpLabel: 'string',
         reqtPrice: new BigNumber(1),

@@ -78,7 +78,7 @@ const RedeemAction: React.FunctionComponent<RedeemActionProps> = ({ bondId, user
             } finally {
               setPendingTx(false)
             }
-            dispatch(fetchBondUserDataAsync({ account, bondIds: [bondId] }))
+            dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
           }}
           ml="4px"
         >
