@@ -36,20 +36,22 @@ interface BondingModalProps {
   reqtPrice?: BigNumber
 }
 
-const BondingModal: React.FC<BondingModalProps> = ({
-  max,
-  stakedBalance,
-  onConfirm,
-  onDismiss,
-  tokenName = '',
-  multiplier,
-  displayApr,
-  lpPrice,
-  lpLabel,
-  apr,
-  addLiquidityUrl,
-  reqtPrice,
-}) => {
+const BondingModal: React.FC<BondingModalProps> = (
+  {
+    max,
+    stakedBalance,
+    onConfirm,
+    onDismiss,
+    tokenName = '',
+    multiplier,
+    displayApr,
+    lpPrice,
+    lpLabel,
+    apr,
+    addLiquidityUrl,
+    reqtPrice,
+  }
+) => {
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -88,7 +90,9 @@ const BondingModal: React.FC<BondingModalProps> = ({
 
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance)
-  }, [fullBalance, setVal])
+  },
+    [fullBalance, setVal]
+  )
 
   if (showRoiCalculator) {
     return (
@@ -120,6 +124,7 @@ const BondingModal: React.FC<BondingModalProps> = ({
         addLiquidityUrl={addLiquidityUrl}
         inputTitle={t('Bond')}
       />
+      
       {/* <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           {t('Annual ROI at current rates')}:
@@ -131,14 +136,14 @@ const BondingModal: React.FC<BondingModalProps> = ({
           </IconButton>
         </AnnualRoiContainer>
       </Flex> */}
-      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+      {/* <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           Your Balance
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
           LP
         </Text>
-      </Flex>
+      </Flex> */}
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           You Will Get

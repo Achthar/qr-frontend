@@ -1,21 +1,12 @@
 /** eslint @typescript-eslint/no-shadow:0 */
 import { TokenAmount, Pair, Currency, StablePool, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, SwapStorage } from '@requiemswap/sdk'
-import React, { useMemo, useCallback, useEffect, useState } from 'react'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
-import IERC20 from 'config/abi/avax/IERC20.json'
-// import { serializeError } from 'eth-rpc-errors'
-// import { Interface } from '@ethersproject/abi'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useNetworkState } from 'state/globalNetwork/hooks'
+import  { useMemo} from 'react'
 import { BigNumber } from 'ethers'
 import { getStableLpContract, getStableSwapContract } from 'utils/contractHelpers'
 import { swapStorageData } from 'config/constants/stableSwapData'
 import { useBlock } from 'state/block/hooks'
-import useRefresh from './useRefresh'
-import { useTotalSupply } from './useTokenBalance'
-import { useStableLPContract, useTokenContract } from './useContract'
 import { NEVER_RELOAD, useSingleCallResult, useSingleContractMultipleFunctions } from '../state/multicall/hooks'
-import { wrappedCurrency } from '../utils/wrappedCurrency'
+
 
 
 
@@ -49,6 +40,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
     getStableSwapContract(chainId),
     'getTokenBalances'
   )
+
 
   const { currentBlock } = useBlock()
 

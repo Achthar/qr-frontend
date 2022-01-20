@@ -2,15 +2,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
 
-import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract, getContractForLpReserve } from 'utils/contractHelpers';
-import { getAddressForBond, getAddressForReserve } from 'utils/addressHelpers';
+import { getContractForBond, getContractForLpReserve } from 'utils/contractHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 // import { useAppDispatch, useAppSelector } from 'state'
 import { addresses } from 'config/constants/contracts';
-import { Fraction, JSBI } from '@requiemswap/sdk';
+import multicall from 'utils/multicall';
+import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
+import { Fraction, JSBI, WeightedPair } from '@requiemswap/sdk';
 import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
-import { loadMarketPrice } from './loadMarketPrice';
+import { loadMarketPrice, priceFromData } from './loadMarketPrice';
 import { BondsState, Bond } from '../types'
 
 const E_NINE = BigNumber.from('1000000000')
@@ -22,30 +23,40 @@ function bnParser(bn: BigNumber, decNr: BigNumber) {
 
 export const calcSingleBondDetails = createAsyncThunk(
   "bonds/calcBondDetails",
-  async ({ bond, value, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
-    if (!value || value === "") {
-      value = "0";
-    }
-    const amountInWei = ethers.utils.parseEther(value);
+  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
 
-    let bondPrice = BigNumber.from(0);
     let bondDiscount = 0;
-    let valuation = 0;
+    const valuation = 0;
     let bondQuote: BigNumberish = BigNumber.from(0);
     const bondContract = getContractForBond(chainId, provider);
-    const bondCalcContract = getBondCalculatorContract(chainId, provider);
+    const reserveContract = getContractForLpReserve(chainId, provider)
+    const calls = [
+      // max payout
+      {
+        address: bondContract.address,
+        name: 'maxPayout'
+      },
+      // debt ratio
+      {
+        address: bondContract.address,
+        name: bond.name === 'cvx' ? 'debtRatio' : 'standardizedDebtRatio',
+      },
+      // terms
+      {
+        address: bondContract.address,
+        name: 'terms',
+      },
+      // bond price in USD
+      {
+        address: bondContract.address,
+        name: 'bondPriceInUSD',
+      },
+    ]
 
-    const terms = await bondContract.terms();
-    const maxBondPrice = await bondContract.maxPayout();
-    let debtRatio: BigNumber;
-    // TODO (appleseed): improve this logic
-    if (bond.name === "cvx") {
-      debtRatio = await bondContract.debtRatio();
-    } else {
-      debtRatio = await bondContract.standardizedDebtRatio();
-    }
-    debtRatio = debtRatio.div(E_NINE)  // / (10 ** 9);
+    const [maxBondPrice, debtRatio, terms, bondPrice] =
+      await multicall(chainId, bondReserveAVAX, calls)
 
+    console.log("RES", maxBondPrice, debtRatio, terms, bondPrice)
     let marketPrice: BigNumber;
     try {
       const originalPromiseResult = await dispatch(
@@ -57,79 +68,71 @@ export const calcSingleBondDetails = createAsyncThunk(
       console.error("Returned a null response from dispatch(loadMarketPrice)");
     }
 
-    try {
-      // TODO (appleseed): improve this logic
-      if (bond.name === "cvx") {
-        const bondPriceRaw = await bondContract.bondPrice();
-        const assetPriceUSD = 213 // await bond.getBondReservePrice(chainId, provider);
-        const assetPriceBN = ethers.utils.parseUnits(assetPriceUSD.toString(), 14);
-        // bondPriceRaw has 4 extra decimals, so add 14 to assetPrice, for 18 total
-        bondPrice = bondPriceRaw.mul(assetPriceBN);
-      } else {
-        bondPrice = await bondContract.bondPriceInUSD();
-      }
-      bondDiscount = bnParser(marketPrice.sub(bondPrice), bondPrice) // marketPrice && bondPrice
-      // ?  : 0 // (marketPrice * (10 ** 18) - Number(bondPrice.toString())) / Number(bondPrice.toString()); // 1 - bondPrice / (bondPrice * (10 ** 9));
+    // const callsPair = [
+    //   // max payout
+    //   {
+    //     address: weightedPairContract.address,
+    //     name: 'getReserves'
+    //   },
+    //   // debt ratio
+    //   {
+    //     address: weightedPairContract.address,
+    //     name: 'balanceOf',
+    //   },
+    // ]
 
-    } catch (e) {
-      console.log("error getting bondPriceInUSD", bond.name, e);
-    }
+    // const [reserves, balance,] =
+    //   await multicall(chainId, weightedPairAVAX, callsPair)
 
-    if (Number(value) === 0) {
-      // if inputValue is 0 avoid the bondQuote calls
-      bondQuote = BigNumber.from(0);
+    // const price = useMemo(
+    //   () => {
+    //     return priceFromData(
+    //       deserializeToken(bond.token),
+    //       deserializeToken(bond.quoteToken),
+    //       BigNumber.from(80),
+    //       BigNumber.from(20),
+    //       reserves[0],
+    //       reserves[1],
+    //       JSBI.BigInt(25)
+    //     )
+    //   },
+    //   [reserves, bond.token, bond.quoteToken]
+    // )
 
-    } else if (bond.isLP) {
-      valuation = Number(
-        (await bondCalcContract.valuation(getAddressForReserve(chainId) || "", amountInWei)).toString(),
-      );
-      bondQuote = BigNumber.from(await bondContract.payoutFor(valuation))
 
-      if (!amountInWei.isZero() && Number(bondQuote.toString()) < 100000) {
-        bondQuote = BigNumber.from(0);
-        const errorString = "Amount is too small!";
-        // dispatch(error(errorString));
-      } else {
-        bondQuote = bnParser(bondQuote, E_NINE) //  / (10 ** 9);
-      }
+    if (bond.isLP) {
+      // valuation = Number(
+      //   (await bondCalcContract.valuation(getAddressForReserve(chainId) || "", amountInWei)).toString(),
+      // );
+      bondQuote = BigNumber.from(100) // await bondContract.payoutFor(valuation))
+
+      bondQuote = bnParser(bondQuote, E_NINE) //  / (10 ** 9);
     } else {
       // RFV = DAI
       bondQuote = BigNumber.from(3245) // await bondContract.payoutFor(amountInWei);
 
-      if (!amountInWei.isZero() && Number(bondQuote.toString()) < 100000000000000) {
-        bondQuote = BigNumber.from(0);
-        const errorString = "Amount is too small!";
-        // dispatch(error(errorString));
-      } else {
-        bondQuote = bnParser(bondQuote, E_EIGHTEEN) // / (10 ** 18);
-      }
+      bondQuote = bnParser(bondQuote, E_EIGHTEEN) // / (10 ** 18);
+
     }
 
-    // Display error if user tries to exceed maximum.
-    if (!!value && parseFloat(bondQuote.toString()) > bnParser(maxBondPrice, E_NINE)) {
-      const errorString =
-        `You're trying to bond more than the maximum payout available! The maximum bond payout is ${bnParser(maxBondPrice, E_NINE).toFixed(2).toString()
-        } REQT.`;
-      console.log(errorString)
-      // dispatch(error(errorString));
-    }
     // Calculate bonds purchased
-    const reserveContract = getContractForLpReserve(chainId, provider)
+
     // console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
     const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
 
     const purchased = bnParser(purchasedQuery, E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
-    console.log("ASYNC BOND", bond)
+
+    bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
 
     return {
       ...bond,
       bondDiscount,
-      debtRatio: Number(debtRatio.toString()),
+      debtRatio: bnParser(debtRatio[0], E_NINE),
       bondQuote: Number(bondQuote.toString()),
       purchased,
       vestingTerm: Number(terms.vestingTerm.toString()),
-      maxBondPrice: bnParser(maxBondPrice, E_NINE), // maxBondPrice.div(E_NINE).toNumber(),
-      bondPrice: bnParser(bondPrice, E_EIGHTEEN), // bondPrice.div(E_EIGHTEEN).toNumber(),
+      maxBondPrice: bnParser(maxBondPrice[0], E_NINE), // maxBondPrice.div(E_NINE).toNumber(),
+      bondPrice: bnParser(bondPrice.price_, E_EIGHTEEN), // bondPrice.div(E_EIGHTEEN).toNumber(),
       marketPrice: marketPrice.toString(),
     };
   },

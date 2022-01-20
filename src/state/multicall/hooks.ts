@@ -168,7 +168,6 @@ export function useSingleContractMultipleData(
   contract: Contract | null | undefined,
   methodName: string,
   callInputs: OptionalMethodInputs[],
-  // useBlock: () => BlockState,
   options?: ListenerOptions,
 ): CallState[] {
   const fragment = useMemo(() => contract?.interface?.getFunction(methodName), [contract, methodName])
@@ -199,7 +198,6 @@ export function useMultipleContractSingleData(
   addresses: (string | undefined)[],
   contractInterface: Interface,
   methodName: string,
-  // useBlock: () => BlockState,
   callInputs?: OptionalMethodInputs,
   options?: ListenerOptions,
 ): CallState[] {
@@ -240,7 +238,6 @@ export function useSingleCallResult(
   chainId: number,
   contract: Contract | null | undefined,
   methodName: string,
-  // useBlock: () => BlockState,
   inputs?: OptionalMethodInputs,
   options?: ListenerOptions,
 ): CallState {
@@ -269,7 +266,6 @@ export function useSingleContractMultipleFunctions(
   chainId: number,
   contract: Contract | null | undefined,
   methodNames: string[],
-  // useBlock: () => BlockState,
   callInputs: OptionalMethodInputs[],
   options?: ListenerOptions,
 ): CallState[] {

@@ -36,7 +36,7 @@ import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
 
 import fetchPublicBondData from '../../state/bonds/fetchPublicBondData'
-import { fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
+import { calculateUserBondDetails, fetchBondsPublicDataAsync, fetchBondUserDataAsync } from '../../state/bonds/index'
 
 
 
@@ -259,18 +259,24 @@ const Bonds: React.FC = () => {
   // workaround useEffect in hooks not working
   // useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
 
-  const calcDebounce = useDebounce('1', 10)
+  const calcDebounce = useDebounce('1', 100)
 
   useEffect(() => {
     bondsLP.map(
-      (bond) => dispatch(calcSingleBondDetails({ bond, value: '', provider: library, chainId }))
+      (bond) => {
+        dispatch(calcSingleBondDetails({ bond,  provider: library, chainId }))
+        if (account) {
+          dispatch(calculateUserBondDetails({ address: account, bond, chainId, provider: library }))
+        }
+        return 0
+      }
     )
   },
-    [calcDebounce, dispatch, bondsLP, chainId, library]
+    [calcDebounce, dispatch, bondsLP, chainId, library, account]
   )
-
+  // console.log("BAM")
   const { bondData } = useBonds()
-
+  console.log("BDATA", bondData)
   chosenBondsLength.current = chosenBondsMemoized.length
 
   useEffect(() => {
@@ -354,34 +360,34 @@ const Bonds: React.FC = () => {
 
   const renderContent = (): JSX.Element => {
     // if (
-      // viewMode === ViewMode.TABLE && 
-      // rowData.length > 0) {
-      const columnSchema = DesktopColumnSchema
+    // viewMode === ViewMode.TABLE && 
+    // rowData.length > 0) {
+    const columnSchema = DesktopColumnSchema
 
-      const columns = columnSchema.map((column) => ({
-        id: column.id,
-        name: column.name,
-        label: column.label,
-        sort: (a: RowType<RowProps>, b: RowType<RowProps>) => {
-          switch (column.name) {
-            case 'bond':
-              return b.id - a.id
-            // case 'apr':
-            //   if (a.original.apr.value && b.original.apr.value) {
-            //     return Number(a.original.apr.value) - Number(b.original.apr.value)
-            //   }
+    const columns = columnSchema.map((column) => ({
+      id: column.id,
+      name: column.name,
+      label: column.label,
+      sort: (a: RowType<RowProps>, b: RowType<RowProps>) => {
+        switch (column.name) {
+          case 'bond':
+            return b.id - a.id
+          // case 'apr':
+          //   if (a.original.apr.value && b.original.apr.value) {
+          //     return Number(a.original.apr.value) - Number(b.original.apr.value)
+          //   }
 
-            //   return 0
-            // case 'earned':
-            //   return a.original.earned.earnings - b.original.earned.earnings
-            default:
-              return 1
-          }
-        },
-        sortable: column.sortable,
-      }))
+          //   return 0
+          // case 'earned':
+          //   return a.original.earned.earnings - b.original.earned.earnings
+          default:
+            return 1
+        }
+      },
+      sortable: column.sortable,
+    }))
 
-      return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
+    return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
     // }
 
     // return (
@@ -450,15 +456,15 @@ const Bonds: React.FC = () => {
       </PageHeader> */}
       <Page>
         {/* <ControlContainer> */}
-          {/* <ViewControls> */}
-            {/* <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} /> */}
-            {/* <ToggleWrapper>
+        {/* <ViewControls> */}
+        {/* <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} /> */}
+        {/* <ToggleWrapper>
               <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
               <Text> {t('Staked only')}</Text>
             </ToggleWrapper>
             <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
-          {/* </ViewControls> */}
-          {/* <FilterContainer>
+        {/* </ViewControls> */}
+        {/* <FilterContainer>
             <LabelWrapper>
               <Text textTransform="uppercase">{t('Sort by')}</Text>
               <Select

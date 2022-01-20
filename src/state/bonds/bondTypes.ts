@@ -71,7 +71,7 @@ export interface IBaseAsyncThunk {
   }
   
   export interface ICalcBondDetailsAsyncThunk extends IBaseBondAsyncThunk {
-    readonly value: string;
+    // readonly value: string;
   }
   
   export interface IBondAssetAsyncThunk extends IBaseBondAsyncThunk, IValueAsyncThunk {

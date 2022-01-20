@@ -1,15 +1,8 @@
 
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// import { useNetworkState } from 'state/globalNetwork/hooks'
-import { JsonRpcProvider, StaticJsonRpcProvider } from "@ethersproject/providers";
-import { ChainId, JSBI, Price, TokenAmount, WeightedPair } from '@requiemswap/sdk'
-import { useWeb3React } from '@web3-react/core'
-// import { useReqtPrice } from 'hooks/usePrice';
-import isArchivedBondId from 'utils/bondHelpers'
+import { ChainId, JSBI, Price, Token, TokenAmount, WeightedPair } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens';
-import { bondList as bondsDict } from 'config/constants/bonds'
-import { BondConfig } from 'config/constants/types'
 import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
 import { IBaseAsyncThunk } from './bondTypes';
 
@@ -55,8 +48,43 @@ export const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({
         // console.log("LOAD FAILED")
         marketPrice = null // await getTokenPrice("olympus");
     }
+    console.log("MP", marketPrice)
     return { marketPrice };
 });
+
+export const priceFromData = (token: Token, quoteToken: Token, weight0: any, weight1: any, reserve0: any, reserve1: any, fee: any): string => {
+    let marketPrice;
+    // console.log("LOAD PRICE")
+    try {
+
+        const tokenBeforeQToken = token.sortsBefore(quoteToken)
+        // create pair object
+        const pair = tokenBeforeQToken ? new WeightedPair(
+            new TokenAmount(token, reserve0.toString() ?? 0),
+            new TokenAmount(quoteToken, reserve1.toString() ?? 0),
+            JSBI.BigInt(weight0),
+            JSBI.BigInt(fee)
+        )
+            : new WeightedPair(
+                new TokenAmount(quoteToken, reserve1.toString() ?? 0),
+                new TokenAmount(token, reserve0.toString() ?? 0),
+                JSBI.BigInt(weight1),
+                JSBI.BigInt(fee)
+            )
+
+        // console.log("PPP", pair.priceOf(REQT[chainId]).toSignificant(10))
+        const price = pair.priceOf(token)
+        // only get marketPrice from eth mainnet
+        marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_E_EIGHTEEN), price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
+        // let mainnetProvider = (marketPrice = await getMarketPrice({ 1: NetworkID, provider }));
+        // console.log("MARKETPRICE:", marketPrice)
+        // marketPrice /= 10 ** 9;
+    } catch (e) {
+        // console.log("LOAD FAILED")
+        marketPrice = null // await getTokenPrice("olympus");
+    }
+    return marketPrice.toString()
+}
 
 export const findOrLoadMarketPrice = createAsyncThunk(
     "bond/findOrLoadMarketPrice",

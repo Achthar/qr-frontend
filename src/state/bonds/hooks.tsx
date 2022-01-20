@@ -23,8 +23,11 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
     const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId ?? 43113)
     console.log(bondsToFetch)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
-    dispatch(fetchBondsPublicDataAsync())
-  }, [includeArchive, dispatch, slowRefresh, chainId])
+    // dispatch(fetchBondsPublicDataAsync())
+  }, [
+    includeArchive,
+    //  dispatch, 
+     slowRefresh, chainId])
 }
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
@@ -36,12 +39,14 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
 
-    dispatch(fetchBondsPublicDataAsync())
+    // dispatch(fetchBondsPublicDataAsync())
 
     if (account) {
-      dispatch(fetchBondUserDataAsync({chainId,  account, bondIds }))
+      // dispatch(fetchBondUserDataAsync({chainId,  account, bondIds }))
     }
-  }, [chainId, includeArchive, dispatch, slowRefresh, account])
+  }, [chainId, includeArchive, 
+    // dispatch,
+     slowRefresh, account])
 }
 
 /**
@@ -76,7 +81,7 @@ export const useBondUser = (bondId) => {
   const bond = useBondFromBondId(bondId)
 
   return {
-    allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
+    allowance: bond.allowance ? new BigNumber(bond.allowance) : BIG_ZERO,
     tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
     stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
     earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
