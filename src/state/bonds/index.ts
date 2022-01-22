@@ -6,6 +6,7 @@ import { BondConfig } from 'config/constants/types'
 import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import multicall from 'utils/multicall';
+import { getAddressForBond } from 'utils/addressHelpers';
 import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
 import fetchBonds from './fetchBonds'
 import {
@@ -210,34 +211,57 @@ export const calculateUserBondDetails = createAsyncThunk(
     // Calculate bond details.
     const bondContract = getContractForBond(chainId, provider);
     const reserveContract = getContractForReserve(chainId, provider);
-
+    console.log("PRE CALL")
     const calls = [
       // max payout
       {
         address: bondContract.address,
         name: 'bondInfo',
-        args:[address]
+        args: [address]
       },
       // debt ratio
       {
         address: bondContract.address,
         name: 'pendingPayoutFor',
-        args:[address]
+        args: [address]
       },
     ]
 
     const [bondDetails, pendingPayout] =
       await multicall(chainId, bondReserveAVAX, calls)
+    // console.log("MC CD", bondDetails, pendingPayout)
 
+    // const bondDetails = await bondContract.bondInfo(address);
+    // const pendingPayout = await bondContract.pendingPayoutFor(address);
 
     const interestDue: BigNumberish = Number(bondDetails.payout.toString()) / (10 ** 9);
     const bondMaturationBlock = +bondDetails.vesting + +bondDetails.lastBlock;
 
     let balance = BigNumber.from(0);
     const userBondAllowances = await fetchBondUserAllowances(chainId, address, [bond])
-    const allowance = userBondAllowances[0]
+
+    // const allowance = await reserveContract.allowance(address, getAddressForBond(chainId) || "");
+
 
     balance = await reserveContract.balanceOf(address);
+
+    // const callsReserve = [
+    //   // max payout
+    //   {
+    //     address: reserveContract.address,
+    //     name: 'allowance',
+    //     args: [address]
+    //   },
+    //   // debt ratio
+    //   {
+    //     address: reserveContract.address,
+    //     name: 'pendingPayoutFor',
+    //     args: [address]
+    //   },
+    // ]
+
+    console.log("ALLOW", userBondAllowances)
+    const allowance = userBondAllowances[0]
     // formatEthers takes BigNumber => String
     const balanceVal = ethers.utils.formatEther(balance);
     // balanceVal should NOT be converted to a number. it loses decimal precision

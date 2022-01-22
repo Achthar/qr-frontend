@@ -52,7 +52,8 @@ export const calcSingleBondDetails = createAsyncThunk(
         name: 'bondPriceInUSD',
       },
     ]
-
+    // const interval = setInterval(multicall, 5000);
+    
     const [maxBondPrice, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 

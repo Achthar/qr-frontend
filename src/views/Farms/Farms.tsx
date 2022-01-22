@@ -171,7 +171,7 @@ const Farms: React.FC = () => {
         }
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
         const { reqtRewardsApr, lpRewardsApr } = isActive
-          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[ChainId.AVAX_TESTNET])
+          ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[chainId])
           : { reqtRewardsApr: 0, lpRewardsApr: 0 }
 
         return { ...farm, apr: reqtRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -185,7 +185,7 @@ const Farms: React.FC = () => {
       }
       return farmsToDisplayWithAPR
     },
-    [cakePrice, query, isActive],
+    [cakePrice, query, isActive, chainId],
   )
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {

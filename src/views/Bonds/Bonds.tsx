@@ -210,12 +210,6 @@ const Bonds: React.FC = () => {
       switch (sortOption) {
         case 'apr':
           return orderBy(bonds, (bond: BondWithStakedValue) => bond.apr + bond.lpRewardsApr, 'desc')
-        // case 'multiplier':
-        //   return orderBy(
-        //     bonds,
-        //     (bond: BondWithStakedValue) => (bond.multiplier ? Number(bond.multiplier.slice(0, -1)) : 0),
-        //     'desc',
-        //   )
         case 'earned':
           return orderBy(
             bonds,
@@ -256,15 +250,15 @@ const Bonds: React.FC = () => {
 
   const dispatch = useAppDispatch()
 
-  // workaround useEffect in hooks not working
-  // useEffect(() => { dispatch(fetchBondsPublicDataAsync()) }, [dispatch])
 
-  const calcDebounce = useDebounce('1', 100)
+  const calcDebounce = useDebounce('1', 5000)
+
+  const { slowRefresh } = useRefresh()
 
   useEffect(() => {
     bondsLP.map(
       (bond) => {
-        dispatch(calcSingleBondDetails({ bond,  provider: library, chainId }))
+        dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
         if (account) {
           dispatch(calculateUserBondDetails({ address: account, bond, chainId, provider: library }))
         }
@@ -272,8 +266,35 @@ const Bonds: React.FC = () => {
       }
     )
   },
-    [calcDebounce, dispatch, bondsLP, chainId, library, account]
+    [
+      account,
+      slowRefresh,
+      dispatch,
+      bondsLP,
+      chainId,
+      library
+    ]
   )
+
+  // useEffect(() => {
+  //   if (account) {
+  //     bondsLP.map(
+  //       (bond) => {
+  //         dispatch(calculateUserBondDetails({ address: account, bond, chainId, provider: library }))
+  //         return 0
+  //       }
+  //     )
+  //   }
+  // },
+  //   [
+  //     slowRefresh,
+  //     dispatch,
+  //     bondsLP,
+  //     chainId,
+  //     library,
+  //     account
+  //   ]
+  // )
   // console.log("BAM")
   const { bondData } = useBonds()
   console.log("BDATA", bondData)
@@ -506,7 +527,6 @@ const Bonds: React.FC = () => {
           </Flex>
         )}
         <div ref={loadMoreRef} />
-        {/* <StyledImage src="/images/decorations/3dpan.png" alt="Panreqt illustration" width={120} height={103} /> */}
       </Page>
     </>
   )
