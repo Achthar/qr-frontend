@@ -4,9 +4,11 @@ import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
 import { getAddress, getAddressForBond, getMasterChefAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
+import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getContractForReserve } from 'utils/contractHelpers'
 
+// simple allowance fetch
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
   const bondDepositoryAddress = getAddressForBond(chainId)
 
@@ -21,6 +23,56 @@ export const fetchBondUserAllowances = async (chainId: number, account: string, 
   })
   console.log("ALLOWANCE FETCH", rawLpAllowances)
   return parsedLpAllowances
+}
+
+// payout data fetch
+export const fetchBondUserPendingPayout = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
+  const bondDepositoryAddress = getAddressForBond(chainId)
+
+  const calls = bondsToFetch.map((bond) => {
+    return { address: bondDepositoryAddress, name: 'pendingPayoutFor', params: [account] }
+  })
+
+  const rawPayoutFor = await multicall(chainId, bondReserveAVAX, calls)
+  const parsedPayout = rawPayoutFor.map((lpBalance) => {
+    return new BigNumber(lpBalance).toJSON()
+  })
+
+  return parsedPayout
+}
+
+export interface BondUserData {
+  pendingPayout: BigNumber[]
+  bondInfo: any[]
+}
+// payout and interest fetch
+export const fetchBondUserPendingPayoutData = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondUserData> => {
+  const bondDepositoryAddress = getAddressForBond(chainId)
+
+  const calls = bondsToFetch.map((bond) => {
+    return { address: bondDepositoryAddress, name: 'pendingPayoutFor', params: [account] }
+  })
+
+  const callsInfo = bondsToFetch.map((bond) => {
+    return { address: bondDepositoryAddress, name: 'bondInfo', params: [account] }
+  })
+
+  const rawData = await multicall(chainId, bondReserveAVAX, [...calls, ...callsInfo])
+
+  const parsedPayoff = rawData.slice(calls.length - 1).map((lpBalance) => {
+    return new BigNumber(lpBalance).toJSON()
+  })
+
+  const parsedInfo = rawData.slice(-calls.length)
+  // .map((lpBalance) => {
+  //   return new BigNumber(lpBalance).toJSON()
+  // })
+
+  console.log("ALLOWANCE FETCH", rawData)
+  return {
+    pendingPayout: parsedPayoff,
+    bondInfo: parsedInfo
+  }
 }
 
 // TODO (appleseed): improve this logic
@@ -38,7 +90,7 @@ export const getBondReservePrice = async (bond: BondConfig, chainId: number, pro
 
 export const fetchBondUserTokenBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
   const calls = bondsToFetch.map((bond) => {
-    const lpContractAddress = getAddress(chainId, bond.bondAddress)
+    const lpContractAddress = getAddress(chainId, bond.reserveAddress)
     return {
       address: lpContractAddress,
       name: 'balanceOf',

@@ -255,26 +255,27 @@ const Bonds: React.FC = () => {
 
   const { slowRefresh } = useRefresh()
 
-  useEffect(() => {
-    bondsLP.map(
-      (bond) => {
-        dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
-        if (account) {
-          dispatch(calculateUserBondDetails({ address: account, bond, chainId, provider: library }))
-        }
-        return 0
-      }
-    )
-  },
-    [
-      account,
-      slowRefresh,
-      dispatch,
-      bondsLP,
-      chainId,
-      library
-    ]
-  )
+  // useEffect(() => {
+  //   bondsLP.map(
+  //     (bond) => {
+  //       dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
+  //       return 0
+  //     }
+  //   )
+
+  //   if (account) {
+  //     dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: bondsLP.map(bond => bond.bondId) }))
+  //   }
+  // },
+  //   [
+  //     account,
+  //     slowRefresh,
+  //     dispatch,
+  //     bondsLP,
+  //     chainId,
+  //     library
+  //   ]
+  // )
 
   // useEffect(() => {
   //   if (account) {
@@ -324,30 +325,14 @@ const Bonds: React.FC = () => {
   }, [chosenBondsMemoized, observerIsSet])
 
   const rowData = Object.values(bondData).map((bond) => {
-    // console.log("TERM", (1 + bond.bondDiscount), (365 / blocksToDays(bond.vestingTerm, chainId)))
-    // const { token, quoteToken } = bond
 
-    // const token = getSerializedToken(chainId, tokens.reqt)
-    // const quoteToken = getSerializedToken(chainId, tokens.tusd)
-
-    // const tokenAddress = token.address
-    // const quoteTokenAddress = quoteToken.address
 
     const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
     const price = Number(bond.bondPrice)
     const purchased = Math.round(bond.purchased * 100) / 100 // 7002000
 
     const row: RowProps = {
-      // apr: {
-      //   value: getDisplayApr(bond.apr, bond.lpRewardsApr),
-      //   bondId: bond.bondId,
-      //   // multiplier: bond.multiplier,
-      //   lpLabel,
-      //   tokenAddress,
-      //   quoteTokenAddress,
-      //   reqtPrice,
-      //   originalValue: bond.apr,
-      // },
+
       bond: {
         label: bond.name,
         bondId: bond.bondId,
@@ -355,13 +340,6 @@ const Bonds: React.FC = () => {
         quoteToken: bond.quoteToken
       },
       discount: bond.bondDiscount,
-      // earned: {
-      //   earnings: getBalanceNumber(new BigNumber(bond.userData.earnings)),
-      //   bondId: bond.bondId,
-      // },
-      // multiplier: {
-      //   multiplier: '12x',
-      // },
       details: bond,
       price: Math.round(price * 1000) / 1000,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),

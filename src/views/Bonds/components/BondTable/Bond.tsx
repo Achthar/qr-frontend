@@ -55,9 +55,12 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
 
   return (
     <Container>
-      <TokenWrapper>
-        <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={30} margin />
-      </TokenWrapper>
+      {
+        token && quoteToken && (
+          <TokenWrapper>
+            <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={30} margin />
+          </TokenWrapper>)
+      }
       <div style={{ marginLeft: 40 }}>
         {handleRenderBonding()}
         <Text bold>{label}</Text>

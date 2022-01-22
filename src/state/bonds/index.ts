@@ -11,10 +11,13 @@ import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
 import fetchBonds from './fetchBonds'
 import {
   fetchBondUserAllowances,
+  fetchBondUserPendingPayout,
+  fetchBondUserPendingPayoutData,
+  fetchBondUserTokenBalances
 } from './fetchBondUser'
 import fetchPublicBondData from './fetchPublicBondData';
 import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
-import { calcSingleBondDetails } from './calcSingleBondDetails';
+import { bnParser, calcSingleBondDetails } from './calcSingleBondDetails';
 import { BondsState, Bond } from '../types'
 
 
@@ -31,13 +34,17 @@ function noAccountBondConfig(chainId: number) {
       tokenBalance: '0',
       stakedBalance: '0',
       earnings: '0',
+      pendingPayout: '0',
+      interestDue: 0,
+      balance: '0',
+      bondMaturationBlock: 0
     },
-    bond: "",
+    bond: '',
     allowance: 0,
-    balance: "",
+    balance: '',
     interestDue: 0,
     bondMaturationBlock: 0,
-    pendingPayout: "",
+    pendingPayout: '',
   }))
 }
 
@@ -79,6 +86,10 @@ interface BondUserDataResponse {
   tokenBalance: string
   stakedBalance: string
   earnings: string
+  pendingPayout: string,
+  interestDue: number,
+  balance: string
+  bondMaturationBlock: number
 }
 
 
@@ -88,19 +99,30 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
   async ({ chainId, account, bondIds }) => {
     // const { chainId } = useWeb3React()
     // const chainId = 43113
-    const bondsToFetch = bondList(chainId) // bondsDict[chainId] // .filter((bondConfig) => bondIds.includes(bondConfig.bondId))
+    const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
     const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
-    // const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
-    // const userStakedBalances = await fetchBondUserStakedBalances(chainId, account, bondsToFetch)
-    // const userBondEarnings = await fetchBondUserEarnings(chainId, account, bondsToFetch)
+    const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
+    const { pendingPayout, bondInfo } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
     console.log("bTF", bondsToFetch)
+    const interestDue = bondInfo.map((info) => {
+      return bnParser(info.payout, BigNumber.from('1000000000'));
+    })
+
+    const bondMaturationBlock = bondInfo.map((info) => {
+      return +info.vesting + +info.lastBlock;
+    })
+
     return userBondAllowances.map((bondAllowance, index) => {
       return {
         bondId: bondsToFetch[index].bondId,
         allowance: userBondAllowances[index],
-        tokenBalance: 0, //  userBondTokenBalances[index],
+        tokenBalance: userBondTokenBalances[index], //  userBondTokenBalances[index],
         stakedBalance: 0, // userStakedBalances[index],
-        earnings: 0 //  userBondEarnings[index],
+        earnings: 0, //  userBondEarnings[index],
+        pendingPayout: pendingPayout[index],
+        interestDue: interestDue[index],
+        balance: userBondTokenBalances[index],
+        bondMaturationBlock: bondMaturationBlock[chainId]
       }
     })
   },
@@ -160,8 +182,7 @@ export const bondsSlice = createSlice({
       // Update bonds with user data
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
         action.payload.forEach((userDataEl) => {
-          const index = state.data.findIndex((bond) => bond.bondId === 0)
-          state.bondData[index] = { ...state.bondData[index], userData: userDataEl }
+          state.bondData[userDataEl.bondId] = { ...state.bondData[userDataEl.bondId], userData: userDataEl }
         })
         state.userDataLoaded = true
       })
@@ -211,13 +232,13 @@ export const calculateUserBondDetails = createAsyncThunk(
     // Calculate bond details.
     const bondContract = getContractForBond(chainId, provider);
     const reserveContract = getContractForReserve(chainId, provider);
-    console.log("PRE CALL")
+    console.log("PRE CALL", address)
     const calls = [
       // max payout
       {
         address: bondContract.address,
         name: 'bondInfo',
-        args: [address]
+        args: [address],
       },
       // debt ratio
       {
@@ -227,18 +248,21 @@ export const calculateUserBondDetails = createAsyncThunk(
       },
     ]
 
-    const [bondDetails, pendingPayout] =
-      await multicall(chainId, bondReserveAVAX, calls)
-    // console.log("MC CD", bondDetails, pendingPayout)
 
-    // const bondDetails = await bondContract.bondInfo(address);
-    // const pendingPayout = await bondContract.pendingPayoutFor(address);
+
+    // const [bondDetails, pendingPayout] =
+    //   await multicall(chainId, bondReserveAVAX, calls)
+
+    const bondDetails = await bondContract.bondInfo(address);
+    const pendingPayout = await bondContract.pendingPayoutFor(address);
+
+    console.log("MC CD", bondDetails, pendingPayout)
 
     const interestDue: BigNumberish = Number(bondDetails.payout.toString()) / (10 ** 9);
     const bondMaturationBlock = +bondDetails.vesting + +bondDetails.lastBlock;
 
     let balance = BigNumber.from(0);
-    const userBondAllowances = await fetchBondUserAllowances(chainId, address, [bond])
+    // const userBondAllowances = await fetchBondUserAllowances(chainId, address, [bond])
 
     // const allowance = await reserveContract.allowance(address, getAddressForBond(chainId) || "");
 
@@ -260,8 +284,8 @@ export const calculateUserBondDetails = createAsyncThunk(
     //   },
     // ]
 
-    console.log("ALLOW", userBondAllowances)
-    const allowance = userBondAllowances[0]
+    // console.log("ALLOW", userBondAllowances)
+    const allowance = BigNumber.from(0) // userBondAllowances[0]
     // formatEthers takes BigNumber => String
     const balanceVal = ethers.utils.formatEther(balance);
     // balanceVal should NOT be converted to a number. it loses decimal precision

@@ -13,6 +13,7 @@ import { DAI, REQT } from 'config/constants/tokens'
 import useRefresh from 'hooks/useRefresh'
 import { fetchBondsPublicDataAsync, fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
+import { calcSingleBondDetails } from './calcSingleBondDetails'
 
 
 export const usePollBondsPublicData = (chainId: number, includeArchive = false) => {
@@ -27,26 +28,32 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
   }, [
     includeArchive,
     //  dispatch, 
-     slowRefresh, chainId])
+    slowRefresh, chainId])
 }
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
 
   useEffect(() => {
-    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId)
+    const bondsToFetch = bondList(chainId)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
 
-    // dispatch(fetchBondsPublicDataAsync())
-
+    bondsToFetch.map(
+      (bond) => {
+        dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
+        return 0
+      }
+    )
+    console.log("bondids", bondIds)
     if (account) {
-      // dispatch(fetchBondUserDataAsync({chainId,  account, bondIds }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
     }
-  }, [chainId, includeArchive, 
-    // dispatch,
-     slowRefresh, account])
+  }, [chainId, includeArchive,
+    dispatch,
+    library,
+    slowRefresh, account])
 }
 
 /**
@@ -69,6 +76,7 @@ export const useBonds = (): BondsState => {
 export const useBondFromBondId = (bondId): Bond => {
   // console.log()
   const bond = useSelector((state: State) => state.bonds.data.find((f) => f.bondId === bondId))
+  console.log("BOND FROM ID", bondId, bond)
   return bond
 }
 
@@ -78,13 +86,22 @@ export const useBondFromBondName = (name: string): Bond => {
 }
 
 export const useBondUser = (bondId) => {
-  const bond = useBondFromBondId(bondId)
+  const bonds = useBonds()
+  const bond = bonds.bondData[bondId]
+  if (bond) {
+    return {
+      allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
+      tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
+      stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
+      earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
+    }
+  }
 
   return {
-    allowance: bond.allowance ? new BigNumber(bond.allowance) : BIG_ZERO,
-    tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
-    stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
-    earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
+    allowance: BIG_ZERO,
+    tokenBalance: BIG_ZERO,
+    stakedBalance: BIG_ZERO,
+    earnings: BIG_ZERO,
   }
 }
 

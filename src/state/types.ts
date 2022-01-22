@@ -118,8 +118,10 @@ export interface Bond extends BondConfig, IBondDetails {
     tokenBalance: string
     stakedBalance: string
     earnings: string
-    // pendingPayout:string
-    // interestDue:number
+    pendingPayout: string
+    interestDue: number
+    balance: string
+    bondMaturationBlock: number
   },
   // bondId?: number
   bond?: string

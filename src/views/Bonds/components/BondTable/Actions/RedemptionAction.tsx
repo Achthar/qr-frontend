@@ -46,6 +46,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const { account, chainId } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
+  // console.log("allowance", allowance)
   const { onStake } = useStakeBonds(chainId, bondId)
   const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()

@@ -17,7 +17,7 @@ import { BondsState, Bond } from '../types'
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
-function bnParser(bn: BigNumber, decNr: BigNumber) {
+export function bnParser(bn: BigNumber, decNr: BigNumber) {
   return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
 }
 
@@ -30,6 +30,7 @@ export const calcSingleBondDetails = createAsyncThunk(
     let bondQuote: BigNumberish = BigNumber.from(0);
     const bondContract = getContractForBond(chainId, provider);
     const reserveContract = getContractForLpReserve(chainId, provider)
+    console.log("BC", bondContract)
     const calls = [
       // max payout
       {
@@ -53,7 +54,7 @@ export const calcSingleBondDetails = createAsyncThunk(
       },
     ]
     // const interval = setInterval(multicall, 5000);
-    
+
     const [maxBondPrice, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
@@ -118,9 +119,9 @@ export const calcSingleBondDetails = createAsyncThunk(
 
     // Calculate bonds purchased
 
-    // console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
+    console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
     const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
-
+    console.log("CONTRACTEND")
     const purchased = bnParser(purchasedQuery, E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
 
     bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
