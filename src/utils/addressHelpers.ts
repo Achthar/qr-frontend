@@ -2,11 +2,12 @@ import { ChainId } from '@requiemswap/sdk'
 import { addresses } from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address } from 'config/constants/types'
+import { ethers } from 'ethers'
 
 
 export const getAddress = (chainId: number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
-  return address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID]
+  return ethers.utils.getAddress(address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID])
 }
 
 export const getCakeAddress = (chainId: number) => {
@@ -98,4 +99,8 @@ export const getAddressForBondingCalculator = (chainId: number) => {
 
 export const getAddressForWeightedPairFactory = (chainId: number) => {
   return getAddress(chainId, addresses.weightedPairFactory);
+}
+
+export const getBondingDepositoryContract = (chainId: number) => {
+  return getAddress(chainId, addresses.bondDepositoty)
 }

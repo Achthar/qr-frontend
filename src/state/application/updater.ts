@@ -36,7 +36,7 @@ function useBlockWarningTimer() {
   const timeout = useRef<NodeJS.Timeout>()
   const isWindowVisible = useIsWindowVisible()
   const [msSinceLastBlock, setMsSinceLastBlock] = useState(0)
-  const currentBlock = useBlockNumber()
+  const currentBlock = useBlockNumber(chainId)
 
   useEffect(() => {
     setMsSinceLastBlock(0)

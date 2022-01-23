@@ -6,9 +6,7 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 
 import { addPopup, ApplicationModal, PopupContent, removePopup, setOpenModal } from './actions'
 
-export function useBlockNumber(): number | undefined {
-  const { chainId } = useNetworkState()
-
+export function useBlockNumber(chainId:number): number | undefined {
   return useAppSelector((state: AppState) => state.application.blockNumber[chainId ?? -1])
 }
 

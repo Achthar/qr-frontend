@@ -206,3 +206,7 @@ export const getBondCalculatorContract = (chainId: number, signer?: ethers.Signe
     signer,
   )
 };
+
+export const getBondingDepositoryContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(bondReserveAVAX) : bondReserveAVAX, getBondingDepositoryContract(chainId), signer)
+}

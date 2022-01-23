@@ -17,6 +17,8 @@ import {
   getSouschefV2Contract,
   getLotteryV2Contract,
   getFarmAuctionContract,
+  getContractForBond,
+  getBondingDepositoryContract,
 } from 'utils/contractHelpers'
 
 
@@ -232,11 +234,15 @@ export function useWeightedFormulaContract(chainId: number): Contract | null {
 }
 
 
-export function useBondContract(chainId: number): Contract | null {
-  return useContract(chainId ? getAddressForBond(chainId) : undefined, new Interface(BOND_DEPO_AVAX), false)
+export function useBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(chainId ? getAddressForBond(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
 }
 
 export const useRequiemChef = (chainId, library) => {
   // const { library, chainId } = useActiveWeb3React("useMasterchef")
   return useMemo(() => getMasterchefContract(chainId, library.getSigner()), [chainId, library])
+}
+
+export function useBondDepositoryContract(chainId: number, library): Contract | null {
+  return useMemo(() => getBondingDepositoryContract(chainId, library.getSigner()), [chainId, library])
 }

@@ -158,6 +158,17 @@ const BondingModal: React.FC<BondingModalProps> = (
   const payoutNumber = bnParser(payout, ethers.BigNumber.from('1000000000000000000'))
   const price = bnParser(ethers.BigNumber.from(bond.marketPrice), ethers.BigNumber.from('1000000000000000000'))
 
+  const maxPriceText = (): string => {
+    let text = ''
+    try {
+      text = `${Math.round(bnParser(ethers.BigNumber.from(bond.maxBondPrice), ethers.BigNumber.from('1000000000000000000')) * 100) / 100}`
+    }
+    catch {
+      text = 'no limit'
+    }
+    return text
+  }
+
   return (
     <Modal title={t('Bond LP tokens')} onDismiss={onDismiss}>
       <ModalInput
@@ -188,6 +199,14 @@ const BondingModal: React.FC<BondingModalProps> = (
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
           {`${Math.round(bond.bondDiscount * 10000) / 100}%`}
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Max You Can Buy
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          {maxPriceText()}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

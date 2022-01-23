@@ -119,7 +119,7 @@ export interface Bond extends BondConfig, IBondDetails {
     stakedBalance: string
     earnings: string
     pendingPayout: string
-    interestDue: number
+    interestDue: string
     balance: string
     bondMaturationBlock: number
   },

@@ -35,7 +35,7 @@ function noAccountBondConfig(chainId: number) {
       stakedBalance: '0',
       earnings: '0',
       pendingPayout: '0',
-      interestDue: 0,
+      interestDue: '0',
       balance: '0',
       bondMaturationBlock: 0
     },
@@ -87,7 +87,7 @@ interface BondUserDataResponse {
   stakedBalance: string
   earnings: string
   pendingPayout: string,
-  interestDue: number,
+  interestDue: string,
   balance: string
   bondMaturationBlock: number
 }
@@ -97,19 +97,18 @@ interface BondUserDataResponse {
 export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], { chainId: number, account: string; bondIds: number[] }>(
   'bonds/fetchBondUserDataAsync',
   async ({ chainId, account, bondIds }) => {
-    // const { chainId } = useWeb3React()
-    // const chainId = 43113
+
     const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
     const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
     const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
     const { pendingPayout, bondInfo } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
-    console.log("bTF", bondsToFetch)
+
     const interestDue = bondInfo.map((info) => {
-      return bnParser(info.payout, BigNumber.from('1000000000'));
+      return info.payout.toString();
     })
 
     const bondMaturationBlock = bondInfo.map((info) => {
-      return +info.vesting + +info.lastBlock;
+      return info.vesting.add(info.lastBlock).toString();
     })
 
     return userBondAllowances.map((bondAllowance, index) => {
@@ -122,7 +121,7 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
         pendingPayout: pendingPayout[index],
         interestDue: interestDue[index],
         balance: userBondTokenBalances[index],
-        bondMaturationBlock: bondMaturationBlock[chainId]
+        bondMaturationBlock: bondMaturationBlock[index]
       }
     })
   },
@@ -259,7 +258,7 @@ export const calculateUserBondDetails = createAsyncThunk(
     console.log("MC CD", bondDetails, pendingPayout)
 
     const interestDue: BigNumberish = Number(bondDetails.payout.toString()) / (10 ** 9);
-    const bondMaturationBlock = +bondDetails.vesting + +bondDetails.lastBlock;
+    const bondMaturationBlock = bondDetails.vesting.add(bondDetails.lastBlock).toString();
 
     let balance = BigNumber.from(0);
     // const userBondAllowances = await fetchBondUserAllowances(chainId, address, [bond])

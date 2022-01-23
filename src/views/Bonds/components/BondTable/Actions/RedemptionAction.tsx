@@ -86,6 +86,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const [onPresentDeposit] = useModal(
     <RedemptionModal
+      bondId={bondId}
       max={tokenBalance}
       lpPrice={lpPrice}
       lpLabel={lpLabel}

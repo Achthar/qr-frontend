@@ -3,7 +3,7 @@ import { unstakeBond } from 'utils/calls'
 import { useBondContract } from 'hooks/useContract'
 
 const useUnstakeBonds = (chainId: number, bondId: number) => {
-  const bondContract = useBondContract(chainId)
+  const bondContract = useBondContract(chainId, true)
 
   const handleUnstake = useCallback(
     async (amount: string) => {

@@ -18,6 +18,7 @@ import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import { useReqtPrice } from 'hooks/usePrice'
+import useDepositBond from 'views/Bonds/hooks/useDepositBond'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
@@ -45,15 +46,16 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   displayApr,
 }) => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId, library } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
   const { onStake } = useStakeBonds(chainId, bondId)
+  const { onBonding } = useDepositBond(chainId, account, library, bondId)
   const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
   const reqtPrice = new BigNumber(useReqtPrice(chainId))
-  
+
   // console.log("PRICE", useReqtPrice(chainId))
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
@@ -65,9 +67,10 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     tokenAddress: 'token.address',
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
+  const amountWSlippage = ethers.BigNumber.from('9000000000000000').toString()
 
   const handleStake = async (amount: string) => {
-    await onStake(amount)
+    await onBonding(amount, amountWSlippage)
     dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
   }
 

@@ -22,6 +22,50 @@ export const blockTimes = (chainId: number) => {
   return 10
 }
 
+export function secondsUntilBlock(chainId: number, startBlock: number, endBlock: number): number {
+  const blocksAway = endBlock - startBlock;
+  const secondsAway = blocksAway * blockTimes(chainId);
+
+  return secondsAway;
+}
+
+export function prettyVestingPeriod(chainId: number, currentBlock: number, vestingBlock: number) {
+  if (vestingBlock === 0) {
+    return "";
+  }
+
+  const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
+  if (seconds < 0) {
+    return "Fully Vested";
+  }
+  return prettifySeconds(seconds);
+}
+
+export function prettifySeconds(seconds: number, resolution?: string) {
+  if (seconds !== 0 && !seconds) {
+    return "";
+  }
+
+  const d = Math.floor(seconds / (3600 * 24));
+  const h = Math.floor((seconds % (3600 * 24)) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+
+  if (resolution === "day") {
+    return d + (d === 1 ? " day" : " days");
+  }
+
+  const dDisplay = d > 0 ? d + (d === 1 ? " day, " : " days, ") : "";
+  const hDisplay = h > 0 ? h + (h === 1 ? " hr, " : " hrs, ") : "";
+  const mDisplay = m > 0 ? m + (m === 1 ? " min" : " mins") : "";
+
+  let result = dDisplay + hDisplay + mDisplay;
+  if (mDisplay === "") {
+    result = result.slice(0, result.length - 2);
+  }
+
+  return result;
+}
+
 export const blocksToDays = (blocks: number, chainId: number) => {
   return blockTimes(chainId) * blocks / 3600 / 24
 }

@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@requiemswap/uikit'
@@ -8,6 +9,13 @@ import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
+import { useBondFromBondId } from 'state/bonds/hooks'
+import { deserializeToken } from 'state/user/hooks/helpers'
+import { TokenAmount } from '@requiemswap/sdk'
+import { blocksToDays, prettifySeconds, prettyVestingPeriod, secondsUntilBlock } from 'config'
+import { bnParser } from 'state/bonds/calcSingleBondDetails'
+import { useBlockNumber } from 'state/application/hooks'
+import { useBlock } from 'state/block/hooks'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;
@@ -22,6 +30,7 @@ const AnnualRoiDisplay = styled(Text)`
 `
 
 interface RedemptionModalProps {
+  bondId: number
   max: BigNumber
   stakedBalance: BigNumber
   multiplier?: string
@@ -37,6 +46,7 @@ interface RedemptionModalProps {
 }
 
 const RedemptionModal: React.FC<RedemptionModalProps> = ({
+  bondId,
   max,
   stakedBalance,
   onConfirm,
@@ -50,6 +60,8 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   addLiquidityUrl,
   reqtPrice,
 }) => {
+  const bond = useBondFromBondId(bondId)
+  const chainId = bond.token.chainId
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -86,38 +98,31 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
     [setVal],
   )
 
+  const { currentBlock } = useBlock()
+
+  const vestingTime = () => {
+    return prettyVestingPeriod(chainId, currentBlock, bond.userData.bondMaturationBlock);
+  };
+  console.log("VESTING", currentBlock, vestingTime(), bond.userData.bondMaturationBlock)
+  const vestingPeriod = () => {
+    const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms.vestingTerm);
+    const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
+    return prettifySeconds(seconds, "day");
+  };
+
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance)
   }, [fullBalance, setVal])
 
   return (
     <Modal title={t('Redeem Bond')} onDismiss={onDismiss}>
-      <ModalInput
-        value={val}
-        onSelectMax={handleSelectMax}
-        onChange={handleChange}
-        max={fullBalance}
-        symbol={tokenName}
-        addLiquidityUrl={addLiquidityUrl}
-        inputTitle={t('Redeem')}
-      />
-      {/* <Flex mt="24px" alignItems="center" justifyContent="space-between">
-        <Text mr="8px" color="textSubtle">
-          {t('Annual ROI at current rates')}:
-        </Text>
-        <AnnualRoiContainer alignItems="center" onClick={() => setShowRoiCalculator(true)}>
-          <AnnualRoiDisplay>${formattedAnnualRoi}</AnnualRoiDisplay>
-          <IconButton variant="text" scale="sm">
-            <CalculateIcon color="textSubtle" width="18px" />
-          </IconButton>
-        </AnnualRoiContainer>
-      </Flex> */}
+
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           Pending Rewards
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          REQ
+          {`${(new TokenAmount(deserializeToken(bond.token), String(bond.userData.interestDue) ?? '0')).toSignificant(4)} REQ`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -125,7 +130,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Claimable Rewards
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          REQ
+          {`${(new TokenAmount(deserializeToken(bond.token), bond.userData.pendingPayout ?? '0')).toSignificant(4)} REQ`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -133,7 +138,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Time until fully vested
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          days
+          {vestingTime()}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -141,7 +146,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Debt Ratio
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          %
+          {`${Math.round(bnParser(ethers.BigNumber.from(bond.debtRatio), ethers.BigNumber.from('1000000000')) * 10000) / 100}%`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -149,7 +154,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Vesting Term
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          days
+          {`${Math.round(blocksToDays(Number(bond.bondTerms.vestingTerm), bond.token.chainId) * 100) / 100} days`}
         </Text>
       </Flex>
       <ModalActions>
