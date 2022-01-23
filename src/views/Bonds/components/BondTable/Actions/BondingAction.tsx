@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
 import { useLocation } from 'react-router-dom'
 import { BigNumber } from 'bignumber.js'
+import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
@@ -16,6 +17,7 @@ import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
+import { useReqtPrice } from 'hooks/usePrice'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
@@ -50,7 +52,9 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { onUnstake } = useUnstakeBonds(chainId, bondId)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
-  const reqtPrice = usePriceReqtUsd(chainId)
+  const reqtPrice = new BigNumber(useReqtPrice(chainId))
+  
+  // console.log("PRICE", useReqtPrice(chainId))
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
@@ -85,6 +89,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   const [onPresentBonding] = useModal(
     <BondingModal
+      bondId={bondId}
       max={tokenBalance}
       lpPrice={lpPrice}
       lpLabel={lpLabel}

@@ -74,9 +74,8 @@ export const useBonds = (): BondsState => {
 }
 
 export const useBondFromBondId = (bondId): Bond => {
-  // console.log()
-  const bond = useSelector((state: State) => state.bonds.data.find((f) => f.bondId === bondId))
-  console.log("BOND FROM ID", bondId, bond)
+
+  const bond = useSelector((state: State) => state.bonds.bondData[bondId])
   return bond
 }
 

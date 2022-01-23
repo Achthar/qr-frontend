@@ -9,6 +9,7 @@ import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
+import weightedPair from 'config/abi/avax/RequiemWeightedPair.json'
 import { Fraction, JSBI, WeightedPair } from '@requiemswap/sdk';
 import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
 import { loadMarketPrice, priceFromData } from './loadMarketPrice';
@@ -58,7 +59,8 @@ export const calcSingleBondDetails = createAsyncThunk(
     const [maxBondPrice, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
-    console.log("RES", maxBondPrice, debtRatio, terms, bondPrice)
+    // console.log("RES", maxBondPrice, debtRatio, terms, bondPrice)
+
     let marketPrice: BigNumber;
     try {
       const originalPromiseResult = await dispatch(
@@ -70,22 +72,28 @@ export const calcSingleBondDetails = createAsyncThunk(
       console.error("Returned a null response from dispatch(loadMarketPrice)");
     }
 
-    // const callsPair = [
-    //   // max payout
-    //   {
-    //     address: weightedPairContract.address,
-    //     name: 'getReserves'
-    //   },
-    //   // debt ratio
-    //   {
-    //     address: weightedPairContract.address,
-    //     name: 'balanceOf',
-    //   },
-    // ]
+    const callsPair = [
+      // max payout
+      {
+        address: reserveContract.address,
+        name: 'getReserves'
+      },
+      // debt ratio
+      {
+        address: reserveContract.address,
+        name: 'totalSupply',
+      },
+      {
+        address: reserveContract.address,
+        name: 'balanceOf',
+        params: [getAddress(addresses.treasury[chainId])]
+      },
+    ]
 
-    // const [reserves, balance,] =
-    //   await multicall(chainId, weightedPairAVAX, callsPair)
+    const [reserves, supply, purchasedQuery] =
+      await multicall(chainId, weightedPair, callsPair)
 
+    console.log("RES1", reserves, supply)
     // const price = useMemo(
     //   () => {
     //     return priceFromData(
@@ -120,18 +128,31 @@ export const calcSingleBondDetails = createAsyncThunk(
     // Calculate bonds purchased
 
     console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
-    const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
+    // const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
     console.log("CONTRACTEND")
-    const purchased = bnParser(purchasedQuery, E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
+    const purchased = bnParser(purchasedQuery[0], E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
 
     bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
-
+    console.log("DR", debtRatio)
     return {
       ...bond,
       bondDiscount,
-      debtRatio: bnParser(debtRatio[0], E_NINE),
+      debtRatio: debtRatio[0].toString(),
       bondQuote: Number(bondQuote.toString()),
       purchased,
+      lpData: {
+        lpTotalSupply: supply[0]?.toString(),
+        reserve0: reserves[0]?.toString(),
+        reserve1: reserves[1]?.toString()
+      },
+      bondTerms: {
+        controlVariable: terms.controlVariable.toString(), // scaling variable for price
+        vestingTerm: terms.vestingTerm.toString(), // in blocks
+        minimumPrice: terms.minimumPrice.toString(), // vs principle value
+        maxPayout: terms.maxPayout.toString(), // in thousandths of a %. i.e. 500 = 0.5%
+        fee: terms.fee.toString(), // as % of bond payout, in hundreths. ( 500 = 5% = 0.05 for every 1 paid)
+        maxDebt: terms.maxDebt.toString(),
+      },
       vestingTerm: Number(terms.vestingTerm.toString()),
       maxBondPrice: bnParser(maxBondPrice[0], E_NINE), // maxBondPrice.div(E_NINE).toNumber(),
       bondPrice: bnParser(bondPrice.price_, E_EIGHTEEN), // bondPrice.div(E_EIGHTEEN).toNumber(),

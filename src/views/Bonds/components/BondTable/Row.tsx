@@ -113,16 +113,6 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     </CellInner>
                   </td>
                 )
-              // case 'apr':
-              //   return (
-              //     <td key={key}>
-              //       <CellInner>
-              //         <CellLayout label={t('APR')}>
-              //           <Apr {...props.apr} hideButton={isSmallerScreen} />
-              //         </CellLayout>
-              //       </CellInner>
-              //     </td>
-              //   )
               case 'discount':
                 return (
                   <td key={key}>

@@ -64,11 +64,7 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
   })
 
   const parsedInfo = rawData.slice(-calls.length)
-  // .map((lpBalance) => {
-  //   return new BigNumber(lpBalance).toJSON()
-  // })
 
-  console.log("ALLOWANCE FETCH", rawData)
   return {
     pendingPayout: parsedPayoff,
     bondInfo: parsedInfo

@@ -79,6 +79,7 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
 
   const [onPresentDeposit] = useModal(
     <BondingModal
+      bondId={bondId}
       max={tokenBalance}
       stakedBalance={stakedBalance}
       onConfirm={handleStake}

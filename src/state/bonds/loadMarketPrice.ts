@@ -16,9 +16,7 @@ const TEN_E_EIGHTEEN = JSBI.BigInt('1000000000000000000')
  */
 export const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({ chainId, provider }: IBaseAsyncThunk) => {
     let marketPrice;
-    // console.log("LOAD PRICE")
     try {
-        // const price = 0 // usePriceReqtUsd(chainId).toString()
         const address = WeightedPair.getAddress(REQT[chainId], DAI[chainId], JSBI.BigInt(80), JSBI.BigInt(25))
         const relevantLpContract = getWeightedPairContract(address, provider)
         const [_reserve0, _reserve1,] = await relevantLpContract.getReserves()
@@ -37,24 +35,19 @@ export const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({
                 JSBI.BigInt(25)
             )
 
-        // console.log("PPP", pair.priceOf(REQT[chainId]).toSignificant(10))
         const price = pair.priceOf(REQT[chainId])
         // only get marketPrice from eth mainnet
-        marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_E_EIGHTEEN), price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
-        // let mainnetProvider = (marketPrice = await getMarketPrice({ 1: NetworkID, provider }));
-        // console.log("MARKETPRICE:", marketPrice)
-        // marketPrice /= 10 ** 9;
+        marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_E_EIGHTEEN), price.denominator).toString()
     } catch (e) {
-        // console.log("LOAD FAILED")
-        marketPrice = null // await getTokenPrice("olympus");
+        marketPrice = null
     }
-    console.log("MP", marketPrice)
+
     return { marketPrice };
 });
 
 export const priceFromData = (token: Token, quoteToken: Token, weight0: any, weight1: any, reserve0: any, reserve1: any, fee: any): string => {
     let marketPrice;
-    // console.log("LOAD PRICE")
+
     try {
 
         const tokenBeforeQToken = token.sortsBefore(quoteToken)

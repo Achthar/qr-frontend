@@ -85,6 +85,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
 
   const [onPresentDeposit] = useModal(
     <DepositModal
+      bondId={bondId}
       max={tokenBalance}
       lpPrice={lpPrice}
       lpLabel={lpLabel}

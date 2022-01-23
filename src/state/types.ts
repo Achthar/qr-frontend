@@ -77,7 +77,7 @@ export interface Farm extends FarmConfig {
 
 export interface IBondDetails {
   bondDiscount?: number;
-  debtRatio?: number;
+  debtRatio?: SerializedBigNumber;
   bondQuote?: number;
   purchased?: number;
   vestingTerm?: number;
@@ -123,6 +123,19 @@ export interface Bond extends BondConfig, IBondDetails {
     balance: string
     bondMaturationBlock: number
   },
+  lpData?: {
+    lpTotalSupply: SerializedBigNumber
+    reserve0: SerializedBigNumber
+    reserve1: SerializedBigNumber
+  },
+  bondTerms?: {
+    controlVariable: SerializedBigNumber; // scaling variable for price
+    vestingTerm: SerializedBigNumber; // in blocks
+    minimumPrice: SerializedBigNumber; // vs principle value
+    maxPayout: SerializedBigNumber; // in thousandths of a %. i.e. 500 = 0.5%
+    fee: SerializedBigNumber; // as % of bond payout, in hundreths. ( 500 = 5% = 0.05 for every 1 paid)
+    maxDebt: SerializedBigNumber;
+  }
   // bondId?: number
   bond?: string
   // displayName?: string
