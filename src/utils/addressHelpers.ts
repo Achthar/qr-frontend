@@ -1,4 +1,4 @@
-import { ChainId } from '@requiemswap/sdk'
+import { ChainId, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { addresses } from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address } from 'config/constants/types'
@@ -23,7 +23,7 @@ export const getMulticallAddress = (chainId: number) => {
   return getAddress(chainId, addresses.multiCall)
 }
 export const getWbnbAddress = (chainId: number) => {
-  return getAddress(chainId, tokens.wavax.address)
+  return WRAPPED_NETWORK_TOKENS[chainId].address
 }
 export const getLotteryV2Address = (chainId: number) => {
   return getAddress(chainId, addresses.lotteryV2)

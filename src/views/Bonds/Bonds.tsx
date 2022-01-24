@@ -249,53 +249,6 @@ const Bonds: React.FC = () => {
 
   const dispatch = useAppDispatch()
 
-
-  const calcDebounce = useDebounce('1', 5000)
-
-  const { slowRefresh } = useRefresh()
-
-  // useEffect(() => {
-  //   bondsLP.map(
-  //     (bond) => {
-  //       dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
-  //       return 0
-  //     }
-  //   )
-
-  //   if (account) {
-  //     dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: bondsLP.map(bond => bond.bondId) }))
-  //   }
-  // },
-  //   [
-  //     account,
-  //     slowRefresh,
-  //     dispatch,
-  //     bondsLP,
-  //     chainId,
-  //     library
-  //   ]
-  // )
-
-  // useEffect(() => {
-  //   if (account) {
-  //     bondsLP.map(
-  //       (bond) => {
-  //         dispatch(calculateUserBondDetails({ address: account, bond, chainId, provider: library }))
-  //         return 0
-  //       }
-  //     )
-  //   }
-  // },
-  //   [
-  //     slowRefresh,
-  //     dispatch,
-  //     bondsLP,
-  //     chainId,
-  //     library,
-  //     account
-  //   ]
-  // )
-  // console.log("BAM")
   const { bondData } = useBonds()
   console.log("BDATA", bondData)
   chosenBondsLength.current = chosenBondsMemoized.length
