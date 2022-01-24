@@ -17,11 +17,12 @@ import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
+import useStakeBonds from 'views/Bonds/hooks/useStakeBonds'
+import useApproveBond from 'views/Bonds/hooks/useApproveBond'
+import useRedeemBond from 'views/Bonds/hooks/useRedeemBond'
+import { ActionContainer, ActionTitles, ActionContent } from './styles'
 import RedemptionModal from '../../RedemptionModal'
 import WithdrawModal from '../../WithdrawModal'
-import useStakeBonds from '../../../hooks/useStakeBonds'
-import useApproveBond from '../../../hooks/useApproveBond'
-import { ActionContainer, ActionTitles, ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
   display: flex;
@@ -49,6 +50,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   // console.log("allowance", allowance)
   const { onStake } = useStakeBonds(chainId, bondId)
   const { onUnstake } = useUnstakeBonds(chainId, bondId)
+  const { onRedeem } = useRedeemBond(chainId, account, bondId)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
   const reqtPrice = usePriceReqtUsd(chainId)
@@ -63,8 +65,8 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
-  const handleStake = async (amount: string) => {
-    await onStake(amount)
+  const handleRedemption = async (amount: string) => {
+    await onRedeem()
     dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
   }
 
@@ -93,7 +95,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
       apr={apr}
       displayApr={displayApr}
       stakedBalance={stakedBalance}
-      onConfirm={handleStake}
+      onConfirm={handleRedemption}
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
       reqtPrice={reqtPrice}

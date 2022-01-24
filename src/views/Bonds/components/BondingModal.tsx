@@ -238,7 +238,7 @@ const BondingModal: React.FC<BondingModalProps> = (
             setPendingTx(true)
             try {
               await onConfirm(val)
-              toastSuccess(t('Staked!'), t('Your funds have been staked in the farm'))
+              toastSuccess(t('Bonding successful!'), t('Your LP tokens have been bonded'))
               onDismiss()
             } catch (e) {
               toastError(

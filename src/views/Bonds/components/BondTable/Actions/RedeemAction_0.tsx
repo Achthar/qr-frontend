@@ -40,7 +40,7 @@ const RedeemAction: React.FunctionComponent<RedeemActionProps> = ({ bondId, user
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
   const { chainId } = useNetworkState()
-  const { onReward } = useRedeemBond(chainId, bondId)
+  const { onRedeem } = useRedeemBond(chainId, account, bondId)
 
   return (
     <ActionContainer>
@@ -64,7 +64,7 @@ const RedeemAction: React.FunctionComponent<RedeemActionProps> = ({ bondId, user
           onClick={async () => {
             setPendingTx(true)
             try {
-              await onReward()
+              await onRedeem()
               toastSuccess(
                 `${t('Redeemed')}!`,
                 t('Your %symbol% earnings have been sent to your wallet!', { symbol: 'REQT' }),

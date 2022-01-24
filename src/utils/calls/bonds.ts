@@ -50,9 +50,9 @@ export const harvestBond = async (masterChefContract, pid) => {
 }
 
 
-export const redeemBond = async (bondDepositoryContract, bondId) => {
-  const gasPrice = getGasPrice(56)
-  const tx = await bondDepositoryContract.redeem('0', { ...options, gasPrice })
+export const redeemBond = async (chainId, account, bondDepositoryContract, bondId) => {
+  const gasPrice = getGasPrice(chainId)
+  const tx = await bondDepositoryContract.redeem(account, false, { ...options, gasPrice })
   const receipt = await tx.wait()
   return receipt.status
 }

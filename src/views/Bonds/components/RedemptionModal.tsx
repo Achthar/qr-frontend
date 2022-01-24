@@ -164,7 +164,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
         <Button
           width="100%"
           disabled={
-            pendingTx || !lpTokensToStake.isFinite() || lpTokensToStake.eq(0) || lpTokensToStake.gt(fullBalanceNumber)
+            pendingTx || (new BigNumber(bond.userData.interestDue).eq(0) && new BigNumber(bond.userData.pendingPayout).eq(0))
           }
           onClick={async () => {
             setPendingTx(true)
