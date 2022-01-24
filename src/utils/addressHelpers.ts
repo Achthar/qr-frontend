@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 
 export const getAddress = (chainId: number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
-  return ethers.utils.getAddress(address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID])
+  return address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID]
 }
 
 export const getCakeAddress = (chainId: number) => {
