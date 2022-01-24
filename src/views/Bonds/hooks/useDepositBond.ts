@@ -4,7 +4,7 @@ import { useBondDepositoryContract } from 'hooks/useContract'
 import { getContractForBond } from 'utils/contractHelpers'
 
 const useDepositBond = (chainId: number, account: string, library: any, bondId: number) => {
-  const bondDepositoryContract = getContractForBond(chainId, library.getSigner())
+  const bondDepositoryContract = getContractForBond(chainId, account ? library.getSigner() : library)
 
   console.log("BDCONTRACT", bondDepositoryContract.address)
   const handleBonding = useCallback(

@@ -126,7 +126,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
       <ActionContainer>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-            {t('Start Bonding')}
+            {t('Redeem Bond / claim Rewards ')}
           </Text>
         </ActionTitles>
         <ActionContent>

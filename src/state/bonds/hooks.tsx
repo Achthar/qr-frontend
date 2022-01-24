@@ -11,6 +11,7 @@ import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
 import { Price, TokenAmount } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens'
 import useRefresh from 'hooks/useRefresh'
+import { simpleRpcProvider } from 'utils/providers'
 import { fetchBondsPublicDataAsync, fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
@@ -42,7 +43,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
 
     bondsToFetch.map(
       (bond) => {
-        dispatch(calcSingleBondDetails({ bond, provider: library, chainId }))
+        dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId ?? 43113), chainId: chainId ?? 43113 }))
         return 0
       }
     )
