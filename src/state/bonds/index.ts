@@ -11,7 +11,7 @@ import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
 import fetchBonds from './fetchBonds'
 import {
   fetchBondUserAllowances,
-  fetchBondUserPendingPayout,
+  fetchBondUserAllowancesAndBalances,
   fetchBondUserPendingPayoutData,
   fetchBondUserTokenBalances
 } from './fetchBondUser'
@@ -99,9 +99,19 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
   async ({ chainId, account, bondIds }) => {
 
     const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
-    const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
-    const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
-    const { pendingPayout, bondInfo } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
+
+    //  const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
+    // const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
+
+    const {
+      allowances: userBondAllowances,
+      balances: userBondTokenBalances
+    } = await fetchBondUserAllowancesAndBalances(chainId, account, bondsToFetch)
+
+    const {
+      pendingPayout,
+      bondInfo
+    } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
 
     const interestDue = bondInfo.map((info) => {
       return info.payout.toString();
@@ -111,9 +121,9 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
       return info.vesting.add(info.lastBlock).toString();
     })
 
-    return userBondAllowances.map((bondAllowance, index) => {
+    return userBondAllowances.map((_, index) => {
       return {
-        bondId: bondsToFetch[index].bondId,
+        bondId: bondIds[index],
         allowance: userBondAllowances[index],
         tokenBalance: userBondTokenBalances[index], //  userBondTokenBalances[index],
         stakedBalance: 0, // userStakedBalances[index],
@@ -126,6 +136,8 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
     })
   },
 )
+
+
 export const bondsSlice = createSlice({
   name: 'Bonds',
   initialState: initialState(chainIdFromState), // TODO: make that more flexible
@@ -148,23 +160,7 @@ export const bondsSlice = createSlice({
       //     return { ...bond, ...liveBondData }
       //   })
       // })
-      .addCase(calculateUserBondDetails.pending, state => {
-        state.userDataLoaded = false;
-      })
-      .addCase(calculateUserBondDetails.fulfilled, (state, action) => {
-        console.log("PLOAD")
-        if (!action.payload) {
-          console.log("REJECTED")
-          return;
-        }
-        const index = state.data.findIndex((bond) => bond.bondId === 0)
-        state.userDataLoaded = true;
-        state.data[action.payload.bondId] = { ...state.data[action.payload.bondId], ...action.payload }
-      })
-      .addCase(calculateUserBondDetails.rejected, (state, { error }) => {
-        state.userDataLoaded = true;
-        console.log(error);
-      }).addCase(calcSingleBondDetails.pending, state => {
+      .addCase(calcSingleBondDetails.pending, state => {
         state.userDataLoaded = false;
       })
       .addCase(calcSingleBondDetails.fulfilled, (state, action) => {
@@ -209,100 +205,6 @@ export interface IBondData extends IUserBondDetails {
   pendingPayout: string
 
 }
-export const calculateUserBondDetails = createAsyncThunk(
-  "account/calculateUserBondDetails",
-  async ({ address, bond, chainId, provider }: ICalcUserBondDetailsAsyncThunk): Promise<Bond> => {
-    if (!address) {
-      return {
-        ...bond,
-        bondId: bond.bondId,
-        bond: "",
-        displayName: "",
-        isLP: false,
-        allowance: 0,
-        balance: "0",
-        interestDue: 0,
-        bondMaturationBlock: 0,
-        pendingPayout: "",
-      };
-    }
-    // dispatch(fetchBondInProgress());
-
-    // Calculate bond details.
-    const bondContract = getContractForBond(chainId, provider);
-    const reserveContract = getContractForReserve(chainId, provider);
-    console.log("PRE CALL", address)
-    const calls = [
-      // max payout
-      {
-        address: bondContract.address,
-        name: 'bondInfo',
-        args: [address],
-      },
-      // debt ratio
-      {
-        address: bondContract.address,
-        name: 'pendingPayoutFor',
-        args: [address]
-      },
-    ]
-
-
-
-    // const [bondDetails, pendingPayout] =
-    //   await multicall(chainId, bondReserveAVAX, calls)
-
-    const bondDetails = await bondContract.bondInfo(address);
-    const pendingPayout = await bondContract.pendingPayoutFor(address);
-
-    console.log("MC CD", bondDetails, pendingPayout)
-
-    const interestDue: BigNumberish = Number(bondDetails.payout.toString()) / (10 ** 9);
-    const bondMaturationBlock = bondDetails.vesting.add(bondDetails.lastBlock).toString();
-
-    let balance = BigNumber.from(0);
-    // const userBondAllowances = await fetchBondUserAllowances(chainId, address, [bond])
-
-    // const allowance = await reserveContract.allowance(address, getAddressForBond(chainId) || "");
-
-
-    balance = await reserveContract.balanceOf(address);
-
-    // const callsReserve = [
-    //   // max payout
-    //   {
-    //     address: reserveContract.address,
-    //     name: 'allowance',
-    //     args: [address]
-    //   },
-    //   // debt ratio
-    //   {
-    //     address: reserveContract.address,
-    //     name: 'pendingPayoutFor',
-    //     args: [address]
-    //   },
-    // ]
-
-    // console.log("ALLOW", userBondAllowances)
-    const allowance = BigNumber.from(0) // userBondAllowances[0]
-    // formatEthers takes BigNumber => String
-    const balanceVal = ethers.utils.formatEther(balance);
-    // balanceVal should NOT be converted to a number. it loses decimal precision
-    return {
-      ...bond,
-      bondId: bond.bondId,
-      bond: bond.name,
-      displayName: bond.displayName,
-      // bondIconSvg: bond.bondIconSvg,
-      isLP: bond.isLP,
-      allowance: Number(allowance.toString()),
-      balance: balanceVal,
-      interestDue,
-      bondMaturationBlock,
-      pendingPayout: ethers.utils.formatUnits(pendingPayout, "gwei"),
-    };
-  },
-);
 
 // TODO (appleseed): improve this logic
 const getBondReservePrice = async (chainId: number, isLP: boolean, provider: any) => {

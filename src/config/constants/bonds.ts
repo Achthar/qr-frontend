@@ -79,7 +79,7 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
 
 export const bonds = (chainId: number): BondConfig[] => {
   // [ChainId.AVAX_TESTNET]: [
-  const serializedTokens = serializeTokens(chainId)
+  const serializedTokens = serializeTokens(chainId ?? 43113)
   const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
   return [
     {

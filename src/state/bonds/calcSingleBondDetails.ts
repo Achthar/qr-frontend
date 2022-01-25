@@ -1,11 +1,10 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// import { useNetworkState } from 'state/globalNetwork/hooks'
-
+import { useMemo } from 'react';
+import { deserializeToken } from 'state/user/hooks/helpers';
 import { getContractForBond, getContractForLpReserve } from 'utils/contractHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
-// import { useAppDispatch, useAppSelector } from 'state'
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
@@ -27,11 +26,10 @@ export const calcSingleBondDetails = createAsyncThunk(
   async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
 
     let bondDiscount = 0;
-    const valuation = 0;
     let bondQuote: BigNumberish = BigNumber.from(0);
     const bondContract = getContractForBond(chainId, provider);
     const reserveContract = getContractForLpReserve(chainId, provider)
-    console.log("BC", bondContract)
+
     const calls = [
       // max payout
       {
@@ -54,23 +52,20 @@ export const calcSingleBondDetails = createAsyncThunk(
         name: 'bondPriceInUSD',
       },
     ]
-    // const interval = setInterval(multicall, 5000);
 
     const [maxBondPrice, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
-    // console.log("RES", maxBondPrice, debtRatio, terms, bondPrice)
 
-    let marketPrice: BigNumber;
-    try {
-      const originalPromiseResult = await dispatch(
-        loadMarketPrice({ chainId, provider }),
-      ).unwrap();
-      marketPrice = BigNumber.from(originalPromiseResult.marketPrice)
-    } catch (rejectedValueOrSerializedError) {
-      // handle error here
-      console.error("Returned a null response from dispatch(loadMarketPrice)");
-    }
+    // try {
+    //   const originalPromiseResult = await dispatch(
+    //     loadMarketPrice({ chainId, provider }),
+    //   ).unwrap();
+    //   marketPrice = BigNumber.from(originalPromiseResult.marketPrice)
+    // } catch (rejectedValueOrSerializedError) {
+    //   // handle error here
+    //   console.error("Returned a null response from dispatch(loadMarketPrice)");
+    // }
 
     const callsPair = [
       // max payout
@@ -94,22 +89,21 @@ export const calcSingleBondDetails = createAsyncThunk(
       await multicall(chainId, weightedPair, callsPair)
 
     console.log("RES1", reserves, supply)
-    // const price = useMemo(
-    //   () => {
-    //     return priceFromData(
-    //       deserializeToken(bond.token),
-    //       deserializeToken(bond.quoteToken),
-    //       BigNumber.from(80),
-    //       BigNumber.from(20),
-    //       reserves[0],
-    //       reserves[1],
-    //       JSBI.BigInt(25)
-    //     )
-    //   },
-    //   [reserves, bond.token, bond.quoteToken]
-    // )
+    const price = bond.token && bond.quoteToken ? priceFromData(
+      deserializeToken(bond.token),
+      deserializeToken(bond.quoteToken),
+      BigNumber.from(80),
+      BigNumber.from(20),
+      reserves[0],
+      reserves[1],
+      JSBI.BigInt(25)
+    ) : '0'
+    
+    const marketPrice = BigNumber.from(price)
 
+    console.log("MARKETPRICE", marketPrice)
 
+    // that has to be updated / included in multicall in the future
     if (bond.isLP) {
       // valuation = Number(
       //   (await bondCalcContract.valuation(getAddressForReserve(chainId) || "", amountInWei)).toString(),
@@ -125,15 +119,9 @@ export const calcSingleBondDetails = createAsyncThunk(
 
     }
 
-    // Calculate bonds purchased
-
-    console.log("CONTRACT", reserveContract, "ARG", getAddress(addresses.treasury[chainId]))
-    // const purchasedQuery = await reserveContract.balanceOf(getAddress(addresses.treasury[chainId])) // 213432 // await bond.getTreasuryBalance(chainId, provider);
-    console.log("CONTRACTEND")
     const purchased = bnParser(purchasedQuery[0], E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
-
     bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
-    console.log("DR", debtRatio)
+
     return {
       ...bond,
       bondDiscount,

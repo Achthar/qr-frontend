@@ -25,21 +25,6 @@ export const fetchBondUserAllowances = async (chainId: number, account: string, 
   return parsedLpAllowances
 }
 
-// payout data fetch
-export const fetchBondUserPendingPayout = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const bondDepositoryAddress = getAddressForBond(chainId)
-
-  const calls = bondsToFetch.map((bond) => {
-    return { address: bondDepositoryAddress, name: 'pendingPayoutFor', params: [account] }
-  })
-
-  const rawPayoutFor = await multicall(chainId, bondReserveAVAX, calls)
-  const parsedPayout = rawPayoutFor.map((lpBalance) => {
-    return new BigNumber(lpBalance).toJSON()
-  })
-
-  return parsedPayout
-}
 
 export interface BondUserData {
   pendingPayout: BigNumber[]
@@ -100,6 +85,47 @@ export const fetchBondUserTokenBalances = async (chainId: number, account: strin
   })
   return parsedTokenBalances
 }
+
+
+export interface BondTokenData {
+  allowances: any
+  balances: any
+}
+
+// simple allowance fetch together with balances in multicall
+export const fetchBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
+  const bondDepositoryAddress = getAddressForBond(chainId)
+
+  const callsAllowance = bondsToFetch.map((bond) => {
+    const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
+  })
+
+  const callsBalances = bondsToFetch.map((bond) => {
+    const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    return {
+      address: lpContractAddress,
+      name: 'balanceOf',
+      params: [account],
+    }
+  })
+
+  const rawData = await multicall(chainId, erc20ABI, [...callsAllowance, ...callsBalances])
+
+  const parsedAllowance = rawData.slice(callsAllowance.length - 1).map((allowance) => {
+    return new BigNumber(allowance).toJSON()
+  })
+
+  const parsedPayoff = rawData.slice(-callsAllowance.length).map((payoff) => {
+    return new BigNumber(payoff).toJSON()
+  })
+
+  return {
+    allowances: parsedAllowance,
+    balances: parsedPayoff
+  }
+}
+
 
 export const fetchBondUserStakedBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
   const masterChefAddress = getAddressForBond(chainId)
