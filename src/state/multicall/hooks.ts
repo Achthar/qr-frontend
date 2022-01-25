@@ -51,7 +51,6 @@ export const NEVER_RELOAD: ListenerOptions = {
 
 // the lowest level call for subscribing to contract data
 function useCallsData(chainId:number, calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
-  // const { chainId } = useNetworkState()
   const callResults = useSelector<AppState, AppState['multicall']['callResults']>(
     (state) => state.multicall.callResults,
   )

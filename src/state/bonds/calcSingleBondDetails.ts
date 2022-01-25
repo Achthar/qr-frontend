@@ -25,11 +25,11 @@ export const calcSingleBondDetails = createAsyncThunk(
   "bonds/calcBondDetails",
   async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
 
-    let bondDiscount = 0;
     let bondQuote: BigNumberish = BigNumber.from(0);
     const bondContract = getContractForBond(chainId, provider);
     const reserveContract = getContractForLpReserve(chainId, provider)
 
+    // cals for general bond data
     const calls = [
       // max payout
       {
@@ -56,17 +56,7 @@ export const calcSingleBondDetails = createAsyncThunk(
     const [maxBondPrice, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
-
-    // try {
-    //   const originalPromiseResult = await dispatch(
-    //     loadMarketPrice({ chainId, provider }),
-    //   ).unwrap();
-    //   marketPrice = BigNumber.from(originalPromiseResult.marketPrice)
-    // } catch (rejectedValueOrSerializedError) {
-    //   // handle error here
-    //   console.error("Returned a null response from dispatch(loadMarketPrice)");
-    // }
-
+    // calls from pair used for pricing
     const callsPair = [
       // max payout
       {
@@ -88,20 +78,19 @@ export const calcSingleBondDetails = createAsyncThunk(
     const [reserves, supply, purchasedQuery] =
       await multicall(chainId, weightedPair, callsPair)
 
-    console.log("RES1", reserves, supply)
+
+    // calculate price
     const price = bond.token && bond.quoteToken ? priceFromData(
       deserializeToken(bond.token),
       deserializeToken(bond.quoteToken),
-      BigNumber.from(80),
-      BigNumber.from(20),
+      BigNumber.from(bond.lpProperties.weightToken),
+      BigNumber.from(bond.lpProperties.weightQuoteToken),
       reserves[0],
       reserves[1],
-      JSBI.BigInt(25)
+      JSBI.BigInt(bond.lpProperties.fee)
     ) : '0'
-    
-    const marketPrice = BigNumber.from(price)
 
-    console.log("MARKETPRICE", marketPrice)
+    const marketPrice = BigNumber.from(price)
 
     // that has to be updated / included in multicall in the future
     if (bond.isLP) {
@@ -110,17 +99,17 @@ export const calcSingleBondDetails = createAsyncThunk(
       // );
       bondQuote = BigNumber.from(100) // await bondContract.payoutFor(valuation))
 
-      bondQuote = bnParser(bondQuote, E_NINE) //  / (10 ** 9);
+      bondQuote = bnParser(bondQuote, E_NINE)
     } else {
       // RFV = DAI
       bondQuote = BigNumber.from(3245) // await bondContract.payoutFor(amountInWei);
 
-      bondQuote = bnParser(bondQuote, E_EIGHTEEN) // / (10 ** 18);
+      bondQuote = bnParser(bondQuote, E_EIGHTEEN)
 
     }
 
-    const purchased = bnParser(purchasedQuery[0], E_EIGHTEEN) // Number(purchasedQuery.toString()) / (10 ** 18);
-    bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
+    const purchased = bnParser(purchasedQuery[0], E_EIGHTEEN)
+    const bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
 
     return {
       ...bond,

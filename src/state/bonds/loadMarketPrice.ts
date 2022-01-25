@@ -45,7 +45,10 @@ export const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({
     return { marketPrice };
 });
 
-export const priceFromData = (token: Token, quoteToken: Token, weight0: any, weight1: any, reserve0: any, reserve1: any, fee: any): string => {
+
+// pricer for LP that are stored in a bond
+// reserves are provided as read out from the blockchain (ordered by address)
+export const priceFromData = (token: Token, quoteToken: Token, weightToken: any, weightQuoteToken: any, reserve0: any, reserve1: any, fee: any): string => {
     let marketPrice;
 
     try {
@@ -55,13 +58,13 @@ export const priceFromData = (token: Token, quoteToken: Token, weight0: any, wei
         const pair = tokenBeforeQToken ? new WeightedPair(
             new TokenAmount(token, reserve0.toString() ?? 0),
             new TokenAmount(quoteToken, reserve1.toString() ?? 0),
-            JSBI.BigInt(weight0),
+            JSBI.BigInt(weightToken),
             JSBI.BigInt(fee)
         )
             : new WeightedPair(
                 new TokenAmount(quoteToken, reserve1.toString() ?? 0),
                 new TokenAmount(token, reserve0.toString() ?? 0),
-                JSBI.BigInt(weight1),
+                JSBI.BigInt(weightQuoteToken),
                 JSBI.BigInt(fee)
             )
 

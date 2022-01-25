@@ -35,23 +35,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bondId }) => {
-  const { stakedBalance } = useBondUser(bondId)
-  const { t } = useTranslation()
-  const rawStakedBalance = getBalanceNumber(stakedBalance)
-  const { isDesktop, isMobile } = useMatchBreakpoints()
-  const handleRenderBonding = (): JSX.Element => {
-    if (rawStakedBalance) {
-      return (
-        <Text color="secondary" fontSize="12px" bold textTransform="uppercase">
-          {t('Bonding')}
-        </Text>
-      )
-    }
-
-    return null
-  }
-
+const BondMobile: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bondId }) => {
 
   return (
     <Container>
@@ -61,12 +45,8 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
             <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={24} margin />
           </TokenWrapper>)
       }
-      <div style={{ marginLeft: 25}}>
-        {handleRenderBonding()}
-        <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>
-      </div>
     </Container>
   )
 }
 
-export default Bond
+export default BondMobile

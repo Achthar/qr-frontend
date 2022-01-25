@@ -35,6 +35,11 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
       reserveAddress: {
         43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
         43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
       }
     },
     {
@@ -64,6 +69,11 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
       reserveAddress: {
         43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
         43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
       }
     }
   ],
@@ -93,8 +103,8 @@ export const bonds = (chainId: number): BondConfig[] => {
         [ChainId.AVAX_MAINNET]: false
       },
       isLP: false,
-      name: "80% REQT - 20% DAI",
-      displayName: "80% REQT - 20% DAI",
+      name: "80%REQT/20%DAI",
+      displayName: "80%REQT/20%DAI",
       bondToken: "DAI REQT LP",
       payoutToken: "REQT",
       bondIconSvg: 'CvxImg',
@@ -111,7 +121,12 @@ export const bonds = (chainId: number): BondConfig[] => {
         43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
       },
       token: serializedTokens.reqt,
-      quoteToken: serializedTokens.dai
+      quoteToken: serializedTokens.dai,
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
+      }
     },
     {
       bondId: 1,
@@ -142,7 +157,12 @@ export const bonds = (chainId: number): BondConfig[] => {
         43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
       },
       token: serializedTokens.wavax,
-      quoteToken: serializedTokens.usdc
+      quoteToken: serializedTokens.usdc,
+      lpProperties: {
+        weightToken: 50,
+        weightQuoteToken: 50,
+        fee: 10
+      }
     }
   ]
   // ],

@@ -215,6 +215,11 @@ export interface BondConfig {
   displayUnits: string;
   token?: SerializedToken
   quoteToken?: SerializedToken
+  lpProperties?: {
+    weightToken: number
+    weightQuoteToken: number
+    fee: number
+  }
 }
 
 

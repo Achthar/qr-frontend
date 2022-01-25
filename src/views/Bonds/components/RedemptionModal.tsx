@@ -104,6 +104,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
     return prettyVestingPeriod(chainId, currentBlock, bond.userData.bondMaturationBlock);
   };
   console.log("VESTING", currentBlock, vestingTime(), bond.userData.bondMaturationBlock)
+
   const vestingPeriod = () => {
     const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms.vestingTerm);
     const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
@@ -154,7 +155,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Vesting Term
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(blocksToDays(Number(bond.bondTerms.vestingTerm), bond.token.chainId) * 100) / 100} days`}
+          {vestingPeriod()}
         </Text>
       </Flex>
       <ModalActions>
