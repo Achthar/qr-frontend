@@ -51,7 +51,7 @@ const CardActions: React.FC<BondCardActionsProps> = ({ bond, account, addLiquidi
 
   const lpContract = useERC20(lpAddress)
 
-  const { onApprove } = useApproveBond(chainId, lpContract)
+  const { onApprove } = useApproveBond(chainId, lpContract, bond)
 
   const handleApprove = useCallback(async () => {
     try {

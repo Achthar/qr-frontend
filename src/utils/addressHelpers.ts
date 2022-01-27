@@ -1,13 +1,13 @@
 import { ChainId, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { addresses } from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
-import { Address } from 'config/constants/types'
+import { Address, BondConfig } from 'config/constants/types'
 import { ethers } from 'ethers'
 
 
 export const getAddress = (chainId: number, address: Address): string => {
   // const chainId = process.env.REACT_APP_CHAIN_ID
-  return address[chainId] ? address[chainId] : address[process.env.REACT_APP_CHAIN_ID]
+  return address[chainId ?? 43113] ? address[chainId ?? 43113] : address[process.env.REACT_APP_CHAIN_ID ?? 43113]
 }
 
 export const getCakeAddress = (chainId: number) => {
@@ -81,16 +81,16 @@ export const getStableLpAddress = (chainId: number) => {
   return getAddress(chainId, addresses.stableLp)
 }
 
-export const getAddressForBond = (chainId: number) => {
-  return getAddress(chainId, addresses.bondDepositoty);
+export const getAddressForBond = (chainId: number, bondConfig: BondConfig) => {
+  return getAddress(chainId, bondConfig.depositoryAddress);
 }
 
-export const getAddressForReserve = (chainId: number) => {
-  return getAddress(chainId, addresses.reserve)
+export const getAddressForReserve = (chainId: number, bondConfig: BondConfig) => {
+  return getAddress(chainId, bondConfig.reserveAddress)
 }
 
-export const getAddressForLpReserve = (chainId: number) => {
-  return getAddress(chainId, addresses.reserveLp)
+export const getAddressForLpReserve = (chainId: number, bondConfig: BondConfig) => {
+  return getAddress(chainId, bondConfig.reserveAddress)
 }
 
 export const getAddressForBondingCalculator = (chainId: number) => {
@@ -102,5 +102,5 @@ export const getAddressForWeightedPairFactory = (chainId: number) => {
 }
 
 export const getBondingDepositoryContract = (chainId: number) => {
-  return getAddress(chainId, addresses.bondDepositoty)
+  return getAddress(chainId, addresses.bondDepository)
 }

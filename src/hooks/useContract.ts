@@ -30,6 +30,8 @@ import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
 import { WRAPPED_NETWORK_TOKENS, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk'
+import { BondConfig } from 'config/constants/types'
+
 
 // abis
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
@@ -50,7 +52,6 @@ import stableLp_AVAX from '../config/abi/avax/IERC20.json'
 import weightedFactoryABI from '../config/abi/avax/RequiemWeightedPairFactory.json'
 import { getContract } from '../utils'
 import { ChainId } from '../config/index'
-
 
 
 /**
@@ -234,8 +235,8 @@ export function useWeightedFormulaContract(chainId: number): Contract | null {
 }
 
 
-export function useBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(chainId ? getAddressForBond(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
+export function useBondContract(chainId: number, bondConfig: BondConfig, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(chainId ? getAddressForBond(chainId, bondConfig) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
 }
 
 export const useRequiemChef = (chainId, library) => {

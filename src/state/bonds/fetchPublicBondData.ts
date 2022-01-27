@@ -21,20 +21,20 @@ export type PublicBondData = {
 const fetchPublicBondData = async (chainId: number, bond: Bond): Promise<PublicBondData> => {
   const { bondToken } = bond
 
-  console.log("BMULTICALL", getAddressForBond(chainId))
+  console.log("BMULTICALL", getAddressForBond(chainId, bond))
   const calls = [
     {
-      address: getAddressForBond(chainId),
+      address: getAddressForBond(chainId, bond),
       name: 'viewBondData'
     }
   ]
-  const bondContract = getContractForBond(chainId)
+  const bondContract = getContractForBond(chainId, bond)
 
   const [
     _bondPrice_, // uint256 _bondPrice_,
     _bondPriceInUsd_, // uint256 _bondPriceInUsd_,
     _currentDebt_ // uint256 _currentDebt_
-  ] = await  multicall(chainId, bondABI, calls)
+  ] = await multicall(chainId, bondABI, calls)
   // await bondContract.viewBondData() //  multicall(chainId, bondABI, calls)
   // const lpAddress = getAddress(chainId, lpAddresses)
   // const calls = [

@@ -159,6 +159,11 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
   quoteToken: SerializedToken
   token2?: SerializedToken
   token3?: SerializedToken
+  lpProperties?: {
+    weightToken: number
+    weightQuoteToken: number
+    fee: number
+  }
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
@@ -203,10 +208,11 @@ export interface BondConfig {
   isBondable: Available;
   isClaimable: Available;
   type: BondType;
-  bondIconSvg: React.ReactNode;
+  bondIconSvg?: React.ReactNode;
   // bondContractABI: ethers.ContractInterface; // Bond ABI
   reserveAddress: Address;
   bondAddress: Address;
+  depositoryAddress: Address
   bondToken: string;
   payoutToken: string;
   // The following two fields will differ on how they are set depending on bond type

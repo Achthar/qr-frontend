@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
-import { useBondUser, useLpTokenPrice, usePriceReqtUsd } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser, useLpTokenPrice, usePriceReqtUsd } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
@@ -49,9 +49,9 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { account, chainId, library } = useWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
-  const { onStake } = useStakeBonds(chainId, bondId)
-  const { onBonding } = useDepositBond(chainId, account, library, bondId)
-  const { onUnstake } = useUnstakeBonds(chainId, bondId)
+  const bond = useBondFromBondId(bondId)
+  const { onBonding } = useDepositBond(chainId, account, library, bond)
+  const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
   const lpPrice = useLpTokenPrice(name)
   const reqtPrice = new BigNumber(useReqtPrice(chainId))
@@ -111,7 +111,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   const lpContract = useERC20(lpAddress)
   const dispatch = useAppDispatch()
-  const { onApprove } = useApproveBond(chainId, lpContract)
+  const { onApprove } = useApproveBond(chainId, lpContract, bond)
 
   const handleApprove = useCallback(async () => {
     try {

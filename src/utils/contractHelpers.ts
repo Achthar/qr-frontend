@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { Interface } from '@ethersproject/abi'
 import { simpleRpcProvider } from 'utils/providers'
 import { poolsConfig } from 'config/constants'
-import { PoolCategory } from 'config/constants/types'
+import { BondConfig, PoolCategory } from 'config/constants/types'
 
 // Addresses
 import {
@@ -167,14 +167,14 @@ export const getStableLpContract = (chainId: number, signer?: ethers.Signer | et
   // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
 }
 
-export const getContractForReserve = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const bondAddress = getAddressForReserve(chainId) || "";
+export const getContractForReserve = (chainId: number, bondConfig: BondConfig, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getAddressForReserve(chainId, bondConfig) || "";
   const ABI = new Interface(weightedPairAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 
-export const getContractForLpReserve = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const bondAddress = getAddressForLpReserve(chainId) || "";
+export const getContractForLpReserve = (chainId: number, bondConfig: BondConfig, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getAddressForLpReserve(chainId, bondConfig) || "";
   const ABI = new Interface(weightedPairAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
@@ -191,8 +191,8 @@ export const getWeightedPairFactory = (chainId: number, signer?: ethers.Signer |
   return new ethers.Contract(factoryAddress, ABI, signer);
 }
 
-export const getContractForBond = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const bondAddress = getAddressForBond(chainId) || "";
+export const getContractForBond = (chainId: number, bondConfig: BondConfig, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getAddressForBond(chainId, bondConfig) || "";
   const ABI = new Interface(bondReserveAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }

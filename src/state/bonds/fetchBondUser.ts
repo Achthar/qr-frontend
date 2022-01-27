@@ -10,10 +10,10 @@ import { getContractForReserve } from 'utils/contractHelpers'
 
 // simple allowance fetch
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const bondDepositoryAddress = getAddressForBond(chainId)
 
   const calls = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
   })
 
@@ -32,13 +32,14 @@ export interface BondUserData {
 }
 // payout and interest fetch
 export const fetchBondUserPendingPayoutData = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondUserData> => {
-  const bondDepositoryAddress = getAddressForBond(chainId)
 
   const calls = bondsToFetch.map((bond) => {
+    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: bondDepositoryAddress, name: 'pendingPayoutFor', params: [account] }
   })
 
   const callsInfo = bondsToFetch.map((bond) => {
+    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: bondDepositoryAddress, name: 'bondInfo', params: [account] }
   })
 
@@ -60,7 +61,7 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
 export const getBondReservePrice = async (bond: BondConfig, chainId: number, provider: StaticJsonRpcProvider | JsonRpcSigner) => {
   let marketPrice: number;
   if (bond.isLP) {
-    const pairContract = getContractForReserve(chainId, provider);
+    const pairContract = getContractForReserve(chainId, bond, provider);
     const reserves = await pairContract.getReserves();
     marketPrice = Number(reserves[1].toString()) / Number(reserves[0].toString()) / 10 ** 9;
   } else {
@@ -94,15 +95,16 @@ export interface BondTokenData {
 
 // simple allowance fetch together with balances in multicall
 export const fetchBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
-  const bondDepositoryAddress = getAddressForBond(chainId)
 
   const callsAllowance = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
   })
 
   const callsBalances = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return {
       address: lpContractAddress,
       name: 'balanceOf',
@@ -128,7 +130,7 @@ export const fetchBondUserAllowancesAndBalances = async (chainId: number, accoun
 
 
 export const fetchBondUserStakedBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = getAddressForBond(chainId)
+  const masterChefAddress = 'getAddressForBond(chainId)'
 
   const calls = bondsToFetch.map((bond) => {
     return {

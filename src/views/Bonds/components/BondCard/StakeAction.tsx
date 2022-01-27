@@ -8,7 +8,7 @@ import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { useLpTokenPrice } from 'state/bonds/hooks'
+import { useBondFromBondId, useLpTokenPrice } from 'state/bonds/hooks'
 import { getBalanceAmount, getBalanceNumber } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../BondingModal'
@@ -49,8 +49,10 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
 }) => {
   const { t } = useTranslation()
   const { account, chainId } = useWeb3React()
-  const { onStake } = useStakeBonds(chainId, bondId)
-  const { onUnstake } = useUnstakeBonds(chainId, bondId)
+
+  const bond = useBondFromBondId(bondId)
+  const { onStake } = useStakeBonds(chainId, bond)
+  const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
   const dispatch = useAppDispatch()
 

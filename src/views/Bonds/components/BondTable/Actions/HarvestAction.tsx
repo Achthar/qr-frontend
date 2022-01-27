@@ -11,6 +11,7 @@ import { fetchBondUserDataAsync } from 'state/bonds'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
 import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useBondFromBondId } from 'state/bonds/hooks'
 
 import { ActionContainer, ActionTitles, ActionContent } from './styles'
 import useHarvestBond from '../../../hooks/useHarvestBond'
@@ -22,6 +23,9 @@ interface HarvestActionProps extends BondWithStakedValue {
 const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ bondId, userData, userDataReady }) => {
   const { toastSuccess, toastError } = useToast()
   const earningsBigNumber = new BigNumber(userData.earnings)
+
+  const bond = useBondFromBondId(bondId)
+
   const reqtPrice = '432'
   let earnings = BIG_ZERO
   let earningsBusd = 0
@@ -40,7 +44,7 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ bondId, us
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
   const { chainId } = useNetworkState()
-  const { onReward } = useHarvestBond(chainId, bondId)
+  const { onReward } = useHarvestBond(chainId, bond)
 
   return (
     <ActionContainer>

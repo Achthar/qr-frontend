@@ -9,7 +9,7 @@ import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
 import weightedPair from 'config/abi/avax/RequiemWeightedPair.json'
-import { Fraction, JSBI, WeightedPair } from '@requiemswap/sdk';
+import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
 import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
 import { loadMarketPrice, priceFromData } from './loadMarketPrice';
 import { BondsState, Bond } from '../types'
@@ -26,8 +26,8 @@ export const calcSingleBondDetails = createAsyncThunk(
   async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
 
     let bondQuote: BigNumberish = BigNumber.from(0);
-    const bondContract = getContractForBond(chainId, provider);
-    const reserveContract = getContractForLpReserve(chainId, provider)
+    const bondContract = getContractForBond(chainId, bond, provider);
+    const reserveContract = getContractForLpReserve(chainId, bond, provider)
 
     // cals for general bond data
     const calls = [
@@ -108,7 +108,7 @@ export const calcSingleBondDetails = createAsyncThunk(
 
     }
 
-    const purchased = bnParser(purchasedQuery[0], E_EIGHTEEN)
+    const purchased = new TokenAmount(deserializeToken(bond.quoteToken), purchasedQuery[0]?.toString() ?? '0') // bnParser(purchasedQuery[0], E_EIGHTEEN)
     const bondDiscount = bnParser(marketPrice.sub(bondPrice.price_), bondPrice.price_)
 
     return {
@@ -116,7 +116,7 @@ export const calcSingleBondDetails = createAsyncThunk(
       bondDiscount,
       debtRatio: debtRatio[0].toString(),
       bondQuote: Number(bondQuote.toString()),
-      purchased,
+      purchased: Number(purchased.toSignificant(18)),
       lpData: {
         lpTotalSupply: supply[0]?.toString(),
         reserve0: reserves[0]?.toString(),

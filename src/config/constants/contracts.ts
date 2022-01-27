@@ -209,9 +209,10 @@ export const addresses = {
   weightedBondingCalculator: {
     43113: '0xB9Ec202978450F962C7EA17A852F84b72e3C4AF4'
   },
-  bondDepositoty: {
+  bondDepository: {
     43113: '0x0D5Ff7e85Bf536A26CaFD411FF333c453D5ca455'
   }
+
 
 }
 

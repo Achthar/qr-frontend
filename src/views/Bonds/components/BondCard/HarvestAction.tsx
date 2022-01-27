@@ -9,6 +9,7 @@ import { getBalanceAmount } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { useWeb3React } from '@web3-react/core'
 import Balance from 'components/Balance'
+import { useBondFromBondId } from 'state/bonds/hooks'
 import useHarvestBond from '../../hooks/useHarvestBond'
 
 interface BondCardActionsProps {
@@ -21,7 +22,8 @@ const HarvestAction: React.FC<BondCardActionsProps> = ({ earnings, bondId }) => 
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)
-  const { onReward } = useHarvestBond(chainId, bondId)
+  const bond = useBondFromBondId(bondId)
+  const { onReward } = useHarvestBond(chainId, bond)
   const reqtPrice = '243'
   const dispatch = useAppDispatch()
   const rawEarningsBalance = account ? getBalanceAmount(earnings) : BIG_ZERO
