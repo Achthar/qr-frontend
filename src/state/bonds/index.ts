@@ -100,9 +100,6 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
 
     const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
 
-    //  const userBondAllowances = await fetchBondUserAllowances(chainId, account, bondsToFetch)
-    // const userBondTokenBalances = await fetchBondUserTokenBalances(chainId, account, bondsToFetch)
-
     const {
       allowances: userBondAllowances,
       balances: userBondTokenBalances
@@ -120,7 +117,7 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
     const bondMaturationBlock = bondInfo.map((info) => {
       return info.vesting.add(info.lastBlock).toString();
     })
-
+    
     return userBondAllowances.map((_, index) => {
       return {
         bondId: bondIds[index],

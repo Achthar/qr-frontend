@@ -21,7 +21,7 @@ export const fetchBondUserAllowances = async (chainId: number, account: string, 
   const parsedLpAllowances = rawLpAllowances.map((lpBalance) => {
     return new BigNumber(lpBalance).toJSON()
   })
-  console.log("ALLOWANCE FETCH", rawLpAllowances)
+
   return parsedLpAllowances
 }
 
@@ -46,7 +46,7 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
   const rawData = await multicall(chainId, bondReserveAVAX, [...calls, ...callsInfo])
 
   const parsedPayoff = rawData.slice(calls.length - 1).map((lpBalance) => {
-    return new BigNumber(lpBalance).toJSON()
+    return new BigNumber(lpBalance[0].toString()).toJSON()
   })
 
   const parsedInfo = rawData.slice(-calls.length)
