@@ -2,18 +2,18 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getAddress, getAddressForBond, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getBondingDepositoryAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
-import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
+import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import { JsonRpcSigner, StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getContractForReserve } from 'utils/contractHelpers'
 
 // simple allowance fetch
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
 
+  const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
   const calls = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
-    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
   })
 
@@ -27,33 +27,22 @@ export const fetchBondUserAllowances = async (chainId: number, account: string, 
 
 
 export interface BondUserData {
-  pendingPayout: BigNumber[]
-  bondInfo: any[]
+  notes: any[]
 }
 // payout and interest fetch
 export const fetchBondUserPendingPayoutData = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondUserData> => {
 
-  const calls = bondsToFetch.map((bond) => {
-    const bondDepositoryAddress = getAddressForBond(chainId, bond)
-    return { address: bondDepositoryAddress, name: 'pendingPayoutFor', params: [account] }
-  })
+  const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
 
   const callsInfo = bondsToFetch.map((bond) => {
-    const bondDepositoryAddress = getAddressForBond(chainId, bond)
-    return { address: bondDepositoryAddress, name: 'bondInfo', params: [account] }
+    return { address: bondDepositoryAddress, name: 'notes', params: [account, bond.bondId] }
   })
 
-  const rawData = await multicall(chainId, bondReserveAVAX, [...calls, ...callsInfo])
+  const notes = await multicall(chainId, bondReserveAVAX, callsInfo)
 
-  const parsedPayoff = rawData.slice(calls.length - 1).map((lpBalance) => {
-    return new BigNumber(lpBalance[0].toString()).toJSON()
-  })
-
-  const parsedInfo = rawData.slice(-calls.length)
 
   return {
-    pendingPayout: parsedPayoff,
-    bondInfo: parsedInfo
+    notes
   }
 }
 
@@ -96,15 +85,14 @@ export interface BondTokenData {
 // simple allowance fetch together with balances in multicall
 export const fetchBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
 
+  const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
   const callsAllowance = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
-    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
   })
 
   const callsBalances = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
-    const bondDepositoryAddress = getAddressForBond(chainId, bond)
     return {
       address: lpContractAddress,
       name: 'balanceOf',
@@ -146,21 +134,3 @@ export const fetchBondUserStakedBalances = async (chainId: number, account: stri
   })
   return parsedStakedBalances
 }
-
-// export const fetchBondUserEarnings = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-//   const masterChefAddress = getMasterChefAddress(chainId)
-
-//   const calls = bondsToFetch.map((bond) => {
-//     return {
-//       address: masterChefAddress,
-//       name: 'pendingReqt',
-//       params: [bond.bondId, account],
-//     }
-//   })
-
-//   const rawEarnings = await multicall(chainId, masterchefABI, calls)
-//   const parsedEarnings = rawEarnings.map((earnings) => {
-//     return new BigNumber(earnings).toJSON()
-//   })
-//   return parsedEarnings
-// }

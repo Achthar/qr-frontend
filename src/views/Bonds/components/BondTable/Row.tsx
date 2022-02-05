@@ -29,6 +29,7 @@ export interface RowProps {
   roi: RoiProps
   purchased: number
   term: number
+  reqPrice?: number
 }
 
 interface RowPropsWithLoading extends RowProps {
@@ -125,7 +126,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { currentBlock } = useBlock()
 
   const vestingPeriod = () => {
-    const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms?.vestingTerm ?? '0');
+    const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms?.vesting ?? '0');
     const seconds = secondsUntilBlock(bond.token?.chainId ?? 43113, currentBlock, vestingBlock);
     return prettifySeconds(seconds, isMobile ? 'day' : 'hour');
   };
@@ -169,7 +170,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label={t('Price')}>
                         <Text>
-                          {`$${props.price}`}
+                          {`$${Math.round(props.price * 10000) / 10000}`}
                         </Text>
                       </CellLayout>
                     </CellInner>

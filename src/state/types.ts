@@ -122,19 +122,34 @@ export interface Bond extends BondConfig, IBondDetails {
     interestDue: string
     balance: string
     bondMaturationBlock: number
+    notes: {
+      payout: SerializedBigNumber;
+      created: SerializedBigNumber;
+      matured: SerializedBigNumber;
+      redeemed: SerializedBigNumber;
+      marketId?: SerializedBigNumber;
+    }
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber
     reserve0: SerializedBigNumber
     reserve1: SerializedBigNumber
+    priceInQuote: SerializedBigNumber
   },
   bondTerms?: {
     controlVariable: SerializedBigNumber; // scaling variable for price
-    vestingTerm: SerializedBigNumber; // in blocks
-    minimumPrice: SerializedBigNumber; // vs principle value
-    maxPayout: SerializedBigNumber; // in thousandths of a %. i.e. 500 = 0.5%
-    fee: SerializedBigNumber; // as % of bond payout, in hundreths. ( 500 = 5% = 0.05 for every 1 paid)
     maxDebt: SerializedBigNumber;
+    conclusion: SerializedBigNumber;
+    vesting: SerializedBigNumber;
+    fixedTerm: boolean;
+  }
+  market?: {
+    capacity: SerializedBigNumber;
+    capacityInQuote: boolean;
+    totalDebt: SerializedBigNumber;
+    maxPayout: SerializedBigNumber;
+    sold: SerializedBigNumber;
+    purchased: SerializedBigNumber;
   }
   // bondId?: number
   bond?: string
@@ -144,7 +159,6 @@ export interface Bond extends BondConfig, IBondDetails {
   balance?: string
   interestDue?: number
   bondMaturationBlock?: number
-  pendingPayout?: string
 }
 
 export interface BondsState {

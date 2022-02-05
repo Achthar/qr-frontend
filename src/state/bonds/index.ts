@@ -3,20 +3,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
 import { bonds as bondList, bondList as bondsDict } from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
-import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
-import { ethers, BigNumber, BigNumberish } from 'ethers'
-import multicall from 'utils/multicall';
-import { getAddressForBond } from 'utils/addressHelpers';
-import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
-import fetchBonds from './fetchBonds'
+import { getContractForReserve } from 'utils/contractHelpers';
 import {
-  fetchBondUserAllowances,
   fetchBondUserAllowancesAndBalances,
   fetchBondUserPendingPayoutData,
-  fetchBondUserTokenBalances
 } from './fetchBondUser'
-import fetchPublicBondData from './fetchPublicBondData';
-import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
 import { bnParser, calcSingleBondDetails } from './calcSingleBondDetails';
 import { BondsState, Bond } from '../types'
 
@@ -37,7 +28,14 @@ function noAccountBondConfig(chainId: number) {
       pendingPayout: '0',
       interestDue: '0',
       balance: '0',
-      bondMaturationBlock: 0
+      bondMaturationBlock: 0,
+      notes: {
+        payout: '0',
+        created: '0',
+        matured: '0',
+        redeemed: '0',
+        marketId: '0',
+      }
     },
     bond: '',
     allowance: 0,
@@ -60,36 +58,23 @@ function initialState(chainId: number): BondsState {
 
 export function nonArchivedBonds(chainId: number): BondConfig[] { return bondList(chainId).filter(({ bondId }) => !isArchivedBondId(bondId)) }
 
-// Async thunks
-export const fetchBondsPublicDataAsync = createAsyncThunk(
-  'bonds/fetchBondsPublicDataAsync',
-  async (bondIds) => {
-    // const { chainId } = useWeb3React()
-
-    const chainId = 43113
-    // const bondsToFetch = bondsDict[chainId].filter((bondConfig) => bondIds.includes(bondConfig.bondId))
-
-    // Add price helper bonds
-    // const bondsWithPriceHelpers = bondsToFetch
-    const bonds = await fetchBonds(chainId, bondsDict)
-    console.log("bonds", bonds)
-    const bondWithPublicData = await fetchPublicBondData(chainId, bonds[bondIds])
-    // const bondsWithPrices = await fetchBondsPrices(chainId, bonds)
-
-    return bondWithPublicData
-  }
-)
-
 interface BondUserDataResponse {
   bondId: number
   allowance: string
   tokenBalance: string
   stakedBalance: string
   earnings: string
-  pendingPayout: string,
-  interestDue: string,
+  pendingPayout: string
+  interestDue: string
   balance: string
   bondMaturationBlock: number
+  notes: {
+    payout: string
+    created: string
+    matured: string
+    redeemed: string
+    marketId?: string
+  }
 }
 
 
@@ -106,29 +91,29 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
     } = await fetchBondUserAllowancesAndBalances(chainId, account, bondsToFetch)
 
     const {
-      pendingPayout,
-      bondInfo
+      notes
     } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
 
-    const interestDue = bondInfo.map((info) => {
+    const interestDue = notes.map((info) => {
       return info.payout.toString();
     })
 
-    const bondMaturationBlock = bondInfo.map((info) => {
-      return info.vesting.add(info.lastBlock).toString();
-    })
-    
     return userBondAllowances.map((_, index) => {
       return {
         bondId: bondIds[index],
         allowance: userBondAllowances[index],
-        tokenBalance: userBondTokenBalances[index], //  userBondTokenBalances[index],
+        tokenBalance: userBondTokenBalances[index],
         stakedBalance: 0, // userStakedBalances[index],
         earnings: 0, //  userBondEarnings[index],
-        pendingPayout: pendingPayout[index],
+        notes: {
+          payout: notes[index]?.payout?.toString(),
+          created: notes[index]?.created?.toString(),
+          matured: notes[index]?.matured?.toString(),
+          redeemed: notes[index]?.redeemed?.toString(),
+          marketId: notes[index]?.marketdId?.toString()
+        },
         interestDue: interestDue[index],
-        balance: userBondTokenBalances[index],
-        bondMaturationBlock: bondMaturationBlock[index]
+        balance: userBondTokenBalances[index]
       }
     })
   },
@@ -150,13 +135,6 @@ export const bondsSlice = createSlice({
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
-      // .addCase(fetchBondsPublicDataAsync.fulfilled, (state, action) => {
-      //   state.data = state.data.map((bond) => {
-      //     console.log("baba", action.payload)
-      //     const liveBondData = action.payload // .find((bondData) => bondData.bondId === bond.bondId)
-      //     return { ...bond, ...liveBondData }
-      //   })
-      // })
       .addCase(calcSingleBondDetails.pending, state => {
         state.userDataLoaded = false;
       })
@@ -170,7 +148,6 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
-
       // Update bonds with user data
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
         action.payload.forEach((userDataEl) => {
@@ -203,18 +180,6 @@ export interface IBondData extends IUserBondDetails {
 
 }
 
-// TODO (appleseed): improve this logic
-const getBondReservePrice = async (chainId: number, isLP: boolean, provider: any) => {
-  let marketPrice: number;
-  if (isLP) {
-    const pairContract = getContractForReserve(chainId, provider);
-    const reserves = await pairContract.getReserves();
-    marketPrice = Number(reserves[1].toString()) / Number(reserves[0].toString()) / 10 ** 9;
-  } else {
-    marketPrice = 16 // await getTokenPrice("convex-finance");
-  }
-  return marketPrice;
-}
 
 
 // Actions

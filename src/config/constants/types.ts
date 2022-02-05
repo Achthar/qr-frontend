@@ -211,8 +211,6 @@ export interface BondConfig {
   bondIconSvg?: React.ReactNode;
   // bondContractABI: ethers.ContractInterface; // Bond ABI
   reserveAddress: Address;
-  bondAddress: Address;
-  depositoryAddress: Address
   bondToken: string;
   payoutToken: string;
   // The following two fields will differ on how they are set depending on bond type

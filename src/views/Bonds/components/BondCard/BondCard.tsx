@@ -63,8 +63,8 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
 
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond.reserveAddress[chainId],
-    tokenAddress: bond.bondAddress[chainId],
+    quoteTokenAddress: bond.quoteToken.address,
+    tokenAddress: bond.token.address,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const lpAddress = getAddress(chainId, bond.reserveAddress)

@@ -191,9 +191,6 @@ export const addresses = {
   reserveLp: {
     43113: '0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c' // 80reqt 20dai 25bps LP address
   },
-  treasury: {
-    43113: '0x30E4242b17Cda7e6C5F05B7b2cE35A38e06BD7Ee'
-  },
   reqtRewarder: {
     43113: '0xF5d2E7bAC75673d2D1761B5B98f6209ae5B39203'
   },
@@ -210,7 +207,22 @@ export const addresses = {
     43113: '0xB9Ec202978450F962C7EA17A852F84b72e3C4AF4'
   },
   bondDepository: {
-    43113: '0x0D5Ff7e85Bf536A26CaFD411FF333c453D5ca455'
+    43113: '0x7C0adE653CFeb0cC9CB1122f034Af1D0CD2D7d3c'
+  },
+  staking: {
+    43113: '0x1Fd4Eb153954B13BDbF1F0B325E1323fd22a30Ef'
+  },
+  treasury: {
+    43113: '0xc7E6142a5586238eeBf8a0aA33D881C0D2C4b09e'
+  },
+  sREQ: {
+    43113: '0xF6cC340F63148bE23BDf659A313F4b65178Dd05E'
+  },
+  gREQ: {
+    43113: '0x7554faD7915BF9cE5d860507201378f61d8a4110'
+  },
+  abREQ: {
+    43113: '0x852b6aA56F2e7C16D061E4e3030b8819B08a024C'
   }
 
 

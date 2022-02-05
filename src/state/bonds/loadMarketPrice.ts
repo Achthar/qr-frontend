@@ -3,11 +3,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { ChainId, JSBI, Price, Token, TokenAmount, WeightedPair } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens';
-import { getContractForBond, getContractForReserve, getBondCalculatorContract, getWeightedPairContract } from 'utils/contractHelpers';
+import { getWeightedPairContract } from 'utils/contractHelpers';
 import { IBaseAsyncThunk } from './bondTypes';
 
 const TEN_E_NINE = JSBI.BigInt('1000000000')
 const TEN_E_EIGHTEEN = JSBI.BigInt('1000000000000000000')
+
+export const TEN_ES: { [num: number]: JSBI } = {
+    6: JSBI.BigInt('1000000'),
+    8: JSBI.BigInt('100000000'),
+    9: JSBI.BigInt('1000000000'),
+    10: JSBI.BigInt('10000000000'),
+    11: JSBI.BigInt('100000000000'),
+    12: JSBI.BigInt('1000000000000'),
+    13: JSBI.BigInt('10000000000000'),
+    18: JSBI.BigInt('1000000000000000000')
+}
 
 /**
  * - fetches the REQT price from CoinGecko (via getTokenPrice)
@@ -50,9 +61,7 @@ export const loadMarketPrice = createAsyncThunk("bond/loadMarketPrice", async ({
 // reserves are provided as read out from the blockchain (ordered by address)
 export const priceFromData = (token: Token, quoteToken: Token, weightToken: any, weightQuoteToken: any, reserve0: any, reserve1: any, fee: any): string => {
     let marketPrice;
-
     try {
-
         const tokenBeforeQToken = token.sortsBefore(quoteToken)
         // create pair object
         const pair = tokenBeforeQToken ? new WeightedPair(
@@ -67,17 +76,12 @@ export const priceFromData = (token: Token, quoteToken: Token, weightToken: any,
                 JSBI.BigInt(weightQuoteToken),
                 JSBI.BigInt(fee)
             )
-
-        // console.log("PPP", pair.priceOf(REQT[chainId]).toSignificant(10))
         const price = pair.priceOf(token)
         // only get marketPrice from eth mainnet
-        marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_E_EIGHTEEN), price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
-        // let mainnetProvider = (marketPrice = await getMarketPrice({ 1: NetworkID, provider }));
-        // console.log("MARKETPRICE:", marketPrice)
-        // marketPrice /= 10 ** 9;
+        marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_ES[quoteToken.decimals ?? 18]), price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
+
     } catch (e) {
-        // console.log("LOAD FAILED")
-        marketPrice = null // await getTokenPrice("olympus");
+        marketPrice = null 
     }
     return marketPrice.toString()
 }

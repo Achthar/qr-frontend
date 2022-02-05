@@ -144,8 +144,8 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const lpLabel = 'Bond'
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond.reserveAddress,
-    tokenAddress: bond.bondAddress,
+    quoteTokenAddress: bond.quoteToken.address,
+    tokenAddress: bond.token.address,
   })
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const bsc = getNetworkExplorerLink(lpAddress, 'address')

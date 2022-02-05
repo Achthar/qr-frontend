@@ -53,6 +53,15 @@ export const formatBigNumberToFixed = (number: ethers.BigNumber, displayDecimals
 }
 
 /**
+ * Method to format the display of wei given a sting to be interpreted as ethers.BigNumber object with toFixed
+ * Note: rounds
+ */
+ export const formatSerializedBigNumber = (number: string, displayDecimals = 18, decimals = 18) => {
+  return formatBigNumber(ethers.BigNumber.from(number), displayDecimals, decimals)
+}
+
+
+/**
  * Formats a FixedNumber like BigNumber
  * i.e. Formats 9763410526137450427.1196 into 9.763 (3 display decimals)
  */

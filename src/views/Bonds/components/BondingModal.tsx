@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@requiemswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
-import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
@@ -14,7 +13,6 @@ import { fullPayoutForUsingDebtRatio, WeightedPair, TokenAmount, JSBI } from '@r
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { bnParser } from 'state/bonds/calcSingleBondDetails'
 import { blocksToDays } from 'config'
-import { useReqtPrice } from 'hooks/usePrice'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;
@@ -65,7 +63,6 @@ const BondingModal: React.FC<BondingModalProps> = (
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-  const [showRoiCalculator, setShowRoiCalculator] = useState(false)
   const { t } = useTranslation()
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(max)
@@ -112,10 +109,8 @@ const BondingModal: React.FC<BondingModalProps> = (
   const payout = useMemo(() => {
     const bondTerms = {
       controlVariable: ethers.BigNumber.from(bond.bondTerms.controlVariable), // scaling variable for price
-      vestingTerm: ethers.BigNumber.from(bond.bondTerms.vestingTerm), // in blocks
-      minimumPrice: ethers.BigNumber.from(bond.bondTerms.minimumPrice), // vs principle value
-      maxPayout: ethers.BigNumber.from(bond.bondTerms.maxPayout), // in thousandths of a %. i.e. 500 = 0.5%
-      fee: ethers.BigNumber.from(bond.bondTerms.fee), // as % of bond payout, in hundreths. ( 500 = 5% = 0.05 for every 1 paid)
+      vesting: ethers.BigNumber.from(bond.bondTerms.vesting), // in blocks
+      maxPayout: ethers.BigNumber.from(bond.market.maxPayout), // in thousandths of a %. i.e. 500 = 0.5%
       maxDebt: ethers.BigNumber.from(bond.bondTerms.maxDebt)
     }
 
@@ -222,7 +217,7 @@ const BondingModal: React.FC<BondingModalProps> = (
           Vesting Term
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(blocksToDays(Number(bond.bondTerms.vestingTerm), bond.token.chainId) * 100) / 100} days`}
+          {`${Math.round(blocksToDays(Number(bond.bondTerms.vesting), bond.token.chainId) * 100) / 100} days`}
         </Text>
       </Flex>
       <ModalActions>

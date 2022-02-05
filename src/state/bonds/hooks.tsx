@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { bonds as bondList } from 'config/constants/bonds'
@@ -12,7 +11,7 @@ import { Price, TokenAmount } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
-import { fetchBondsPublicDataAsync, fetchBondUserDataAsync, nonArchivedBonds } from '.'
+import { fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
 
@@ -60,14 +59,6 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
 /**
  * Fetches the "core" bond data used globally
  */
-export const usePollCoreBondData = () => {
-  const dispatch = useAppDispatch()
-  const { fastRefresh } = useRefresh()
-
-  useEffect(() => {
-    dispatch(fetchBondsPublicDataAsync())
-  }, [dispatch, fastRefresh])
-}
 
 export const useBonds = (): BondsState => {
   const bonds = useSelector((state: State) => state.bonds)

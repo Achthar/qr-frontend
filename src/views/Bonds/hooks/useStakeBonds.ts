@@ -4,7 +4,7 @@ import { useBondContract } from 'hooks/useContract'
 import { BondConfig } from 'config/constants/types'
 
 const useStakeBonds = (chainId: number, bond: BondConfig) => {
-  const bondCalculator = useBondContract(chainId, bond)
+  const bondCalculator = useBondContract(chainId)
 
   const handleStake = useCallback(
     async (amount: string) => {

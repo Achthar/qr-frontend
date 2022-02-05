@@ -4,7 +4,7 @@ import { useBondContract } from 'hooks/useContract'
 import { BondConfig } from 'config/constants/types'
 
 const useRedeemBond = (chainId: number, account: string, bond: BondConfig) => {
-  const bondContract = useBondContract(chainId, bond)
+  const bondContract = useBondContract(chainId)
 
   const handleRedeem = useCallback(async () => {
     await redeemBond(chainId, account, bondContract, bond.bondId)

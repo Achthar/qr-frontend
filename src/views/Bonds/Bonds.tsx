@@ -12,6 +12,7 @@ import { getBondApr } from 'utils/apr'
 import { chain, orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays } from 'config'
+import { formatSerializedBigNumber } from 'utils/formatBalance'
 import { latinise } from 'utils/latinise'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
@@ -260,34 +261,38 @@ const Bonds: React.FC = () => {
     }
   }, [chosenBondsMemoized, observerIsSet])
 
+  const reqPrice = useMemo(
+    () => {
+      return Number(formatSerializedBigNumber(bondData[0]?.lpData?.priceInQuote ?? '0', 18, 18))
+    },
+    [bondData]
+  )
+  console.log("PRICE", reqPrice)
+
   const rowData = Object.values(bondData).map((bond) => {
 
-
-    const lpLabel = bond.name && bond.name.split(' ')[0].toUpperCase().replace('REQUIEM', '')
-    const price = Number(bond.bondPrice)
-    const purchased = Math.round(bond.purchased * 100) / 100 // 7002000
-
+    const purchased = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
     const row: RowProps = {
-
       bond: {
         label: bond.name,
         bondId: bond.bondId,
         token: bond.token,
         quoteToken: bond.quoteToken
       },
-      discount: bond.bondDiscount,
+      discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
-      price: Math.round(price * 1000) / 1000,
+      price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
         value: String(Math.round(((1 + bond.bondDiscount / blocksToDays(bond.vestingTerm, chainId)) ** (365 / blocksToDays(bond.vestingTerm, chainId)) - 1) * 100) / 100),
         bondId: 1,
         lpLabel: 'string',
-        reqtPrice: new BigNumber(1),
+        reqtPrice: new BigNumber(reqPrice),
         originalValue: 3
 
       },
-      purchased
+      purchased,
+      reqPrice,
     }
 
     return row

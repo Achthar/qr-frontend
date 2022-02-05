@@ -23,9 +23,9 @@ import {
   getStableLpAddress,
   getAddressForReserve,
   getAddressForBondingCalculator,
-  getAddressForBond,
   getAddressForWeightedPairFactory,
-  getAddressForLpReserve
+  getAddressForLpReserve,
+  getBondingDepositoryAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -53,7 +53,8 @@ import weightedPairAVAX from 'config/abi/avax/RequiemWeightedPair.json'
 
 import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.json'
 
-import bondReserveAVAX from 'config/abi/avax/RequiemQBondDepository.json'
+import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
+
 import bondingCalculatorAVAX from 'config/abi/avax/RequiemQBondingCalculator.json'
 
 // ABI polygon
@@ -191,8 +192,9 @@ export const getWeightedPairFactory = (chainId: number, signer?: ethers.Signer |
   return new ethers.Contract(factoryAddress, ABI, signer);
 }
 
-export const getContractForBond = (chainId: number, bondConfig: BondConfig, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const bondAddress = getAddressForBond(chainId, bondConfig) || "";
+
+export const getContractForBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getBondingDepositoryAddress(chainId) || "";
   const ABI = new Interface(bondReserveAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
