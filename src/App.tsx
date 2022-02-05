@@ -1,5 +1,4 @@
 import React, { lazy, useCallback } from 'react'
-import config from 'components/Menu/config'
 import { Router, Redirect, Route, Switch } from 'react-router-dom'
 import { ResetCSS } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
@@ -38,7 +37,6 @@ const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool/poolList'))
-const PoolFinder = lazy(() => import('./views/PoolFinder'))
 const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
 const RemoveLiquidity = lazy(() => import('./views/RemoveLiquidity'))
 const RemoveStableLiquidity = lazy(() => import('./views/RemoveStableLiquidity'))
@@ -78,7 +76,6 @@ const App: React.FC = () => {
           </Route>
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
           <Route exact strict path="/exchange" component={SwapV3} />
-          <Route exact strict path="/findV2" component={PoolFinder} />
           <Route exact strict path="/find" component={WeightedPairFinder} />
           <Route exact strict path="/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
@@ -87,7 +84,6 @@ const App: React.FC = () => {
           <Route exact path="/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
           <Route exact path="/create" component={AddLiquidity} />
           <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
-          {/* <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} /> */}
           <Route exact strict path="/remove/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RemoveLiquidity} />
           <Route exact path="/remove/stables" component={RemoveStableLiquidity} />
           {/* Redirect */}

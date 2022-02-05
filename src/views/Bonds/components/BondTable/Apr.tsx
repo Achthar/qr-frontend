@@ -4,9 +4,10 @@ import ApyButton from 'views/Bonds/components/BondCard/ApyButton'
 import { Address } from 'config/constants/types'
 import BigNumber from 'bignumber.js'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
-import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { Skeleton } from '@requiemswap/uikit'
 import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useBondFromBondId } from 'state/bonds/hooks'
 
 export interface AprProps {
   value: string
@@ -56,7 +57,15 @@ const Apr: React.FC<AprProps> = ({
   hideButton = false,
 }) => {
   const {chainId} = useNetworkState()
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({chainId, quoteTokenAddress, tokenAddress })
+  const bond = useBondFromBondId(bondId)
+  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
+    chainId,
+    quoteTokenAddress: bond?.quoteToken?.address,
+    tokenAddress: bond?.token?.address,
+    weightQuote: bond?.lpProperties?.weightQuoteToken,
+    weightToken: bond?.lpProperties?.weightToken,
+    fee: bond?.lpProperties?.fee
+  })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   return originalValue !== 0 ? (

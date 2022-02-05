@@ -3,14 +3,14 @@
 import { NETWORK_CCY } from '@requiemswap/sdk'
 import { getWNetworkCcyAddress } from './addressHelpers'
 
-const getLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress }) => {
+const getWeightedLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress, weightQuote, weightToken, fee }) => {
   const wNetworkCCYAddressString = getWNetworkCcyAddress(chainId ?? process.env.REACT_APP_CHAIN_ID)
-  const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId ?? process.env.REACT_APP_CHAIN_ID] : null
-  const tokenAddressString: string = tokenAddress ? tokenAddress[chainId] : null
+  const quoteTokenAddressString: string = quoteTokenAddress // ? quoteTokenAddress[chainId ?? process.env.REACT_APP_CHAIN_ID] : null
+  const tokenAddressString: string = tokenAddress // ? tokenAddress[chainId] : null
   const firstPart =
     !quoteTokenAddressString || quoteTokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : quoteTokenAddressString
   const secondPart = !tokenAddressString || tokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : tokenAddressString
-  return `${firstPart}/${secondPart}`
+  return `${weightQuote}-${firstPart}/${weightToken}-${secondPart}/${fee}`
 }
 
-export default getLiquidityUrlPathParts
+export default getWeightedLiquidityUrlPathParts

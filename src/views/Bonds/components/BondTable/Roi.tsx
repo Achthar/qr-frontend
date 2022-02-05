@@ -4,9 +4,10 @@ import RoiButton from 'views/Bonds/components/BondCard/RoiButton'
 import { Address } from 'config/constants/types'
 import BigNumber from 'bignumber.js'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
-import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { Skeleton } from '@requiemswap/uikit'
 import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useBondFromBondId } from 'state/bonds/hooks'
 
 export interface RoiProps {
   value: string
@@ -54,7 +55,16 @@ const Roi: React.FC<RoiProps> = ({
   hideButton = false,
 }) => {
   const {chainId} = useNetworkState()
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({chainId, quoteTokenAddress, tokenAddress })
+  const bond = useBondFromBondId(bondId)
+  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
+    chainId,
+    quoteTokenAddress: bond?.quoteToken?.address,
+    tokenAddress: bond?.token?.address,
+    weightQuote: bond?.lpProperties?.weightQuoteToken,
+    weightToken: bond?.lpProperties?.weightToken,
+    fee: bond?.lpProperties?.fee
+  })
+
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   return originalValue !== 0 ? (

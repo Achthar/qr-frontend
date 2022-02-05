@@ -3,7 +3,7 @@ import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text } from '@requiemswap/uikit'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
-import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
@@ -142,10 +142,13 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const isActive = true
   // const { quoteToken, token, dual } = bond
   const lpLabel = 'Bond'
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({
+  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond.quoteToken.address,
-    tokenAddress: bond.token.address,
+    quoteTokenAddress: bond?.quoteToken?.address,
+    tokenAddress: bond?.token?.address,
+    weightQuote: bond?.lpProperties?.weightQuoteToken,
+    weightToken: bond?.lpProperties?.weightToken,
+    fee: bond?.lpProperties?.fee
   })
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const bsc = getNetworkExplorerLink(lpAddress, 'address')

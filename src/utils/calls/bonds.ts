@@ -52,7 +52,12 @@ export const harvestBond = async (masterChefContract, pid) => {
 
 export const redeemBond = async (chainId, account, bondDepositoryContract, bondId) => {
   const gasPrice = getGasPrice(chainId)
-  const tx = await bondDepositoryContract.redeem(account, false, { ...options, gasPrice })
+  const tx = await bondDepositoryContract.redeem(
+    account, // user
+    [bondId], // indexes
+    false,  // sendingREQ
+    { ...options, gasPrice }
+  )
   const receipt = await tx.wait()
   return receipt.status
 }
@@ -62,7 +67,14 @@ export const startBonding = async (chainId, account, bondDepositoryContract, bon
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
   const max = new BigNumber(maxPrice).times(DEFAULT_TOKEN_DECIMAL).toString()
   console.log("ARGS", value, max, account)
-  const tx = await bondDepositoryContract.deposit(value, max, getAddress(account), { gasPrice }) // no gas limit, otherwise issues
+  const tx = await bondDepositoryContract.deposit(
+    bondId, // id
+    value, // amount
+    max, // max price
+    getAddress(account), // user
+    getAddress(account), // referral
+    { gasPrice }
+  ) // no gas limit, otherwise issues
   const receipt = await tx.wait()
   return receipt.status
 }

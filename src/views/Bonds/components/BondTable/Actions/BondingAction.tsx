@@ -15,7 +15,7 @@ import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
-import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import { useReqtPrice } from 'hooks/usePrice'
 import useDepositBond from 'views/Bonds/hooks/useDepositBond'
@@ -61,10 +61,13 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
   const lpAddress = getAddress(chainId, reserveAddress)
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({
+  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: 'quoteToken.address',
-    tokenAddress: 'token.address',
+    quoteTokenAddress: bond?.quoteToken?.address,
+    tokenAddress: bond?.token?.address,
+    weightQuote: bond?.lpProperties?.weightQuoteToken,
+    weightToken: bond?.lpProperties?.weightToken,
+    fee: bond?.lpProperties?.fee
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const amountWSlippage = ethers.BigNumber.from('9000000000000000').toString()

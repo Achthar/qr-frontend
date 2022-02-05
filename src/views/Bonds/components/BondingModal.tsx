@@ -5,14 +5,14 @@ import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@requiemswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import { useBondFromBondId } from 'state/bonds/hooks'
-import { fullPayoutForUsingDebtRatio, WeightedPair, TokenAmount, JSBI } from '@requiemswap/sdk'
+import { fullPayoutForUsingDebtRatio, WeightedPair, TokenAmount, JSBI, payoutFor } from '@requiemswap/sdk'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { bnParser } from 'state/bonds/calcSingleBondDetails'
-import { blocksToDays } from 'config'
+import { blocksToDays, prettifySeconds } from 'config'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;
@@ -89,40 +89,13 @@ const BondingModal: React.FC<BondingModalProps> = (
   const token = deserializeToken(bond.token)
   const quoteToken = deserializeToken(bond.quoteToken)
 
-  const pair = useMemo(() => {
-    return new WeightedPair(
-      new TokenAmount(
-        token,
-        token.sortsBefore(quoteToken) ? bond.lpData.reserve0 : bond.lpData.reserve1
-      ),
-      new TokenAmount(
-        quoteToken,
-        token.sortsBefore(quoteToken) ? bond.lpData.reserve1 : bond.lpData.reserve0
-      ),
-      JSBI.BigInt(80),
-      JSBI.BigInt(25)
-    )
-  },
-    [token, quoteToken, bond.lpData.reserve0, bond.lpData.reserve1])
-
 
   const payout = useMemo(() => {
-    const bondTerms = {
-      controlVariable: ethers.BigNumber.from(bond.bondTerms.controlVariable), // scaling variable for price
-      vesting: ethers.BigNumber.from(bond.bondTerms.vesting), // in blocks
-      maxPayout: ethers.BigNumber.from(bond.market.maxPayout), // in thousandths of a %. i.e. 500 = 0.5%
-      maxDebt: ethers.BigNumber.from(bond.bondTerms.maxDebt)
-    }
-
     let returnVal = ethers.BigNumber.from(0)
     try {
-      returnVal = fullPayoutForUsingDebtRatio(
-        pair,
-        ethers.BigNumber.from(bond.debtRatio),
-        ethers.BigNumber.from(bond.lpData.lpTotalSupply),
-        ethers.BigNumber.from(val === '' ? 0 : val),
-        deserializeToken(bond.token),
-        bondTerms
+      returnVal = payoutFor(
+        ethers.BigNumber.from(val === '' ? 0 : new BigNumber(val).multipliedBy('1000000000000000000').toString()),
+        ethers.BigNumber.from(bond.marketPrice)
       )
     }
     catch {
@@ -132,9 +105,10 @@ const BondingModal: React.FC<BondingModalProps> = (
     return returnVal
   }, [
     val,
-    pair,
     bond
   ])
+
+  console.log("Inp", new BigNumber(val).multipliedBy('1000000000000000000').toString(), "PAYOUT", payout.toString())
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
@@ -144,19 +118,27 @@ const BondingModal: React.FC<BondingModalProps> = (
     [setVal],
   )
 
+
+  const vesting = () => {
+    return prettifySeconds(Number(bond.bondTerms?.vesting) ?? 0, 'hour');
+  };
+
+
   const handleSelectMax = useCallback(() => {
     setVal(fullBalance)
   },
     [fullBalance, setVal]
   )
 
-  const payoutNumber = bnParser(payout, ethers.BigNumber.from('1000000000000000000'))
-  const price = bnParser(ethers.BigNumber.from(bond.marketPrice), ethers.BigNumber.from('1000000000000000000'))
+  const payoutNumber = Number(formatBigNumber(payout, 18, 18))
+  const price = Number(formatSerializedBigNumber(bond.marketPrice, 18, 18))
 
+  console.log("MP", bond.market.maxPayout)
   const maxPriceText = (): string => {
     let text = ''
     try {
-      text = `${Math.round(bnParser(ethers.BigNumber.from(bond.maxBondPrice), ethers.BigNumber.from('1000000000000000000')) * 100) / 100}`
+
+      text = `${Math.round(Number(formatSerializedBigNumber(bond.market.maxPayout, 18, 18)) * 100) / 100}`
     }
     catch {
       text = 'no limit'
@@ -190,7 +172,7 @@ const BondingModal: React.FC<BondingModalProps> = (
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
-          ROI
+          Discount
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
           {`${Math.round(bond.bondDiscount * 10000) / 100}%`}
@@ -198,7 +180,7 @@ const BondingModal: React.FC<BondingModalProps> = (
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
-          Max You Can Buy
+          Maximum Payout
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
           {maxPriceText()}
@@ -217,7 +199,7 @@ const BondingModal: React.FC<BondingModalProps> = (
           Vesting Term
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(blocksToDays(Number(bond.bondTerms.vesting), bond.token.chainId) * 100) / 100} days`}
+          {vesting()}
         </Text>
       </Flex>
       <ModalActions>
@@ -227,7 +209,11 @@ const BondingModal: React.FC<BondingModalProps> = (
         <Button
           width="100%"
           disabled={
-            pendingTx || !lpTokensToStake.isFinite() || lpTokensToStake.eq(0) || lpTokensToStake.gt(fullBalanceNumber)
+            pendingTx ||
+            !lpTokensToStake.isFinite() ||
+            lpTokensToStake.eq(0) ||
+            lpTokensToStake.gt(fullBalanceNumber) ||
+            payout.gt(ethers.BigNumber.from(bond.market.maxPayout))
           }
           onClick={async () => {
             setPendingTx(true)

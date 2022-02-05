@@ -22,7 +22,7 @@ export const getMasterChefAddress = (chainId: number) => {
 export const getMulticallAddress = (chainId: number) => {
   return getAddress(chainId, addresses.multiCall)
 }
-export const getWbnbAddress = (chainId: number) => {
+export const getWNetworkCcyAddress = (chainId: number) => {
   return WRAPPED_NETWORK_TOKENS[chainId].address
 }
 export const getLotteryV2Address = (chainId: number) => {

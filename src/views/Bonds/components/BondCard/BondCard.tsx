@@ -10,7 +10,7 @@ import ExpandableSectionButton from 'components/ExpandableSectionButton'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { getAddress } from 'utils/addressHelpers'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import DetailsSection from './DetailsSection'
 import CardHeading from './CardHeading'
@@ -61,10 +61,13 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
   const lpLabel = bond.name && bond.name.toUpperCase().replace('REQUIEM', '')
   const earnLabel = 'Yield'
 
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({
+  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond.quoteToken.address,
-    tokenAddress: bond.token.address,
+    quoteTokenAddress: bond?.quoteToken?.address,
+    tokenAddress: bond?.token?.address,
+    weightQuote: bond?.lpProperties?.weightQuoteToken,
+    weightToken: bond?.lpProperties?.weightToken,
+    fee: bond?.lpProperties?.fee
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const lpAddress = getAddress(chainId, bond.reserveAddress)
