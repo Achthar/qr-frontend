@@ -123,13 +123,10 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const tableSchema = isSmallerScreen ? MobileColumnSchema : DesktopColumnSchema
   const columnNames = tableSchema.map((column) => column.name)
 
-  const { currentBlock } = useBlock()
-
-  const vestingPeriod = () => {
-    const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms?.vesting ?? '0');
-    const seconds = secondsUntilBlock(bond.token?.chainId ?? 43113, currentBlock, vestingBlock);
-    return prettifySeconds(seconds, isMobile ? 'day' : 'hour');
+  const vesting = () => {
+    return prettifySeconds(Number(bond.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
   };
+
 
   const handleRenderRow = () => {
     if (!isMobile) {
@@ -194,7 +191,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label={t('Vesting Term')}>
                         <Text>
-                          {vestingPeriod()}
+                          {vesting()}
                         </Text>
                       </CellLayout>
                     </CellInner>
@@ -206,7 +203,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label={t('ROI')}>
                         <Text>
-                          <Roi {...props.roi} hideButton={isSmallerScreen} />
+                          <Roi {...props.roi} hideButton />
                         </Text>
                       </CellLayout>
                     </CellInner>
@@ -250,7 +247,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
               <TermMobileCell>
                 <CellLayout label={t('Vesting Period')}>
                   <Text>
-                    {vestingPeriod()}
+                    {vesting()}
                   </Text>
                 </CellLayout>
               </TermMobileCell>

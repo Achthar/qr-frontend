@@ -267,7 +267,6 @@ const Bonds: React.FC = () => {
     },
     [bondData]
   )
-  console.log("PRICE", reqPrice)
 
   const rowData = Object.values(bondData).map((bond) => {
 
@@ -284,7 +283,7 @@ const Bonds: React.FC = () => {
       price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
-        value: String(Math.round(((1 + bond.bondDiscount / blocksToDays(bond.vestingTerm, chainId)) ** (365 / blocksToDays(bond.vestingTerm, chainId)) - 1) * 100) / 100),
+        value: String(Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100),
         bondId: 1,
         lpLabel: 'string',
         reqtPrice: new BigNumber(reqPrice),
