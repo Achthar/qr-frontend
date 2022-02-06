@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 import {
@@ -29,6 +29,8 @@ import {
 } from '@requiemswap/uikit'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
+import { RouteComponentProps } from 'react-router-dom'
+import getChain from 'utils/getChain'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
 import { useStablePool } from 'hooks/useStablePool'
@@ -70,11 +72,25 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
-export default function RemoveStableLiquidity() {
+
+export default function RemoveStableLiquidity({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { account, chainId, library } = useActiveWeb3React("RemoveStableLiquidity")
 
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/remove/stables`)
+
+  },
+    [chain, chainId, history],
+  )
 
   // burn state
   const {
@@ -883,7 +899,7 @@ export default function RemoveStableLiquidity() {
         <AppHeader
           chainId={chainId}
           account={account}
-          backTo="/pool"
+          backTo={`/${chain}/liquidity`}
           title="Remove Stable Swap Liquidity"
           subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${STABLES_INDEX_MAP[chainId ?? 43113][1].symbol
             }, ${STABLES_INDEX_MAP[chainId ?? 43113][2].symbol} and/or ${STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}`}

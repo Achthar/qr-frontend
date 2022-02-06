@@ -8,6 +8,7 @@ import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
 import { useNetworkState } from 'state/globalNetwork/hooks'
+import getChain from 'utils/getChain'
 import HarvestAction from './HarvestAction'
 import BondingAction from './BondingAction'
 import RedemptionAction from './RedemptionAction'
@@ -142,6 +143,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const isActive = true
   // const { quoteToken, token, dual } = bond
   const lpLabel = 'Bond'
+  const chain = getChain(chainId)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
     quoteTokenAddress: bond?.quoteToken?.address,
@@ -159,7 +161,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
       <InfoContainer>
         {isActive && (
           <StakeContainer>
-            <StyledLinkExternal href={`/add/${liquidityUrlPathParts}`}>
+            <StyledLinkExternal href={`/${chain}/add/${liquidityUrlPathParts}`}>
               {t('Get %symbol%', { symbol: lpLabel })}
             </StyledLinkExternal>
           </StakeContainer>

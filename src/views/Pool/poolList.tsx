@@ -1,14 +1,15 @@
 /* eslint no-continue: 0 */
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { REQT, DAI } from 'config/constants/tokens'
 import { WeightedPair, Token, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import getChain from 'utils/getChain'
 import Column from 'components/Column'
 import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
@@ -86,10 +87,23 @@ function useRelevantWeightedPairs(chainId: number): WeightedPair[] {
   )
 }
 
-export default function PoolList() {
+export default function PoolList({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/liquidity`)
+
+  },
+    [chainId, chain, history],
+  )
 
   const pairs = useRelevantWeightedPairs(chainId)
 
@@ -204,7 +218,7 @@ export default function PoolList() {
           <Button
             id="join-pool-button"
             as={Link}
-            to={`/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
+            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
             width="100%"
             startIcon={<AddIcon color={theme.colors.backgroundAlt} />}
           >

@@ -12,6 +12,7 @@ import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
+import getChain from 'utils/getChain'
 import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
@@ -57,6 +58,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const reqtPrice = usePriceReqtUsd(chainId)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
+  const chain = getChain(chainId)
   const lpAddress = getAddress(chainId, reserveAddress)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
@@ -66,7 +68,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
   })
-  const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
+  const addLiquidityUrl = `${chain}/${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   const handleRedemption = async (amount: string) => {
     await onRedeem()

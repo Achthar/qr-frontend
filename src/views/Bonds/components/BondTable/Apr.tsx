@@ -8,6 +8,7 @@ import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathP
 import { Skeleton } from '@requiemswap/uikit'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useBondFromBondId } from 'state/bonds/hooks'
+import getChain from 'utils/getChain'
 
 export interface AprProps {
   value: string
@@ -56,7 +57,7 @@ const Apr: React.FC<AprProps> = ({
   originalValue,
   hideButton = false,
 }) => {
-  const {chainId} = useNetworkState()
+  const { chainId } = useNetworkState()
   const bond = useBondFromBondId(bondId)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
@@ -66,7 +67,10 @@ const Apr: React.FC<AprProps> = ({
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
   })
-  const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
+
+  const chain = getChain(chainId)
+
+  const addLiquidityUrl = `${chain}/${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   return originalValue !== 0 ? (
     <Container>

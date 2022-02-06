@@ -76,7 +76,7 @@ export default function PoolFinder({
     },
     [activeField],
   )
-  
+
   useEffect(() => {
     const _chain = chain ?? getChain(chainId)
     history.push(`/${_chain}/liquidity`)
@@ -113,7 +113,7 @@ export default function PoolFinder({
           account={account}
           title={t('Import Pool')}
           subtitle={t('Import an existing pool')}
-          backTo="/pool" />
+          backTo={`/${getChain(chainId)}/pool`} />
         <AutoColumn style={{ padding: '1rem' }} gap="md">
           <StyledButton
             endIcon={<ChevronDownIcon />}
@@ -158,7 +158,7 @@ export default function PoolFinder({
               style={{ justifyItems: 'center', backgroundColor: '', padding: '12px 0px', borderRadius: '12px' }}
             >
               <Text textAlign="center">{t('Pool Found!')}</Text>
-              <StyledInternalLink to="/pool">
+              <StyledInternalLink to={`/${getChain(chainId)}/pool`}>
                 <Text textAlign="center">{t('Manage this pool.')}</Text>
               </StyledInternalLink>
             </ColumnCenter>

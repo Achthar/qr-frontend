@@ -1,5 +1,5 @@
 import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem } from '@requiemswap/uikit'
-import config, { configData } from 'components/Menu/config'
+import config, { configData, getIcon } from 'components/Menu/config'
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'
 import { useHistory, useLocation } from 'react-router'
@@ -26,24 +26,27 @@ interface MenuProps {
 const MenuItem: React.FC<MenuProps> = ({ history, current, menuItem, isMobile }) => {
   return (
     // isMobile ? (
-      <UserMenuItem as='button' onClick={() => history.push(menuItem.href)}>
-        {/* <ButtonMenuItem key={menuItem?.label}> */}
-        <StyledLogo
-          size="24px"
-          srcs={[current?.label === menuItem?.label ? menuItem.iconSelected : menuItem.icon]}
-          alt={menuItem?.label.charAt(0)}
-        />
-                  {menuItem.label}
-        {/* </ButtonMenuItem> */}
+    <UserMenuItem as='button' onClick={() => {
+      history.push(menuItem.href)
+    }
+    }>
+      {/* <ButtonMenuItem key={menuItem?.label}> */}
+      <StyledLogo
+        size="24px"
+        srcs={[current?.label === menuItem?.label ? menuItem.iconSelected : menuItem.icon]}
+        alt={menuItem?.label.charAt(0)}
+      />
+      {menuItem.label}
+      {/* </ButtonMenuItem> */}
 
-      </UserMenuItem>
-    )
-//       : (
-//         <UserMenuItem as='button' onClick={() => history.push(menuItem.href)}>
-//           {menuItem.label}
-//         </UserMenuItem>
-//       )
-//   )
+    </UserMenuItem>
+  )
+  //       : (
+  //         <UserMenuItem as='button' onClick={() => history.push(menuItem.href)}>
+  //           {menuItem.label}
+  //         </UserMenuItem>
+  //       )
+  //   )
 }
 
 const CustomNav: React.FC = () => {
@@ -62,10 +65,13 @@ const CustomNav: React.FC = () => {
   })
 
   const current = menuItems[activeIndex]
+  const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getIcon('Liquidity') : current?.icon
+  const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
+
   return (
     <UIKitUserMenu
-      text={current?.label ?? 'Requiem Finance'}
-      avatarSrc={current?.icon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'}
+      text={fbLabel ?? 'Requiem Finance'}
+      avatarSrc={fbIcon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'}
     >
       {menuItems.map((menuItem) =>
         <MenuItem history={history} current={current} isMobile={isMobile} menuItem={menuItem} />

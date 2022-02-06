@@ -406,7 +406,7 @@ export default function RemoveLiquidity({
         <AppHeader
           chainId={chainId}
           account={account}
-          backTo="/pool"
+          backTo={`/${chain}/liquidity`}
           title={`Remove\n ${weightA}-${currencyA?.symbol ?? ''}/${weightB}-${currencyB?.symbol ?? ''}@${fee}bps\nliquidity`}
           subtitle={`To receive ${currencyA?.symbol} and ${currencyB?.symbol}`}
           noConfig

@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import getChain from 'utils/getChain'
 
 import { useBurnActionHandlers } from 'state/burn/hooks'
 import useTotalSupply from '../../hooks/useTotalSupply'
@@ -149,7 +150,10 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
 
   const currency0 = unwrappedToken(weightedPair.token0)
   const currency1 = unwrappedToken(weightedPair.token1)
-  const {onSetFee, onSetWeightA} = useBurnActionHandlers()
+  const { onSetFee, onSetWeightA } = useBurnActionHandlers()
+
+
+  const chain = getChain(chainId)
 
   const [showMore, setShowMore] = useState(false)
 
@@ -237,7 +241,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
             <Flex flexDirection="column">
               <Button
                 as={Link}
-                to={`/remove/${weightedPair.weight0}-${currencyId(chainId, currency0)}/${weightedPair.weight1}-${currencyId(chainId, currency1)}/${weightedPair.fee0}`}
+                to={`/${chain}/remove/${weightedPair.weight0}-${currencyId(chainId, currency0)}/${weightedPair.weight1}-${currencyId(chainId, currency1)}/${weightedPair.fee0}`}
                 variant="primary"
                 width="100%"
                 mb="8px"
@@ -250,7 +254,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
                 //   onSetFee(weightedPair?.fee0.toString())
                 //   onSetWeightA(weightedPair?.weight0.toString())
                 // }}
-                to={`/add/${weightedPair.weight0.toString()}-${currencyId(chainId, currency0)}/${weightedPair.weight1.toString()}-${currencyId(chainId, currency1)}/${weightedPair.fee0.toString()}`}
+                to={`/${chain}/add/${weightedPair.weight0.toString()}-${currencyId(chainId, currency0)}/${weightedPair.weight1.toString()}-${currencyId(chainId, currency1)}/${weightedPair.fee0.toString()}`}
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
                 width="100%"

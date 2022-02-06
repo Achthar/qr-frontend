@@ -76,7 +76,7 @@ const App: React.FC = () => {
           <Route exact strict path="/:chain/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/:chain/add" component={AddLiquidity} />
-          <Route exact path="/:chain/add/stable" component={AddStableLiquidity} />
+          <Route exact path="/:chain/add/stables" component={AddStableLiquidity} />
           <Route exact path="/:chain/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
           <Route exact path="/:chain/create" component={AddLiquidity} />
           <Route exact path="/:chain/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />

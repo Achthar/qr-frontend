@@ -12,6 +12,7 @@ import {
   AddIcon,
   CircleOutlineIcon,
 } from '@requiemswap/uikit'
+import getChain from 'utils/getChain'
 import { BigNumber } from 'ethers'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -65,7 +66,6 @@ export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: Po
   const chainId = stablePool.chainId
 
   const [showMore, setShowMore] = useState(false)
-
   // const userPoolBalance = useTokenBalance(chainId, account ?? undefined, stablePool?.liquidityToken)
   const totalPoolTokens = stablePool.lpTotalSupply
 
@@ -201,6 +201,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
 
   // useTokenBalance(chainId, account ?? undefined, stablePool.liquidityToken)
   const totalPoolTokens = stablePool.lpTotalSupply
+  const chain = getChain(chainId)
 
   const poolTokenPercentage =
     !!userLpPoolBalance && !!totalPoolTokens && totalPoolTokens.gte(userLpPoolBalance.raw.toString())
@@ -228,7 +229,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
         <Flex flexDirection="column">
           <Flex alignItems="center" mb="4px">
             <AutoColumn gap="4px">
-              <QuadCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} currency2={tokens[2]} currency3={tokens[3]} size={20}/>
+              <QuadCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} currency2={tokens[2]} currency3={tokens[3]} size={20} />
               {/* <DoubleCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} size={20} />
               <DoubleCurrencyLogo chainId={chainId} currency0={tokens[2]} currency1={tokens[3]} size={20} /> */}
             </AutoColumn>
@@ -333,7 +334,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
               <Flex flexDirection="column">
                 <Button
                   as={Link}
-                  to='/remove/stables'
+                  to={`/${chain}/remove/stables`}
                   variant="primary"
                   width="100%"
                   mb="8px"
@@ -342,7 +343,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
                 </Button>
                 <Button
                   as={Link}
-                  to='/add/stable'
+                  to={`/${chain}/add/stables`}
                   variant="text"
                   startIcon={<AddIcon color="primary" />}
                   width="100%"

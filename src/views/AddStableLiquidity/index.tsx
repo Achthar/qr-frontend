@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   TokenAmount,
   STABLE_POOL_ADDRESS,
@@ -8,11 +8,13 @@ import {
   Button,
   CardBody,
 } from '@requiemswap/uikit'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { LightCard } from 'components/Card'
+import getChain from 'utils/getChain'
 import { AutoColumn } from 'components/Layout/Column'
+import { DAI, REQT } from 'config/constants/tokens'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
 import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
@@ -32,11 +34,23 @@ import { useStablePool } from 'hooks/useStablePool'
 import StablePoolPriceBar from './StablePoolPriceBar'
 import Page from '../Page'
 
-export default function AddStableLiquidity() {
+export default function AddStableLiquidity({
+  match: {
+    params: { chain },
+  },
+  history,
+}: RouteComponentProps<{ chain: string }>) {
   const { account, chainId, library } = useActiveWeb3React("AL")
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
 
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/add/stables`)
+
+  },
+    [chainId, chain, history],
+  )
 
   const expertMode = useIsExpertMode()
 
@@ -222,7 +236,7 @@ export default function AddStableLiquidity() {
         {/* <ButtonMenu activeIndex={liquidityState} onItemClick={handleClick} scale="sm" ml="24px"> */}
         <Button
           as={Link}
-          to='/add'
+          to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
           variant="secondary"
           width="100%"
           mb="8px"
@@ -231,7 +245,7 @@ export default function AddStableLiquidity() {
         </Button>
         <Button
           as={Link}
-          to='/add/stable'
+          to={`/${getChain(chainId)}/add/stables`}
           variant="primary"
           width="100%"
           mb="8px"

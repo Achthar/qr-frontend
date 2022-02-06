@@ -7,6 +7,7 @@ import { getNetworkExplorerLink } from 'utils'
 import tokens, { getSerializedToken, REQT, USDC } from 'config/constants/tokens'
 import { useTranslation } from 'contexts/Localization'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
+import getChain from 'utils/getChain'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { getAddress } from 'utils/addressHelpers'
 import { deserializeToken } from 'state/user/hooks/helpers'
@@ -60,6 +61,7 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
 
   const lpLabel = bond.name && bond.name.toUpperCase().replace('REQUIEM', '')
   const earnLabel = 'Yield'
+  const chain = getChain(chainId)
 
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
@@ -69,7 +71,7 @@ const BondCard: React.FC<BondCardProps> = ({ bond, displayApr, removed, reqtPric
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
   })
-  const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
+  const addLiquidityUrl = `${chain}/${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const isPromotedBond = true
 
