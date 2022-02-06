@@ -68,27 +68,23 @@ const App: React.FC = () => {
           <Route path="/" exact>
             <Home />
           </Route>
-          <Route path="/bonds">
-            <Bonds />
-          </Route>
-          <Route path="/farms">
-            <Farms />
-          </Route>
           {/* Using this format because these components use routes injected props. We need to rework them with hooks */}
-          <Route exact strict path="/exchange" component={SwapV3} />
-          <Route exact strict path="/find" component={WeightedPairFinder} />
-          <Route exact strict path="/liquidity" component={Liquidity} />
+          <Route exact strict path="/:chain/farms" component={Farms} />
+          <Route exact strict path="/:chain/bonds" component={Bonds} />
+          <Route exact strict path="/:chain/exchange" component={SwapV3} />
+          <Route exact strict path="/:chain/find" component={WeightedPairFinder} />
+          <Route exact strict path="/:chain/liquidity" component={Liquidity} />
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
-          <Route exact path="/add" component={AddLiquidity} />
-          <Route exact path="/add/stable" component={AddStableLiquidity} />
-          <Route exact path="/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
-          <Route exact path="/create" component={AddLiquidity} />
-          <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
-          <Route exact strict path="/remove/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RemoveLiquidity} />
-          <Route exact path="/remove/stables" component={RemoveStableLiquidity} />
+          <Route exact path="/:chain/add" component={AddLiquidity} />
+          <Route exact path="/:chain/add/stable" component={AddStableLiquidity} />
+          <Route exact path="/:chain/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
+          <Route exact path="/:chain/create" component={AddLiquidity} />
+          <Route exact path="/:chain/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+          <Route exact strict path="/:chain/remove/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RemoveLiquidity} />
+          <Route exact path="/:chain/remove/stables" component={RemoveStableLiquidity} />
           {/* Redirect */}
           <Route path="/pool">
-            <Redirect to="/liquidity" />
+            <Redirect to="/:chain/liquidity" />
           </Route>
 
           {/* 404 */}

@@ -4,12 +4,14 @@ import BigNumber from 'bignumber.js'
 import { useWeb3React } from '@web3-react/core'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
+import getChain from 'utils/getChain'
 import Page from 'components/Layout/Page'
 import { useBonds, usePollBondsWithUserData, usePriceReqtUsd, usePollBondsPublicData } from 'state/bonds/hooks'
 import { Bond } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
+import { RouteComponentProps } from 'react-router'
 import { getBondApr } from 'utils/apr'
-import { chain, orderBy } from 'lodash'
+import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays } from 'config'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
@@ -111,7 +113,12 @@ const getDisplayApr = (reqtRewardsApr?: number, lpRewardsApr?: number) => {
   return null
 }
 
-const Bonds: React.FC = () => {
+function Bonds({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { path } = useRouteMatch()
   const { pathname } = useLocation()
   const { t } = useTranslation()
@@ -237,6 +244,15 @@ const Bonds: React.FC = () => {
   const { bondData } = useBonds()
   console.log("BDATA", bondData)
   chosenBondsLength.current = chosenBondsMemoized.length
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/bonds`)
+
+  },
+    [chainId, chain, history],
+  )
+
 
   useEffect(() => {
     const showMoreBonds = (entries) => {

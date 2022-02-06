@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Currency, JSBI, TokenAmount, NETWORK_CCY } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/uikit'
 import styled from 'styled-components'
+import { RouteComponentProps, Link } from 'react-router-dom'
+import getChain from 'utils/getChain'
 import { useTranslation } from 'contexts/Localization'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
@@ -31,7 +33,12 @@ const StyledButton = styled(Button)`
   border-radius: 16px;
 `
 
-export default function PoolFinder() {
+export default function PoolFinder({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
@@ -68,6 +75,14 @@ export default function PoolFinder() {
       }
     },
     [activeField],
+  )
+  
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/liquidity`)
+
+  },
+    [chain, chainId, history],
   )
 
   const prerequisiteMessage = (

@@ -7,14 +7,14 @@ export function RedirectToAddLiquidity() {
 }
 
 
-export function RedirectDuplicateTokenIds(props: RouteComponentProps<{  weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
+export function RedirectDuplicateTokenIds(props: RouteComponentProps<{ chain: string, weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
   const {
     match: {
-      params: { currencyIdA, currencyIdB },
+      params: { chain, currencyIdA, currencyIdB, weightA, weightB, fee },
     },
   } = props
   if (currencyIdA.toLowerCase() === currencyIdB.toLowerCase()) {
-    return <Redirect to={`/add/${currencyIdA}`} />
+    return <Redirect to={`/${chain}/add/${currencyIdA}`} />
   }
   return <AddLiquidity {...props} />
 }

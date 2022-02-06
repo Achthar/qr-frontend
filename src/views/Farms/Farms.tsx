@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
+import { RouteComponentProps } from 'react-router'
 import { useWeb3React } from '@web3-react/core'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@requiemswap/uikit'
 import { ChainId } from '@requiemswap/sdk'
@@ -16,6 +17,7 @@ import { getFarmApr } from 'utils/apr'
 import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/farmHelpers'
 import { latinise } from 'utils/latinise'
+import getChain from 'utils/getChain'
 import {
   useUserFarmStakedOnly,
   //  useUserFarmsViewMode 
@@ -120,7 +122,12 @@ const getDisplayApr = (reqtRewardsApr?: number, lpRewardsApr?: number) => {
   return null
 }
 
-const Farms: React.FC = () => {
+function Farms({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { path } = useRouteMatch()
   const { pathname } = useLocation()
   const { t } = useTranslation()
@@ -248,6 +255,14 @@ const Farms: React.FC = () => {
   ])
 
   chosenFarmsLength.current = chosenFarmsMemoized.length
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/farms`)
+
+  },
+    [chainId, chain, history],
+  )
 
   useEffect(() => {
     if (isIntersecting) {

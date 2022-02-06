@@ -5,7 +5,9 @@ import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import PercentageInputPanel from 'components/CurrencyInputPanel/PercentageInputPanel'
 import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
+import getChain from 'utils/getChain'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import { CurrencyLogo } from '../../components/Logo'
@@ -40,7 +42,12 @@ const StyledButton = styled(Button)`
 `
 
 
-export default function WeightedPairFinder() {
+export default function WeightedPairFinder({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
 
@@ -73,6 +80,16 @@ export default function WeightedPairFinder() {
       addPair(pair)
     }
   }, [pair, addPair])
+
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/liquidity`)
+
+  },
+    [chain, chainId, history],
+  )
+
 
   const validPairNoLiquidity: boolean =
     pairState === WeightedPairState.NOT_EXISTS ||

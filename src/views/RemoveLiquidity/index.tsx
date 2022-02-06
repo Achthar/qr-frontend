@@ -6,6 +6,7 @@ import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useM
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
+import getChain from 'utils/getChain'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -44,9 +45,9 @@ const BorderCard = styled.div`
 export default function RemoveLiquidity({
   history,
   match: {
-    params: { weightA, weightB, fee, currencyIdA, currencyIdB },
+    params: {chain, weightA, weightB, fee, currencyIdA, currencyIdB },
   },
-}: RouteComponentProps<{ weightA: string, weightB: string, fee: string, currencyIdA: string; currencyIdB: string }>) {
+}: RouteComponentProps<{chain:string, weightA: string, weightB: string, fee: string, currencyIdA: string; currencyIdB: string }>) {
 
   const { account, chainId, library } = useActiveWeb3React()
 
@@ -350,23 +351,25 @@ export default function RemoveLiquidity({
 
   const handleSelectCurrencyA = useCallback(
     (currency: Currency) => {
+      const _chain = chain ?? getChain(chainId)
       if (currencyIdB && currencyId(chainId, currency) === currencyIdB) {
-        history.push(`/remove/${weightB}-${currencyId(chainId, currency)}/${weightA}-${currencyIdA}/${fee}`)
+        history.push(`/${_chain}/remove/${weightB}-${currencyId(chainId, currency)}/${weightA}-${currencyIdA}/${fee}`)
       } else {
-        history.push(`/remove/${weightA}-${currencyId(chainId, currency)}/${weightB}-${currencyIdB}/${fee}`)
+        history.push(`/${_chain}/remove/${weightA}-${currencyId(chainId, currency)}/${weightB}-${currencyIdB}/${fee}`)
       }
     },
-    [chainId, currencyIdA, currencyIdB, history, fee, weightA, weightB],
+    [chain, currencyIdA, currencyIdB, history, fee, weightA, weightB, chainId],
   )
   const handleSelectCurrencyB = useCallback(
     (currency: Currency) => {
+      const _chain = chain ?? getChain(chainId)
       if (currencyIdA && currencyId(chainId, currency) === currencyIdA) {
-        history.push(`/remove/${weightB}-${currencyIdB}/${weightA}-${currencyId(chainId, currency)}/${fee}`)
+        history.push(`/${_chain}/remove/${weightB}-${currencyIdB}/${weightA}-${currencyId(chainId, currency)}/${fee}`)
       } else {
-        history.push(`/remove/${weightA}-${currencyIdA}/${weightB}-${currencyId(chainId, currency)}/${fee}`)
+        history.push(`/${_chain}/remove/${weightA}-${currencyIdA}/${weightB}-${currencyId(chainId, currency)}/${fee}`)
       }
     },
-    [chainId, currencyIdA, currencyIdB, history, fee, weightA, weightB],
+    [chain, currencyIdA, currencyIdB, history, fee, weightA, weightB, chainId],
   )
 
   const handleDismissConfirmation = useCallback(() => {

@@ -56,6 +56,7 @@ import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import Dots from 'components/Loader/Dots'
 import { currencyId } from 'utils/currencyId'
+import getChain from 'utils/getChain'
 import ConfirmAddModalBottom from './ConfirmAddModalBottom'
 import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
@@ -72,10 +73,10 @@ const StyledButton = styled(Button)`
 
 export default function AddLiquidity({
   match: {
-    params: { weightA, weightB, fee, currencyIdA, currencyIdB },
+    params: { chain, weightA, weightB, fee, currencyIdA, currencyIdB },
   },
   history,
-}: RouteComponentProps<{ weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
+}: RouteComponentProps<{ chain: string, weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
@@ -93,7 +94,7 @@ export default function AddLiquidity({
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintWeightedPairState()
-  
+
   const {
     dependentField,
     currencies,
@@ -378,51 +379,54 @@ export default function AddLiquidity({
   const handleCurrencyASelect = useCallback(
     (currencyA_: Currency) => {
       const newCurrencyIdA = currencyId(chainId, currencyA_)
+      const _chain = chain ?? getChain(chainId)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/add/${weightB}-${currencyId(chainId, currencyA_)}/${weightA}-${currencyIdA}/${_fee}`)
+        history.push(`/${_chain}/add/${weightB}-${currencyId(chainId, currencyA_)}/${weightA}-${currencyIdA}/${_fee}`)
       } else {
-        history.push(`/add/${weightA}-${newCurrencyIdA}/${weightB}-${currencyIdB}/${_fee}`)
+        history.push(`/${_chain}/add/${weightA}-${newCurrencyIdA}/${weightB}-${currencyIdB}/${_fee}`)
       }
     },
-    [chainId, currencyIdB, history, currencyIdA, weightA, weightB, _fee],
+    [chainId, currencyIdB, history, currencyIdA, weightA, weightB, _fee, chain],
   )
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {
       const newCurrencyIdB = currencyId(chainId, currencyB_)
+      const _chain = chain ?? getChain(chainId)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/add/${weightB}-${currencyIdB}/${weightA}-${newCurrencyIdB}/${_fee}`)
+          history.push(`/${_chain}/add/${weightB}-${currencyIdB}/${weightA}-${newCurrencyIdB}/${_fee}`)
         } else {
-          history.push(`/add/${weightB}-${newCurrencyIdB}/${_fee}`)
+          history.push(`/${_chain}/add/${weightB}-${newCurrencyIdB}/${_fee}`)
         }
       } else {
-        history.push(`/add/${weightA}-${currencyIdA || NETWORK_CCY[chainId].symbol}/${weightB}-${newCurrencyIdB}/${_fee}`)
+        history.push(`/${_chain}/add/${weightA}-${currencyIdA || NETWORK_CCY[chainId].symbol}/${weightB}-${newCurrencyIdB}/${_fee}`)
       }
     },
-    [chainId, currencyIdA, history, currencyIdB, weightA, weightB, _fee],
+    [chainId, currencyIdA, history, currencyIdB, weightA, weightB, _fee, chain],
   )
 
   const handleWeightASelect = useCallback(
     (weight: string) => {
-
-      history.push(`/add/${weight}-${currencyIdA}/${String(100 - Number(weight))}-${currencyIdB}/${_fee}`)
+      const _chain = chain ?? getChain(chainId)
+      history.push(`/${_chain}/add/${weight}-${currencyIdA}/${String(100 - Number(weight))}-${currencyIdB}/${_fee}`)
     },
-    [currencyIdA, currencyIdB, history, _fee],
+    [currencyIdA, currencyIdB, history, _fee, chainId, chain],
   )
 
   const handleWeightBSelect = useCallback(
     (weight: string) => {
-
-      history.push(`/add/${String(100 - Number(weight))}-${currencyIdA}/${weight}-${currencyIdB}/${_fee}`)
+      const _chain = chain ?? getChain(chainId)
+      history.push(`/${_chain}/add/${String(100 - Number(weight))}-${currencyIdA}/${weight}-${currencyIdB}/${_fee}`)
     },
-    [currencyIdA, currencyIdB, history, _fee],
+    [currencyIdA, currencyIdB, history, _fee, chainId, chain],
   )
 
   const handleFeeSelect = useCallback(
     (fee_: string) => {
-      history.push(`/add/${weightA}-${currencyIdA}/${weightB}-${currencyIdB}/${fee_ === '' ? '-' : fee_}`)
+      const _chain = chain ?? getChain(chainId)
+      history.push(`/${_chain}/add/${weightA}-${currencyIdA}/${weightB}-${currencyIdB}/${fee_ === '' ? '-' : fee_}`)
     },
-    [currencyIdA, currencyIdB, history, weightA, weightB],
+    [currencyIdA, currencyIdB, history, weightA, weightB, chainId, chain],
   )
 
 
