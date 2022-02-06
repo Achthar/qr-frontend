@@ -54,7 +54,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
-  
+
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(chainId, loadedUrlParams?.inputCurrencyId),
@@ -74,7 +74,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     })
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoadingNetworkCcy, isLoadingTokens } = useUserBalancesState()
 
   const tokenBalances = useMemo(
     () => Object.assign({},
@@ -349,7 +349,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
               networkCcyBalance={networkCcyBalance}
-              isLoading={isLoading}
+              isLoading={isLoadingNetworkCcy && isLoadingTokens}
               chainId={chainId}
               account={account}
               balances={tokenBalances}
@@ -385,7 +385,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
               showMaxButton={false}
               currency={currencies[Field.OUTPUT]}
               networkCcyBalance={networkCcyBalance}
-              isLoading={isLoading}
+              isLoading={isLoadingNetworkCcy && isLoadingTokens}
               chainId={chainId}
               account={account}
               balances={tokenBalances}

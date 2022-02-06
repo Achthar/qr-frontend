@@ -6,22 +6,17 @@ import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
 import { useDispatch } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
+import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
+import { fetchUserTokenBalances } from 'state/userBalances/fetchUserTokenBalances'
+import useRefresh from 'hooks/useRefresh'
+import { fetchUserNetworkCcyBalanceBalances } from 'state/userBalances/fetchUserNetworkCcyBalance'
 import {
-  useTokenBalancesWithLoadingIndicator,
-  useNetworkCCYBalances,
-  getStables,
-  getMainTokens,
-  getTokenAmounts,
   getStableAmounts,
-  getMainAmounts
+  getMainAmounts,
+  useUserBalancesState
 } from '../../state/userBalances/hooks'
-// import { useTokenBalancesWithLoadingIndicator as xD } from '../../state/wallet/hooks'
-import {
-  refreshBalances,
-  refreshNetworkCcyBalance,
-  setBalanceLoadingState
-} from '../../state/userBalances/actions'
+import { refreshNetworkCcyBalance } from '../../state/userBalances/actions'
 import Dots from '../../components/Loader/Dots'
 import { AppDispatch } from '../../state'
 
@@ -38,53 +33,34 @@ export const BodyWrapper = styled(Card)`
 `
 
 export default function Balances() {
-  const { account, chainId } = useActiveWeb3React()
-// console.log("CID", chainId)
-  const networkCcyBalance = useNetworkCCYBalances(chainId, [account])[account]
-  const [
-    allBalances,
-    fetchingAllBalances
-  ] = useTokenBalancesWithLoadingIndicator(
-    account,
-    [...getMainTokens(chainId), ...getStables(chainId)]
-  )
+  const { chainId, account } = useActiveWeb3React()
 
+  console.log("DATA", chainId, account)
+
+
+  const { slowRefresh } = useRefresh()
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(
     () => {
-      dispatch(refreshBalances({
-        newBalances: allBalances
-      }))
+      if (account) {
+        dispatch(fetchUserTokenBalances({ chainId, account }))
+        dispatch(fetchUserNetworkCcyBalanceBalances({ chainId, account }))
+      }
       return;
     },
-    [allBalances, dispatch]
+    [chainId, account, slowRefresh, dispatch]
   )
 
-  useEffect(
-    () => {
-      dispatch(refreshNetworkCcyBalance({
-        newBalance: networkCcyBalance
-      }))
-      return;
-    },
-    [networkCcyBalance, dispatch]
-  )
+  const {
+    balances,
+    isLoadingTokens,
+    networkCcyBalance,
+    isLoadingNetworkCcy
+  } = useUserBalancesState()
 
-  useEffect(
-    () => {
-      dispatch(setBalanceLoadingState({
-        newIsLoading: fetchingAllBalances
-      }))
-      return;
-    },
-    [fetchingAllBalances, dispatch]
-  )
+  const allBalances = balances
 
-  // const amounts = useMemo(() =>
-  //   getTokenAmounts(chainId, allBalances),
-  //   [chainId, allBalances]
-  // )
   const stableAmounts = useMemo(() =>
     getStableAmounts(chainId, allBalances),
     [chainId, allBalances]
@@ -103,7 +79,7 @@ export default function Balances() {
         </Text>
       )
     }
-    if (fetchingAllBalances) {
+    if (isLoadingTokens) {
       return (
         <Text color="textSubtle" textAlign="center">
           <Dots>Loading</Dots>
@@ -114,7 +90,7 @@ export default function Balances() {
       <div style={{ zIndex: 15 }}>
         <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='10px' marginLeft='10px'>
           <Column>
-            {!fetchingAllBalances && mainAmounts.map((tokenAmount, index) => (
+            {!isLoadingTokens && mainAmounts.map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
@@ -124,7 +100,7 @@ export default function Balances() {
               />))}
           </Column>
           <Column>
-            {!fetchingAllBalances && stableAmounts.map((tokenAmount, index) => (
+            {!isLoadingTokens && stableAmounts.map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
@@ -134,7 +110,7 @@ export default function Balances() {
               />))}
           </Column>
           {/* <Column>
-            {!fetchingAllBalances && stableAmounts.slice(2, 4).map((tokenAmount, index) => (
+            {!isLoadingTokens && stableAmounts.slice(2, 4).map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}

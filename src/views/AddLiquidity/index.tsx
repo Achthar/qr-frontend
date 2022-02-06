@@ -112,8 +112,13 @@ export default function AddLiquidity({
   } = useDerivedMintWeightedPairInfo(weightA, weightB, fee, currencyA ?? undefined, currencyB ?? undefined)
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoading } = useUserBalancesState()
-
+  const {
+    networkCcyBalance: networkCcyBalanceString,
+    balances: tokenBalancesStrings,
+    isLoadingNetworkCcy,
+    isLoadingTokens
+  } = useUserBalancesState()
+  const isLoading = isLoadingNetworkCcy && isLoadingTokens
   const defaultTokens = useAllTokens(chainId)
   const tokenBalances = useMemo(
     () => Object.assign({},
