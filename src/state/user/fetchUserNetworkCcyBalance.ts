@@ -5,7 +5,7 @@ import { UserProps } from './types';
 
 
 export const fetchUserNetworkCcyBalanceBalances = createAsyncThunk(
-    "userBalances/fetchUserNetworkCcyBalanceBalances",
+    "user/fetchUserNetworkCcyBalanceBalances",
     async ({ chainId, account }: UserProps, { dispatch }): Promise<{ networkCcyBalance: string }> => {
 
         const multicallContract = getMulticallContract(chainId)

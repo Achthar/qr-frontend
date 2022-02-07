@@ -8,7 +8,6 @@ import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import SwapWarningTokens from 'config/constants/swapWarningTokens'
 import { getAddress } from 'utils/addressHelpers'
-import { useUserBalancesState } from 'state/userBalances/hooks'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
 import Column, { AutoColumn } from '../../components/Layout/Column'
@@ -37,7 +36,7 @@ import {
   useSwapV3ActionHandlers,
   useSwapV3State,
 } from '../../state/swapV3/hooks'
-import { useExpertModeManager, useUserSlippageTolerance, useUserSingleHopOnly } from '../../state/user/hooks'
+import { useExpertModeManager, useUserSlippageTolerance, useUserSingleHopOnly, useUserBalances } from '../../state/user/hooks'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradeV3PriceBreakdown, warningSeverity } from '../../utils/pricesV3'
 import CircleLoader from '../../components/Loader/CircleLoader'
@@ -74,7 +73,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     })
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoadingNetworkCcy, isLoadingTokens } = useUserBalancesState()
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoadingNetworkCcy, isLoadingTokens } = useUserBalances()
 
   const tokenBalances = useMemo(
     () => Object.assign({},

@@ -1,19 +1,19 @@
-import { /* ChainId, */ Pair, WeightedPair, Token, JSBI } from '@requiemswap/sdk'
+import { /* ChainId, */ Pair, WeightedPair, Token, JSBI, WRAPPED_NETWORK_TOKENS, STABLECOINS, TokenAmount } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
+import { REQT, WBTC, WETH } from 'config/constants/tokens'
+import { getAddress } from 'ethers/lib/utils'
 import { AppDispatch, AppState } from '../../index'
 import {
   addSerializedPair,
   addSerializedWeightedPair,
   addSerializedToken,
-  FarmStakedOnly,
   muteAudio,
   removeSerializedToken,
-  SerializedPair,
   toggleTheme as toggleThemeAction,
   unmuteAudio,
   updateUserDeadline,
@@ -21,12 +21,11 @@ import {
   updateUserFarmStakedOnly,
   updateUserSingleHopOnly,
   updateUserSlippageTolerance,
-  updateGasPrice,
-  SerializedWeightedPair,
-  ViewMode
+  updateGasPrice
 } from '../actions'
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 import { ChainId } from '../../../config/index'
+import { FarmStakedOnly, SerializedPair, SerializedWeightedPair, UserBalanceState } from '../types'
 
 export function useAudioModeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -45,6 +44,10 @@ export function useAudioModeManager(): [boolean, () => void] {
 
 export function useIsExpertMode(): boolean {
   return useSelector<AppState, AppState['user']['userExpertMode']>((state) => state.user.userExpertMode)
+}
+
+export function useUserBalances(): UserBalanceState {
+  return useSelector<AppState, AppState['user']['userBalances']>((state) => state.user.userBalances)
 }
 
 export function useExpertModeManager(): [boolean, () => void] {
@@ -183,7 +186,7 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
 export function useGasPrice(chainId: number): string {
   // const chainId = process.env.REACT_APP_CHAIN_ID
   const userGas = useSelector<AppState, AppState['user']['gasPrice']>((state) => state.user.gasPrice)
-  return chainId === ChainId.BSC_MAINNET ? userGas : GAS_PRICE_GWEI[chainId??56].default
+  return chainId === ChainId.BSC_MAINNET ? userGas : GAS_PRICE_GWEI[chainId ?? 56].default
 }
 
 export function useGasPriceManager(chainId: number): [string, (userGasPrice: string) => void] {
@@ -232,7 +235,7 @@ export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
  * @param tokenA one of the two tokens
  * @param tokenB the other token
  */
- export function toWeightedLiquidityToken([tokenA, tokenB, weightA, fee]: [Token, Token, number, number]): Token {
+export function toWeightedLiquidityToken([tokenA, tokenB, weightA, fee]: [Token, Token, number, number]): Token {
   return new Token(tokenA.chainId, WeightedPair.getAddress(tokenA, tokenB, JSBI.BigInt(weightA), JSBI.BigInt(fee)), 18, 'Requiem-LP', 'Requiem LPs')
 }
 
@@ -325,7 +328,7 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
 /**
  * Returns all the pairs of tokens that are tracked by the user for the current chain ID.
  */
- export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][] {
+export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][] {
   const { chainId } = useNetworkState()
   const tokens = useAllTokens(chainId)
 
@@ -364,7 +367,7 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
     if (!forChain) return []
 
     return Object.keys(forChain).map((pairId) => {
-      return [deserializeToken(forChain[pairId].token0), deserializeToken(forChain[pairId].token1),forChain[pairId].weight0, forChain[pairId].fee ]
+      return [deserializeToken(forChain[pairId].token0), deserializeToken(forChain[pairId].token1), forChain[pairId].weight0, forChain[pairId].fee]
     })
   }, [savedSerializedPairs, chainId])
 
@@ -377,7 +380,7 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
     // dedupes pairs of tokens in the combined list
     const keyed = combinedList.reduce<{ [key: string]: [Token, Token, number, number] }>((memo, [tokenA, tokenB, weightA, fee]) => {
       const sorted = tokenA.sortsBefore(tokenB)
-      const key = sorted ? `${tokenA.address}-${weightA}:${tokenB.address}-${fee}` : `${tokenB.address}-${100-weightA}:${tokenA.address}${fee}`
+      const key = sorted ? `${tokenA.address}-${weightA}:${tokenB.address}-${fee}` : `${tokenB.address}-${100 - weightA}:${tokenA.address}${fee}`
       if (memo[key]) return memo
       memo[key] = sorted ? [tokenA, tokenB, weightA, fee] : [tokenB, tokenA, 100 - weightA, fee]
       return memo
@@ -386,3 +389,40 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
     return Object.keys(keyed).map((key) => keyed[key])
   }, [combinedList])
 }
+
+
+
+export function getMainTokens(chainId: number): Token[] {
+  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
+}
+
+export function getStables(chainId: number): Token[] {
+  return STABLECOINS[chainId]
+}
+
+export function getTokenAmounts(chainId: number, balances: { [address: string]: string }) {
+  return [...[
+    WRAPPED_NETWORK_TOKENS[chainId],
+    REQT[chainId],
+  ],
+  ...[WBTC[chainId], WETH[chainId]],
+  ...STABLECOINS[chainId]
+  ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+
+}
+
+export function getStableAmounts(chainId: number, balances: { [address: string]: string }) {
+  return STABLECOINS[chainId].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+
+}
+
+export function getMainAmounts(chainId: number, balances: { [address: string]: string }) {
+  return [
+    WRAPPED_NETWORK_TOKENS[chainId],
+    REQT[chainId],
+    WBTC[chainId],
+    WETH[chainId]
+  ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+
+}
+

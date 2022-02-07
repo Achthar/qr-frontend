@@ -1,15 +1,13 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { SerializedToken } from 'config/constants/types'
-import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../config/constants'
-import { updateVersion } from '../global/actions'
+import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { STABLES, REQT } from 'config/constants/tokens'
 import {
   addSerializedPair,
   addSerializedWeightedPair,
   addSerializedToken,
   removeSerializedPair,
   removeSerializedToken,
-  SerializedPair,
-  SerializedWeightedPair,
   updateUserExpertMode,
   updateUserSlippageTolerance,
   updateUserDeadline,
@@ -19,56 +17,23 @@ import {
   unmuteAudio,
   toggleTheme,
   updateUserFarmStakedOnly,
-  FarmStakedOnly,
   toggleURLWarning,
+  refreshBalances,
+  reset,
+  refreshNetworkCcyBalance,
+  setBalanceLoadingState
 } from './actions'
 import { GAS_PRICE_GWEI } from './hooks/helpers'
+import { fetchUserNetworkCcyBalanceBalances } from './fetchUserNetworkCcyBalance'
+import { fetchUserTokenBalances } from './fetchUserTokenBalances'
+import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../config/constants'
+import { updateVersion } from '../global/actions'
+import { FarmStakedOnly, UserState } from './types'
+
+const initialChainId = 43113
 
 const currentTimestamp = () => new Date().getTime()
 
-export interface UserState {
-  // the timestamp of the last updateVersion action
-  lastUpdateVersionTimestamp?: number
-
-  userExpertMode: boolean
-
-  // only allow swaps on direct pairs
-  userSingleHopOnly: boolean
-
-  // user defined slippage tolerance in bips, used in all txns
-  userSlippageTolerance: number
-
-  // deadline set by user in minutes, used in all txns
-  userDeadline: number
-
-  tokens: {
-    [chainId: number]: {
-      [address: string]: SerializedToken
-    }
-  }
-
-  pairs: {
-    [chainId: number]: {
-      // keyed by token0Address:token1Address
-      [key: string]: SerializedPair
-    }
-  }
-
-
-  weightedPairs: {
-    [chainId: number]: {
-      // keyed by token0Address:token1Address
-      [key: string]: SerializedWeightedPair
-    }
-  }
-
-  timestamp: number
-  audioPlay: boolean
-  isDark: boolean
-  userFarmStakedOnly: FarmStakedOnly
-  gasPrice: string
-  URLWarningVisible: boolean
-}
 
 function pairKey(token0Address: string, token1Address: string) {
   return `${token0Address};${token1Address}`
@@ -81,16 +46,27 @@ export const initialState: UserState = {
   userDeadline: DEFAULT_DEADLINE_FROM_NOW,
   tokens: {},
   pairs: {},
-  weightedPairs:{},
+  weightedPairs: {},
   timestamp: currentTimestamp(),
   audioPlay: true,
   isDark: false,
   userFarmStakedOnly: FarmStakedOnly.ON_FINISHED,
   gasPrice: GAS_PRICE_GWEI[99999].default,
-  URLWarningVisible: true
+  URLWarningVisible: true,
+  userBalances: {
+    networkCcyBalance: '0',
+    isLoadingTokens: true,
+    isLoadingNetworkCcy: true,
+    balances: Object.assign({},
+      ...[
+        ...[WRAPPED_NETWORK_TOKENS[initialChainId],
+        REQT[initialChainId]],
+        ...STABLES[initialChainId]
+      ].map((x) => ({ [x.address]: '0' }))),
+  }
 }
 
-export default createReducer(initialState, (builder) =>
+export default createReducer<UserState>(initialState, (builder) =>
   builder
     .addCase(updateVersion, (state) => {
       // slippage isnt being tracked in local storage, reset to default
@@ -184,5 +160,81 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(toggleURLWarning, state => {
       state.URLWarningVisible = !state.URLWarningVisible
-    }),
+    })
+    // user balances state
+    .addCase(refreshBalances, (state, { payload: { newBalances } }) => {
+
+      // state.userBalances.balances = newBalances
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+          balances: newBalances
+        },
+      }
+    }
+    )
+    .addCase(fetchUserTokenBalances.fulfilled, (state, action) => {
+      // state.userBalances.isLoadingTokens = false
+      // state.userBalances.balances = action.payload
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+          balances: action.payload,
+          isLoadingTokens: false
+        }
+      }
+    }
+    )
+    .addCase(fetchUserTokenBalances.pending, (state, action) => {
+      // state.userBalances.isLoadingTokens = true
+
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+          isLoadingTokens: false
+        }
+      }
+    }
+    )
+    .addCase(fetchUserNetworkCcyBalanceBalances.fulfilled, (state, action) => {
+      // state.userBalances.networkCcyBalance = action.payload.networkCcyBalance
+      // state.userBalances.isLoadingNetworkCcy = false
+
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+        networkCcyBalance: action.payload.networkCcyBalance,
+        isLoadingNetworkCcy: false
+        }
+      }
+    }
+    )
+    .addCase(fetchUserNetworkCcyBalanceBalances.pending, (state, action) => {
+      // state.userBalances.isLoadingNetworkCcy = true
+
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+            isLoadingNetworkCcy: true,
+        }
+      }
+    }
+    )
+    .addCase(refreshNetworkCcyBalance, (state, { payload: { newBalance } }) => {
+      // state.userBalances.networkCcyBalance = newBalance
+
+      return {
+        ...state,
+        userBalances: {
+          ...state.userBalances,
+            networkCcyBalance: newBalance,
+        }
+      }
+    }
+    ),
 )

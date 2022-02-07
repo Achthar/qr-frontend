@@ -17,7 +17,6 @@ import lists from './lists/reducer'
 import burn from './burn/reducer'
 import burnStables from './burnStables/reducer'
 import multicall from './multicall/reducer'
-import userBalances from './userBalances/reducer'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
 
@@ -30,7 +29,6 @@ const store = configureStore({
     bonds: bondReducer,
     farms: farmsReducer,
     voting: votingReducer,
-    userBalances,
  
     // Exchange
     user,

@@ -18,6 +18,7 @@ import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/farmHelpers'
 import { latinise } from 'utils/latinise'
 import getChain from 'utils/getChain'
+import { ViewMode } from 'state/user/types'
 import {
   useUserFarmStakedOnly,
   //  useUserFarmsViewMode 
@@ -26,7 +27,6 @@ import { fetchFarmsPublicDataAsync } from 'state/farms'
 import { useAppDispatch } from 'state'
 
 import usePersistState from 'hooks/usePersistState'
-import { ViewMode } from 'state/user/actions'
 import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'

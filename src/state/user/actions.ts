@@ -1,29 +1,9 @@
 import { createAction } from '@reduxjs/toolkit'
 import { SerializedToken } from 'config/constants/types'
+import { FarmStakedOnly, SerializedPair, SerializedWeightedPair } from './types'
 
 
-export interface SerializedPair {
-  token0: SerializedToken
-  token1: SerializedToken
-}
 
-export interface SerializedWeightedPair {
-  token0: SerializedToken
-  token1: SerializedToken
-  weight0: number
-  fee: number
-}
-
-export enum FarmStakedOnly {
-  ON_FINISHED = 'onFinished',
-  TRUE = 'true',
-  FALSE = 'false',
-}
-
-export enum ViewMode {
-  TABLE = 'TABLE',
-  CARD = 'CARD',
-}
 
 
 export const updateMatchesDarkMode = createAction<{ matchesDarkMode: boolean }>('user/updateMatchesDarkMode')
@@ -49,3 +29,9 @@ export const updateUserFarmStakedOnly = createAction<{ userFarmStakedOnly: FarmS
 )
 export const updateGasPrice = createAction<{ gasPrice: string }>('user/updateGasPrice')
 export const toggleURLWarning = createAction<void>('app/toggleURLWarning')
+
+export const refreshBalances = createAction<{ newBalances:{[address:string]:string} }>('user/refreshBalances')
+export const refreshNetworkCcyBalance = createAction<{ newBalance:string }>('user/refreshNetworkCcyBalance')
+export const setBalanceLoadingState = createAction<{ newIsLoading:boolean }>('user/setBalanceLoadingState')
+// export const refreshBalances = createAction<{ chainId: number, account: string, slot: BalanceField }>('user/refreshBalances')
+export const reset = createAction<void>('user/reset')

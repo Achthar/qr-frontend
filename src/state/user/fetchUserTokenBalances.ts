@@ -19,8 +19,8 @@ export function getStables(chainId: number): Token[] {
 
 
 export const fetchUserTokenBalances = createAsyncThunk(
-    "userBalances/fetchUserTokenBalances",
-    async ({ chainId, account }: UserProps, { dispatch }): Promise<{ [address: string]: string }> => {
+    "user/fetchUserTokenBalances",
+    async ({ chainId, account }: UserProps): Promise<{ [address: string]: string }> => {
 
 
         const allTokens = [...getMainTokens(chainId), ...getStables(chainId)]

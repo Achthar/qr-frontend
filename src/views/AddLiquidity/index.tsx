@@ -23,7 +23,6 @@ import {
   Box
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
-import { useUserBalancesState } from 'state/userBalances/hooks'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
@@ -50,7 +49,7 @@ import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
 import { WeightedPairState, useGetWeightedPairs, useWeightedPairsDataLite } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
+import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
@@ -117,7 +116,7 @@ export default function AddLiquidity({
     balances: tokenBalancesStrings,
     isLoadingNetworkCcy,
     isLoadingTokens
-  } = useUserBalancesState()
+  } = useUserBalances()
   const isLoading = isLoadingNetworkCcy && isLoadingTokens
   const defaultTokens = useAllTokens(chainId)
   const tokenBalances = useMemo(
