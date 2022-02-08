@@ -1,4 +1,4 @@
-import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem, Flex, ChevronRightIcon, MenuEntry, Text, ChevronDownIcon } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem, Flex, ChevronRightIcon, MenuEntry, Text, ChevronDownIcon, UserMenuDivider } from '@requiemswap/uikit'
 import config, { configData, getIcon } from 'components/Menu/config'
 import Sidebar from 'components/Sidebar'
 import { ChevronsLeft } from 'react-feather'
@@ -32,7 +32,7 @@ export const ExternalLinks = {
   codes: 'https://github.com/Achthar',
   discord: 'https://discord.gg/HuekxzYj3p',
   medium: 'https://medium.com/@x',
-  telegram: 'https://t.me/x',
+  telegram: 'https://t.me/+Lbc1zHODTQw3YWM6',
   buyShareHref:
     'xD',
 };
@@ -119,7 +119,9 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
 const MenuBar: React.FC = () => {
   const { chainId } = useNetworkState()
   return (
-    <>
+    <div style={{
+      marginBottom: '64px',
+    }}>
       <StyledSidebar>
         {/* <StyledLogoContainer>
           <Logo />
@@ -132,38 +134,39 @@ const MenuBar: React.FC = () => {
         >
           <img src={iconAudit} alt='' />
         </StyledAudit> */}
-        <StyledExternalLink>
-          <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.medium}>
-            <StyledIcon>
-              <img src={iconMedium} alt='' />
-            </StyledIcon>
-          </StyledLink>
-          <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.twitter}>
-            <StyledIcon>
-              <img src={iconTwitter} alt='' />
-            </StyledIcon>
-          </StyledLink>
-          <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.discord}>
-            <StyledIcon>
-              <img src={iconDiscord} alt='' />
-            </StyledIcon>
-          </StyledLink>
-          <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.telegram}>
-            <StyledIcon>
-              <img src={iconTelegram} alt='' />
-            </StyledIcon>
-          </StyledLink>
-          <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.codes}>
-            <StyledIcon>
-              <img src={iconGithub} alt='' />
-            </StyledIcon>
-          </StyledLink>
-        </StyledExternalLink>
-        <StyledAuthorView href="https://iron.finance" target="_blank" rel="noopener noreferrer">
-          Requiem Finance 2022
-        </StyledAuthorView>
+
+        <UserMenuDivider />
+        <Flex flexDirection="row" alignItems='left'>
+          <StyledExternalLink>
+            <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.medium}>
+              <StyledIcon>
+                <img src={iconMedium} alt='' />
+              </StyledIcon>
+            </StyledLink>
+            <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.twitter}>
+              <StyledIcon>
+                <img src={iconTwitter} alt='' />
+              </StyledIcon>
+            </StyledLink>
+            <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.discord}>
+              <StyledIcon>
+                <img src={iconDiscord} alt='' />
+              </StyledIcon>
+            </StyledLink>
+            <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.telegram}>
+              <StyledIcon>
+                <img src={iconTelegram} alt='' />
+              </StyledIcon>
+            </StyledLink>
+            <StyledLink target="_blank" rel="noopener noreferrer" href={ExternalLinks.codes}>
+              <StyledIcon>
+                <img src={iconGithub} alt='' />
+              </StyledIcon>
+            </StyledLink>
+          </StyledExternalLink>
+        </Flex>
       </StyledSidebar>
-    </>
+    </div>
   );
 };
 
@@ -215,15 +218,13 @@ const StyledSidebar = styled.div`
   border-radius: 20px;
   position: fixed;
   padding-top: 32px;
-  width: 250;
-  height: 100%;
+  width: 100%;
+  height: 420px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   background-size: 216px;
-  background-repeat: no-repeat;
-  background-position: left bottom;
   @media (max-width: ${({ theme }) => theme.breakpoints}) {
     display: none;
   }
@@ -344,6 +345,7 @@ const StyledLinkHref = styled.a`
 `;
 
 const StyledAuthorView = styled.a`
+  padding-bottom:80px;
   text-decoration: none;
   font-size: 13px;
   color: #8f929a;

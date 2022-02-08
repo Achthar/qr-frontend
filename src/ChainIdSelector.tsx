@@ -21,6 +21,19 @@ export const Wrapper = styled.div`
   position: relative;
 `;
 
+const FlyoutRow = styled.div<{ active: boolean }>`
+  align-items: center;
+  background-color: ${({ active, theme }) => (active ? theme.colors.contrast : 'transparent')};
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  font-weight: 500;
+  justify-content: space-between;
+  padding: 6px 8px;
+  text-align: left;
+  width: 100%;
+`;
+
 const SelectorWrapper = styled.div`
   @media screen and (min-width: 720px) {
     position: relative;
@@ -121,12 +134,13 @@ const ActiveRowLinkList = styled.div`
 `;
 
 const FlyoutMenu = styled.div`
+  align-items: left;
   margin-top: 52px;
   border-radius: 20px;
   position: fixed;
   padding-top: 32px;
-  width: 250;
-  height: 100%;
+  width: 100%;
+  height: 420px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -231,17 +245,11 @@ const ChainIdSelector = () => {
     const hasExtendedInfo = L2_CHAIN_IDS.includes(targetChain)
     const rowText = `${CHAIN_INFO[targetChain].label}`
     const RowContent = () => (
-      <UserMenuItem as="button" onClick={handleRowClick}>
+      <FlyoutRow active={active} onClick={handleRowClick}>
         <Logo src={CHAIN_INFO[targetChain].logoUrl} />
         <NetworkLabel>{rowText}</NetworkLabel>
         {chainId === targetChain && <FlyoutRowActiveIndicator />}
-      </UserMenuItem>
-
-      /*  <FlyoutRow onClick={handleRowClick} active={active}>
-         <Logo src={CHAIN_INFO[targetChain].logoUrl} />
-         <NetworkLabel>{rowText}</NetworkLabel>
-         {chainId === targetChain && <FlyoutRowActiveIndicator />}
-       </FlyoutRow> */
+      </FlyoutRow>
     )
 
     if (active && hasExtendedInfo) {
@@ -298,16 +306,16 @@ const ChainIdSelector = () => {
   //   }
   // }, [isOpen]);
   // console.log("chainID chainIDselector", chainId)
-  const buttonText = chainId === 56 ? 'Binance' :
-    chainId === 97 ? 'Binance Testnet' :
-      chainId === 80001 ? 'Polygon Mumbai' :
-        chainId === 43114 ? 'Avalanche' :
-          chainId === 43113 ? 'Avalanche Testnet' :
-            chainId === 42261 ? 'Oasis Testnet' :
-              chainId === 110001 ? 'Quarkchain Dev S0' : 'no Network'
+  const buttonText = chainId === 56 ? isMobile ? 'BSC' : 'Binance' :
+    chainId === 97 ? isMobile ? 'BSC Test' : 'Binance Testnet' :
+      chainId === 80001 ? isMobile ? 'MATIC Test' : 'Polygon Mumbai' :
+        chainId === 43114 ? isMobile ? 'AVAX' : 'Avalanche' :
+          chainId === 43113 ? isMobile ? 'AVAX Test' : 'Avalanche Testnet' :
+            chainId === 42261 ? isMobile ? 'ROSE Test' : 'Oasis Testnet' :
+              chainId === 110001 ? isMobile ? 'QKC Test S0' : 'Quarkchain Dev S0' : 'no Network'
   return (
     // <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
-    <SelectorWrapper  ref={wrapperRef}>
+    <SelectorWrapper ref={wrapperRef}>
       <ActivatorButton
         aria-haspopup="true"
         aria-controls="dropdown1"
@@ -319,10 +327,9 @@ const ChainIdSelector = () => {
           <ImageContainer>
             <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' />
           </ImageContainer>
-          {!isMobile ? (
-            <Text bold textAlign='center' paddingTop='10px'>
-              {buttonText}
-            </Text>) : <ChevronDownIcon />}
+          <Text bold textAlign='center' paddingTop='10px'>
+            {buttonText}
+          </Text>
 
         </Flex>
       </ActivatorButton>
