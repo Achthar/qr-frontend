@@ -121,27 +121,24 @@ const ActiveRowLinkList = styled.div`
 `;
 
 const FlyoutMenu = styled.div`
-  align-items: flex-start;
-  background-color: ${({ theme }) => theme.colors.background};
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
+  margin-top: 52px;
   border-radius: 20px;
+  position: fixed;
+  padding-top: 32px;
+  width: 250;
+  height: 100%;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  font-size: 16px;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-size: 216px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  @media (max-width: ${({ theme }) => theme.breakpoints}) {
+    display: none;
+  }
   border: 1px solid white;
-  overflow: auto;
-  padding: 16px;
-  position: absolute;
-  top: 1px;
-  width: 250px;
-  z-index: 99;
-  & > *:not(:last-child) {
-    margin-bottom: 12px;
-  }
-  @media screen and (min-width: 720px) {
-    top: 50px;
-  }
+
 `
 
 
@@ -310,7 +307,7 @@ const ChainIdSelector = () => {
               chainId === 110001 ? 'Quarkchain Dev S0' : 'no Network'
   return (
     // <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
-    <SelectorWrapper ref={node as any}>
+    <SelectorWrapper  ref={wrapperRef}>
       <ActivatorButton
         aria-haspopup="true"
         aria-controls="dropdown1"
@@ -338,7 +335,6 @@ const ChainIdSelector = () => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          ref={wrapperRef}
         >
 
           <FlyoutMenu>

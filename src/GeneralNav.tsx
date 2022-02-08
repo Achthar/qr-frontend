@@ -218,16 +218,16 @@ const StyledSidebar = styled.div`
   width: 250;
   height: 100%;
   padding: 16px;
-  background-color: #0b0d1c;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   background-size: 216px;
   background-repeat: no-repeat;
   background-position: left bottom;
   @media (max-width: ${({ theme }) => theme.breakpoints}) {
     display: none;
   }
+  border: 1px solid white;
 `;
 
 const StyledLogoContainer = styled.div`
@@ -434,7 +434,7 @@ const GeneralNav: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-  const wrapperRef =  useRef<HTMLDivElement>()
+  const wrapperRef = useRef<HTMLDivElement>()
   useOnClickOutside(wrapperRef, () => setIsOpen(false))
 
   const [activeIndex1, setActiveIndex] = React.useState(-1);
@@ -444,7 +444,7 @@ const GeneralNav: React.FC = () => {
   const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
   const activatorRef = React.useRef<HTMLButtonElement | null>(null);
   return (
-    <>
+    <div ref={wrapperRef}>
       <ActivatorButton
         aria-haspopup="true"
         aria-controls="dropdown1"
@@ -471,13 +471,12 @@ const GeneralNav: React.FC = () => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          ref={wrapperRef}
         >
           <MenuBar />
         </div>
       )}
 
-    </>
+    </div>
   )
 }
 
