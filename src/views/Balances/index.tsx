@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import { useWeb3React } from '@web3-react/core'
@@ -14,10 +14,10 @@ import { fetchUserNetworkCcyBalanceBalances } from 'state/user/fetchUserNetworkC
 import {
   getStableAmounts,
   getMainAmounts,
-  useUserBalances
+  useUserBalances,
 } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
-import { AppDispatch } from '../../state'
+import { AppDispatch, AppState } from '../../state'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -34,21 +34,30 @@ export const BodyWrapper = styled(Card)`
 export default function Balances() {
   const { chainId, account } = useActiveWeb3React()
 
-  console.log("DATA", chainId, account)
-
-
   const { slowRefresh } = useRefresh()
   const dispatch = useDispatch<AppDispatch>()
+
+  // const additionalTokens =  Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
 
   useEffect(
     () => {
       if (account) {
-        dispatch(fetchUserTokenBalances({ chainId, account }))
+
+        dispatch(fetchUserTokenBalances({
+          chainId,
+          account,
+          // additionalTokens 
+        }))
         dispatch(fetchUserNetworkCcyBalanceBalances({ chainId, account }))
       }
       return;
     },
-    [chainId, account, slowRefresh, dispatch]
+    [chainId,
+      account,
+      slowRefresh,
+      dispatch,
+      // additionalTokens
+    ]
   )
 
   const {

@@ -6,6 +6,7 @@ import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } fro
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
 import { REQT, WBTC, WETH } from 'config/constants/tokens'
+import { SerializedToken } from 'config/constants/types'
 import { getAddress } from 'ethers/lib/utils'
 import { AppDispatch, AppState } from '../../index'
 import {
@@ -64,6 +65,11 @@ export function useExpertModeManager(): [boolean, () => void] {
 export function useURLWarningVisible(): boolean {
   return useSelector((state: AppState) => state.user.URLWarningVisible)
 }
+
+// export function useCustomTokens(chainId: number): SerializedToken[] {
+//   return Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
+// }
+
 
 export function useThemeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()

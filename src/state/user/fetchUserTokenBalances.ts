@@ -2,11 +2,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import erc20Abi from 'config/abi/erc20.json'
 import multicall from 'utils/multicall';
-import { Fraction, JSBI, STABLECOINS, TokenAmount, WeightedPair, WETH, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
-import { REQT, WBTC } from 'config/constants/tokens';
+import { Fraction, JSBI, STABLECOINS, TokenAmount, WeightedPair, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
+import { WETH, REQT, WBTC } from 'config/constants/tokens';
+import { SerializedToken } from 'config/constants/types';
 import { UserProps } from './types';
-
-
 
 
 export function getMainTokens(chainId: number): Token[] {
@@ -17,20 +16,23 @@ export function getStables(chainId: number): Token[] {
     return STABLECOINS[chainId]
 }
 
-
 export const fetchUserTokenBalances = createAsyncThunk(
     "user/fetchUserTokenBalances",
-    async ({ chainId, account }: UserProps): Promise<{ [address: string]: string }> => {
+    async ({ chainId, account, additionalTokens }: UserProps): Promise<{ [address: string]: string }> => {
 
 
-        const allTokens = [...getMainTokens(chainId), ...getStables(chainId)]
+        const allTokensAddresses = [
+            ...getMainTokens(chainId).map(token => token.address),
+            ...getStables(chainId).map(token => token.address),
+            ...additionalTokens.map(token => token.address)
+        ]
 
 
         // cals for general bond data
-        const calls = allTokens.map(
-            function (token) {
+        const calls = allTokensAddresses.map(
+            function (tokenAddress) {
                 const obj = {
-                    address: token.address,
+                    address: tokenAddress,
                     name: 'balanceOf',
                     params: [account]
                 }
@@ -42,9 +44,9 @@ export const fetchUserTokenBalances = createAsyncThunk(
         const balances = await multicall(chainId, erc20Abi, calls)
 
         return Object.assign(
-            {}, ...allTokens.map(
+            {}, ...allTokensAddresses.map(
                 (token, index) => (
-                    { [allTokens[index].address]: balances[index][0].toString() }
+                    { [allTokensAddresses[index]]: balances[index][0].toString() }
                 )
             )
         );

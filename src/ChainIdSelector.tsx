@@ -9,28 +9,36 @@ import {
 import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider, Text, ChevronDownIcon, CogIcon, TuneIcon } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useToggleModal } from 'state/application/hooks'
+import { useOnClickOutside } from "hooks/useOnClickOutside";
+
 
 export const Wrapper = styled.div`
   position: relative;
 `;
 
+const SelectorWrapper = styled.div`
+  @media screen and (min-width: 720px) {
+    position: relative;
+  }
+`
+
+
 export const ActivatorButton = styled.button`
-  height: 33px;
-  background-color: ${({ theme }) => theme.colors.primary};
+  height: 32px;
+  background-color: ${({ theme }) => theme.colors.tertiary};
   border: none;
-  border-radius: 12px;
-  padding:  6px 8px;
+  border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 400;
   margin-left: 0.4rem;
   margin-right: 0.4rem;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.background};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -83,7 +91,7 @@ const StyledLink = styled.a`
   }
 `;
 const ActiveRowWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.tertiary};
   border-radius: 8px;
   padding: 8px 0 8px 0;
   width: 100%;
@@ -112,12 +120,43 @@ const ActiveRowLinkList = styled.div`
   }
 `;
 
+const FlyoutMenu = styled.div`
+  align-items: flex-start;
+  background-color: ${({ theme }) => theme.colors.background};
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
+    0px 24px 32px rgba(0, 0, 0, 0.01);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  border: 1px solid white;
+  overflow: auto;
+  padding: 16px;
+  position: absolute;
+  top: 1px;
+  width: 250px;
+  z-index: 99;
+  & > *:not(:last-child) {
+    margin-bottom: 12px;
+  }
+  @media screen and (min-width: 720px) {
+    top: 50px;
+  }
+`
+
 
 const LinkOutCircle = styled(ArrowDownCircle)`
   transform: rotate(230deg);
   width: 16px;
   height: 16px;
 `;
+
+const ImageContainer = styled.div`
+  width: 40px;
+  text-align: center;
+  align-items: left;
+`
+
 
 const FlyoutHeader = styled.div`
   color: white;
@@ -177,7 +216,7 @@ const ChainIdSelector = () => {
   // const { isMobile } = useMatchBreakpoints()
 
   const info = chainId ? CHAIN_INFO[chainId] : undefined
-
+  const activatorText = "Select Chain"
   const isOnL2 = chainId ? L2_CHAIN_IDS.includes(chainId) : false
   const mainnetInfo = CHAIN_INFO[ChainId.BSC_MAINNET]
   const showSelector = Boolean(isOnL2)
@@ -238,14 +277,23 @@ const ChainIdSelector = () => {
       </>)
   }
 
-  // const activatorRef = React.useRef<HTMLButtonElement | null>(null);
-  // const listRef = React.useRef<HTMLUListElement | null>(null);
-  // const [isOpen, setIsOpen] = React.useState(false);
-  // const [activeIndex, setActiveIndex] = React.useState(-1);
 
-  // const handleClick = () => {
-  //   setIsOpen(!isOpen);
-  // };
+  const activatorRef = React.useRef<HTMLButtonElement | null>(null);
+  const listRef = React.useRef<HTMLUListElement | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [activeIndex, setActiveIndex] = React.useState(-1);
+
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+
+
+  const wrapperRef = useRef(null);
+  useOnClickOutside(wrapperRef, () => setIsOpen(false))
+
+
+  const { isMobile, isDesktop } = useMatchBreakpoints()
 
   // React.useEffect(() => {
   //   if (!isOpen) {
@@ -261,49 +309,56 @@ const ChainIdSelector = () => {
             chainId === 42261 ? 'Oasis Testnet' :
               chainId === 110001 ? 'Quarkchain Dev S0' : 'no Network'
   return (
-    <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
+    // <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
+    <SelectorWrapper ref={node as any}>
+      <ActivatorButton
+        aria-haspopup="true"
+        aria-controls="dropdown1"
+        onClick={handleClick}
+        ref={activatorRef}
+        onFocus={() => setActiveIndex(-1)}
+      >
+        <Flex flexDirection="row">
+          <ImageContainer>
+            <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' />
+          </ImageContainer>
+          {!isMobile ? (
+            <Text bold textAlign='center' paddingTop='10px'>
+              {buttonText}
+            </Text>) : <ChevronDownIcon />}
 
-      {/* <div> */}
+        </Flex>
+      </ActivatorButton>
+      {isOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '10px',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
 
-      {/* <Wrapper> */}
+          <FlyoutMenu>
+            <Flex alignItems="center" justifyContent="space-between" width="100%">
+              <Text bold>
+                Select a network
+              </Text>
+              <TuneIcon />
+            </Flex>
+            <Row targetChain={ChainId.AVAX_TESTNET} />
+            <Row targetChain={ChainId.AVAX_MAINNET} />
+            <Row targetChain={ChainId.OASIS_TESTNET} />
+            <Row targetChain={ChainId.QUARKCHAIN_DEV_S0} />
+            <Row targetChain={ChainId.BSC_TESTNET} />
+            <Row targetChain={ChainId.MATIC_TESTNET} />
+          </FlyoutMenu>
 
-      <UserMenuItem>
-        {/* <Flex alignItems="center" justifyContent="space-between" width="100%"> */}
-        <FlyoutHeader>
-          Select a network
-        </FlyoutHeader>
-        {/* </Flex> */}
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.AVAX_TESTNET} />
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.AVAX_MAINNET} />
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.OASIS_TESTNET} />
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.QUARKCHAIN_DEV_S0} />
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.BSC_TESTNET} />
-      </UserMenuItem>
-      <UserMenuDivider />
-      <UserMenuItem as='button'>
-        <Row targetChain={ChainId.MATIC_TESTNET} />
-      </UserMenuItem>
-      {/* </UserMenuItem> */}
-
-      {/* </div> */}
-      {/* </Wrapper> */}
-
-    </UIKitUserMenu>
+          {/* // </UIKitUserMenu> */}
+        </div>
+      )}
+    </SelectorWrapper>
   );
 };
 

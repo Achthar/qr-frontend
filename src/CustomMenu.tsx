@@ -5,6 +5,7 @@ import GlobalSettings from 'components/Menu/GlobalSettings'
 import ChainIdSelector from 'ChainIdSelector'
 import CustomNav from 'CustomNav'
 import { useMatchBreakpoints } from '@requiemswap/uikit'
+import GeneralNav from 'GeneralNav'
 
 const CustomMenu: React.FC = () => {
   const { t } = useTranslation()
@@ -24,7 +25,7 @@ const CustomMenu: React.FC = () => {
       }}
     >
       <div style={{ marginRight: 10 }}>
-        <CustomNav />
+        <GeneralNav />
       </div>
       {/* <GlobalSettings /> */}
       <div style={{ marginRight: 10 }}>

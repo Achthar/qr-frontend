@@ -27,6 +27,7 @@ export enum ViewMode {
 export interface UserProps {
     chainId: number
     account: string
+    additionalTokens?: SerializedToken[]
 
 }
 

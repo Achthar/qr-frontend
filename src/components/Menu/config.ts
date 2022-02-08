@@ -7,6 +7,8 @@ import exchangeIconDark from '../../assets/exchangeIconDark.svg'
 import liquidityIconLight from '../../assets/liquidityIconLight.svg'
 import liquidityIconDark from '../../assets/liquidityIconDark.svg'
 import stake from '../../assets/stake.svg'
+
+import iconBank from '../../assets/sidebar/ic-bank.svg';
 import bond from '../../assets/bonds2.svg'
 
 interface MenuEntry {
@@ -55,41 +57,41 @@ const config: (t: ContextApi['t']) => MenuEntry[] = (t) => [
 ]
 
 
-export const configData: (t: ContextApi['t'], chainId: number) => MenuEntry[] = (t, chainId) => {
+export const configData: (chainId: number) => MenuEntry[] = (chainId) => {
   const chain = getChain(chainId)
   return [
     {
-      label: t('Home'),
+      label: 'Home',
       icon: logo,
       iconSelected: logo,
       href: '/',
     },
     {
-      label: t('Exchange'),
+      label: 'Exchange',
       icon: exchangeIconLight,
       iconSelected: exchangeIconDark,
       href: `/${chain}/exchange`,
     },
     {
-      label: t('Liquidity'),
+      label: 'Liquidity',
       icon: liquidityIconLight,
       iconSelected: liquidityIconDark,
       href: `/${chain}/liquidity`,
     },
     {
-      label: t('Farms'),
+      label: 'Farms',
       icon: stake,
       iconSelected: stake,
       href: `/${chain}/farms`,
     },
     {
-      label: t('Bonds'),
+      label: 'Bonds',
       icon: bond,
       iconSelected: bond,
       href: `/${chain}/bonds`,
     },
     // {
-    //   label: t('Pools'),
+    //   label: 'Pools'),
     //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
     //   href: '/pools',
     // },
