@@ -435,7 +435,7 @@ const GeneralNav: React.FC = () => {
   };
 
   const wrapperRef =  useRef<HTMLDivElement>()
-  // useOnClickOutside(wrapperRef, () => setIsOpen(false))
+  useOnClickOutside(wrapperRef, () => setIsOpen(false))
 
   const [activeIndex1, setActiveIndex] = React.useState(-1);
 
@@ -471,6 +471,7 @@ const GeneralNav: React.FC = () => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
+          ref={wrapperRef}
         >
           <MenuBar />
         </div>

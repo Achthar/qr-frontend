@@ -289,7 +289,7 @@ const ChainIdSelector = () => {
 
 
 
-  const wrapperRef = useRef(null);
+  const wrapperRef = useRef<HTMLDivElement>()
   useOnClickOutside(wrapperRef, () => setIsOpen(false))
 
 
@@ -338,6 +338,7 @@ const ChainIdSelector = () => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
+          ref={wrapperRef}
         >
 
           <FlyoutMenu>
