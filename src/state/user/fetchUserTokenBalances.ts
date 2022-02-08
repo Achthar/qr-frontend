@@ -20,12 +20,15 @@ export const fetchUserTokenBalances = createAsyncThunk(
     "user/fetchUserTokenBalances",
     async ({ chainId, account, additionalTokens }: UserProps): Promise<{ [address: string]: string }> => {
 
-
-        const allTokensAddresses = [
+        const allTokensAddresses = additionalTokens ? [
             ...getMainTokens(chainId).map(token => token.address),
             ...getStables(chainId).map(token => token.address),
             ...additionalTokens.map(token => token.address)
+        ] : [
+            ...getMainTokens(chainId).map(token => token.address),
+            ...getStables(chainId).map(token => token.address)
         ]
+
 
 
         // cals for general bond data

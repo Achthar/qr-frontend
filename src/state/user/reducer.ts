@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { SerializedToken } from 'config/constants/types'
-import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import { STABLES, REQT } from 'config/constants/tokens'
+import { Token, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { STABLES, REQT, STABLES_DICT, WETH, WBTC } from 'config/constants/tokens'
 import {
   addSerializedPair,
   addSerializedWeightedPair,
@@ -34,6 +34,22 @@ const initialChainId = 43113
 
 const currentTimestamp = () => new Date().getTime()
 
+const initialTokenList: Token[] = [
+  ...[WRAPPED_NETWORK_TOKENS[initialChainId],
+  REQT[initialChainId]],
+  ...STABLES[initialChainId]
+]
+
+const initialBalances = {
+  [WRAPPED_NETWORK_TOKENS[initialChainId].address]: '0',
+  [REQT[initialChainId].address]: '0',
+  [WETH[initialChainId].address]: '0',
+  [WBTC[initialChainId].address]: '0',
+  [STABLES[initialChainId][0].address]: '0',
+  [STABLES[initialChainId][1].address]: '0',
+  [STABLES[initialChainId][2].address]: '0',
+  [STABLES[initialChainId][3].address]: '0',
+}
 
 function pairKey(token0Address: string, token1Address: string) {
   return `${token0Address};${token1Address}`
@@ -57,12 +73,7 @@ export const initialState: UserState = {
     networkCcyBalance: '0',
     isLoadingTokens: true,
     isLoadingNetworkCcy: true,
-    balances: Object.assign({},
-      ...[
-        ...[WRAPPED_NETWORK_TOKENS[initialChainId],
-        REQT[initialChainId]],
-        ...STABLES[initialChainId]
-      ].map((x) => ({ [x.address]: '0' }))),
+    balances: initialBalances
   }
 }
 
@@ -194,7 +205,7 @@ export default createReducer<UserState>(initialState, (builder) =>
         ...state,
         userBalances: {
           ...state.userBalances,
-          isLoadingTokens: false
+          isLoadingTokens: true
         }
       }
     }
@@ -207,8 +218,8 @@ export default createReducer<UserState>(initialState, (builder) =>
         ...state,
         userBalances: {
           ...state.userBalances,
-        networkCcyBalance: action.payload.networkCcyBalance,
-        isLoadingNetworkCcy: false
+          networkCcyBalance: action.payload.networkCcyBalance,
+          isLoadingNetworkCcy: false
         }
       }
     }
@@ -220,7 +231,7 @@ export default createReducer<UserState>(initialState, (builder) =>
         ...state,
         userBalances: {
           ...state.userBalances,
-            isLoadingNetworkCcy: true,
+          isLoadingNetworkCcy: true,
         }
       }
     }
@@ -232,7 +243,7 @@ export default createReducer<UserState>(initialState, (builder) =>
         ...state,
         userBalances: {
           ...state.userBalances,
-            networkCcyBalance: newBalance,
+          networkCcyBalance: newBalance,
         }
       }
     }

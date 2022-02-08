@@ -48,7 +48,12 @@ export function useIsExpertMode(): boolean {
 }
 
 export function useUserBalances(): UserBalanceState {
-  return useSelector<AppState, AppState['user']['userBalances']>((state) => state.user.userBalances)
+  return useSelector<AppState, AppState['user']['userBalances']>((state) => state.user?.userBalances) ?? {
+    networkCcyBalance: '0',
+    isLoadingTokens: true,
+    isLoadingNetworkCcy: true,
+    balances: {}
+  }
 }
 
 export function useExpertModeManager(): [boolean, () => void] {
@@ -418,11 +423,17 @@ export function getTokenAmounts(chainId: number, balances: { [address: string]: 
 }
 
 export function getStableAmounts(chainId: number, balances: { [address: string]: string }) {
-  return STABLECOINS[chainId].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+  if (!balances)
+    return []
+
+  return STABLECOINS[chainId ?? 43113].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 
 }
 
 export function getMainAmounts(chainId: number, balances: { [address: string]: string }) {
+  if (!balances)
+    return []
+
   return [
     WRAPPED_NETWORK_TOKENS[chainId],
     REQT[chainId],

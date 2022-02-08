@@ -33,7 +33,6 @@ export const BodyWrapper = styled(Card)`
 
 export default function Balances() {
   const { chainId, account } = useActiveWeb3React()
-
   const { slowRefresh } = useRefresh()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -48,7 +47,11 @@ export default function Balances() {
           account,
           // additionalTokens 
         }))
-        dispatch(fetchUserNetworkCcyBalanceBalances({ chainId, account }))
+
+        dispatch(fetchUserNetworkCcyBalanceBalances({
+          chainId,
+          account
+        }))
       }
       return;
     },
@@ -98,7 +101,7 @@ export default function Balances() {
       <div style={{ zIndex: 15 }}>
         <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='10px' marginLeft='10px'>
           <Column>
-            {!isLoadingTokens && mainAmounts.map((tokenAmount, index) => (
+            {!isLoadingTokens && mainAmounts && mainAmounts.map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
@@ -108,7 +111,7 @@ export default function Balances() {
               />))}
           </Column>
           <Column>
-            {!isLoadingTokens && stableAmounts.map((tokenAmount, index) => (
+            {!isLoadingTokens && stableAmounts && stableAmounts.map((tokenAmount, index) => (
               <TokenPositionCard
                 tokenAmount={tokenAmount}
                 mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}

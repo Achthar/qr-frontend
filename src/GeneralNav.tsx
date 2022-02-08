@@ -287,7 +287,7 @@ const StyledNavLink = styled(NavLink)`
     font-weight: 500;
     background: #1a1d2f;
     color: ${({ theme }) => theme.colors.primaryBright};
-    border-left: solid 5px #fea430;
+    border-left: solid 5px #54051d;
     img {
       filter: brightness(0) invert(1);
     }
@@ -296,7 +296,7 @@ const StyledNavLink = styled(NavLink)`
     font-weight: 500;
     background: #1a1d2f;
     color: ${({ theme }) => theme.colors.primaryBright};
-    border-left: solid 5px #fea43022;
+    border-left: solid 5px #54051d22;
     img {
       filter: brightness(0) invert(1);
     }
@@ -382,7 +382,7 @@ export const ActivatorButton = styled.button`
   }
 `
 const ImageContainer = styled.div`
-  width: 40px;
+  width: 50px;
   text-align: center;
   align-items: left;
 `

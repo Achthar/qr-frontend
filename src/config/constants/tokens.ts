@@ -299,6 +299,16 @@ export const STABLES = {
 
 }
 
+export const STABLES_DICT = {
+  [ChainId.AVAX_TESTNET]: {
+    [USDT[ChainId.AVAX_TESTNET].address]: USDT[ChainId.AVAX_TESTNET],
+    [USDC[ChainId.AVAX_TESTNET].address]: USDC[ChainId.AVAX_TESTNET],
+    [DAI[ChainId.AVAX_TESTNET].address]: DAI[ChainId.AVAX_TESTNET],
+    [TUSD[ChainId.AVAX_TESTNET].address]: TUSD[ChainId.AVAX_TESTNET]
+
+  }
+}
+
 export interface TokenEntry {
   symbol: string
   address: { [chainId: number]: string }
