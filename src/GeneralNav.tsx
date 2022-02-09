@@ -366,7 +366,7 @@ const StyledAuthorView = styled.a`
 `;
 
 
-export const ActivatorButton = styled.button<{ isMobile: boolean, isConnected: boolean }>`
+export const ActivatorButton = styled.button<{ isMobile: boolean }>`
   zIndex: 8;
   height: 52px;
   background-color: ${({ theme }) => theme.colors.tertiary};
@@ -384,7 +384,7 @@ export const ActivatorButton = styled.button<{ isMobile: boolean, isConnected: b
   justify-content: space-between;
   align-items: center;
   float: right;
-  width: ${({ isMobile, isConnected }) => isMobile ? (!isConnected ? '360px' : '360px') : '530px'};
+  width: ${({ isMobile }) => isMobile ?  '360px' : '530px'};
 
   &:hover {
     font-weight: 500;
@@ -513,7 +513,6 @@ const GeneralNav: React.FC = () => {
         ref={activatorRef}
         onFocus={() => setActiveIndex(-1)}
         isMobile={isMobile}
-        isConnected={isConnected}
       >
         <Flex flexDirection="row">
           <ImageContainer>

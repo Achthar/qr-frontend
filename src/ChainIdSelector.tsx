@@ -334,7 +334,7 @@ const ChainIdSelector = () => {
           <ImageContainer style={{ marginRight: '5px' }}>
             <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' style={{ marginLeft: '0px', position: 'relative' }} />
           </ImageContainer>
-          {isMobile && isConnected &&
+          {((isMobile && isConnected) || isDesktop) &&
             (<Text bold textAlign='center' paddingTop='7px'>
               {buttonText}
             </Text>)
