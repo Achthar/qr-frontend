@@ -24,14 +24,15 @@ const CustomMenu: React.FC = () => {
         paddingRight: 15,
       }}
     >
-      <div style={{ marginRight: 10 }}>
+      <div style={{ zIndex: 9, position: 'fixed' }}>
         <GeneralNav />
       </div>
-      {/* <GlobalSettings /> */}
-      <div style={{ marginRight: 10 }}>
+      <div style={{ zIndex: 10, position: 'fixed' }}>
         <ChainIdSelector />
       </div>
-      <UserMenu />
+      <div style={{ zIndex: 11, position: 'fixed' }}>
+        <UserMenu />
+      </div>
     </div>
   )
 }

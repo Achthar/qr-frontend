@@ -1,4 +1,4 @@
-import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem, Flex, ChevronRightIcon, MenuEntry, Text, ChevronDownIcon, UserMenuDivider } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem, Flex, ChevronRightIcon, MenuEntry, Text, ChevronDownIcon, UserMenuDivider, SwapIcon } from '@requiemswap/uikit'
 import config, { configData, getIcon } from 'components/Menu/config'
 import Sidebar from 'components/Sidebar'
 import { ChevronsLeft } from 'react-feather'
@@ -9,17 +9,20 @@ import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import React, { useCallback, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
+
+import logo from './assets/logoTransparent.svg'
 import bgSidebar from './assets/sidebar/bg-sidebar.png';
 import iconHome from './assets/sidebar/ic-home.svg';
-import iconBank from './assets/sidebar/ic-bank.svg';
+import iconBank from './assets/swap.svg';
 import iconGovernment from './assets/sidebar/ic-government.svg';
-import iconPools from './assets/sidebar/ic-pools.svg';
+import iconPools from './assets/farms.svg';
 import iconMedium from './assets/sidebar/ic-medium.svg';
 import iconDiscord from './assets/sidebar/ic-discord.svg';
 import iconTelegram from './assets/sidebar/ic-telegram.svg';
 import iconGithub from './assets/sidebar/ic-github.svg';
 import iconTwitter from './assets/sidebar/ic-twitter.svg';
 import iconDoc from './assets/sidebar/ic-doc.svg';
+import iconLiquidity from './assets/liquidity.svg';
 import iconAudit from './assets/sidebar/audit.svg';
 
 import bond from './assets/bonds2.svg'
@@ -84,8 +87,14 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
       </StyledNavItem>
       <StyledNavItem onClick={handleClick}>
         <StyledNavLink to={`/${chain}/exchange`} activeClassName="active">
-          <img src={iconBank} alt='' />
+           <img src={iconBank} alt='' />
           Exchange
+        </StyledNavLink>
+      </StyledNavItem>
+      <StyledNavItem onClick={handleClick}>
+        <StyledNavLink to={`/${chain}/liquidity`} activeClassName="active">
+          <img src={iconLiquidity} alt='' />
+          Liquidity
         </StyledNavLink>
       </StyledNavItem>
       <StyledNavItem onClick={handleClick}>
@@ -219,7 +228,7 @@ const StyledSidebar = styled.div`
   position: fixed;
   padding-top: 32px;
   width: 100%;
-  height: 420px;
+  height: 450px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -358,10 +367,12 @@ const StyledAuthorView = styled.a`
 
 export const ActivatorButton = styled.button`
   zIndex: 8;
-  height: 32px;
+  height: 52px;
   background-color: ${({ theme }) => theme.colors.tertiary};
+  border-left: solid 5px transparent;
   border: none;
-  border-radius: 20px;
+  width:1000px;
+  border-radius: 30px;
   font-size: 0.875rem;
   font-weight: 400;
   margin-left: 0.4rem;
@@ -372,9 +383,13 @@ export const ActivatorButton = styled.button`
   justify-content: space-between;
   align-items: center;
   float: right;
+  width: 530px;
 
-  :hover {
-    background-color: ${({ theme }) => theme.colors.dropdown};
+  &:hover {
+    font-weight: 500;
+    background: #1a1d2f;
+    color: ${({ theme }) => theme.colors.primaryBright};
+    border-left: solid 10px white;
   }
   :focus {
     background-color: ${({ theme }) => theme.colors.dropdown};
@@ -382,11 +397,10 @@ export const ActivatorButton = styled.button`
   }
 `
 const ImageContainer = styled.div`
-  width: 50px;
-  text-align: center;
-  align-items: left;
+  width: 40px;
+  height: 100%;
+  margin-left: 1px;
 `
-
 
 const LIQUIDITY_ROUTES = ['/add', '/find', '/remove']
 
@@ -416,12 +430,54 @@ const MenuItem: React.FC<MenuProps> = ({ history, current, menuItem, isMobile })
 }
 
 
+
+export const configDataEntries: (chainId: number) => MenuEntry[] = (chainId) => {
+  const chain = getChain(chainId)
+  return [
+    {
+      label: 'Home',
+      icon: logo,
+      iconSelected: logo,
+      href: '/',
+    },
+    {
+      label: 'Exchange',
+      icon: iconBank,
+      iconSelected: iconBank,
+      href: `/${chain}/exchange`,
+    },
+    {
+      label: 'Liquidity',
+      icon: iconLiquidity,
+      iconSelected: iconLiquidity,
+      href: `/${chain}/liquidity`,
+    },
+    {
+      label: 'Farms',
+      icon: iconPools,
+      iconSelected: iconPools,
+      href: `/${chain}/farms`,
+    },
+    {
+      label: 'Bonds',
+      icon: bond,
+      iconSelected: bond,
+      href: `/${chain}/bonds`,
+    },
+    // {
+    //   label: 'Pools'),
+    //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
+    //   href: '/pools',
+    // },
+  ]
+}
+
 const GeneralNav: React.FC = () => {
   const history = useHistory()
   const location = useLocation()
   const { isMobile } = useMatchBreakpoints()
   const { chainId } = useNetworkState()
-  const menuItems = configData(chainId) // config(t)
+  const menuItems = configDataEntries(chainId) // config(t)
 
   const activeIndex = menuItems.findIndex((i) => {
     const pathname = location.pathname.match(new RegExp(`^${LIQUIDITY_ROUTES.join('|^')}`))
@@ -456,9 +512,9 @@ const GeneralNav: React.FC = () => {
       >
         <Flex flexDirection="row">
           <ImageContainer>
-            <img src={fbIcon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'} height='10px' alt='' />
+            <img src={fbIcon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'} alt='' />
           </ImageContainer>
-          <Text bold textAlign='center' paddingTop='10px'>
+          <Text bold textAlign='center' paddingTop='9px' marginLeft='15px'>
             {fbLabel}
           </Text>
 

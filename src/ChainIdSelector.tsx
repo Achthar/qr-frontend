@@ -42,7 +42,7 @@ const SelectorWrapper = styled.div`
 
 
 export const ActivatorButton = styled.button`
-  height: 32px;
+  height: 42px;
   background-color: ${({ theme }) => theme.colors.tertiary};
   border: none;
   border-radius: 20px;
@@ -56,9 +56,13 @@ export const ActivatorButton = styled.button`
   justify-content: space-between;
   align-items: center;
   float: right;
+  width: 355px;
 
-  :hover {
-    background-color: ${({ theme }) => theme.colors.dropdown};
+  &:hover {
+    font-weight: 500;
+    background: #1a1d2f;
+    color: ${({ theme }) => theme.colors.primaryBright};
+    border-left: solid 10px white;
   }
   :focus {
     background-color: ${({ theme }) => theme.colors.dropdown};
@@ -67,9 +71,8 @@ export const ActivatorButton = styled.button`
 `
 
 const Logo = styled.img`
-  height: 20px;
-  width: 20px;
-  margin-right: 8px;
+  height: 25px;
+  width: 25px;
 `;
 
 const NetworkLabel = styled.div`
@@ -164,8 +167,8 @@ const LinkOutCircle = styled(ArrowDownCircle)`
 
 const ImageContainer = styled.div`
   width: 40px;
-  text-align: center;
-  align-items: left;
+  height: 40px;
+  margin-left: -13px;
 `
 
 
@@ -323,11 +326,11 @@ const ChainIdSelector = () => {
         ref={activatorRef}
         onFocus={() => setActiveIndex(-1)}
       >
-        <Flex flexDirection="row">
-          <ImageContainer>
-            <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' />
+        <Flex flexDirection="row" mr='3px'>
+          <ImageContainer style={{marginRight:'5px'}}>
+            <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' style={{ marginLeft: '0px', position:'relative' }} />
           </ImageContainer>
-          <Text bold textAlign='center' paddingTop='10px'>
+          <Text bold textAlign='center' paddingTop='7px'>
             {buttonText}
           </Text>
 
