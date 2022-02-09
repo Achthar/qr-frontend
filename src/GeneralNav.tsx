@@ -2,6 +2,7 @@ import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoi
 import config, { configData, getIcon } from 'components/Menu/config'
 import Sidebar from 'components/Sidebar'
 import { ChevronsLeft } from 'react-feather'
+import { useWeb3React } from '@web3-react/core'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { useHistory, useLocation } from 'react-router'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -87,7 +88,7 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
       </StyledNavItem>
       <StyledNavItem onClick={handleClick}>
         <StyledNavLink to={`/${chain}/exchange`} activeClassName="active">
-           <img src={iconBank} alt='' />
+          <img src={iconBank} alt='' />
           Exchange
         </StyledNavLink>
       </StyledNavItem>
@@ -365,7 +366,7 @@ const StyledAuthorView = styled.a`
 `;
 
 
-export const ActivatorButton = styled.button`
+export const ActivatorButton = styled.button<{ isMobile: boolean, isConnected: boolean }>`
   zIndex: 8;
   height: 52px;
   background-color: ${({ theme }) => theme.colors.tertiary};
@@ -383,7 +384,7 @@ export const ActivatorButton = styled.button`
   justify-content: space-between;
   align-items: center;
   float: right;
-  width: 530px;
+  width: ${({ isMobile, isConnected }) => isMobile ? (!isConnected ? '360px' : '360px') : '530px'};
 
   &:hover {
     font-weight: 500;
@@ -476,7 +477,7 @@ const GeneralNav: React.FC = () => {
   const history = useHistory()
   const location = useLocation()
   const { isMobile } = useMatchBreakpoints()
-  const { chainId } = useNetworkState()
+  const { chainId, account } = useWeb3React()
   const menuItems = configDataEntries(chainId) // config(t)
 
   const activeIndex = menuItems.findIndex((i) => {
@@ -497,6 +498,8 @@ const GeneralNav: React.FC = () => {
 
   const [activeIndex1, setActiveIndex] = React.useState(-1);
 
+  const isConnected = Boolean(account)
+
   const current = menuItems[activeIndex]
   const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getIcon('Liquidity') : current?.icon
   const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
@@ -509,6 +512,8 @@ const GeneralNav: React.FC = () => {
         onClick={handleClick}
         ref={activatorRef}
         onFocus={() => setActiveIndex(-1)}
+        isMobile={isMobile}
+        isConnected={isConnected}
       >
         <Flex flexDirection="row">
           <ImageContainer>

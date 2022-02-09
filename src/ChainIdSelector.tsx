@@ -41,7 +41,7 @@ const SelectorWrapper = styled.div`
 `
 
 
-export const ActivatorButton = styled.button`
+export const ActivatorButton = styled.button<{ isMobile: boolean, isConnected: boolean }>`
   height: 42px;
   background-color: ${({ theme }) => theme.colors.tertiary};
   border: none;
@@ -56,7 +56,7 @@ export const ActivatorButton = styled.button`
   justify-content: space-between;
   align-items: center;
   float: right;
-  width: 355px;
+  width: ${({ isMobile, isConnected }) => isMobile ? (!isConnected ? '200px' : '120px') : '355px'};
 
   &:hover {
     font-weight: 500;
@@ -136,9 +136,10 @@ const ActiveRowLinkList = styled.div`
   }
 `;
 
-const FlyoutMenu = styled.div`
+const FlyoutMenu = styled.div<{ isMobile: boolean }>`
   align-items: left;
   margin-top: 52px;
+  left: ${({ isMobile }) => isMobile ? '100px' : ''};
   border-radius: 20px;
   position: fixed;
   padding-top: 32px;
@@ -300,40 +301,44 @@ const ChainIdSelector = () => {
   const wrapperRef = useRef<HTMLDivElement>()
   useOnClickOutside(wrapperRef, () => setIsOpen(false))
 
+  const isConnected = Boolean(account)
 
   const { isMobile, isDesktop } = useMatchBreakpoints()
-
   // React.useEffect(() => {
   //   if (!isOpen) {
   //     setActiveIndex(-1);
   //   }
   // }, [isOpen]);
   // console.log("chainID chainIDselector", chainId)
-  const buttonText = chainId === 56 ? isMobile ? 'BSC' : 'Binance' :
-    chainId === 97 ? isMobile ? 'BSC Test' : 'Binance Testnet' :
-      chainId === 80001 ? isMobile ? 'MATIC Test' : 'Polygon Mumbai' :
-        chainId === 43114 ? isMobile ? 'AVAX' : 'Avalanche' :
-          chainId === 43113 ? isMobile ? 'AVAX Test' : 'Avalanche Testnet' :
-            chainId === 42261 ? isMobile ? 'ROSE Test' : 'Oasis Testnet' :
-              chainId === 110001 ? isMobile ? 'QKC Test S0' : 'Quarkchain Dev S0' : 'no Network'
+  const smallText = isMobile
+  const buttonText = chainId === 56 ? smallText ? 'BSC' : 'Binance' :
+    chainId === 97 ? smallText ? 'BSC Test' : 'Binance Testnet' :
+      chainId === 80001 ? smallText ? 'MATIC Test' : 'Polygon Mumbai' :
+        chainId === 43114 ? smallText ? 'AVAX' : 'Avalanche' :
+          chainId === 43113 ? smallText ? 'AVAX Test' : 'Avalanche Testnet' :
+            chainId === 42261 ? smallText ? 'ROSE Test' : 'Oasis Testnet' :
+              chainId === 110001 ? smallText ? 'QKC Test S0' : 'Quarkchain Dev S0' : 'no Network'
   return (
     // <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
     <SelectorWrapper ref={wrapperRef}>
       <ActivatorButton
+        isMobile={isMobile}
         aria-haspopup="true"
         aria-controls="dropdown1"
         onClick={handleClick}
         ref={activatorRef}
         onFocus={() => setActiveIndex(-1)}
+        isConnected={false}
       >
         <Flex flexDirection="row" mr='3px'>
-          <ImageContainer style={{marginRight:'5px'}}>
-            <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' style={{ marginLeft: '0px', position:'relative' }} />
+          <ImageContainer style={{ marginRight: '5px' }}>
+            <img src={CHAIN_INFO[chainId ?? 43113].logoUrl} height='10px' alt='' style={{ marginLeft: '0px', position: 'relative' }} />
           </ImageContainer>
-          <Text bold textAlign='center' paddingTop='7px'>
-            {buttonText}
-          </Text>
-
+          {isMobile && isConnected &&
+            (<Text bold textAlign='center' paddingTop='7px'>
+              {buttonText}
+            </Text>)
+          }
         </Flex>
       </ActivatorButton>
       {isOpen && (
@@ -347,7 +352,7 @@ const ChainIdSelector = () => {
           }}
         >
 
-          <FlyoutMenu>
+          <FlyoutMenu isMobile={isMobile}>
             <Flex alignItems="center" justifyContent="space-between" width="100%">
               <Text bold>
                 Select a network
