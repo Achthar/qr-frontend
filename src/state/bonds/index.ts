@@ -90,15 +90,19 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
       allowances: userBondAllowances,
       balances: userBondTokenBalances
     } = await fetchBondUserAllowancesAndBalances(chainId, account, bondsToFetch)
-
-    const {
-      notes
-    } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
-
-    const interestDue = notes.map((info) => {
+    let notesFinal = []
+    try {
+      const {
+        notes
+      } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
+      notesFinal = notes
+    } catch {
+      notesFinal = []
+    }
+    const interestDue = notesFinal.map((info) => {
       return info.payout.toString();
     })
-
+    console.log("BAM")
     return userBondAllowances.map((_, index) => {
       return {
         bondId: bondIds[index],
@@ -107,11 +111,11 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
         stakedBalance: 0, // userStakedBalances[index],
         earnings: 0, //  userBondEarnings[index],
         notes: {
-          payout: notes[index]?.payout?.toString(),
-          created: notes[index]?.created?.toString(),
-          matured: notes[index]?.matured?.toString(),
-          redeemed: notes[index]?.redeemed?.toString(),
-          marketId: notes[index]?.marketdId?.toString()
+          payout: notesFinal[index]?.payout?.toString(),
+          created: notesFinal[index]?.created?.toString(),
+          matured: notesFinal[index]?.matured?.toString(),
+          redeemed: notesFinal[index]?.redeemed?.toString(),
+          marketId: notesFinal[index]?.marketdId?.toString()
         },
         interestDue: interestDue[index],
         balance: userBondTokenBalances[index]

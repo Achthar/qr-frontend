@@ -317,9 +317,6 @@ function Bonds({
   })
 
   const renderContent = (): JSX.Element => {
-    // if (
-    // viewMode === ViewMode.TABLE && 
-    // rowData.length > 0) {
     const columnSchema = DesktopColumnSchema
 
     const columns = columnSchema.map((column) => ({
@@ -330,14 +327,6 @@ function Bonds({
         switch (column.name) {
           case 'bond':
             return b.id - a.id
-          // case 'apr':
-          //   if (a.original.apr.value && b.original.apr.value) {
-          //     return Number(a.original.apr.value) - Number(b.original.apr.value)
-          //   }
-
-          //   return 0
-          // case 'earned':
-          //   return a.original.earned.earnings - b.original.earned.earnings
           default:
             return 1
         }
@@ -346,48 +335,6 @@ function Bonds({
     }))
 
     return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
-    // }
-
-    // return (
-    //   <FlexLayout>
-    //     <Route exact path={`${path}`}>
-    //       {chosenBondsMemoized.map((bond) => (
-    //         <BondCard
-    //           key={bond.bondId}
-    //           bond={bond}
-    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-    //           reqtPrice={reqtPrice}
-    //           account={account}
-    //           removed={false}
-    //         />
-    //       ))}
-    //     </Route>
-    //     <Route exact path={`${path}/history`}>
-    //       {chosenBondsMemoized.map((bond) => (
-    //         <BondCard
-    //           key={bond.bondId}
-    //           bond={bond}
-    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-    //           reqtPrice={reqtPrice}
-    //           account={account}
-    //           removed
-    //         />
-    //       ))}
-    //     </Route>
-    //     <Route exact path={`${path}/archived`}>
-    //       {chosenBondsMemoized.map((bond) => (
-    //         <BondCard
-    //           key={bond.bondId}
-    //           bond={bond}
-    //           displayApr={getDisplayApr(bond.apr, bond.lpRewardsApr)}
-    //           reqtPrice={reqtPrice}
-    //           account={account}
-    //           removed
-    //         />
-    //       ))}
-    //     </Route>
-    //   </FlexLayout>
-    // )
   }
 
   const handleSortOptionChange = (option: OptionProps): void => {
@@ -396,67 +343,7 @@ function Bonds({
 
   return (
     <>
-      {/* <PageHeader>
-        <Heading as="h1" scale="xxl" color="secondary" mb="24px">
-          {t('Bonds')}
-        </Heading>
-        <Heading scale="lg" color="text">
-          {t('Stake LP tokens to earn.')}
-        </Heading>
-        <NavLink exact activeClassName="active" to="/bonds/auction" id="lottery-pot-banner">
-          <Button p="0" variant="text">
-            <Text color="primary" bold fontSize="16px" mr="4px">
-              {t('Community Auctions')}
-            </Text>
-            <ArrowForwardIcon color="primary" />
-          </Button>
-        </NavLink>
-      </PageHeader> */}
       <Page>
-        {/* <ControlContainer> */}
-        {/* <ViewControls> */}
-        {/* <ToggleView viewMode={viewMode} onToggle={(mode: ViewMode) => setViewMode(mode)} /> */}
-        {/* <ToggleWrapper>
-              <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
-              <Text> {t('Staked only')}</Text>
-            </ToggleWrapper>
-            <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
-        {/* </ViewControls> */}
-        {/* <FilterContainer>
-            <LabelWrapper>
-              <Text textTransform="uppercase">{t('Sort by')}</Text>
-              <Select
-                options={[
-                  {
-                    label: t('Hot'),
-                    value: 'hot',
-                  },
-                  {
-                    label: t('APR'),
-                    value: 'apr',
-                  },
-                  {
-                    label: t('Multiplier'),
-                    value: 'multiplier',
-                  },
-                  {
-                    label: t('Earned'),
-                    value: 'earned',
-                  },
-                  {
-                    label: t('Liquidity'),
-                    value: 'liquidity',
-                  },
-                ]}
-                onChange={handleSortOptionChange}
-              />
-            </LabelWrapper>
-            <LabelWrapper style={{ marginLeft: 16 }}>
-              <Text textTransform="uppercase">{t('Search')}</Text>
-              <SearchInput onChange={handleChangeQuery} placeholder="Search Bonds" />
-            </LabelWrapper>
-          </FilterContainer> */}
-        {/* </ControlContainer> */}
         {renderContent()}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

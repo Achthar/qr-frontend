@@ -124,7 +124,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const columnNames = tableSchema.map((column) => column.name)
 
   const vesting = () => {
-    return prettifySeconds(Number(bond.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
+    return prettifySeconds(Number(bond?.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
   };
 
 

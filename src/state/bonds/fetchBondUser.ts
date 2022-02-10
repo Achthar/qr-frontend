@@ -86,6 +86,7 @@ export interface BondTokenData {
 export const fetchBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
 
   const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
+
   const callsAllowance = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)
     return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
@@ -101,18 +102,16 @@ export const fetchBondUserAllowancesAndBalances = async (chainId: number, accoun
   })
 
   const rawData = await multicall(chainId, erc20ABI, [...callsAllowance, ...callsBalances])
-
-  const parsedAllowance = rawData.slice(callsAllowance.length - 1).map((allowance) => {
+  const parsedAllowance = rawData.slice(bondsToFetch.length).map((allowance) => {
     return new BigNumber(allowance).toJSON()
   })
 
-  const parsedPayoff = rawData.slice(-callsAllowance.length).map((payoff) => {
-    return new BigNumber(payoff).toJSON()
+  const balances = rawData.slice(bondsToFetch.length, rawData.length).map((balance) => {
+    return new BigNumber(balance).toJSON()
   })
-
   return {
     allowances: parsedAllowance,
-    balances: parsedPayoff
+    balances
   }
 }
 

@@ -84,8 +84,7 @@ export const useBondFromBondName = (name: string): Bond => {
 }
 
 export const useBondUser = (bondId) => {
-  const bonds = useBonds()
-  const bond = bonds.bondData[bondId]
+  const bond = useBondFromBondId(bondId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
@@ -169,86 +168,3 @@ export const usePriceRequiemDollar = (): BigNumber => {
 
   return reqtPriceUsd
 }
-// import { useSelector } from "react-redux";
-// import { useEffect, useState } from "react";
-// import allBonds, { allExpiredBonds } from "src/helpers/AllBonds";
-// import { IUserBondDetails } from "src/slices/AccountSlice";
-// import { Bond } from "src/lib/Bond";
-// import { IBondDetails } from "src/slices/BondSlice";
-
-// interface IBondingStateView {
-//   account: {
-//     bonds: {
-//       [key: string]: IUserBondDetails;
-//     };
-//   };
-//   bonding: {
-//     loading: Boolean;
-//     [key: string]: any;
-//   };
-// }
-
-// // Smash all the interfaces together to get the BondData Type
-// export interface IAllBondData extends Bond, IBondDetails, IUserBondDetails {}
-
-// const initialBondArray = allBonds;
-// const initialExpiredArray = allExpiredBonds;
-// // Slaps together bond data within the account & bonding states
-// export function useBondsGeneric(chainId: number) {
-//   const bondLoading = useSelector((state: IBondingStateView) => !state.bonding.loading);
-//   const bondState = useSelector((state: IBondingStateView) => state.bonding);
-//   const accountBondsState = useSelector((state: IBondingStateView) => state.account.bonds);
-//   const [bonds, setBonds] = useState<Bond[] | IAllBondData[]>(initialBondArray);
-//   const [expiredBonds, setExpiredBonds] = useState<Bond[] | IAllBondData[]>(initialExpiredArray);
-
-//   useEffect(() => {
-//     let bondDetails: Bond[];
-//     bondDetails = allBonds
-//       .flatMap(bond => {
-//         if (bondState[bond.name] && bondState[bond.name].bondDiscount) {
-//           return Object.assign(bond, bondState[bond.name]); // Keeps the object type
-//         }
-//         return bond;
-//       })
-//       .flatMap(bond => {
-//         if (accountBondsState[bond.name]) {
-//           return Object.assign(bond, accountBondsState[bond.name]);
-//         }
-//         return bond;
-//       });
-
-//     const mostProfitableBonds = bondDetails.concat().sort((a, b) => {
-//       if (!getBondability(chainId, a)) return 1;
-//       if (!getBondability(chainId, b)) return -1;
-//       return a["bondDiscount"] > b["bondDiscount"] ? -1 : b["bondDiscount"] > a["bondDiscount"] ? 1 : 0;
-//     });
-//     setBonds(mostProfitableBonds);
-
-//     // TODO (appleseed-expiredBonds): there may be a smarter way to refactor this
-//     let expiredDetails: IAllBondData[];
-//     expiredDetails = allExpiredBonds
-//       .flatMap(bond => {
-//         if (bondState[bond.name] && bondState[bond.name].bondDiscount) {
-//           return Object.assign(bond, bondState[bond.name]); // Keeps the object type
-//         }
-//         return bond;
-//       })
-//       .flatMap(bond => {
-//         if (accountBondsState[bond.name]) {
-//           return Object.assign(bond, accountBondsState[bond.name]);
-//         }
-//         return bond;
-//       });
-//     setExpiredBonds(expiredDetails);
-//   }, [bondState, accountBondsState, bondLoading]);
-
-//   // Debug Log:
-//   // console.log(bonds);
-//   return { bonds, loading: bondLoading, expiredBonds };
-// }
-
-function getBondability(chainId: number, bond: Bond) {
-  return bond.isBondable[chainId];
-}
-
-// export default useBonds;

@@ -68,7 +68,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
     },
     {
       pid: 3,
-      lpSymbol: `req4-Pool`,
+      lpSymbol: `USD-Quad-Pool`,
       lpAddresses: {
         97: '',
         56: '',
