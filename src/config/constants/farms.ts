@@ -72,7 +72,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpAddresses: {
         97: '',
         56: '',
-        43113: '0x3372de341a07418765ae12f77aee9029eaa4442a'
+        43113: '0x3372DE341A07418765Ae12f77aEe9029EaA4442A'
       },
       token: serializedTokens.usdt,
       quoteToken: serializedTokens.usdc,

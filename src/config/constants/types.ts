@@ -192,7 +192,8 @@ interface BondOpts {
 
 export enum BondType {
   StableAsset,
-  LP,
+  PairLP,
+  StableSwapLP
 }
 
 
@@ -219,6 +220,8 @@ export interface BondConfig {
   displayUnits: string;
   token?: SerializedToken
   quoteToken?: SerializedToken
+  token2?: SerializedToken
+  token3?: SerializedToken
   lpProperties?: {
     weightToken: number
     weightQuoteToken: number

@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Tag, Flex, Heading, Skeleton } from '@requiemswap/uikit'
-import { Token } from '@requiemswap/sdk'
+import { PoolType, Token } from '@requiemswap/sdk'
 import { CommunityTag, CoreTag } from 'components/Tags'
 import { TokenPairImage } from 'components/TokenImage'
+import QuadCurrencyLogo from 'components/Logo/QuadLogo'
 
 export interface ExpandableSectionProps {
   lpLabel?: string
@@ -11,6 +12,9 @@ export interface ExpandableSectionProps {
   isCommunityFarm?: boolean
   token: Token
   quoteToken: Token
+  poolType?: PoolType
+  token2?: Token
+  token3?: Token
 }
 
 const Wrapper = styled(Flex)`
@@ -23,10 +27,24 @@ const MultiplierTag = styled(Tag)`
   margin-left: 4px;
 `
 
-const CardHeading: React.FC<ExpandableSectionProps> = ({ lpLabel, multiplier, isCommunityFarm, token, quoteToken }) => {
+const CardHeading: React.FC<ExpandableSectionProps> = ({ lpLabel, multiplier, isCommunityFarm, token, quoteToken, poolType, token2, token3 }) => {
   return (
     <Wrapper justifyContent="space-between" alignItems="center" mb="12px">
-      <TokenPairImage variant="inverted" chainId={token.chainId} primaryToken={token} secondaryToken={quoteToken} width={64} height={64} />
+      {
+        poolType !== PoolType.StablePairWrapper && token && quoteToken ? (
+          <TokenPairImage variant="inverted" chainId={token.chainId} primaryToken={token} secondaryToken={quoteToken} width={64} height={64} />
+        )
+          : token2 && token3 && (
+            <QuadCurrencyLogo
+              currency0={token}
+              currency1={quoteToken}
+              currency2={token2}
+              currency3={token3}
+              size={24}
+              margin
+            />
+          )
+      }
       <Flex flexDirection="column" alignItems="flex-end">
         <Heading mb="4px">{lpLabel.split(' ')[0]}</Heading>
         <Flex justifyContent="center">

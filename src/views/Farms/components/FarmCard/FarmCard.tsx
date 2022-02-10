@@ -77,6 +77,9 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
           isCommunityFarm={farm.isCommunity}
           token={farm.token}
           quoteToken={farm.quoteToken}
+          poolType={farm.lpData?.poolType}
+          token2={farm.token2}
+          token3={farm.token3}
         />
         {!removed && (
           <Flex justifyContent="space-between" alignItems="center">

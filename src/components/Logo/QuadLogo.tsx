@@ -1,4 +1,5 @@
 import { Currency } from '@requiemswap/sdk'
+import { AutoColumn } from 'components/Column'
 import React from 'react'
 import styled from 'styled-components'
 import CurrencyLogo from './CurrencyLogo'
@@ -29,15 +30,15 @@ export default function QuadCurrencyLogo({
   margin = false,
 }: QuadCurrencyLogoProps) {
   return (
-    <>
-    <Wrapper margin={margin}>
-      {currency0 && <CurrencyLogo chainId={chainId} currency={currency0} size={`${size.toString()}px`} style={{ marginRight: '2px' }} />}
-      {currency1 && <CurrencyLogo chainId={chainId} currency={currency1} size={`${size.toString()}px`} />}
-    </Wrapper>
-    <Wrapper margin={margin}>
-      {currency2 && <CurrencyLogo chainId={chainId} currency={currency2} size={`${size.toString()}px`} style={{ marginRight: '2px' }} />}
-      {currency3 && <CurrencyLogo chainId={chainId} currency={currency3} size={`${size.toString()}px`} />}
-    </Wrapper>
-    </>
+    <AutoColumn>
+      <Wrapper margin={margin}>
+        {currency0 && <CurrencyLogo chainId={chainId} currency={currency0} size={`${size.toString()}px`} style={{ marginRight: '2px' }} />}
+        {currency1 && <CurrencyLogo chainId={chainId} currency={currency1} size={`${size.toString()}px`} />}
+      </Wrapper>
+      <Wrapper margin={margin}>
+        {currency2 && <CurrencyLogo chainId={chainId} currency={currency2} size={`${size.toString()}px`} style={{ marginRight: '2px' }} />}
+        {currency3 && <CurrencyLogo chainId={chainId} currency={currency3} size={`${size.toString()}px`} />}
+      </Wrapper>
+    </AutoColumn>
   )
 }

@@ -23,8 +23,8 @@ export function bnParser(bn: BigNumber, decNr: BigNumber) {
   return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
 }
 
-export const calcSingleBondDetails = createAsyncThunk(
-  "bonds/calcBondDetails",
+export const calcSingleBondStableLpDetails = createAsyncThunk(
+  "bonds/calcBondStableLpDetails",
   async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
 
     const bondContract = getContractForBondDepo(chainId, provider);
@@ -62,37 +62,29 @@ export const calcSingleBondDetails = createAsyncThunk(
       await multicall(chainId, bondReserveAVAX, calls)
 
     // calls from pair used for pricing
-    const callsPair = [
-      // max payout
-      {
-        address: reserveContract.address,
-        name: 'getReserves'
-      },
-      // debt ratio
-      {
-        address: reserveContract.address,
-        name: 'totalSupply',
-      },
-      {
-        address: reserveContract.address,
-        name: 'balanceOf',
-        params: [getAddress(addresses.treasury[chainId])]
-      },
-    ]
+    // const callsPair = [
+    //   // max payout
+    //   {
+    //     address: reserveContract.address,
+    //     name: 'getReserves'
+    //   },
+    //   // debt ratio
+    //   {
+    //     address: reserveContract.address,
+    //     name: 'totalSupply',
+    //   },
+    //   {
+    //     address: reserveContract.address,
+    //     name: 'balanceOf',
+    //     params: [getAddress(addresses.treasury[chainId])]
+    //   },
+    // ]
 
-    const [reserves, supply, purchasedQuery] =
-      await multicall(chainId, weightedPairABI, callsPair)
+    const [reserves, supply] = [['0', '0'], '0']
+      // await multicall(chainId, weightedPairABI, callsPair)
 
     // calculate price
-    const price = bond.token && bond.quoteToken && bond.type === BondType.PairLP ? priceFromData(
-      deserializeToken(bond.token),
-      deserializeToken(bond.quoteToken),
-      BigNumber.from(bond.lpProperties.weightToken),
-      BigNumber.from(bond.lpProperties.weightQuoteToken),
-      reserves[0],
-      reserves[1],
-      JSBI.BigInt(bond.lpProperties.fee)
-    ) : '0'
+    const price = '0'
 
     const marketPrice = BigNumber.from(price)
 

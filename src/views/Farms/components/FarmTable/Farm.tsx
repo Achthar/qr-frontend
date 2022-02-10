@@ -9,6 +9,7 @@ import { TokenPairImage } from 'components/TokenImage'
 import { SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { PoolType } from '@requiemswap/sdk'
+import QuadCurrencyLogo from 'components/Logo/QuadLogo'
 
 export interface FarmProps {
   chainId: number
@@ -40,7 +41,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, label, pid }) => {
+const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, label, pid, poolType, token2, token3 }) => {
   const { stakedBalance } = useFarmUser(pid)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
@@ -59,11 +60,27 @@ const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, 
 
   return (
     <Container>
-      <TokenWrapper>
-        <TokenPairImage variant="inverted" chainId={chainId} primaryToken={deserializeToken(token)} secondaryToken={deserializeToken(quoteToken)} width={40} height={40} />
-      </TokenWrapper>
+      {
+        poolType !== PoolType.StablePairWrapper && token && quoteToken ? (
+          <TokenWrapper>
+            <TokenPairImage variant="inverted" chainId={chainId} primaryToken={deserializeToken(token)} secondaryToken={deserializeToken(quoteToken)} width={40} height={40} />
+          </TokenWrapper>)
+          : token2 && token3 && (
+            <TokenWrapper>
+              <QuadCurrencyLogo
+                currency0={deserializeToken(token)}
+                currency1={deserializeToken(quoteToken)}
+                currency2={deserializeToken(token2)}
+                currency3={deserializeToken(token3)}
+                size={17}
+                margin
+              />
+            </TokenWrapper>
+          )
+      }
       <div>
         {handleRenderFarming()}
+
         <Text bold>{label}</Text>
       </div>
     </Container>

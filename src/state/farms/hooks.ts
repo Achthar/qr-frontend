@@ -39,6 +39,9 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     lpTotalSupply: farm.lpTotalSupply ? new BigNumber(farm.lpTotalSupply) : BIG_ZERO,
     tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO,
     poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
+    lpData: farm.lpData,
+    token2: farm.token2 ? deserializeToken(farm.token2) : undefined,
+    token3: farm.token3 ? deserializeToken(farm.token3) : undefined,
   }
 }
 

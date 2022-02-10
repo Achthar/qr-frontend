@@ -27,7 +27,7 @@ import iconLiquidity from './assets/liquidity.svg';
 import iconAudit from './assets/sidebar/audit.svg';
 
 import bond from './assets/bonds2.svg'
-import iconDragonBall from './assets/sidebar/ic-dragon.png';
+import iconREQTransparent from './assets/REQ_Transparent.png';
 
 
 export const ExternalLinks = {
@@ -82,7 +82,7 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
     <StyledNavContainer>
       <StyledNavItem onClick={handleClick}>
         <StyledNavLink to="/" activeClassName="active" exact>
-          <img src={iconHome} alt='' />
+          <img src={iconREQTransparent} alt='' />
           Home
         </StyledNavLink>
       </StyledNavItem>
@@ -179,6 +179,22 @@ const MenuBar: React.FC = () => {
     </div>
   );
 };
+
+export const getMenuIcon: (label: string) => any = (label) => {
+  if (label === 'Home')
+    return iconREQTransparent
+  if (label === 'Exchange')
+    return iconBank
+  if (label === 'Liquidity')
+    return iconLiquidity
+  if (label === 'Farms')
+    return bond
+  if (label === 'Bonds')
+    return bond
+
+  return null
+}
+
 
 const StyledAudit = styled.a`
   align-self: center;
@@ -384,7 +400,7 @@ export const ActivatorButton = styled.button<{ isMobile: boolean }>`
   justify-content: space-between;
   align-items: center;
   float: right;
-  width: ${({ isMobile }) => isMobile ?  '360px' : '530px'};
+  width: ${({ isMobile }) => isMobile ? '360px' : '530px'};
 
   &:hover {
     font-weight: 500;
@@ -437,8 +453,8 @@ export const configDataEntries: (chainId: number) => MenuEntry[] = (chainId) => 
   return [
     {
       label: 'Home',
-      icon: logo,
-      iconSelected: logo,
+      icon: iconREQTransparent,
+      iconSelected: iconREQTransparent,
       href: '/',
     },
     {
@@ -501,7 +517,7 @@ const GeneralNav: React.FC = () => {
   const isConnected = Boolean(account)
 
   const current = menuItems[activeIndex]
-  const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getIcon('Liquidity') : current?.icon
+  const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getMenuIcon('Liquidity') : current?.icon
   const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
   const activatorRef = React.useRef<HTMLButtonElement | null>(null);
   return (

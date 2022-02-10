@@ -279,7 +279,7 @@ function Bonds({
 
   const reqPrice = useMemo(
     () => {
-      return Number(formatSerializedBigNumber(bondData[0]?.lpData?.priceInQuote ?? '0', 18, 18))
+      return Number(formatSerializedBigNumber(bondData[4]?.lpData?.priceInQuote ?? '0', 18, 18))
     },
     [bondData]
   )
@@ -292,7 +292,10 @@ function Bonds({
         label: bond.name,
         bondId: bond.bondId,
         token: bond.token,
-        quoteToken: bond.quoteToken
+        quoteToken: bond.quoteToken,
+        token2: bond.token2,
+        token3: bond.token3,
+        bondType: bond.type
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,

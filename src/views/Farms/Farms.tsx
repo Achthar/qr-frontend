@@ -298,7 +298,7 @@ function Farms({
         chainId,
         label: lpLabel,
         pid: farm.pid,
-        poolType: farm?.poolType,
+        poolType: farm?.lpData?.poolType,
         token: farm.token,
         quoteToken: farm.quoteToken,
         token2: farm?.token2,
@@ -403,32 +403,6 @@ function Farms({
 
   return (
     <>
-      <PageHeader>
-        <Heading as="h1" scale="xxl" color="secondary" mb="24px">
-          {t('Farms')}
-        </Heading>
-        <Heading scale="lg" color="text">
-          {t('Stake LP tokens to earn.')}
-        </Heading>
-        {/* <NavLink exact activeClassName="active" to="/farms/auction" id="lottery-pot-banner">
-          <Button p="0" variant="text">
-            <Text color="primary" bold fontSize="16px" mr="4px">
-              {t('Community Auctions')}
-            </Text>
-            <ArrowForwardIcon color="primary" />
-          </Button>
-        </NavLink> */}
-        <ControlContainer>
-          <ViewControls>
-
-            {/* <ToggleWrapper>
-              <Toggle checked={stakedOnly} onChange={() => setStakedOnly(!stakedOnly)} scale="sm" />
-              <Text> {t('Staked only')}</Text>
-            </ToggleWrapper>
-            <BondTabButtons hasStakeInFinishedBonds={stakedInactiveBonds.length > 0} /> */}
-          </ViewControls>
-        </ControlContainer>
-      </PageHeader>
       <Page>
         <ControlContainer>
           <ViewControls>

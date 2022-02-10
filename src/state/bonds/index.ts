@@ -9,6 +9,7 @@ import {
   fetchBondUserPendingPayoutData,
 } from './fetchBondUser'
 import { bnParser, calcSingleBondDetails } from './calcSingleBondDetails';
+import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 
 
@@ -144,6 +145,19 @@ export const bondsSlice = createSlice({
         state.userDataLoaded = true;
       })
       .addCase(calcSingleBondDetails.rejected, (state, { error }) => {
+        state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
+      .addCase(calcSingleBondStableLpDetails.pending, state => {
+        state.userDataLoaded = false;
+      })
+      .addCase(calcSingleBondStableLpDetails.fulfilled, (state, action) => {
+        const bond = action.payload
+        state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...action.payload };
+        state.userDataLoaded = true;
+      })
+      .addCase(calcSingleBondStableLpDetails.rejected, (state, { error }) => {
         state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);

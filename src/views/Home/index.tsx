@@ -6,6 +6,7 @@ import useTheme from 'hooks/useTheme'
 import Container from 'components/Layout/Container'
 import { Text, Step, Stepper, Card, CardBody, Image, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
+import iconREQTransparent from 'assets/REQ_Transparent.png';
 
 // import * as fs from 'fs';
 // import { readFile } from 'fs'
@@ -23,12 +24,7 @@ const Home: React.FC = () => {
   const { isMobile } = useMatchBreakpoints()
 
   const HomeSectionContainerStyles = { padding: '5px', width: '100%', maxWidth: '2000px' }
-  const StyledBackIcon = styled.div`
-    background-image: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png';
-    width: 500px;
-    zindex: 5;
-    opacity: 1;
-  `
+
   const intro = 'Requiem is a decentralized platform that will give traders easy access to the most powerful tools in DeFi. At its core, it is a decentralized exchange with a stable swap built-in -ensuring traders get access to the best pricing. We already have a beta of our DEX  deployed on the AVAX testnet on requiem.finance. However, this is just the beginning. The following features are on our immediate release roadmap:'
   const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading', 'Farm Swap', 'Yield swap']
   const steps = [
@@ -68,20 +64,24 @@ const Home: React.FC = () => {
         hasCurvedDivider={false}
       >
         <Container width="100%" maxWidth="25000px" style={{ marginBottom: 60 }}>
-          <Row align="space-between" style={{ marginBottom: 60, ...iconStyle }}>
-            {!isMobile && (
-              <Column>
-                <Text {...titleFont}>Requiem</Text>
-                <Text {...titleFont}>Finance</Text>
-              </Column>
-            )}
-            <Image
-              src="https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_transparent.png"
-              width={240}
-              height={192}
-              alt="REQT"
-            />
-          </Row>
+          <div
+            style={{
+              justifyContent: 'center'
+            }}
+          >
+            <Row align="space-between" style={{ marginBottom: 20, justifyContent: 'center', ...iconStyle }}>
+
+              <Text marginTop='50px' marginRight='10px' {...titleFont}>Requiem</Text>
+
+              <Image
+                src={iconREQTransparent}
+                width={991 / 4}
+                height={927 / 4}
+                alt="REQT"
+              />
+              <Text marginTop='50px' marginLeft='10px' {...titleFont}>Finance</Text>
+            </Row>
+          </div>
           <Text fontSize="24px" color='white'>
             {intro}
           </Text>

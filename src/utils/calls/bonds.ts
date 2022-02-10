@@ -66,14 +66,13 @@ export const startBonding = async (chainId, account, bondDepositoryContract, bon
   const gasPrice = getGasPrice(chainId)
   const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString()
   const max = new BigNumber(maxPrice).times(DEFAULT_TOKEN_DECIMAL).toString()
-  console.log("ARGS", value, max, account)
   const tx = await bondDepositoryContract.deposit(
     bondId, // id
     value, // amount
     max, // max price
     getAddress(account), // user
     getAddress(account), // referral
-    { gasPrice }
+    // { ...options, gasPrice }
   ) // no gas limit, otherwise issues
   const receipt = await tx.wait()
   return receipt.status
