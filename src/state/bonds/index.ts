@@ -102,7 +102,6 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
     const interestDue = notesFinal.map((info) => {
       return info.payout.toString();
     })
-    console.log("BAM")
     return userBondAllowances.map((_, index) => {
       return {
         bondId: bondIds[index],

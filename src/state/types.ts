@@ -14,7 +14,8 @@ import {
   TranslatableText,
   BondConfig,
   SerializedFarmConfig,
-  DeserializedFarmConfig
+  DeserializedFarmConfig,
+  SerializedToken
 } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
@@ -171,6 +172,44 @@ export interface BondsState {
   }
 }
 
+export interface StablePoolConfig {
+  key: string
+  address: string
+  lpAddress
+  tokens: SerializedToken[]
+}
+
+export interface SwapStorage {
+  tokenMultipliers: SerializedBigNumber[]
+  fee: SerializedBigNumber
+  adminFee: SerializedBigNumber
+  initialA: SerializedBigNumber
+  futureA: SerializedBigNumber
+  initialATime: SerializedBigNumber
+  futureATime: SerializedBigNumber
+  lpAddress: string
+  defaultWithdrawFee: SerializedBigNumber
+}
+
+export interface SerializedStablePool extends StablePoolConfig {
+  balances: SerializedBigNumber[]
+  A: SerializedBigNumber
+  swapStorage: SwapStorage
+  lpToken: SerializedToken
+  lpTotalSupply: SerializedBigNumber
+  userData?: {
+    allowances: SerializedBigNumber[]
+    lpAllowance: SerializedBigNumber
+    lpBalance: SerializedBigNumber
+    userWithdarawFee: SerializedBigNumber
+  }
+}
+
+export interface StablePoolsState {
+  pools: SerializedStablePool[]
+  publicDataLoaded: boolean
+  userDataLoaded: boolean
+}
 
 export interface FarmsState {
   data: Farm[]
@@ -647,6 +686,7 @@ export interface State {
   bonds: BondsState
   farms: SerializedFarmsState
   // pools: PoolsState
+  stablePools: StablePoolsState
   predictions: PredictionsState
   profile: ProfileState
   teams: TeamsState

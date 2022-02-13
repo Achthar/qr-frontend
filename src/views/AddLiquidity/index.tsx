@@ -513,7 +513,7 @@ export default function AddLiquidity({
           helper={t(
             'Liquidity providers earn a trading fee on all trades made for that token pair, proportional to their share of the liquidity pool.',
           )}
-          backTo="/pool"
+          backTo={`/${getChain(chainId)}/liquidity`}
         />
         <CardBody>
           <AutoColumn gap="20px">

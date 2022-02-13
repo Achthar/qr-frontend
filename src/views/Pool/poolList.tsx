@@ -11,6 +11,12 @@ import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import getChain from 'utils/getChain'
 import Column from 'components/Column'
+import { fetchStablePoolserDataAsync } from 'state/stablePools'
+import { useAppDispatch } from 'state'
+import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
+import { simpleRpcProvider } from 'utils/providers'
+import useRefresh from 'hooks/useRefresh'
+import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
 import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
@@ -93,7 +99,7 @@ export default function PoolList({
     params: { chain },
   },
 }: RouteComponentProps<{ chain: string }>) {
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
   const { theme } = useTheme()
 
@@ -104,6 +110,56 @@ export default function PoolList({
   },
     [chainId, chain, history],
   )
+
+
+  const { slowRefresh } = useRefresh()
+
+  const dispatch = useAppDispatch()
+
+  const { pools, publicDataLoaded: dataLoaded, userDataLoaded } = useStablePools()
+  useEffect(
+    () => {
+      if (!dataLoaded) {
+        Object.values(pools).map(
+          (pool) => {
+            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+
+            return 0
+          }
+        )
+      }
+
+    },
+    [
+      chainId,
+      dispatch,
+      slowRefresh,
+      pools,
+      library,
+      dataLoaded
+    ])
+
+  useEffect(() => {
+    if (account && !userDataLoaded && dataLoaded) {
+      dispatch(fetchStablePoolserDataAsync({ chainId, account, pools }))
+    }
+  },
+    [
+      account,
+      chainId,
+      pools,
+      userDataLoaded,
+      dataLoaded,
+      slowRefresh,
+      dispatch
+    ]
+  )
+
+
+  const deserializedPools = useDeserializedStablePools()
+  const stablePool = deserializedPools[0]
+
+
 
   const pairs = useRelevantWeightedPairs(chainId)
 
@@ -131,18 +187,7 @@ export default function PoolList({
 
   const allWeightedPairsWithLiquidity = lpWithBalances.filter((pair): pair is WeightedPair => Boolean(pair))
 
-  // stable pool starting here
-  const [stablePoolState, stablePool] = useStablePool(chainId)
-
-  const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
-  )
-
-  const stablePoolBalance = useMemo(() =>
-    Object.values(userPoolBalance)[0],
-    [userPoolBalance]
-  )
+  const stablePoolBalance = useStablePoolLpBalance(0)
 
   const renderBody = () => {
     if (!account) {

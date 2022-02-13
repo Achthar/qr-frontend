@@ -168,6 +168,11 @@ export const getStableLpContract = (chainId: number, signer?: ethers.Signer | et
   // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
 }
 
+export const getStablePoolContract = (chainId: number, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, new Interface(stableSwapAVAX), address, signer) as StableSwapContract
+  // return getContract(chainId, stableSwapAVAX, getStableSwapAddress(chainId), signer) as StableSwapContract
+}
+
 export const getContractForReserve = (chainId: number, bondConfig: BondConfig, signer?: ethers.Signer | ethers.providers.Provider) => {
   const bondAddress = getAddressForReserve(chainId, bondConfig) || "";
   const ABI = new Interface(weightedPairAVAX)

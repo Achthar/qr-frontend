@@ -72,7 +72,7 @@ const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, 
                 currency1={deserializeToken(quoteToken)}
                 currency2={deserializeToken(token2)}
                 currency3={deserializeToken(token3)}
-                size={17}
+                size={10}
                 margin
               />
             </TokenWrapper>

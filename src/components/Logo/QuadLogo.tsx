@@ -7,7 +7,8 @@ import CurrencyLogo from './CurrencyLogo'
 const Wrapper = styled.div<{ margin: boolean }>`
   display: flex;
   flex-direction: row;
-  margin-right: ${({ margin }) => margin && '4px'};
+  margin-right: ${({ margin }) => margin && '4px'}
+  aspect-ratio: 1;
 `
 
 interface QuadCurrencyLogoProps {

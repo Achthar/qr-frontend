@@ -197,9 +197,6 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
   const chainId = stablePool.chainId
   const [showMore, setShowMore] = useState(false)
 
-  // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
-
-  // useTokenBalance(chainId, account ?? undefined, stablePool.liquidityToken)
   const totalPoolTokens = stablePool.lpTotalSupply
   const chain = getChain(chainId)
 
@@ -209,11 +206,6 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
       : undefined
 
 
-  // console.log("total:", totalPoolTokens?.toString())
-  // console.log("stable total:", stablePool.lpTotalSupply?.toString())
-  // console.log("user:", userLpPoolBalance?.toBigNumber().toString())
-  // console.log("validate", totalPoolTokens >= userLpPoolBalance.toBigNumber())
-  // stablePool?.setTotalSupply(totalPoolTokens.toBigNumber())
 
   const amountsDeposited = !!stablePool &&
     !!totalPoolTokens &&
@@ -230,8 +222,6 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
           <Flex alignItems="center" mb="4px">
             <AutoColumn gap="4px">
               <QuadCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} currency2={tokens[2]} currency3={tokens[3]} size={20} />
-              {/* <DoubleCurrencyLogo chainId={chainId} currency0={tokens[0]} currency1={tokens[1]} size={20} />
-              <DoubleCurrencyLogo chainId={chainId} currency0={tokens[2]} currency1={tokens[3]} size={20} /> */}
             </AutoColumn>
             <Column>
               <Text bold ml="8px">

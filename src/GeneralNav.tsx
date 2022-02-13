@@ -521,7 +521,7 @@ const GeneralNav: React.FC = () => {
   const isConnected = Boolean(account)
 
   const current = menuItems[activeIndex]
-  console.log("CURRENT", current, activeIndex, location.pathname)
+  
   const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getMenuIcon('Liquidity') : current?.icon
   const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
   const activatorRef = React.useRef<HTMLButtonElement | null>(null);
