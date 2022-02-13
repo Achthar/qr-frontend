@@ -75,7 +75,7 @@ export const fetchStablePoolData = createAsyncThunk(
     ]
 
     const [supply] = await multicall(chainId, erc20, callsLp)
-    console.log("stablePool TS", supply[0]?.toString())
+    
     return {
       ...pool,
       balances: tokenBalances[0].map(balance => balance.toString()),
