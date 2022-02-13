@@ -166,26 +166,27 @@ export default function PoolList({
         </Text>
       )
     }
-    return (<Column>
-      {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && (
-        <FullStablesPositionCard
-          userLpPoolBalance={stablePoolBalance}
-          stablePool={stablePool}
-          mb='20px'
-        />)}
-      {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedPairsWithLiquidity.map((v2Pair, index) => (
-        <FullWeightedPositionCard
-          key={v2Pair.liquidityToken.address}
-          weightedPair={v2Pair}
-          mb={index < allWeightedPairsWithLiquidity.length - 1 ? '16px' : 0}
-        />)))}
+    return (
+      <Column>
+        {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && (
+          <FullStablesPositionCard
+            userLpPoolBalance={stablePoolBalance}
+            stablePool={stablePool}
+            mb='20px'
+          />)}
+        {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedPairsWithLiquidity.map((v2Pair, index) => (
+          <FullWeightedPositionCard
+            key={v2Pair.liquidityToken.address}
+            weightedPair={v2Pair}
+            mb={index < allWeightedPairsWithLiquidity.length - 1 ? '16px' : 0}
+          />)))}
 
-      {(stablePoolBalance?.toBigNumber().eq(0) && allWeightedPairsWithLiquidity?.length === 0) && (
-        <Text color="textSubtle" textAlign="center">
-          {t('No liquidity found.')}
-        </Text>
-      )}
-    </Column>
+        {(stablePoolBalance?.toBigNumber().eq(0) && allWeightedPairsWithLiquidity?.length === 0) && (
+          <Text color="textSubtle" textAlign="center">
+            {t('No liquidity found.')}
+          </Text>
+        )}
+      </Column>
     )
   }
 

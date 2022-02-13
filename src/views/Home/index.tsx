@@ -17,7 +17,7 @@ import iconREQTransparent from 'assets/REQ_Transparent.png';
 // import Footer from './components/Footer'
 // import REQTDataRow from './components/REQTDataRow'
 import Row from 'components/Row'
-import Column from 'components/Column'
+import Column, { AutoColumn } from 'components/Column'
 
 const Home: React.FC = () => {
   const { theme } = useTheme()
@@ -25,7 +25,7 @@ const Home: React.FC = () => {
 
   const HomeSectionContainerStyles = { padding: '5px', width: '100%', maxWidth: '2000px' }
 
-  const intro = 'Requiem is a decentralized platform that will give traders easy access to the most powerful tools in DeFi. At its core, it is a decentralized exchange with a stable swap built-in -ensuring traders get access to the best pricing. We already have a beta of our DEX  deployed on the AVAX testnet on requiem.finance. However, this is just the beginning. The following features are on our immediate release roadmap:'
+  const intro = 'Requiem Finance is a decentralized platform that will give traders easy access to the most powerful tools in DeFi. At its core, it is a decentralized exchange with a stable swap built-in -ensuring traders get access to the best pricing. We already have a beta of our DEX  deployed on the AVAX testnet on requiem.finance. However, this is just the beginning. The following features are on our immediate release roadmap:'
   const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading', 'Farm Swap', 'Yield swap']
   const steps = [
     'Regular product based swap structure is implemented',
@@ -71,15 +71,32 @@ const Home: React.FC = () => {
           >
             <Row align="space-between" style={{ marginBottom: 20, justifyContent: 'center', ...iconStyle }}>
 
-              <Text marginTop='50px' marginRight='10px' {...titleFont}>Requiem</Text>
+              {!isMobile ? (
+                <>
+                  <Text marginTop='50px' marginRight='10px' {...titleFont}>Requiem</Text>
 
-              <Image
-                src={iconREQTransparent}
-                width={991 / 4}
-                height={927 / 4}
-                alt="REQT"
-              />
-              <Text marginTop='50px' marginLeft='10px' {...titleFont}>Finance</Text>
+                  <Image
+                    src={iconREQTransparent}
+                    width={991 / 4}
+                    height={927 / 4}
+                    alt="REQT"
+                  />
+                  <Text marginTop='50px' marginLeft='10px' {...titleFont}>Finance</Text>
+                </>)
+                :
+                (
+                  <>
+                  <Image
+                    src={iconREQTransparent}
+                    width={991 / 4}
+                    height={927 / 4}
+                    alt="REQT"
+                  />
+
+                  <Text marginTop='50px' marginLeft='10px' fontSize='30px' bold>Requiem Finance</Text>
+                  </>
+                )
+              }
             </Row>
           </div>
           <Text fontSize="24px" color='white'>

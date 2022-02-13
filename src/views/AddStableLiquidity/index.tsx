@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   TokenAmount,
   STABLE_POOL_ADDRESS,
@@ -7,6 +7,7 @@ import {
 import {
   Button,
   CardBody,
+  useMatchBreakpoints,
 } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps, Link } from 'react-router-dom'
@@ -24,7 +25,7 @@ import { StablesField } from 'state/mintStables/actions'
 import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { useGasPrice, useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
+import { getStableAmounts, useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
@@ -72,13 +73,25 @@ export default function AddStableLiquidity({
   const [stablePoolState, stablePool] = useStablePool(chainId)
 
   const {
+    balances: allBalances,
+    isLoadingTokens,
+  } = useUserBalances()
+
+
+  const stableAmounts = useMemo(() =>
+    getStableAmounts(chainId, allBalances),
+    [chainId, allBalances]
+  )
+
+
+  const {
     stableCurrencies,
     stablesCurrencyBalances,
     parsedStablesAmounts,
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
     stablesError,
-  } = useDerivedMintStablesInfo(stablePool, stablePoolState, account)
+  } = useDerivedMintStablesInfo(stablePool, stablePoolState, stableAmounts, account)
 
   const formattedStablesAmounts = {
     [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],
@@ -92,25 +105,33 @@ export default function AddStableLiquidity({
   const [approval1, approve1Callback] = useApproveCallback(
     chainId,
     account,
-    formattedStablesAmounts[StablesField.CURRENCY_1],
+    formattedStablesAmounts[StablesField.CURRENCY_1].greaterThan('0') ?
+      formattedStablesAmounts[StablesField.CURRENCY_1] :
+      new TokenAmount(formattedStablesAmounts[StablesField.CURRENCY_1].token, '1'),
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval2, approve2Callback] = useApproveCallback(
     chainId,
     account,
-    formattedStablesAmounts[StablesField.CURRENCY_2],
+    formattedStablesAmounts[StablesField.CURRENCY_2].greaterThan('0') ?
+      formattedStablesAmounts[StablesField.CURRENCY_2] :
+      new TokenAmount(formattedStablesAmounts[StablesField.CURRENCY_2].token, '1'),
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval3, approve3Callback] = useApproveCallback(
     chainId,
     account,
-    formattedStablesAmounts[StablesField.CURRENCY_3],
+    formattedStablesAmounts[StablesField.CURRENCY_3].greaterThan('0') ?
+      formattedStablesAmounts[StablesField.CURRENCY_3] :
+      new TokenAmount(formattedStablesAmounts[StablesField.CURRENCY_3].token, '1'),
     STABLE_POOL_ADDRESS[chainId],
   )
   const [approval4, approve4Callback] = useApproveCallback(
     chainId,
     account,
-    formattedStablesAmounts[StablesField.CURRENCY_4],
+    formattedStablesAmounts[StablesField.CURRENCY_4].greaterThan('0') ?
+      formattedStablesAmounts[StablesField.CURRENCY_4] :
+      new TokenAmount(formattedStablesAmounts[StablesField.CURRENCY_4].token, '1'),
     STABLE_POOL_ADDRESS[chainId],
   )
 
@@ -139,6 +160,7 @@ export default function AddStableLiquidity({
     }
   }, {})
 
+  const { isMobile } = useMatchBreakpoints()
 
   const balances: { [address: string]: TokenAmount } = [
     StablesField.CURRENCY_1,
@@ -163,6 +185,7 @@ export default function AddStableLiquidity({
       || !parsedStablesAmounts[StablesField.CURRENCY_3].toBigNumber().eq(0)
       || !parsedStablesAmounts[StablesField.CURRENCY_4].toBigNumber().eq(0)
     )
+
   async function onStablesAdd() {
     if (!chainId || !library || !account) return
     const stableRouter = getStableRouterContract(chainId, library, account)
@@ -178,11 +201,6 @@ export default function AddStableLiquidity({
     }
 
     const amountMin = calculateSlippageAmount(stablesLiquidityMinted, allowedSlippage)[0]
-
-    // let estimate
-    // let method: (...args: any) => Promise<TransactionResponse>
-    // let args: Array<string | string[] | number>
-    // let value: BigNumber | null
 
     const estimate = stableRouter.estimateGas.addLiquidity
     const method = stableRouter.addLiquidity
@@ -233,7 +251,6 @@ export default function AddStableLiquidity({
   return (
     <Page>
       <Row width='200px' height='50px'>
-        {/* <ButtonMenu activeIndex={liquidityState} onItemClick={handleClick} scale="sm" ml="24px"> */}
         <Button
           as={Link}
           to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
@@ -252,7 +269,6 @@ export default function AddStableLiquidity({
         >
           Stables
         </Button>
-        {/* </ButtonMenu> */}
       </Row>
       <AppBody>
         <AppHeader
@@ -264,16 +280,16 @@ export default function AddStableLiquidity({
           helper={t(
             'Liquidity providers earn a 0.01% trading fee on all trades made through the pool, proportional to their share of the liquidity pool.',
           )}
-          backTo="/pool"
+          backTo={`/${getChain(chainId)}/liquidity`}
         />
         <CardBody>
 
           <AutoColumn gap="5px">
-            <Row>
+            <Row align='center'>
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval1 !== ApprovalState.APPROVED ? '300px' : '100%'}
+                width={account && approval1 !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue1}
                 onUserInput={onField1Input}
                 onMax={() => {
@@ -306,7 +322,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval2 !== ApprovalState.APPROVED ? '300px' : '100%'}
+                width={account && approval2 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue2}
                 onUserInput={onField2Input}
                 onMax={() => {
@@ -335,7 +351,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval3 !== ApprovalState.APPROVED ? '300px' : '100%'}
+                width={account && approval3 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue3}
                 onUserInput={onField3Input}
                 onMax={() => {
@@ -364,7 +380,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval4 !== ApprovalState.APPROVED ? '300px' : '100%'}
+                width={account && approval4 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue4}
                 onUserInput={onField4Input}
                 onMax={() => {
@@ -410,13 +426,8 @@ export default function AddStableLiquidity({
                   approval4 === ApprovalState.NOT_APPROVED ||
                   approval4 === ApprovalState.PENDING) ? (<RowBetween>Approvals still pending...</RowBetween>) :
                   (<Button
-                    variant={
-                      // !!parsedStablesAmounts[StablesField.CURRENCY_1] && !!parsedStablesAmounts[StablesField.CURRENCY_2]
-                      //   && !!parsedStablesAmounts[StablesField.CURRENCY_3] && !!parsedStablesAmounts[StablesField.CURRENCY_4]
-                      //   ? 'danger'
-                      //   : 
-                      'primary'
-                    }
+                    variant='primary'
+
                     onClick={() => {
                       onStablesAdd()
                     }}

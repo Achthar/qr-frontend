@@ -29,7 +29,7 @@ const StyledPage = styled(Container)`
 const PageMeta = () => {
   const { t } = useTranslation()
   const { pathname } = useLocation()
-  const reqtPriceUsd = BigNumber.from("321")
+  const reqtPriceUsd = BigNumber.from("4")
   const reqtPriceUsdDisplay = reqtPriceUsd.gt(0)
     ? `$${reqtPriceUsd.toNumber().toLocaleString(undefined, {
         minimumFractionDigits: 3,

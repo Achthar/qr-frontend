@@ -27,12 +27,11 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
-  
+
   const { callWithGasPrice } = useCallWithGasPrice()
   const token = amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined
   const currentAllowance = useTokenAllowance(chainId, token, account ?? undefined, spender)
   const pendingApproval = useHasPendingApproval(token?.address, spender)
-
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN

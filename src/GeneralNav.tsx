@@ -32,13 +32,13 @@ import iconREQTransparent from './assets/REQ_Transparent.png';
 
 export const ExternalLinks = {
   twitter: 'https://twitter.com/xz',
-  documentations: 'https://docs.xz',
+  documentations: 'https://docs.requiem.finance',
   codes: 'https://github.com/Achthar',
   discord: 'https://discord.gg/HuekxzYj3p',
   medium: 'https://medium.com/@x',
   telegram: 'https://t.me/+Lbc1zHODTQw3YWM6',
   buyShareHref:
-    'xD',
+    'https://requiem.finance/avax-test/exchange',
 };
 
 interface LogoProps {
@@ -126,8 +126,12 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
   );
 };
 
-const MenuBar: React.FC = () => {
-  const { chainId } = useNetworkState()
+interface MenuBarProps {
+  chainId?: number
+  onClick?: () => void;
+}
+
+const MenuBar: React.FC<MenuBarProps> = ({ chainId, onClick }) => {
   return (
     <div style={{
       marginBottom: '64px',
@@ -136,7 +140,7 @@ const MenuBar: React.FC = () => {
         {/* <StyledLogoContainer>
           <Logo />
         </StyledLogoContainer> */}
-        <NavContainer chainId={chainId} />
+        <NavContainer chainId={chainId} onClickItem={onClick} />
         {/* <StyledAudit
           href="https://docs.iron.finance/audits"
           target="_blank"
@@ -517,6 +521,7 @@ const GeneralNav: React.FC = () => {
   const isConnected = Boolean(account)
 
   const current = menuItems[activeIndex]
+  console.log("CURRENT", current, activeIndex, location.pathname)
   const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getMenuIcon('Liquidity') : current?.icon
   const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
   const activatorRef = React.useRef<HTMLButtonElement | null>(null);
@@ -550,7 +555,7 @@ const GeneralNav: React.FC = () => {
             alignItems: 'center'
           }}
         >
-          <MenuBar />
+          <MenuBar chainId={chainId} onClick={handleClick}/>
         </div>
       )}
 

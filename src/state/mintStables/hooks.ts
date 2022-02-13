@@ -84,6 +84,7 @@ export function useMintStablesActionHandlers(): {
 export function useDerivedMintStablesInfo(
   stablePool: StablePool,
   stablePoolState: StablePoolState,
+  stableCcyAmounts: TokenAmount[],
   account?: string
 ): {
   stableCurrencies: { [field in StablesField]?: Currency }
@@ -114,28 +115,15 @@ export function useDerivedMintStablesInfo(
 
   const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
-  // balances
-  const balances = useTokenBalances(account ?? undefined, [
-    stableCurrencies[StablesField.CURRENCY_1],
-    stableCurrencies[StablesField.CURRENCY_2],
-    stableCurrencies[StablesField.CURRENCY_3],
-    stableCurrencies[StablesField.CURRENCY_4],
-  ])
-
-  const fieldList = [
-    StablesField.CURRENCY_1,
-    StablesField.CURRENCY_2,
-    StablesField.CURRENCY_3,
-    StablesField.CURRENCY_4,
-  ]
-
 
   const stablesCurrencyBalances: { [field in StablesField]?: TokenAmount } = {
-    [StablesField.CURRENCY_1]: balances[stableCurrencies[StablesField.CURRENCY_1].address],
-    [StablesField.CURRENCY_2]: balances[stableCurrencies[StablesField.CURRENCY_2].address],
-    [StablesField.CURRENCY_3]: balances[stableCurrencies[StablesField.CURRENCY_3].address],
-    [StablesField.CURRENCY_4]: balances[stableCurrencies[StablesField.CURRENCY_4].address]
+    [StablesField.CURRENCY_1]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_1].address)[0],
+    [StablesField.CURRENCY_2]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_2].address)[0],
+    [StablesField.CURRENCY_3]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_3].address)[0],
+    [StablesField.CURRENCY_4]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_4].address)[0],
   }
+
+
 
   const parsedStablesAmount1: TokenAmount | undefined = wrappedCurrencyAmount(
     tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, STABLES_INDEX_MAP[chainId][0]),
