@@ -14,14 +14,12 @@ import Column from 'components/Column'
 import { fetchStablePoolserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
-import { simpleRpcProvider } from 'utils/providers'
 import useRefresh from 'hooks/useRefresh'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
 import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
 import { WeightedPairState, useWeightedPairsDataLite, useGetWeightedPairs } from '../../hooks/useWeightedPairs'
-import { useStablePool } from '../../hooks/useStablePool'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
@@ -116,10 +114,10 @@ export default function PoolList({
 
   const dispatch = useAppDispatch()
 
-  const { pools, publicDataLoaded: dataLoaded, userDataLoaded } = useStablePools()
+  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
   useEffect(
     () => {
-      if (!dataLoaded) {
+      if (!publicDataLoaded) {
         Object.values(pools).map(
           (pool) => {
             dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
@@ -136,11 +134,11 @@ export default function PoolList({
       slowRefresh,
       pools,
       library,
-      dataLoaded
+      publicDataLoaded
     ])
 
   useEffect(() => {
-    if (account && !userDataLoaded && dataLoaded) {
+    if (account && !userDataLoaded && publicDataLoaded) {
       dispatch(fetchStablePoolserDataAsync({ chainId, account, pools }))
     }
   },
@@ -149,7 +147,7 @@ export default function PoolList({
       chainId,
       pools,
       userDataLoaded,
-      dataLoaded,
+      publicDataLoaded,
       slowRefresh,
       dispatch
     ]
@@ -157,7 +155,7 @@ export default function PoolList({
 
 
   const deserializedPools = useDeserializedStablePools()
-  const stablePool = deserializedPools[0]
+  const stablePoolReceived = deserializedPools[0]
 
 
 
@@ -213,10 +211,10 @@ export default function PoolList({
     }
     return (
       <Column>
-        {stablePoolBalance?.toBigNumber().gt(0) && stablePool != null && (
+        {stablePoolBalance?.toBigNumber().gt(0) && stablePoolReceived != null && (
           <FullStablesPositionCard
             userLpPoolBalance={stablePoolBalance}
-            stablePool={stablePool}
+            stablePool={stablePoolReceived}
             mb='20px'
           />)}
         {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedPairsWithLiquidity.map((v2Pair, index) => (

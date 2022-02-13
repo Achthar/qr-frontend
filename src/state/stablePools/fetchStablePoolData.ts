@@ -59,7 +59,7 @@ export const fetchStablePoolData = createAsyncThunk(
         address: poolAddress,
         name: 'getA',
         params: []
-      }
+      },
     ]
 
     const [multipliers, swapStorage, tokenBalances, A] =
@@ -69,13 +69,13 @@ export const fetchStablePoolData = createAsyncThunk(
     // calls from pair used for pricing
     const callsLp = [
       {
-        address: pool.lpAddress,
+        address: swapStorage.lpAddress ?? pool.lpAddress,
         name: 'totalSupply',
       },
     ]
 
     const [supply] = await multicall(chainId, erc20, callsLp)
-
+    console.log("stablePool TS", supply[0]?.toString())
     return {
       ...pool,
       balances: tokenBalances[0].map(balance => balance.toString()),

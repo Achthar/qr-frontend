@@ -276,13 +276,13 @@ export const TUSD: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
     '0xccf7ed44c5a0f3cb5c9a9b9f765f8d836fb93ba1',
-    6,
+    18,
     'TUSD',
     'True USD',
   ), [ChainId.QUARKCHAIN_DEV_S0]: new Token(
     ChainId.QUARKCHAIN_DEV_S0,
     '0xD71C821a373E16D607277DB6C1356c1209C7d866',
-    6,
+    18,
     'TUSD',
     'True USD',
   ),
@@ -291,8 +291,8 @@ export const TUSD: { [chainId: number]: Token } = {
 export const STABLES = {
   [ChainId.AVAX_TESTNET]:
     [
-      USDT[ChainId.AVAX_TESTNET],
       USDC[ChainId.AVAX_TESTNET],
+      USDT[ChainId.AVAX_TESTNET],
       DAI[ChainId.AVAX_TESTNET],
       TUSD[ChainId.AVAX_TESTNET]
     ],

@@ -1,3 +1,4 @@
+import { STABLECOINS } from '@requiemswap/sdk'
 import { BigNumber } from 'ethers'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { STABLES } from './tokens'
@@ -16,16 +17,16 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
                 serializeToken(STABLES[43113][3])
             ],
             balances: ['1', '1', '1', '1'],
-            lpAddress: '0xDf65aC8079A71f5174A35dE3D29e5458d03D5787',
-            lpToken:{
-                chainId:43113,
-                decimals:18,
-                address: '0xDf65aC8079A71f5174A35dE3D29e5458d03D5787',
+            lpAddress: '0x3372DE341A07418765Ae12f77aEe9029EaA4442A',
+            lpToken: {
+                chainId: 43113,
+                decimals: 18,
+                address: '0x3372DE341A07418765Ae12f77aEe9029EaA4442A',
                 symbol: 'req4USD'
             },
             swapStorage: {
-                tokenMultipliers:['1000000000000', '1000000000000', '1', '1'],
-                lpToken: '0xDf65aC8079A71f5174A35dE3D29e5458d03D5787',
+                tokenMultipliers: ['1000000000000', '1000000000000', '1', '1'],
+                lpToken: '0x3372DE341A07418765Ae12f77aEe9029EaA4442A',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
                 initialA: BigNumber.from('0xea60').toString(),
