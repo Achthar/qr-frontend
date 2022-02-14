@@ -9,6 +9,11 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import { useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
+import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
+import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
+import { fetchStablePoolUserDataAsync } from 'state/stablePools'
+import { useAppDispatch } from 'state'
+import useRefresh from 'hooks/useRefresh'
 import useParsedQueryString from 'hooks/useParsedQueryString'
 import { useTranslation } from 'contexts/Localization'
 import { isAddress } from 'utils'
@@ -18,7 +23,6 @@ import { useCurrencyBalances } from '../wallet/hooks'
 import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
 import { SwapV3State } from './reducer'
 import { useUserSlippageTolerance } from '../user/hooks'
-
 
 export function useSwapV3State(): AppState['swapV3'] {
   return useSelector<AppState, AppState['swapV3']>((state) => state.swapV3)
@@ -125,7 +129,56 @@ export function useDerivedSwapV3Info(chainId: number, account:string): {
     recipient,
   } = useSwapV3State()
 
-  const [stablePoolState, stablePool] = useStablePool(chainId)
+  // we always will load stable pools as these are most commonly routed through
+ // call pool from state
+ const { slowRefresh } = useRefresh()
+
+ const dispatch = useAppDispatch()
+
+ const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
+ useEffect(
+   () => {
+     if (!publicDataLoaded) {
+       Object.values(pools).map(
+         (pool) => {
+           dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+
+           return 0
+         }
+       )
+     }
+
+   },
+   [
+     chainId,
+     dispatch,
+     slowRefresh,
+     pools,
+     publicDataLoaded
+   ])
+
+ useEffect(() => {
+   if (account && !userDataLoaded && publicDataLoaded) {
+     dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
+   }
+ },
+   [
+     account,
+     chainId,
+     pools,
+     userDataLoaded,
+     publicDataLoaded,
+     slowRefresh,
+     dispatch
+   ]
+ )
+
+
+ const deserializedPools = useDeserializedStablePools()
+ const stablePool = deserializedPools[0]
+
+
+
 
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
@@ -142,8 +195,8 @@ export function useDerivedSwapV3Info(chainId: number, account:string): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  const bestTradeExactIn = useTradeV3ExactIn(stablePoolState, stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeV3ExactOut(stablePoolState, stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
+  const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
 
   const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut

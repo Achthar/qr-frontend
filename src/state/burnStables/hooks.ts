@@ -25,7 +25,7 @@ export function useDerivedBurnStablesInfo(
     [tokenAddress: string]: TokenAmount;
   },
   stablePool: StablePool,
-  stablePoolState: StablePoolState,
+  publicDataLoaded: boolean,
   account?: string,
 ): {
   parsedAmounts: {
@@ -59,7 +59,7 @@ export function useDerivedBurnStablesInfo(
   } = useBurnStableState()
 
   const lpToken = new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')
-  
+
   // lp balance
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[getAddress(STABLE_POOL_LP_ADDRESS[chainId ?? 43113]) ?? '']
 
@@ -74,7 +74,7 @@ export function useDerivedBurnStablesInfo(
     [StablesField.LIQUIDITY]: lpToken,
   }
   // liquidity values
-  const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply
+  const totalSupply = !publicDataLoaded ? BigNumber.from(0) : stablePool.lpTotalSupply
 
   // default values are set here
   let percentToRemove: Percent = new Percent('0', '100')

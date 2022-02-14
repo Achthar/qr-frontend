@@ -83,7 +83,6 @@ export function useMintStablesActionHandlers(): {
 
 export function useDerivedMintStablesInfo(
   stablePool: StablePool,
-  stablePoolState: StablePoolState,
   stableCcyAmounts: TokenAmount[],
   account?: string
 ): {

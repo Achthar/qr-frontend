@@ -22,6 +22,11 @@ import Row, { RowBetween } from 'components/Layout/Row'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { StablesField } from 'state/mintStables/actions'
+import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
+import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
+import { fetchStablePoolUserDataAsync } from 'state/stablePools'
+import { useAppDispatch } from 'state'
+import useRefresh from 'hooks/useRefresh'
 import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
@@ -69,8 +74,53 @@ export default function AddStableLiquidity({
   // mint state
   const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
 
-  // we separate loading the stavblepool to avoid rerendering on every input
-  const [stablePoolState, stablePool] = useStablePool(chainId)
+  // we separate loading the stablepool to avoid rerendering on every input
+  const { slowRefresh } = useRefresh()
+
+  const dispatch = useAppDispatch()
+
+  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
+  useEffect(
+    () => {
+      if (!publicDataLoaded) {
+        Object.values(pools).map(
+          (pool) => {
+            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+
+            return 0
+          }
+        )
+      }
+
+    },
+    [
+      chainId,
+      dispatch,
+      slowRefresh,
+      pools,
+      library,
+      publicDataLoaded
+    ])
+
+  useEffect(() => {
+    if (account && !userDataLoaded && publicDataLoaded) {
+      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
+    }
+  },
+    [
+      account,
+      chainId,
+      pools,
+      userDataLoaded,
+      publicDataLoaded,
+      slowRefresh,
+      dispatch
+    ]
+  )
+
+
+  const deserializedPools = useDeserializedStablePools()
+  const stablePool = deserializedPools[0]
 
   const {
     balances: allBalances,
@@ -91,7 +141,7 @@ export default function AddStableLiquidity({
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
     stablesError,
-  } = useDerivedMintStablesInfo(stablePool, stablePoolState, stableAmounts, account)
+  } = useDerivedMintStablesInfo(stablePool, stableAmounts, account)
 
   const formattedStablesAmounts = {
     [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],

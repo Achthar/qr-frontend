@@ -11,7 +11,7 @@ import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import getChain from 'utils/getChain'
 import Column from 'components/Column'
-import { fetchStablePoolserDataAsync } from 'state/stablePools'
+import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import useRefresh from 'hooks/useRefresh'
@@ -139,7 +139,7 @@ export default function PoolList({
 
   useEffect(() => {
     if (account && !userDataLoaded && publicDataLoaded) {
-      dispatch(fetchStablePoolserDataAsync({ chainId, account, pools }))
+      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
     }
   },
     [

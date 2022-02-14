@@ -216,7 +216,7 @@ const MAX_HOPS = 4
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
 export function useTradeV3ExactIn(
-  stablePoolState: StablePoolState,
+  publicDataLoaded: boolean,
   stablePool: StablePool,
   currencyAmountIn?: CurrencyAmount,
   currencyOut?: Currency
@@ -226,7 +226,7 @@ export function useTradeV3ExactIn(
   const regularPairs = useAllCommonWeightedPairs(currencyAmountIn?.currency, currencyOut) as Pool[]
   return useMemo(() => {
     let allowedPairs = regularPairs
-    if (stablePoolState !== StablePoolState.EXISTS)
+    if (!publicDataLoaded)
       return null
 
     if (stablePool && stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
@@ -262,14 +262,14 @@ export function useTradeV3ExactIn(
     }
 
     return null
-  }, [regularPairs, currencyAmountIn, currencyOut, singleHopOnly, stablePool, stablePoolState])
+  }, [regularPairs, currencyAmountIn, currencyOut, singleHopOnly, stablePool, publicDataLoaded])
 }
 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
 export function useTradeV3ExactOut(
-  stablePoolState: StablePoolState,
+  publicDataLoaded: boolean,
   stablePool: StablePool,
   currencyIn?: Currency,
   currencyAmountOut?: CurrencyAmount
@@ -279,7 +279,7 @@ export function useTradeV3ExactOut(
   const regularPairs = useAllCommonWeightedPairs(currencyIn, currencyAmountOut?.currency) as Pool[]
   return useMemo(() => {
     let allowedPairs = regularPairs
-    if (stablePoolState !== StablePoolState.EXISTS)
+    if (!publicDataLoaded)
       return null
 
     if (stablePool && stablePool !== null) { allowedPairs = allowedPairs.concat(StablePairWrapper.wrapPairsFromPool(stablePool)) }
@@ -304,7 +304,7 @@ export function useTradeV3ExactOut(
       return bestTradeSoFar
     }
     return null
-  }, [regularPairs, currencyIn, currencyAmountOut, singleHopOnly, stablePool, stablePoolState])
+  }, [regularPairs, currencyIn, currencyAmountOut, singleHopOnly, stablePool, publicDataLoaded])
 }
 
 export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {

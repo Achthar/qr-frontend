@@ -40,7 +40,7 @@ interface PoolUserDataResponse {
 
 
 
-export const fetchStablePoolserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: StablePoolConfig[] }>(
+export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: StablePoolConfig[] }>(
   'stablePools/fetchStablePoolsUserDataAsync',
   async ({ chainId, account, pools }) => {
 
@@ -87,7 +87,7 @@ export const stablePoolSlice = createSlice({
         console.error(error.message);
       })
       // Update pools with user data
-      .addCase(fetchStablePoolserDataAsync.fulfilled, (state, action) => {
+      .addCase(fetchStablePoolUserDataAsync.fulfilled, (state, action) => {
         action.payload.forEach((userDataEl) => {
           state.pools[userDataEl.index] = { ...state.pools[userDataEl.index], userData: userDataEl }
         })

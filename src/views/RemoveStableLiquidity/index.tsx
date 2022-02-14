@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 import {
@@ -30,6 +30,11 @@ import {
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router-dom'
+import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
+import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
+import { fetchStablePoolUserDataAsync } from 'state/stablePools'
+import { useAppDispatch } from 'state'
+import useRefresh from 'hooks/useRefresh'
 import getChain from 'utils/getChain'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
 import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
@@ -62,7 +67,7 @@ import {
 } from '../../state/burnStables/hooks'
 
 import { StablesField } from '../../state/burnStables/actions'
-import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
+import { getStableAmounts, useGasPrice, useUserBalances, useUserSlippageTolerance } from '../../state/user/hooks'
 
 // const function getStableIndex(token)
 
@@ -104,29 +109,87 @@ export default function RemoveStableLiquidity({
     // typedValueSingle,
   } = useBurnStableState()
 
-  const [stablePoolState, stablePool] = useStablePool(chainId)
+  // call pool from state
+  const { slowRefresh } = useRefresh()
 
-  const [
-    relevantTokenBalances,
-    // fetchingUserPoolBalance
-  ] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
+  const dispatch = useAppDispatch()
+
+  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
+  useEffect(
+    () => {
+      if (!publicDataLoaded) {
+        Object.values(pools).map(
+          (pool) => {
+            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+
+            return 0
+          }
+        )
+      }
+
+    },
     [
-      STABLE_POOL_LP[chainId],
-      STABLES_INDEX_MAP[chainId][0],
-      STABLES_INDEX_MAP[chainId][1],
-      STABLES_INDEX_MAP[chainId][2],
-      STABLES_INDEX_MAP[chainId][3]
-    ],
+      chainId,
+      dispatch,
+      slowRefresh,
+      pools,
+      library,
+      publicDataLoaded
+    ])
+
+  useEffect(() => {
+    if (account && !userDataLoaded && publicDataLoaded) {
+      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
+    }
+  },
+    [
+      account,
+      chainId,
+      pools,
+      userDataLoaded,
+      publicDataLoaded,
+      slowRefresh,
+      dispatch
+    ]
+  )
+
+
+  const deserializedPools = useDeserializedStablePools()
+  const stablePool = deserializedPools[0]
+
+  const {
+    balances: allBalances,
+    isLoadingTokens,
+  } = useUserBalances()
+
+
+  const stableAmounts = useMemo(() =>
+    getStableAmounts(chainId, allBalances),
+    [chainId, allBalances]
+  )
+
+  // all balances are loaded from state
+  const relevantTokenBalances = useMemo(() => {
+    return {
+      [STABLE_POOL_LP[chainId].address]: new TokenAmount(STABLE_POOL_LP[chainId], pools[0]?.userData?.lpBalance ?? '0'),
+      [STABLES_INDEX_MAP[chainId][0].address]: stableAmounts[0],
+      [STABLES_INDEX_MAP[chainId][1].address]: stableAmounts[1],
+      [STABLES_INDEX_MAP[chainId][2].address]: stableAmounts[2],
+      [STABLES_INDEX_MAP[chainId][3].address]: stableAmounts[3]
+    }
+  },
+    [
+      stableAmounts,
+      chainId,
+      pools
+    ]
   )
 
   const {
     parsedAmounts,
     error,
-    // calculatedValuesFormatted,
-    // errorSingle,
     liquidityTradeValues
-  } = useDerivedBurnStablesInfo(chainId, relevantTokenBalances, stablePool, stablePoolState, account)
+  } = useDerivedBurnStablesInfo(chainId, relevantTokenBalances, stablePool, publicDataLoaded, account)
 
   const {
     onLpInput,
@@ -223,7 +286,7 @@ export default function RemoveStableLiquidity({
   ]
 
   const priceMatrix = []
-  if (stablePool !== null)
+  if (publicDataLoaded)
     for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
       priceMatrix.push([])
       for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {

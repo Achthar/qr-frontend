@@ -35,26 +35,27 @@ export const fetchStablePoolData = createAsyncThunk(
 
     const poolAddress = getAddress(pool.address)
 
-    // // cals for general bond data
+    // // cals for general pool data
     const calls = [
+      // token multipliers
       {
         address: poolAddress,
         name: 'getTokenPrecisionMultipliers',
         params: []
       },
-      // max payout
+      // mswap storage
       {
         address: poolAddress,
         name: 'swapStorage',
         params: []
       },
-      // debt ratio
+      // token balances
       {
         address: poolAddress,
         name: 'getTokenBalances',
         params: []
       },
-      // debt ratio
+      // amplification parameter
       {
         address: poolAddress,
         name: 'getA',
@@ -68,6 +69,7 @@ export const fetchStablePoolData = createAsyncThunk(
 
     // calls from pair used for pricing
     const callsLp = [
+      // total supply of LP token
       {
         address: swapStorage.lpAddress ?? pool.lpAddress,
         name: 'totalSupply',
@@ -75,7 +77,7 @@ export const fetchStablePoolData = createAsyncThunk(
     ]
 
     const [supply] = await multicall(chainId, erc20, callsLp)
-    
+
     return {
       ...pool,
       balances: tokenBalances[0].map(balance => balance.toString()),

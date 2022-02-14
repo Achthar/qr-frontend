@@ -108,7 +108,6 @@ const BondingModal: React.FC<BondingModalProps> = (
     bond
   ])
 
-  console.log("Inp", new BigNumber(val).multipliedBy('1000000000000000000').toString(), "PAYOUT", payout.toString())
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
