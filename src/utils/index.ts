@@ -10,7 +10,7 @@ import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
-import { JSBI, Percent, Token, CurrencyAmount, Currency,  NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
+import { JSBI, Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -99,13 +99,13 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
 
 // account is optional
 export function getRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = IRequiemRouter02AVAX 
+  const ABI = IRequiemRouter02AVAX
   return getContract(ROUTER_ADDRESS[chainId], ABI, library, account)
 }
 
 // account is optional
 export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = RequiemQPairManager 
+  const ABI = RequiemQPairManager
   return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
 }
 
@@ -131,6 +131,8 @@ export function escapeRegExp(string: string): string {
 }
 
 export function isTokenOnList(chainId: number, defaultTokens: TokenAddressMap, currency?: Currency): boolean {
-  if (currency === NETWORK_CCY[chainId]) return true
+  if (currency === NETWORK_CCY[chainId]) {
+    return true
+  }
   return Boolean(currency instanceof Token && defaultTokens[currency.chainId]?.[currency.address])
 }

@@ -81,10 +81,10 @@ export const REQT: { [chainId: number]: Token } = {
   ), // not deployed yet, but dummy needed
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b',
+    '0xB6bcC8b771ef17b50e6B7Cc53F18dB81498691DB',
     18,
-    'WETH',
-    'Wrapped ETH',
+    'REQT',
+    'Requiem Token',
   ),
   [ChainId.QUARKCHAIN_DEV_S0]: new Token(
     ChainId.QUARKCHAIN_DEV_S0,
@@ -180,6 +180,13 @@ export const DAI: { [chainId: number]: Token } = {
     'DAI',
     'Dai Stablecoin',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0xf10Bd0dA1f0e69c3334D7F8116C9082746EBC1B4',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
 }
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
@@ -189,6 +196,7 @@ export const USDT: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e', 6, 'USDT', 'Tether USD'),
   [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 6, 'USDT', 'Tether USD'),
   [ChainId.QUARKCHAIN_DEV_S0]: new Token(ChainId.QUARKCHAIN_DEV_S0, '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7', 6, 'USDT', 'Tether USD'),
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, '0xfA0D8065755Fb3b6520149e86Ac5A3Dc3ee5Dc92', 6, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 
@@ -270,6 +278,13 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0x9aEeeD65aE87e3b28793aefAeED59c3f10ef956b',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
 
 }
 export const TUSD: { [chainId: number]: Token } = {
@@ -285,6 +300,12 @@ export const TUSD: { [chainId: number]: Token } = {
     18,
     'TUSD',
     'True USD',
+  ), [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0x4e8848da06E40E866b82f6b52417494936c9509b',
+    18,
+    'TUSD',
+    'True USD',
   ),
 }
 
@@ -296,7 +317,13 @@ export const STABLES = {
       DAI[ChainId.AVAX_TESTNET],
       TUSD[ChainId.AVAX_TESTNET]
     ],
-
+    [ChainId.OASIS_TESTNET]:
+    [
+      USDC[ChainId.OASIS_TESTNET],
+      USDT[ChainId.OASIS_TESTNET],
+      DAI[ChainId.OASIS_TESTNET],
+      TUSD[ChainId.OASIS_TESTNET]
+    ],
 }
 
 export const STABLES_DICT = {
@@ -305,6 +332,13 @@ export const STABLES_DICT = {
     [USDC[ChainId.AVAX_TESTNET].address]: USDC[ChainId.AVAX_TESTNET],
     [DAI[ChainId.AVAX_TESTNET].address]: DAI[ChainId.AVAX_TESTNET],
     [TUSD[ChainId.AVAX_TESTNET].address]: TUSD[ChainId.AVAX_TESTNET]
+
+  },
+  [ChainId.OASIS_TESTNET]: {
+    [USDT[ChainId.OASIS_TESTNET].address]: USDT[ChainId.OASIS_TESTNET],
+    [USDC[ChainId.OASIS_TESTNET].address]: USDC[ChainId.OASIS_TESTNET],
+    [DAI[ChainId.OASIS_TESTNET].address]: DAI[ChainId.OASIS_TESTNET],
+    [TUSD[ChainId.OASIS_TESTNET].address]: TUSD[ChainId.OASIS_TESTNET]
 
   }
 }

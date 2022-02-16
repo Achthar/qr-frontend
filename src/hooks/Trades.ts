@@ -160,10 +160,8 @@ export function useTradeExactOut(currencyIn?: Currency, currencyAmountOut?: Curr
   }, [currencyIn, currencyAmountOut, allowedPairs, singleHopOnly])
 }
 
-export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {
-  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
-  const { chainId } = useNetworkState()
-
+export function useIsTransactionUnsupported(chainId:number, currencyIn?: Currency, currencyOut?: Currency): boolean {
+  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens(chainId)
   const tokenIn = wrappedCurrency(currencyIn, chainId)
   const tokenOut = wrappedCurrency(currencyOut, chainId)
 

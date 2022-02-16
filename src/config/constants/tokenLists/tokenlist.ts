@@ -385,12 +385,12 @@ export const tokenList = {
                 "address": "0xfb40cd35C0cF322fA3cfB8D67b533Bd9ad7df056",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ROSE.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/wROSE.png"
             },
             {
                 "name": "Requiem Token",
                 "symbol": "REQT",
-                "address": "0x00c9ac8d414Ea3C7466F27431133dD989d8f20Df",
+                "address": "0xB6bcC8b771ef17b50e6B7Cc53F18dB81498691DB",
                 "chainId": 42261,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"

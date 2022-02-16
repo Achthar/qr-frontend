@@ -33,7 +33,7 @@ const UnsupportedModal: React.FC<Props> = ({ chainId, currencies, onDismiss }) =
       })
       : []
 
-  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
+  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens(chainId)
 
   return (
     <Modal title="Unsupported Assets" maxWidth="420px" onDismiss={onDismiss}>

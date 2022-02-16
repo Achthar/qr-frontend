@@ -13,6 +13,7 @@ import getChain from 'utils/getChain'
 import Column from 'components/Column'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
+import { changeChainId } from 'state/stablePools/actions'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import useRefresh from 'hooks/useRefresh'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
@@ -115,8 +116,12 @@ export default function PoolList({
   const dispatch = useAppDispatch()
 
   const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
+
   useEffect(
     () => {
+      if (chainId !== pools[0].tokens[0].chainId) {
+        dispatch(changeChainId({ newChainId: chainId }))
+      }
       if (!publicDataLoaded) {
         Object.values(pools).map(
           (pool) => {
@@ -202,7 +207,7 @@ export default function PoolList({
         </Text>
       )
     }
-    if (!pairs || pairs.length === 0) {
+    if ((!pairs || pairs.length === 0) && !publicDataLoaded) {
       return (
         <Text color="textSubtle" textAlign="center">
           <Dots>Finding Pools</Dots>

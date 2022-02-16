@@ -47,6 +47,9 @@ export default function CurrencyLogo({
     if (chainId === 43114 || chainId === 43113) {
       return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
     }
+    if (chainId === 42261 || chainId === 42261) {
+      return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
+    }
     return <BinanceIcon width={size} style={style} />
 
   }

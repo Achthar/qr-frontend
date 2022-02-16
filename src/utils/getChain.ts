@@ -1,11 +1,8 @@
-// import { ChainId } from '@requiemswap/sdk'
-import store from 'state'
-import { GAS_PRICE_GWEI } from 'state/user/hooks/helpers'
-import { ChainId } from '../config/index'
 
 export const CHAIN_DICT = {
   43113: 'avax-test',
   43114: 'avax',
+  42261: 'oasis-test'
 }
 /**
  * Function to return chain outwith a react component

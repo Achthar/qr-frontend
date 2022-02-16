@@ -63,6 +63,7 @@ export interface Address {
   137?: string
   80001?: string
   43114?: string
+  42261?: string
   43113?: string
   110001?: string
 }

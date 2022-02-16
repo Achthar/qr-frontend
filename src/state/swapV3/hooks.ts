@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount,  JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -112,7 +112,7 @@ function involvesAddress(trade: TradeV4, checksummedAddress: string): boolean {
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapV3Info(chainId: number, account:string): {
+export function useDerivedSwapV3Info(chainId: number, account: string): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
@@ -130,56 +130,54 @@ export function useDerivedSwapV3Info(chainId: number, account:string): {
   } = useSwapV3State()
 
   // we always will load stable pools as these are most commonly routed through
- // call pool from state
- const { slowRefresh } = useRefresh()
+  // call pool from state
+  const { slowRefresh } = useRefresh()
 
- const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch()
 
- const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
- useEffect(
-   () => {
-     if (!publicDataLoaded) {
-       Object.values(pools).map(
-         (pool) => {
-           dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
 
-           return 0
-         }
-       )
-     }
+  useEffect(
+    () => {
+      if (!publicDataLoaded) {
+        Object.values(pools).map(
+          (pool) => {
+            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
 
-   },
-   [
-     chainId,
-     dispatch,
-     slowRefresh,
-     pools,
-     publicDataLoaded
-   ])
+            return 0
+          }
+        )
+      }
 
- useEffect(() => {
-   if (account && !userDataLoaded && publicDataLoaded) {
-     dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
-   }
- },
-   [
-     account,
-     chainId,
-     pools,
-     userDataLoaded,
-     publicDataLoaded,
-     slowRefresh,
-     dispatch
-   ]
- )
+    },
+    [
+      chainId,
+      dispatch,
+      slowRefresh,
+      pools,
+      publicDataLoaded
+    ])
 
-
- const deserializedPools = useDeserializedStablePools()
- const stablePool = deserializedPools[0]
+  useEffect(() => {
+    if (account && !userDataLoaded && publicDataLoaded) {
+      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
+    }
+  },
+    [
+      account,
+      chainId,
+      pools,
+      userDataLoaded,
+      publicDataLoaded,
+      slowRefresh,
+      dispatch
+    ]
+  )
 
 
-
-
+  const deserializedPools = useDeserializedStablePools()
+  const stablePool = deserializedPools[0]
+  console.log("INPS", inputCurrencyId, outputCurrencyId)
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
 
@@ -317,10 +315,9 @@ export function queryParametersToSwapV3State(chainId: number, parsedQs: ParsedQs
 }
 
 // updates the swap state to use the defaults for a given network
-export function useDefaultsFromURLSearch():
+export function useDefaultsFromURLSearch(chainId: number):
   | { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined }
   | undefined {
-  const { chainId } = useNetworkState()
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()
   const [result, setResult] = useState<

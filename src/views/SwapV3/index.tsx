@@ -8,6 +8,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import SwapWarningTokens from 'config/constants/swapWarningTokens'
 import { getAddress } from 'utils/addressHelpers'
+import getChain from 'utils/getChain'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
 import Column, { AutoColumn } from '../../components/Layout/Column'
@@ -49,9 +50,26 @@ const Label = styled(Text)`
   color: ${({ theme }) => theme.colors.secondary};
 `
 
-export default function SwapV3({ history }: RouteComponentProps) {
-  const loadedUrlParams = useDefaultsFromURLSearch()
+export default function SwapV3({
+  history,
+  match: {
+    params: { chain },
+  },
+}: RouteComponentProps<{ chain: string }>) {
+
   const { account, chainId, library } = useActiveWeb3React()
+
+  const loadedUrlParams = useDefaultsFromURLSearch(chainId)
+
+  useEffect(() => {
+    const _chain = chain ?? getChain(chainId)
+    history.push(`/${_chain}/exchange`)
+
+  },
+    [chain, chainId, history],
+  )
+
+
   const { t } = useTranslation()
 
   // token warning stuff
@@ -301,7 +319,7 @@ export default function SwapV3({ history }: RouteComponentProps) {
     [onCurrencySelection],
   )
 
-  const swapIsUnsupported = useIsTransactionUnsupported(currencies?.INPUT, currencies?.OUTPUT)
+  const swapIsUnsupported = useIsTransactionUnsupported(chainId, currencies?.INPUT, currencies?.OUTPUT)
 
   const [onPresentImportTokenWarningModal] = useModal(
     <ImportTokenWarningModal tokens={importTokensNotInDefault} onCancel={() => history.push('/swap/')} />,

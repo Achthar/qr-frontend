@@ -5,6 +5,7 @@ export function currencyId(chainId: number, currency: Currency): string {
     if (chainId === 56 || chainId === 97) { return 'BNB' }
     if (chainId === 137 || chainId === 80001) { return 'MATIC' }
     if (chainId === 43113 || chainId === 43114) { return 'AVAX' }
+    if (chainId === 42261 || chainId === 42261) { return 'ROSE' }
     if (chainId === 110001) { return 'QKC' }
   }
 

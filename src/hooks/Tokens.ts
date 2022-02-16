@@ -3,8 +3,6 @@ import { parseBytes32String } from '@ethersproject/strings'
 import { Currency, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { arrayify } from 'ethers/lib/utils'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import {
   TokenAddressMap,
   useDefaultTokenList,
@@ -21,8 +19,7 @@ import { useBytes32TokenContract, useTokenContract } from './useContract'
 import { filterTokens } from '../components/SearchModal/filtering'
 
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
-function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
-  const { chainId } = useNetworkState()
+function useTokensFromMap(chainId: number, tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
   const userAddedTokens = useUserAddedTokens()
 
   return useMemo(() => {
@@ -56,18 +53,18 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
 
 export function useDefaultTokens(chainId: number): { [address: string]: Token } {
   const defaultList = useDefaultTokenList(chainId)
-  return useTokensFromMap(defaultList, false)
+  return useTokensFromMap(chainId, defaultList, false)
 }
 
 export function useAllTokens(chainId: number): { [address: string]: Token } {
   const allTokens = useCombinedActiveList(chainId)
-  return useTokensFromMap(allTokens, true)
+  return useTokensFromMap(chainId, allTokens, true)
 }
 
 export function useAllInactiveTokens(chainId: number): { [address: string]: Token } {
   // get inactive tokens
   const inactiveTokensMap = useCombinedInactiveList()
-  const inactiveTokens = useTokensFromMap(inactiveTokensMap, false)
+  const inactiveTokens = useTokensFromMap(chainId, inactiveTokensMap, false)
 
   // filter out any token that are on active list
   const activeTokensAddresses = Object.keys(useAllTokens(chainId))
@@ -83,9 +80,9 @@ export function useAllInactiveTokens(chainId: number): { [address: string]: Toke
   return filteredInactive
 }
 
-export function useUnsupportedTokens(): { [address: string]: Token } {
+export function useUnsupportedTokens(chainId: number): { [address: string]: Token } {
   const unsupportedTokensMap = useUnsupportedTokenList()
-  return useTokensFromMap(unsupportedTokensMap, false)
+  return useTokensFromMap(chainId, unsupportedTokensMap, false)
 }
 
 export function useIsTokenActive(token: Token | undefined | null): boolean {

@@ -307,9 +307,8 @@ export function useTradeV3ExactOut(
   }, [regularPairs, currencyIn, currencyAmountOut, singleHopOnly, stablePool, publicDataLoaded])
 }
 
-export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?: Currency): boolean {
-  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens()
-  const { chainId } = useNetworkState()
+export function useIsTransactionUnsupported(chainId: number, currencyIn?: Currency, currencyOut?: Currency): boolean {
+  const unsupportedTokens: { [address: string]: Token } = useUnsupportedTokens(chainId)
 
   const tokenIn = wrappedCurrency(currencyIn, chainId)
   const tokenOut = wrappedCurrency(currencyOut, chainId)

@@ -118,7 +118,7 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
           rel="noopener noreferrer"
         >
           <img src={iconDoc} alt='' />
-          Documentations
+          Documentation
           <i className="fas fa-external-link" />
         </StyledLinkHref>
       </StyledNavItem>

@@ -62,7 +62,6 @@ export const ActivatorButton = styled.button<{ isMobile: boolean, isConnected: b
     font-weight: 500;
     background: #1a1d2f;
     color: ${({ theme }) => theme.colors.primaryBright};
-    border-left: solid 10px white;
   }
   :focus {
     background-color: ${({ theme }) => theme.colors.dropdown};

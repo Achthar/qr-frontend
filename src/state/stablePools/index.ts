@@ -8,6 +8,7 @@ import { getContractForReserve } from 'utils/contractHelpers';
 import { bnParser, fetchStablePoolData } from './fetchStablePoolData';
 import { StablePoolConfig, StablePoolsState } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchStablePoolUserData';
+import { changeChainId } from './actions';
 
 
 // import { chain } from 'lodash'
@@ -66,7 +67,7 @@ export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataRespons
 
 
 export const stablePoolSlice = createSlice({
-  name: 'StablePools',
+  name: 'stablePools',
   initialState: initialState(chainIdFromState), // TODO: make that more flexible
   reducers: {
   },
@@ -92,6 +93,8 @@ export const stablePoolSlice = createSlice({
           state.pools[userDataEl.index] = { ...state.pools[userDataEl.index], userData: userDataEl }
         })
         state.userDataLoaded = true
+      }).addCase(changeChainId, (state, action) => {
+        state = initialState(action.payload.newChainId)
       })
   },
 })

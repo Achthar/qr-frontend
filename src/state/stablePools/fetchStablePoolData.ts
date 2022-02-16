@@ -1,8 +1,5 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useMemo } from 'react';
-import { deserializeToken } from 'state/user/hooks/helpers';
-import { getContractForBondDepo, getContractForLpReserve, getStablePoolContract } from 'utils/contractHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
@@ -10,6 +7,7 @@ import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import stableSwapAVAX from 'config/abi/avax/RequiemStableSwap.json'
 import erc20 from 'config/abi/erc20.json'
+import { stableSwapInitialData } from 'config/constants/stablePools';
 import { BondType } from 'config/constants/types';
 import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
 import { BondsState, Bond, StablePoolConfig, SerializedStablePool } from '../types'
@@ -33,8 +31,12 @@ export const fetchStablePoolData = createAsyncThunk(
   "stablePools/fetchStablePoolData",
   async ({ pool, chainId }: PoolRequestData): Promise<SerializedStablePool> => {
 
+    // fallback if chainId is changed
+    if (chainId !== pool.tokens[0].chainId) {
+      pool = stableSwapInitialData[chainId][pool.key]
+    }
     const poolAddress = getAddress(pool.address)
-
+    
     // // cals for general pool data
     const calls = [
       // token multipliers
