@@ -109,7 +109,7 @@ export default function AddLiquidity({
     error,
     fee: _fee
   } = useDerivedMintWeightedPairInfo(weightA, weightB, fee, currencyA ?? undefined, currencyB ?? undefined)
-
+console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
   // use balances from the balance state instead of manually loading them
   const {
     networkCcyBalance: networkCcyBalanceString,

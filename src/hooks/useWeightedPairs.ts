@@ -48,11 +48,9 @@ export function useWeightedPairs(
       }),
     [tokens, weightA, fee],
   )
-
-  const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves',
-  //  useBlock
-   )
-
+      console.log("WPA PA", pairAddresses)
+  const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves')
+console.log("WPA results", results)
   return useMemo(() => {
     return results.map((result, i) => {
 
@@ -75,6 +73,7 @@ export function useWeightedPairs(
 }
 
 export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Currency, weightA?: number, fee?: number): [WeightedPairState, WeightedPair | null] {
+  
   return useWeightedPairs(chainId, [[tokenA, tokenB]], [weightA], [fee])[0]
 }
 
@@ -82,8 +81,8 @@ export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Cur
 export function useWeightedPairsExist(chainId: number, addresses: string[], blocksPerFetch: number): { [address: string]: number } {
   const factoryContract = useWeightedFactoryContract(chainId)
   const results = useSingleContractMultipleData(chainId, factoryContract, 'isPair', addresses.map(adr => [adr]),
-  //  useBlock, 
-   { blocksPerFetch })
+    //  useBlock, 
+    { blocksPerFetch })
 
   return useMemo(() => {
     return Object.assign({}, ...results.map((result, i) => {
@@ -206,8 +205,8 @@ export function useWeightedPairsDataLite(
   )
 
 
-  const resultsReserves = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves', 
-  // useBlock
+  const resultsReserves = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves',
+    // useBlock
   )
   // returns:
   // address tokenB,

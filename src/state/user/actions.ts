@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 import { SerializedToken } from 'config/constants/types'
-import { FarmStakedOnly, SerializedPair, SerializedWeightedPair } from './types'
+import { SerializedWeightedPair, WeightedPairMetaData } from 'state/types'
+import { FarmStakedOnly, SerializedPair } from './types'
 
 
 
@@ -17,7 +18,7 @@ export const updateUserDeadline = createAction<{ userDeadline: number }>('user/u
 export const addSerializedToken = createAction<{ serializedToken: SerializedToken }>('user/addSerializedToken')
 export const removeSerializedToken = createAction<{ chainId: number; address: string }>('user/removeSerializedToken')
 export const addSerializedPair = createAction<{ serializedPair: SerializedPair }>('user/addSerializedPair')
-export const addSerializedWeightedPair = createAction<{ serializedWeightedPair: SerializedWeightedPair }>('user/addSerializedWeightedPair')
+export const addSerializedWeightedPair = createAction<{ serializedWeightedPair: WeightedPairMetaData }>('user/addSerializedWeightedPair')
 export const removeSerializedPair =
   createAction<{ chainId: number; tokenAAddress: string; tokenBAddress: string }>('user/removeSerializedPair')
 

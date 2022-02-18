@@ -55,7 +55,8 @@ export default function Balances() {
       }
       return;
     },
-    [chainId,
+    [
+      chainId,
       account,
       slowRefresh,
       dispatch,

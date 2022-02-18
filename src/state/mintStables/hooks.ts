@@ -83,6 +83,7 @@ export function useMintStablesActionHandlers(): {
 
 export function useDerivedMintStablesInfo(
   stablePool: StablePool,
+  publicDataLoaded:boolean,
   stableCcyAmounts: TokenAmount[],
   account?: string
 ): {
@@ -112,7 +113,7 @@ export function useDerivedMintStablesInfo(
 
   // stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
 
-  const totalSupply = stablePool === null ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
+  const totalSupply = !publicDataLoaded ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
 
   const stablesCurrencyBalances: { [field in StablesField]?: TokenAmount } = {
@@ -210,11 +211,9 @@ export function useDerivedMintStablesInfo(
 
   return {
     stableCurrencies,
-    // stablePool,
-    // stablePoolState,
     stablesCurrencyBalances,
     parsedStablesAmounts,
-    stablesLiquidityMinted: stablePool === null ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
+    stablesLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
     stablesPoolTokenPercentage,
     stablesError,
   }

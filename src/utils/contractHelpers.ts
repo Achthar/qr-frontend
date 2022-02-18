@@ -46,6 +46,7 @@ import cakeVaultAbi from 'config/abi/cakeVault.json'
 import predictionsAbi from 'config/abi/predictions.json'
 import chainlinkOracleAbi from 'config/abi/chainlinkOracle.json'
 import MultiCallAbi from 'config/abi/Multicall.json'
+import MultiCallAbiOasis from 'config/abi/oasis/Multicall.json'
 import farmAuctionAbi from 'config/abi/farmAuction.json'
 
 import weightedFactoryAVAX from 'config/abi/avax/RequiemWeightedPairFactory.json'

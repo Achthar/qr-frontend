@@ -119,6 +119,12 @@ export function useDerivedMintWeightedPairInfo(
     )
 
     const usedFee = typedFee === '' ? fee : typedFee
+
+    console.log("WPA INP", chainId,
+    currencies[WeightedField.CURRENCY_A],
+    currencies[WeightedField.CURRENCY_B],
+    Number(weights[WeightedField.WEIGHT_A]),
+    Number(usedFee))
     // pair
     const [weightedPairState, weightedPair] = useWeightedPair(
         chainId,
@@ -134,7 +140,6 @@ export function useDerivedMintWeightedPairInfo(
         return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && JSBI.equal(totalSupply.raw, ZERO))
     },
         [weightedPairState, totalSupply])
-
     // balances
     const balances = useCurrencyBalances(chainId, account ?? undefined, [
         currencies[WeightedField.CURRENCY_A],

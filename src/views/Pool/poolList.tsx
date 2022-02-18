@@ -9,11 +9,16 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { fetchWeightedPairMetaData } from 'state/weightedPairs/fetchWeightedPairMetaData'
+import { fetchWeightedPairData, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
 import getChain from 'utils/getChain'
+// import { resetWeightedPairChainId } from 'state/weightedPairs'
 import Column from 'components/Column'
+import { changeChainIdWeighted } from 'state/weightedPairs/actions'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
 import { changeChainId } from 'state/stablePools/actions'
+import { useDeserializedWeightedPairsAndLpBalances, useWeightedPairsState } from 'state/weightedPairs/hooks'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import useRefresh from 'hooks/useRefresh'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
@@ -126,12 +131,10 @@ export default function PoolList({
         Object.values(pools).map(
           (pool) => {
             dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
-
             return 0
           }
         )
       }
-
     },
     [
       chainId,
@@ -163,32 +166,117 @@ export default function PoolList({
   const stablePoolReceived = deserializedPools[0]
 
 
+  const {
+    referenceChain: stateChainId
+  } = useWeightedPairsState()
 
-  const pairs = useRelevantWeightedPairs(chainId)
+  console.log("WP: CID", chainId, stateChainId)
+  //  metatedata is supposed to be fetched once
+  useEffect(() => {
+    if (stateChainId !== chainId) {
+      console.log("WP HERE:", chainId, stateChainId)
+      dispatch(changeChainIdWeighted({ newChainId: chainId }))
+    }
 
-  const lpTokens = useMemo(
-    () => pairs && pairs.map((entry) => entry.liquidityToken),
-    [pairs],
+  },
+    [dispatch, stateChainId, chainId]
   )
 
-  const [weightedPairsBalances, fetchingweightedPairBalances] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    lpTokens,
+  const {
+    referenceChain,
+    tokenPairs,
+    metaDataLoaded,
+  } = useWeightedPairsState()
+
+  console.log("WP: CID2", chainId, referenceChain, "TP", tokenPairs[0])
+  //  metatedata is supposed to be fetched once
+  useEffect(() => {
+    if (!metaDataLoaded) {
+      dispatch(fetchWeightedPairMetaData({ tokenPairs }))
+    }
+
+  },
+    [dispatch, slowRefresh, tokenPairs, metaDataLoaded]
   )
+
+
+  const {
+    weightedPairMeta,
+    reservesAndWeightsLoaded,
+    userBalancesLoaded
+  } = useWeightedPairsState()
+
+  console.log("WP MD", weightedPairMeta)
+  // reserves are fetched only once
+  useEffect(() => {
+    if (metaDataLoaded && !reservesAndWeightsLoaded) {
+      dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
+    }
+  },
+    [dispatch, slowRefresh, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded]
+  )
+
+  const {
+    weightedPairs
+  } = useWeightedPairsState()
+  // use reduced data for next input
+  const pairData = useMemo(() => {
+    if (metaDataLoaded) {
+      console.log("WP WPAIRS", weightedPairs)
+      return reduceDataFromDict(weightedPairs)
+    }
+    return {}
+  },
+    [weightedPairs, metaDataLoaded]
+  )
+
+  // fetch balances
+  useEffect(() => {
+    if (metaDataLoaded && reservesAndWeightsLoaded && account && !userBalancesLoaded) {
+      dispatch(fetchWeightedPairUserData({ chainId, account, pairData }))
+    }
+  },
+    [dispatch, slowRefresh, metaDataLoaded, chainId, pairData, reservesAndWeightsLoaded, account, userBalancesLoaded]
+  )
+
+  const { pairs: allWeightedPairs, balances, totalSupply } = useDeserializedWeightedPairsAndLpBalances()
+
+
+  // const pairs = useRelevantWeightedPairs(chainId)
+
+  // const lpTokens = useMemo(
+  //   () => pairs && pairs.map((entry) => entry.liquidityToken),
+  //   [pairs],
+  // )
+
+  // const [weightedPairsBalances, fetchingweightedPairBalances] = useTokenBalancesWithLoadingIndicator(
+  //   account ?? undefined,
+  //   lpTokens,
+  // )
 
   // fetch the reserves for all V2 pools in which the user has a balance
-  const lpWithBalances = useMemo(
+  const lpWithUserBalances = useMemo(
     () =>
-      pairs.filter(({ liquidityToken }) =>
-        weightedPairsBalances[liquidityToken.address]?.greaterThan('0'),
+      allWeightedPairs.filter((_, index) =>
+        balances[index]?.greaterThan('0'),
       ),
-    [weightedPairsBalances, pairs],
+    [allWeightedPairs, balances],
   )
 
-  const weightedIsLoading =
-    fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
 
-  const allWeightedPairsWithLiquidity = lpWithBalances.filter((pair): pair is WeightedPair => Boolean(pair))
+  // fetch the reserves for all V2 pools in which the user has a balance
+  // const lpWithBalances = useMemo(
+  //   () =>
+  //     pairs.filter(({ liquidityToken }) =>
+  //       weightedPairsBalances[liquidityToken.address]?.greaterThan('0'),
+  //     ),
+  //   [weightedPairsBalances, pairs],
+  // )
+
+  const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
+  // fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
+
+  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
 
   const stablePoolBalance = useStablePoolLpBalance(0)
 
@@ -207,7 +295,7 @@ export default function PoolList({
         </Text>
       )
     }
-    if ((!pairs || pairs.length === 0) && !publicDataLoaded) {
+    if ((!allWeightedPairs || allWeightedPairs.length === 0) && !publicDataLoaded) {
       return (
         <Text color="textSubtle" textAlign="center">
           <Dots>Finding Pools</Dots>

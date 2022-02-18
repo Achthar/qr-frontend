@@ -14,6 +14,7 @@ import stablePoolsReducer from './stablePools'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
+import weightedPairReducer from './weightedPairs'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
 import burnStables from './burnStables/reducer'
@@ -31,6 +32,7 @@ const store = configureStore({
     farms: farmsReducer,
     voting: votingReducer,
     stablePools: stablePoolsReducer,
+    weightedPairs: weightedPairReducer,
 
     // Exchange
     user,

@@ -1,16 +1,10 @@
 import { SerializedToken } from "config/constants/types";
+import { SerializedWeightedPair } from "state/types";
 
 
 export interface SerializedPair {
     token0: SerializedToken
     token1: SerializedToken
-}
-
-export interface SerializedWeightedPair {
-    token0: SerializedToken
-    token1: SerializedToken
-    weight0: number
-    fee: number
 }
 
 export enum FarmStakedOnly {

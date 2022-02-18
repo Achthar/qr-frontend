@@ -56,6 +56,10 @@ export interface TokenList {
   readonly logoURI?: string;
 }
 
+export interface TokenPair {
+  token0: SerializedToken
+  token1: SerializedToken
+}
 
 export interface Address {
   97?: string

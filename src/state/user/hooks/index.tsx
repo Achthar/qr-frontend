@@ -7,6 +7,7 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
 import { REQT, WBTC, WETH } from 'config/constants/tokens'
 import { SerializedToken } from 'config/constants/types'
+import { SerializedWeightedPair, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
 import { AppDispatch, AppState } from '../../index'
 import {
@@ -26,7 +27,7 @@ import {
 } from '../actions'
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 import { ChainId } from '../../../config/index'
-import { FarmStakedOnly, SerializedPair, SerializedWeightedPair, UserBalanceState } from '../types'
+import { FarmStakedOnly, SerializedPair, UserBalanceState } from '../types'
 
 export function useAudioModeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -316,7 +317,7 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 }
 
 
-function serializeWeightedPair(weightedPair: WeightedPair): SerializedWeightedPair {
+function serializeWeightedPair(weightedPair: WeightedPair): WeightedPairMetaData {
   return {
     token0: serializeToken(weightedPair.token0),
     token1: serializeToken(weightedPair.token1),

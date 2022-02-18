@@ -15,7 +15,8 @@ import {
   BondConfig,
   SerializedFarmConfig,
   DeserializedFarmConfig,
-  SerializedToken
+  SerializedToken,
+  TokenPair
 } from 'config/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
@@ -209,6 +210,40 @@ export interface StablePoolsState {
   pools: SerializedStablePool[]
   publicDataLoaded: boolean
   userDataLoaded: boolean
+}
+
+export interface WeightedPairMetaData extends TokenPair {
+  weight0: number
+  fee: number
+  address?: string
+}
+
+export interface SerializedWeightedPair extends WeightedPairMetaData {
+  reserve0?: SerializedBigNumber
+  reserve1?: SerializedBigNumber
+  totalSupply?: SerializedBigNumber
+  userData?: {
+    allowanceRouter?: SerializedBigNumber
+    allowancePairManager?: SerializedBigNumber
+    balance: SerializedBigNumber
+  }
+}
+
+
+export interface WeightedPairState {
+  referenceChain: number,
+  tokenPairs: TokenPair[]
+  weightedPairMeta: {
+    [pastedAddresses: string]: WeightedPairMetaData[]
+  }
+  weightedPairs: {
+    [pastedAddresses: string]: {
+      [weight0Fee: string]: SerializedWeightedPair
+    }
+  },
+  metaDataLoaded: boolean
+  reservesAndWeightsLoaded: boolean
+  userBalancesLoaded: boolean
 }
 
 export interface FarmsState {
@@ -686,6 +721,7 @@ export interface State {
   bonds: BondsState
   farms: SerializedFarmsState
   // pools: PoolsState
+  weightedPairs: WeightedPairState
   stablePools: StablePoolsState
   predictions: PredictionsState
   profile: ProfileState

@@ -141,7 +141,7 @@ export default function AddStableLiquidity({
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
     stablesError,
-  } = useDerivedMintStablesInfo(stablePool, stableAmounts, account)
+  } = useDerivedMintStablesInfo(stablePool, publicDataLoaded, stableAmounts, account)
 
   const formattedStablesAmounts = {
     [StablesField.CURRENCY_1]: parsedStablesAmounts[StablesField.CURRENCY_1],
