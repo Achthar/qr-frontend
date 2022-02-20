@@ -8,7 +8,6 @@ import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 export default function useTransactionDeadline(chainId: number): BigNumber | undefined {
   const ttl = useSelector<AppState, number>((state) => state.user.userDeadline)
   const blockTimestamp = useCurrentBlockTimestamp(chainId)
-  console.log("DAMN STE_P", blockTimestamp)
   return useMemo(() => {
     if (blockTimestamp && ttl) return blockTimestamp.add(ttl)
     return undefined

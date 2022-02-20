@@ -50,7 +50,7 @@ export const NEVER_RELOAD: ListenerOptions = {
 }
 
 // the lowest level call for subscribing to contract data
-function useCallsData(chainId:number, calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
+function useCallsData(chainId: number, calls: (Call | undefined)[], options?: ListenerOptions): CallResult[] {
   const callResults = useSelector<AppState, AppState['multicall']['callResults']>(
     (state) => state.multicall.callResults,
   )
@@ -241,7 +241,6 @@ export function useSingleCallResult(
   options?: ListenerOptions,
 ): CallState {
   const fragment = useMemo(() => contract?.interface?.getFunction(methodName), [contract, methodName])
-
   const calls = useMemo<Call[]>(() => {
     return contract && fragment && isValidMethodArgs(inputs)
       ? [

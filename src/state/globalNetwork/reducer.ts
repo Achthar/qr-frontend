@@ -15,10 +15,7 @@ const initialState: GlobalNetworkState = {
 export default createReducer<GlobalNetworkState>(initialState, (builder) =>
   builder
     .addCase(setChainId, (state, { payload: { chainId } }) => {
-      return {
-        ...state,
-        chainId,
-      }
+      state.chainId = chainId
     }).addCase(setAccount, (state, { payload: { account } }) => {
       return {
         ...state,

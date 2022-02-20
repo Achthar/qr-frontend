@@ -9,6 +9,8 @@ import Column from 'components/Column'
 import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { setChainId } from 'state/globalNetwork/actions'
 import useRefresh from 'hooks/useRefresh'
 import { fetchUserNetworkCcyBalanceBalances } from 'state/user/fetchUserNetworkCcyBalance'
 import {
@@ -37,6 +39,13 @@ export default function Balances() {
   const dispatch = useDispatch<AppDispatch>()
 
   // const additionalTokens =  Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
+
+  const { chainId: stateChainId } = useNetworkState()
+  useEffect(() => {
+    if (chainId !== stateChainId) {
+      dispatch(setChainId({ chainId }))
+    }
+  }, [chainId, stateChainId, dispatch])
 
   useEffect(
     () => {
