@@ -31,7 +31,11 @@ export interface UserBalanceState {
     networkCcyBalance: string
 
     balances: {
-        [address: string]: string
+        [address: string]: {
+            balance: string
+            allowanceRouter: string
+            allowancePairManager: string
+        }
     }
 
     isLoadingTokens: boolean

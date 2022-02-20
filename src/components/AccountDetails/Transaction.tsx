@@ -37,7 +37,7 @@ const IconWrapper = styled.div<{ pending: boolean; success?: boolean }>`
 `
 
 export default function Transaction({ chainId, hash }: { chainId: number, hash: string }) {
-  const allTransactions = useAllTransactions()
+  const allTransactions = useAllTransactions(chainId)
 
   const tx = allTransactions?.[hash]
   const summary = tx?.summary

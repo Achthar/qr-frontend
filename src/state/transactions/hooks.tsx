@@ -42,16 +42,15 @@ export function useTransactionAdder(): (
 }
 
 // returns all the transactions for the current chain
-export function useAllTransactions(): { [txHash: string]: TransactionDetails } {
-  const { chainId } = useNetworkState()
+export function useAllTransactions(chainId: number): { [txHash: string]: TransactionDetails } {
 
   const state = useSelector<AppState, AppState['transactions']>((s) => s.transactions)
 
   return chainId ? state[chainId] ?? {} : {}
 }
 
-export function useIsTransactionPending(transactionHash?: string): boolean {
-  const transactions = useAllTransactions()
+export function useIsTransactionPending(chainId: number, transactionHash?: string): boolean {
+  const transactions = useAllTransactions(chainId)
 
   if (!transactionHash || !transactions[transactionHash]) return false
 
@@ -67,8 +66,8 @@ export function isTransactionRecent(tx: TransactionDetails): boolean {
 }
 
 // returns whether a token has a pending approval transaction
-export function useHasPendingApproval(tokenAddress: string | undefined, spender: string | undefined): boolean {
-  const allTransactions = useAllTransactions()
+export function useHasPendingApproval(chainId: number, tokenAddress: string | undefined, spender: string | undefined): boolean {
+  const allTransactions = useAllTransactions(chainId)
   return useMemo(
     () =>
       typeof tokenAddress === 'string' &&

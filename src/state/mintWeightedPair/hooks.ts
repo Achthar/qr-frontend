@@ -1,9 +1,13 @@
-import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount, Pair } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { WeightedPairState, useWeightedPair } from 'hooks/useWeightedPairs'
 import useTotalSupply from 'hooks/useTotalSupply'
+
+import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
+import useRefresh from 'hooks/useRefresh'
+import { deserializeToken } from 'state/user/hooks/helpers'
 
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
@@ -69,11 +73,18 @@ export function useMintWeightedPairActionHandlers(noLiquidity: boolean | undefin
 }
 
 export function useDerivedMintWeightedPairInfo(
+    chainId: number,
+    account: string,
     weightA: string | undefined,
     weightB: string | undefined,
     fee: string | undefined,
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
+    // this is input from the weightedPairState
+    loadedPairs?: WeightedPair[],
+    loadedBalances?: TokenAmount[],
+    loadedSupply?: TokenAmount[],
+    // this is input from the balances state
 ): {
     dependentField: WeightedField,
     dependentWeightField: WeightedField,
@@ -90,8 +101,7 @@ export function useDerivedMintWeightedPairInfo(
     error?: string
     fee: string
 } {
-    const { account, chainId } = useActiveWeb3React()
-
+    
     const {
         independentField,
         typedValue,
@@ -100,6 +110,37 @@ export function useDerivedMintWeightedPairInfo(
         typedWeight,
         typedFee
     } = useMintWeightedPairState()
+
+    const [tokens, aIsToken0] = useMemo(
+        () => {
+            if (!currencyA && !currencyB)
+                return [{ token0: undefined, token1: undefined }, false]
+            const tokenA = wrappedCurrency(currencyA, chainId)
+            const tokenB = wrappedCurrency(currencyB, chainId)
+            return tokenA?.address.toLowerCase() < tokenB?.address.toLocaleLowerCase() ?
+                [
+                    {
+                        token0: deserializeToken(tokenA),
+                        token1: deserializeToken(tokenB),
+                    }, true
+                ] : [
+                    {
+                        token1: deserializeToken(tokenA),
+                        token0: deserializeToken(tokenB),
+                    }, false
+                ]
+        },
+        [chainId, currencyA, currencyB],
+    )
+
+    const relevantPairData = loadedPairs.map((_, index) => {
+        return {
+            pair: loadedPairs[index],
+            supply: loadedSupply[index],
+            balance: loadedBalances[index]
+        }
+    }).filter(data => data.pair.token0.address === tokens.token0.address && data.pair.token1.address === tokens.token1.address)
+
 
     const dependentField = independentField === WeightedField.CURRENCY_A ? WeightedField.CURRENCY_B : WeightedField.CURRENCY_A
     const dependentWeightField = independentWeightField === WeightedField.WEIGHT_A ? WeightedField.WEIGHT_B : WeightedField.WEIGHT_A
@@ -127,21 +168,24 @@ export function useDerivedMintWeightedPairInfo(
 
     const usedFee = typedFee === '' ? fee : typedFee
 
-    console.log("WPA INP", chainId,
-        currencies[WeightedField.CURRENCY_A],
-        currencies[WeightedField.CURRENCY_B],
-        Number(weights[WeightedField.WEIGHT_A]),
-        Number(usedFee))
-    // pair
-    const [weightedPairState, weightedPair] = useWeightedPair(
-        chainId,
-        currencies[WeightedField.CURRENCY_A],
-        currencies[WeightedField.CURRENCY_B],
-        Number(weights[WeightedField.WEIGHT_A]),
-        Number(usedFee)
-    )
 
-    const totalSupply = useTotalSupply(weightedPair?.liquidityToken)
+    // pair
+    const pairData = relevantPairData.filter(
+        data => (aIsToken0 ? data.pair.weight0.toString() === weights[WeightedField.WEIGHT_A] :
+            data.pair.weight1.toString() === weights[WeightedField.WEIGHT_A])
+            && data.pair.fee0.toString() === usedFee
+    )?.[0]
+
+    const [weightedPairState, weightedPairData] = pairData ? [WeightedPairState.EXISTS, pairData] :
+        [WeightedPairState.NOT_EXISTS, undefined]
+
+    console.log("WPA INP", pairData, relevantPairData, weights, "FEE", typedFee, relevantPairData.filter(
+        data => [data.pair.weight0.toString(),
+        data.pair.weight1.toString(), data.pair.fee0.toString()]
+    )?.[0], aIsToken0)
+
+    const totalSupply = weightedPairData?.supply
+    const weightedPair = pairData?.pair
 
     const noLiquidity: boolean = useMemo(() => {
         return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && JSBI.equal(totalSupply.raw, ZERO))

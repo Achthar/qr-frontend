@@ -25,7 +25,7 @@ import {
 } from './actions'
 import { GAS_PRICE_GWEI } from './hooks/helpers'
 import { fetchUserNetworkCcyBalanceBalances } from './fetchUserNetworkCcyBalance'
-import { fetchUserTokenBalances } from './fetchUserTokenBalances'
+import { fetchUserTokenData } from './fetchUserTokenBalances'
 import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../config/constants'
 import { updateVersion } from '../global/actions'
 import { FarmStakedOnly, UserState } from './types'
@@ -40,19 +40,25 @@ const initialTokenList: Token[] = [
   ...STABLES[initialChainId]
 ]
 
+const initialData = {
+  balance: '0',
+  allowanceRouter: '0',
+  allowancePairManager: '0'
+}
+
 const initialBalances = {
-  [WRAPPED_NETWORK_TOKENS[initialChainId].address]: '0',
-  [REQT[initialChainId].address]: '0',
-  [WETH[initialChainId].address]: '0',
-  [WBTC[initialChainId].address]: '0',
-  [STABLES[initialChainId][0].address]: '0',
-  [STABLES[initialChainId][1].address]: '0',
-  [STABLES[initialChainId][2].address]: '0',
-  [STABLES[initialChainId][3].address]: '0',
+  [WRAPPED_NETWORK_TOKENS[initialChainId].address]: initialData,
+  [REQT[initialChainId].address]: initialData,
+  [WETH[initialChainId].address]: initialData,
+  [WBTC[initialChainId].address]: initialData,
+  [STABLES[initialChainId][0].address]: initialData,
+  [STABLES[initialChainId][1].address]: initialData,
+  [STABLES[initialChainId][2].address]: initialData,
+  [STABLES[initialChainId][3].address]: initialData,
 }
 
 function pairKey(token0Address: string, token1Address: string) {
-  return `${token0Address};${token1Address}`
+  return `${token0Address}-${token1Address}`
 }
 
 export const initialState: UserState = {
@@ -176,16 +182,13 @@ export default createReducer<UserState>(initialState, (builder) =>
     .addCase(refreshBalances, (state, { payload: { newBalances } }) => {
 
       // state.userBalances.balances = newBalances
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          balances: newBalances
-        },
+      const keys = Object.keys(newBalances)
+      for (let j = 0; j < keys.length; j++) {
+        state.userBalances.balances[keys[j]].balance = newBalances[keys[j]]
       }
     }
     )
-    .addCase(fetchUserTokenBalances.fulfilled, (state, action) => {
+    .addCase(fetchUserTokenData.fulfilled, (state, action) => {
       // state.userBalances.isLoadingTokens = false
       // state.userBalances.balances = action.payload
       return {
@@ -198,7 +201,7 @@ export default createReducer<UserState>(initialState, (builder) =>
       }
     }
     )
-    .addCase(fetchUserTokenBalances.pending, (state, action) => {
+    .addCase(fetchUserTokenData.pending, (state, action) => {
       // state.userBalances.isLoadingTokens = true
 
       return {

@@ -9,11 +9,14 @@ import { clearAllTransactions } from 'state/transactions/actions'
 import { orderBy } from 'lodash'
 import TransactionRow from './TransactionRow'
 
-const WalletTransactions: React.FC = () => {
-  const { chainId } = useNetworkState()
+
+interface TransactionProps {
+  chainId: number
+}
+const WalletTransactions: React.FC<TransactionProps> = ({ chainId }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
-  const allTransactions = useAllTransactions()
+  const allTransactions = useAllTransactions(chainId)
   const sortedTransactions = orderBy(allTransactions, 'addedTime', 'desc')
 
   const handleClearAll = () => {

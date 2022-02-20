@@ -26,14 +26,50 @@ interface PairRequestData {
 
 interface MetaRequestData {
   chainId: number
+  additionalTokens?: TokenPair[]
+}
+
+// checks whether this specific token pair is new
+export const isNewTokenPair = (additionalTokenPair: TokenPair, referenceTokens: TokenPair[]): boolean => {
+  let pairNew = false
+  for (let j = 0; j < referenceTokens.length; j++) {
+    if (additionalTokenPair.token0.address !== referenceTokens[j].token0.address &&
+      additionalTokenPair.token1.address !== referenceTokens[j].token1.address) {
+      pairNew = true
+      break;
+    }
+  }
+  return pairNew
+}
+
+
+// that function is  supposed to remove duplicate token pairs
+// assumes that the pair is already ordered by addresses of tokens
+export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: TokenPair[]): TokenPair[] => {
+  if (additionalTokens.length === 0)
+    return referenceTokens
+
+  const newPairs = []
+  for (let i = 0; i < additionalTokens.length; i++) {
+    let pairNew = false
+    for (let j = 0; j < referenceTokens.length; j++) {
+      if (additionalTokens[i].token0.address !== referenceTokens[j].token0.address &&
+        additionalTokens[i].token1.address !== referenceTokens[j].token1.address) {
+        pairNew = true
+        break;
+      }
+    }
+    newPairs.push(additionalTokens[i])
+  }
+  return [...newPairs, ...referenceTokens]
 }
 
 // for a provided list of token pairs the funcktion returns a dictionary with the addresses of the
 // tokens in the pairs as keys and arrays of addresses as values
 export const fetchWeightedPairMetaData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairMetaData",
-  async ({ chainId }: MetaRequestData): Promise<{ [pastedAddresses: string]: WeightedPairMetaData[] }> => {
-    const tokenPairs = getAllTokenPairs(chainId)
+  async ({ chainId, additionalTokens }: MetaRequestData): Promise<{ [pastedAddresses: string]: WeightedPairMetaData[] }> => {
+    const tokenPairs = cleanTokenPairs(additionalTokens, getAllTokenPairs(chainId))
     console.log("WP: INPUT Meta", tokenPairs,)
     // // cals for existing pool addresses
     const calls = tokenPairs.map(pair => {

@@ -8,7 +8,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Column from 'components/Column'
 import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
-import { fetchUserTokenBalances } from 'state/user/fetchUserTokenBalances'
+import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
 import useRefresh from 'hooks/useRefresh'
 import { fetchUserNetworkCcyBalanceBalances } from 'state/user/fetchUserNetworkCcyBalance'
 import {
@@ -42,7 +42,7 @@ export default function Balances() {
     () => {
       if (account) {
 
-        dispatch(fetchUserTokenBalances({
+        dispatch(fetchUserTokenData({
           chainId,
           account,
           // additionalTokens 

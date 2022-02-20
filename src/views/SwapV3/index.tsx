@@ -96,7 +96,7 @@ export default function SwapV3({
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0')) })
+        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address]?.balance ?? '0')) })
       )
     ),
     [defaultTokens, tokenBalancesStrings]

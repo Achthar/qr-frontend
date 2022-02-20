@@ -5,6 +5,7 @@ import multicall from 'utils/multicall';
 import { Fraction, JSBI, STABLECOINS, TokenAmount, WeightedPair, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
 import { WETH, REQT, WBTC } from 'config/constants/tokens';
 import { SerializedToken } from 'config/constants/types';
+import { REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from 'config/constants';
 import { UserProps } from './types';
 
 
@@ -16,9 +17,15 @@ export function getStables(chainId: number): Token[] {
     return STABLECOINS[chainId]
 }
 
-export const fetchUserTokenBalances = createAsyncThunk(
-    "user/fetchUserTokenBalances",
-    async ({ chainId, account, additionalTokens }: UserProps): Promise<{ [address: string]: string }> => {
+export interface UserTokenDataResponse {
+    balance: string
+    allowanceRouter: string
+    allowancePairManager: string
+}
+
+export const fetchUserTokenData = createAsyncThunk(
+    "user/fetchUserTokenData",
+    async ({ chainId, account, additionalTokens }: UserProps): Promise<{ [address: string]: UserTokenDataResponse }> => {
 
         const allTokensAddresses = additionalTokens ? [
             ...getMainTokens(chainId).map(token => token.address),
@@ -31,7 +38,7 @@ export const fetchUserTokenBalances = createAsyncThunk(
 
 
 
-        // cals for general bond data
+        // cals for balance
         const calls = allTokensAddresses.map(
             function (tokenAddress) {
                 const obj = {
@@ -44,12 +51,58 @@ export const fetchUserTokenBalances = createAsyncThunk(
             }
         )
 
-        const balances = await multicall(chainId, erc20Abi, calls)
+        // cals for Router Allowance
+        const callsAllowanceRouter = allTokensAddresses.map(
+            function (tokenAddress) {
+                const objR = {
+                    address: tokenAddress,
+                    name: 'allowance',
+                    params: [account, REQUIEMQROUTER_ADDRESS[chainId]]
+                }
+                // do something with person
+                return objR
+            }
+        )
+
+
+        // cals for Router Allowance
+        const callsAllowancePairManager = allTokensAddresses.map(
+            function (tokenAddress) {
+                const objP = {
+                    address: tokenAddress,
+                    name: 'allowance',
+                    params: [account, REQUIEM_PAIR_MANAGER[chainId]]
+                }
+                // do something with person
+                return objP
+            }
+        )
+
+        const rawData = await multicall(chainId, erc20Abi, [...calls, ...callsAllowanceRouter, ...callsAllowancePairManager])
+
+        const sliceLength = calls.length
+        const balances = rawData.slice(0, sliceLength).map((s) => {
+            return s.toString()
+        })
+
+        const allowanceRouter = rawData.slice(sliceLength, 2 * sliceLength).map((b) => {
+            return b.toString()
+        })
+
+        const allowancePairManager = rawData.slice(2 * sliceLength, 3 * sliceLength).map((a) => {
+            return a.toString()
+        })
 
         return Object.assign(
             {}, ...allTokensAddresses.map(
                 (token, index) => (
-                    { [allTokensAddresses[index]]: balances[index][0].toString() }
+                    {
+                        [allTokensAddresses[index]]: {
+                            balance: balances[index],
+                            allowanceRouter: allowanceRouter[index],
+                            allowancePairManager: allowancePairManager[index],
+                        }
+                    }
                 )
             )
         );

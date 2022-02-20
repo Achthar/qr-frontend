@@ -99,15 +99,6 @@ export const stablePoolSlice = createSlice({
         state.weightedPairMeta = action.payload
         // initialize weighted pairs
         state.weightedPairs = {}
-        // const keys = Object.keys(action.payload)
-        // for (let i = 0; i < keys.length; i++) {
-        //   // get keys for weight-fee constellation
-        //   const pairKeys = Object.keys(action.payload[keys[i]])
-        //   for (let j = 0; j < pairKeys.length; j++) {
-        //     // create entry
-        //     state.weightedPairs[keys[i]] = {}
-        //   }
-        // }
         state.metaDataLoaded = true;
       })
       .addCase(fetchWeightedPairMetaData.rejected, (state, { error }) => {

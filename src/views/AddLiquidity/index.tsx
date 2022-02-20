@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
+import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import {
   Currency,
@@ -32,6 +33,9 @@ import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { REQUIEM_PAIR_MANAGER } from 'config/constants'
+import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
+import useRefresh from 'hooks/useRefresh'
+import { deserializeToken } from 'state/user/hooks/helpers'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -43,7 +47,7 @@ import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPai
 import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useCurrency, useAllTokens } from 'hooks/Tokens'
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
+import { ApprovalState, useApproveCallback, useApproveCallbackWithAllowance } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
@@ -94,6 +98,38 @@ export default function AddLiquidity({
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintWeightedPairState()
 
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  const [tokens, aIs0] = useMemo(
+    () => {
+      if (!currencyA && !currencyB)
+        return [{ token0: undefined, token1: undefined }, false]
+      const tokenA = wrappedCurrency(currencyA, chainId)
+      const tokenB = wrappedCurrency(currencyB, chainId)
+      return tokenA?.address.toLowerCase() < tokenB?.address.toLocaleLowerCase() ?
+        [{
+          token0: deserializeToken(tokenA),
+          token1: deserializeToken(tokenB),
+        }, true] : [{
+          token1: deserializeToken(tokenA),
+          token0: deserializeToken(tokenB),
+        }, false]
+    },
+    [chainId, currencyA, currencyB],
+  )
+
+
+  // first, we fetch all weighted pairs from the state
+  // and add some, if not yet included
+  const {
+    pairs,
+    balances: userBalances,
+    userBalancesLoaded,
+    totalSupply: supplyLp
+  } = useGetWeightedPairsState(chainId, account, tokens.token0 && tokens.token1 ? [tokens] : [], slowRefresh, fastRefresh)
+  console.log("WP INP AL P", pairs, fee)
+
+  // get derived info for selected pair
   const {
     dependentField,
     currencies,
@@ -108,8 +144,21 @@ export default function AddLiquidity({
     poolTokenPercentage,
     error,
     fee: _fee
-  } = useDerivedMintWeightedPairInfo(weightA, weightB, fee, currencyA ?? undefined, currencyB ?? undefined)
-console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
+  } = useDerivedMintWeightedPairInfo(
+    chainId,
+    account,
+    weightA,
+    weightB,
+    fee,
+    currencyA ?? undefined,
+    currencyB ?? undefined,
+    pairs,
+    userBalances,
+    supplyLp
+  )
+
+
+  console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
   // use balances from the balance state instead of manually loading them
   const {
     networkCcyBalance: networkCcyBalanceString,
@@ -117,12 +166,14 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
     isLoadingNetworkCcy,
     isLoadingTokens
   } = useUserBalances()
+
+
   const isLoading = isLoadingNetworkCcy && isLoadingTokens
   const defaultTokens = useAllTokens(chainId)
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address] ?? '0')) })
+        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address]?.balance ?? '0')) })
       )
     ),
     [defaultTokens, tokenBalancesStrings]
@@ -178,17 +229,24 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
     },
     {},
   )
+  const [addressA, addressB] = tokens?.token1?.address && tokens?.token0?.address ? (
+    aIs0 ?
+      [ethers.utils.getAddress(tokens.token0.address), ethers.utils.getAddress(tokens.token1.address)]
+      : [ethers.utils.getAddress(tokens.token1.address), ethers.utils.getAddress(tokens.token0.address)]
+  ) : ['', '']
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(
+  const [approvalA, approveACallback] = useApproveCallbackWithAllowance(
     chainId,
     account,
+    tokenBalancesStrings[addressA]?.allowancePairManager ?? '0',
     parsedAmounts[WeightedField.CURRENCY_A],
     REQUIEM_PAIR_MANAGER[chainId],
   )
-  const [approvalB, approveBCallback] = useApproveCallback(
+  const [approvalB, approveBCallback] = useApproveCallbackWithAllowance(
     chainId,
     account,
+    tokenBalancesStrings[addressB]?.allowancePairManager ?? '0',
     parsedAmounts[WeightedField.CURRENCY_B],
     REQUIEM_PAIR_MANAGER[chainId],
   )
@@ -196,7 +254,7 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
-
+    console.log("ADDL ON", noLiquidity, !chainId || !library || !account, parsedAmounts,  !currencyA || !currencyB || !deadline, deadline)
     if (!chainId || !library || !account) return
     const pairManager = getPairManagerContract(chainId, library, account)
 
@@ -217,6 +275,8 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
     if (!noLiquidity) {
+
+      console.log("ADDL NL", noLiquidity)
       // case of network CCY
       if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
         const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
@@ -250,6 +310,7 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
       }
     } // no liquidity available - create pair
     else {
+      console.log("ADDL LIQ")
       // eslint-disable-next-line no-lonely-if
       if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
         const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
@@ -306,19 +367,8 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
       })
   }
 
-  const addressesRaw = useGetWeightedPairs([[currencyA, currencyB]], chainId)
-
-  const validatedAddresses = useMemo(
-    () =>
-      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => data[1]) : [],
-    [addressesRaw]
-  )
-
-  const tA = wrappedCurrency(currencyA, chainId)
-  const tB = wrappedCurrency(currencyB, chainId)
-
-  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId)
-
+  const pairsAvailable = pairs.filter(pair => pair.token0.address === tokens.token0.address && pair.token1.address === tokens.token1.address)
+  console.log("WP PA", pairsAvailable, tokens, pairs)
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -475,8 +525,6 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
     true,
     'addLiquidityModal',
   )
-
-  const aIs0 = tA && tB && tA?.sortsBefore(tB ?? undefined)
 
   // const balances = getTokenAmounts()
 
@@ -706,40 +754,38 @@ console.log("WPA", weightedPair?.liquidityToken, weightedPairState)
               </AutoColumn>
             )}
           </AutoColumn>
-          {weightedPairsAvailable.length > 0 && (
+          {pairsAvailable.length > 0 && (
             <Box>
               <AutoColumn gap="sm" justify="center">
                 <Text bold fontSize='15px'>
                   Available constellations
                 </Text>
-                {weightedPairsAvailable.map((pairData) => (
-
-                  pairData[0] === WeightedPairState.EXISTS && (
-                    <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                      <AutoColumn>
-                        <Text fontSize='13px' width='100px'>
-                          {`${currencyA.symbol} ${aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString()}%`}
-                        </Text>
-                        <Text fontSize='13px' width='100px'>
-                          {`${currencyB.symbol} ${aIs0 ? pairData[1].weight1.toString() : pairData[1].weight0.toString()}%`}
-                        </Text>
-                      </AutoColumn>
-                      <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                        {`Fee ${pairData[1].fee0.toString()}Bps`}
+                {pairsAvailable.map((pairData) => (
+                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
+                    <AutoColumn>
+                      <Text fontSize='13px' width='100px'>
+                        {`${currencyA.symbol} ${aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()}%`}
                       </Text>
-                      <StyledButton
-                        height='20px'
-                        endIcon={<ArrowUpIcon />}
-                        onClick={() => {
-                          feeInput(pairData[1].fee0.toString())
-                          weightAInput(aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString())
-                        }}
-                      >
-                        <Text fontSize='15px'>
-                          Set
-                        </Text>
-                      </StyledButton>
-                    </Flex>)
+                      <Text fontSize='13px' width='100px'>
+                        {`${currencyB.symbol} ${aIs0 ? pairData.weight1.toString() : pairData.weight0.toString()}%`}
+                      </Text>
+                    </AutoColumn>
+                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
+                      {`Fee ${pairData.fee0.toString()}Bps`}
+                    </Text>
+                    <StyledButton
+                      height='20px'
+                      endIcon={<ArrowUpIcon />}
+                      onClick={() => {
+                        feeInput(pairData.fee0.toString())
+                        weightAInput(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString())
+                      }}
+                    >
+                      <Text fontSize='15px'>
+                        Set
+                      </Text>
+                    </StyledButton>
+                  </Flex>
                 ))}
               </AutoColumn>
             </Box>

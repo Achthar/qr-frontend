@@ -84,7 +84,7 @@ export default function WeightedPairFinder({
 
   useEffect(() => {
     const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/liquidity`)
+    history.push(`/${_chain}/find`)
 
   },
     [chain, chainId, history],

@@ -38,7 +38,7 @@ const Tabs = styled.div`
   padding: 16px 24px;
 `
 
-const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALLET_INFO, onDismiss }) => {
+const WalletModal: React.FC<WalletModalProps> = ({ chainId, initialView = WalletView.WALLET_INFO, onDismiss }) => {
   const [view, setView] = useState(initialView)
   const { t } = useTranslation()
   const { balance, fetchStatus } = useGetNetworkCcyBalance()
@@ -66,7 +66,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ initialView = WalletView.WALL
       </Tabs>
       <ModalBody p="24px" maxWidth="400px" width="100%">
         {view === WalletView.WALLET_INFO && <WalletInfo hasLowNetworkCcyBalance={hasLowNetworkCcyBalance} onDismiss={onDismiss} />}
-        {view === WalletView.TRANSACTIONS && <WalletTransactions />}
+        {view === WalletView.TRANSACTIONS && <WalletTransactions chainId={chainId} />}
       </ModalBody>
     </ModalContainer>
   )

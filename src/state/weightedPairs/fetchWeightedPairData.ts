@@ -133,7 +133,6 @@ export const reduceDataFromDict = (pairData: { [pastedAddresses: string]: { [wei
       reducedDict[key][key1] = { address: pairData[key][key1].address }
     }
   }
-  console.log("WPRS: ", pairData, "RD", reducedDict)
   return reducedDict
 }
 

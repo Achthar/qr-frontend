@@ -21,6 +21,7 @@ import { changeChainId } from 'state/stablePools/actions'
 import { useDeserializedWeightedPairsAndLpBalances, useWeightedPairsState } from 'state/weightedPairs/hooks'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import useRefresh from 'hooks/useRefresh'
+import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
 import FullWeightedPositionCardExtended from '../../components/PositionCard/WeightedPairPositionExtended'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
@@ -116,7 +117,7 @@ export default function PoolList({
   )
 
 
-  const { slowRefresh } = useRefresh()
+  const { slowRefresh, fastRefresh } = useRefresh()
 
   const dispatch = useAppDispatch()
 
@@ -165,119 +166,33 @@ export default function PoolList({
   const deserializedPools = useDeserializedStablePools()
   const stablePoolReceived = deserializedPools[0]
 
-
   const {
-    referenceChain
-  } = useWeightedPairsState()
-
-  console.log("WP: CID", chainId, referenceChain)
-  //  metatedata is supposed to be fetched once
-  useEffect(() => {
-    if (referenceChain !== chainId) {
-      console.log("WP HERE:", chainId, referenceChain)
-      dispatch(changeChainIdWeighted({ newChainId: chainId }))
-    }
-
-  },
-    [dispatch, referenceChain, chainId]
-  )
-
-  const {
-    tokenPairs,
+    pairs,
+    balances,
+    totalSupply,
     metaDataLoaded,
-    weightedPairMeta,
     reservesAndWeightsLoaded,
     userBalancesLoaded
-  } = useWeightedPairsState()
-
-  console.log("WP: CID2", chainId, referenceChain, "TP", tokenPairs[0])
-  //  metatedata is supposed to be fetched once
-  useEffect(() => {
-    if (!metaDataLoaded && referenceChain === chainId) {
-      dispatch(fetchWeightedPairMetaData({ chainId }))
-    }
-
-  },
-    [dispatch, slowRefresh, tokenPairs, metaDataLoaded, referenceChain, chainId]
-  )
-
-
-  console.log("WP MD", weightedPairMeta)
-  // reserves are fetched only once
-  useEffect(() => {
-    if (metaDataLoaded && !reservesAndWeightsLoaded && referenceChain === chainId) {
-      dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
-    }
-  },
-    [dispatch, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded, referenceChain]
-  )
-
-  const {
-    weightedPairs
-  } = useWeightedPairsState()
-  // use reduced data for next input
-  const pairData = useMemo(() => {
-    if (metaDataLoaded) {
-      console.log("WP WPAIRS", weightedPairs, chainId, referenceChain)
-      return reduceDataFromDict(weightedPairs)
-    }
-    return {}
-  },
-    [weightedPairs, metaDataLoaded, chainId, referenceChain]
-  )
-
-  // fetch balances
-  useEffect(() => {
-    if (metaDataLoaded && reservesAndWeightsLoaded && account && referenceChain === chainId && Object.values(pairData)) {
-      dispatch(fetchWeightedPairUserData({ chainId, account, pairData }))
-    }
-  },
-    [dispatch, slowRefresh, metaDataLoaded, chainId, pairData, reservesAndWeightsLoaded, account, userBalancesLoaded, referenceChain]
-  )
-
-  const { pairs: allWeightedPairs, balances, totalSupply } = useDeserializedWeightedPairsAndLpBalances()
-  console.log("WP BT", balances.map(b => b.toSignificant(5)), totalSupply.map(tss => tss.toSignificant(5)))
-
-  // const pairs = useRelevantWeightedPairs(chainId)
-
-  // const lpTokens = useMemo(
-  //   () => pairs && pairs.map((entry) => entry.liquidityToken),
-  //   [pairs],
-  // )
-
-  // const [weightedPairsBalances, fetchingweightedPairBalances] = useTokenBalancesWithLoadingIndicator(
-  //   account ?? undefined,
-  //   lpTokens,
-  // )
-
-  // fetch the reserves for all V2 pools in which the user has a balance
-  const lpWithUserBalances = useMemo(
-    () =>
-      allWeightedPairs.filter((_, index) =>
-        balances[index]?.greaterThan('0'),
-      ),
-    [allWeightedPairs, balances],
-  )
+  } = useGetWeightedPairsState(chainId, account, [], slowRefresh, fastRefresh)
 
   const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
     () =>
-      allWeightedPairs.map((pair, index) => { return { pair, balance: balances[index], supply: totalSupply[index] } }).filter((data) =>
+      pairs.map((pair, index) => { return { pair, balance: balances[index], supply: totalSupply[index] } }).filter((data) =>
         data.balance?.greaterThan('0'),
       ),
-    [allWeightedPairs, balances, totalSupply],
+    [pairs, balances, totalSupply],
+  )
+
+  const lpWithUserBalances = useMemo(
+    () =>
+      pairs.filter((_, index) =>
+        balances[index]?.greaterThan('0'),
+      ),
+    [pairs, balances],
   )
   console.log("WP DWU", dataWithUserBalances)
-  // fetch the reserves for all V2 pools in which the user has a balance
-  // const lpWithBalances = useMemo(
-  //   () =>
-  //     pairs.filter(({ liquidityToken }) =>
-  //       weightedPairsBalances[liquidityToken.address]?.greaterThan('0'),
-  //     ),
-  //   [weightedPairsBalances, pairs],
-  // )
 
   const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
-  // fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
 
   const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
 
@@ -302,7 +217,7 @@ export default function PoolList({
         </Text>
       )
     }
-    if ((!allWeightedPairs || allWeightedPairs.length === 0) && !publicDataLoaded) {
+    if ((!pairs || pairs.length === 0) && !publicDataLoaded) {
       if (!userDataLoaded) {
         return (
           <Text color="textSubtle" textAlign="center">
@@ -361,7 +276,7 @@ export default function PoolList({
               <Text color="textSubtle" mb="8px">
                 {t("Don't see a pool you joined?")}
               </Text>
-              <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to="/find">
+              <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to={`/${getChain(chainId)}/find`}>
                 {t('Find other LP tokens')}
               </Button>
             </Flex>

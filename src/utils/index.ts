@@ -15,6 +15,7 @@ import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAI
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
 import RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
+import RequiemQPairManagerOasis from '../config/abi/oasis/RequiemQPairManager.json'
 import RequiemQRouter from '../config/abi/avax/RequiemQRouter.json'
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -105,7 +106,7 @@ export function getRouterContract(chainId: number, library: Web3Provider, accoun
 
 // account is optional
 export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = RequiemQPairManager
+  const ABI = chainId === 43221 ? RequiemQPairManager: RequiemQPairManagerOasis
   return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
 }
 

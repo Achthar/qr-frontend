@@ -423,15 +423,27 @@ export function getTokenAmounts(chainId: number, balances: { [address: string]: 
 
 }
 
-export function getStableAmounts(chainId: number, balances: { [address: string]: string }) {
+export function getStableAmounts(chainId: number, balances: {
+  [address: string]: {
+    balance: string,
+    allowanceRouter: string,
+    allowancePairManager: string
+  }
+}) {
   if (!balances)
     return []
 
-  return STABLECOINS[chainId ?? 43113].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+  return STABLECOINS[chainId ?? 43113].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
 
 }
 
-export function getMainAmounts(chainId: number, balances: { [address: string]: string }) {
+export function getMainAmounts(chainId: number, balances: {
+  [address: string]: {
+    balance: string,
+    allowanceRouter: string,
+    allowancePairManager: string
+  }
+}) {
   if (!balances)
     return []
 
@@ -440,7 +452,7 @@ export function getMainAmounts(chainId: number, balances: { [address: string]: s
     REQT[chainId],
     WBTC[chainId],
     WETH[chainId]
-  ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
+  ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
 
 }
 
