@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { REQT, DAI } from 'config/constants/tokens'
-import { WeightedPair, Token, STABLE_POOL_LP_ADDRESS } from '@requiemswap/sdk'
+import { WeightedPair, Token, STABLE_POOL_LP_ADDRESS, TokenAmount } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
@@ -22,7 +22,7 @@ import { useDeserializedWeightedPairsAndLpBalances, useWeightedPairsState } from
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import useRefresh from 'hooks/useRefresh'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
-import FullWeightedPositionCard from '../../components/PositionCard/WeightedPairPosition'
+import FullWeightedPositionCardExtended from '../../components/PositionCard/WeightedPairPositionExtended'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
 import { WeightedPairState, useWeightedPairsDataLite, useGetWeightedPairs } from '../../hooks/useWeightedPairs'
@@ -167,53 +167,49 @@ export default function PoolList({
 
 
   const {
-    referenceChain: stateChainId
+    referenceChain
   } = useWeightedPairsState()
 
-  console.log("WP: CID", chainId, stateChainId)
+  console.log("WP: CID", chainId, referenceChain)
   //  metatedata is supposed to be fetched once
   useEffect(() => {
-    if (stateChainId !== chainId) {
-      console.log("WP HERE:", chainId, stateChainId)
+    if (referenceChain !== chainId) {
+      console.log("WP HERE:", chainId, referenceChain)
       dispatch(changeChainIdWeighted({ newChainId: chainId }))
     }
 
   },
-    [dispatch, stateChainId, chainId]
+    [dispatch, referenceChain, chainId]
   )
 
   const {
-    referenceChain,
     tokenPairs,
     metaDataLoaded,
-  } = useWeightedPairsState()
-
-  console.log("WP: CID2", chainId, referenceChain, "TP", tokenPairs[0])
-  //  metatedata is supposed to be fetched once
-  useEffect(() => {
-    if (!metaDataLoaded) {
-      dispatch(fetchWeightedPairMetaData({ tokenPairs }))
-    }
-
-  },
-    [dispatch, slowRefresh, tokenPairs, metaDataLoaded]
-  )
-
-
-  const {
     weightedPairMeta,
     reservesAndWeightsLoaded,
     userBalancesLoaded
   } = useWeightedPairsState()
 
+  console.log("WP: CID2", chainId, referenceChain, "TP", tokenPairs[0])
+  //  metatedata is supposed to be fetched once
+  useEffect(() => {
+    if (!metaDataLoaded && referenceChain === chainId) {
+      dispatch(fetchWeightedPairMetaData({ chainId }))
+    }
+
+  },
+    [dispatch, slowRefresh, tokenPairs, metaDataLoaded, referenceChain, chainId]
+  )
+
+
   console.log("WP MD", weightedPairMeta)
   // reserves are fetched only once
   useEffect(() => {
-    if (metaDataLoaded && !reservesAndWeightsLoaded) {
+    if (metaDataLoaded && !reservesAndWeightsLoaded && referenceChain === chainId) {
       dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
     }
   },
-    [dispatch, slowRefresh, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded]
+    [dispatch, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded, referenceChain]
   )
 
   const {
@@ -222,25 +218,25 @@ export default function PoolList({
   // use reduced data for next input
   const pairData = useMemo(() => {
     if (metaDataLoaded) {
-      console.log("WP WPAIRS", weightedPairs)
+      console.log("WP WPAIRS", weightedPairs, chainId, referenceChain)
       return reduceDataFromDict(weightedPairs)
     }
     return {}
   },
-    [weightedPairs, metaDataLoaded]
+    [weightedPairs, metaDataLoaded, chainId, referenceChain]
   )
 
   // fetch balances
   useEffect(() => {
-    if (metaDataLoaded && reservesAndWeightsLoaded && account && !userBalancesLoaded) {
+    if (metaDataLoaded && reservesAndWeightsLoaded && account && referenceChain === chainId && Object.values(pairData)) {
       dispatch(fetchWeightedPairUserData({ chainId, account, pairData }))
     }
   },
-    [dispatch, slowRefresh, metaDataLoaded, chainId, pairData, reservesAndWeightsLoaded, account, userBalancesLoaded]
+    [dispatch, slowRefresh, metaDataLoaded, chainId, pairData, reservesAndWeightsLoaded, account, userBalancesLoaded, referenceChain]
   )
 
   const { pairs: allWeightedPairs, balances, totalSupply } = useDeserializedWeightedPairsAndLpBalances()
-
+  console.log("WP BT", balances.map(b => b.toSignificant(5)), totalSupply.map(tss => tss.toSignificant(5)))
 
   // const pairs = useRelevantWeightedPairs(chainId)
 
@@ -263,7 +259,14 @@ export default function PoolList({
     [allWeightedPairs, balances],
   )
 
-
+  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
+    () =>
+      allWeightedPairs.map((pair, index) => { return { pair, balance: balances[index], supply: totalSupply[index] } }).filter((data) =>
+        data.balance?.greaterThan('0'),
+      ),
+    [allWeightedPairs, balances, totalSupply],
+  )
+  console.log("WP DWU", dataWithUserBalances)
   // fetch the reserves for all V2 pools in which the user has a balance
   // const lpWithBalances = useMemo(
   //   () =>
@@ -277,6 +280,10 @@ export default function PoolList({
   // fetchingweightedPairBalances || pairs?.length < lpWithBalances.length || pairs?.some((pair) => !pair)
 
   const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
+
+  const allWeightedDataWithLiquidity = dataWithUserBalances.filter((data) => Boolean(data.pair))
+
+  console.log("RELEVANT PAIR", allWeightedDataWithLiquidity, allWeightedPairsWithLiquidity?.[0]?.token0Price.toSignificant(18))
 
   const stablePoolBalance = useStablePoolLpBalance(0)
 
@@ -296,6 +303,13 @@ export default function PoolList({
       )
     }
     if ((!allWeightedPairs || allWeightedPairs.length === 0) && !publicDataLoaded) {
+      if (!userDataLoaded) {
+        return (
+          <Text color="textSubtle" textAlign="center">
+            <Dots>Finding Your Pools</Dots>
+          </Text>
+        )
+      }
       return (
         <Text color="textSubtle" textAlign="center">
           <Dots>Finding Pools</Dots>
@@ -310,10 +324,12 @@ export default function PoolList({
             stablePool={stablePoolReceived}
             mb='20px'
           />)}
-        {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedPairsWithLiquidity.map((v2Pair, index) => (
-          <FullWeightedPositionCard
-            key={v2Pair.liquidityToken.address}
-            weightedPair={v2Pair}
+        {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedDataWithLiquidity.map((data, index) => (
+          <FullWeightedPositionCardExtended
+            key={data.pair.liquidityToken.address}
+            weightedPair={data.pair}
+            totalSupply={data.supply}
+            userBalance={data.balance}
             mb={index < allWeightedPairsWithLiquidity.length - 1 ? '16px' : 0}
           />)))}
 

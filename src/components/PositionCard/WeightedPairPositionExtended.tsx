@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, WeightedPair, Percent } from '@requiemswap/sdk'
+import { JSBI, WeightedPair, Percent, TokenAmount } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -37,11 +37,13 @@ const FixedHeightRow = styled(RowBetween)`
 `
 
 interface WeightedPositionCardProps extends CardProps {
+  totalSupply: TokenAmount
+  userBalance: TokenAmount
   weightedPair: WeightedPair
   showUnwrapped?: boolean
 }
 
-export function MinimalWeightedPositionCard({ weightedPair, showUnwrapped = false }: WeightedPositionCardProps) {
+export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply, userBalance, showUnwrapped = false }: WeightedPositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const { t } = useTranslation()
@@ -52,9 +54,9 @@ export function MinimalWeightedPositionCard({ weightedPair, showUnwrapped = fals
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, weightedPair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(weightedPair.liquidityToken)
-
+  const userPoolBalance = userBalance
+  const totalPoolTokens = totalSupply
+  console.log("WP DUH", userPoolBalance, totalPoolTokens)
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
@@ -145,7 +147,7 @@ export function MinimalWeightedPositionCard({ weightedPair, showUnwrapped = fals
   )
 }
 
-export default function FullWeightedPositionCard({ weightedPair, ...props }: WeightedPositionCardProps) {
+export default function FullWeightedPositionCard({ weightedPair, totalSupply, userBalance,  ...props }: WeightedPositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(weightedPair.token0)
@@ -157,8 +159,8 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
 
   const [showMore, setShowMore] = useState(false)
 
-  const userPoolBalance = useTokenBalance(chainId, account ?? undefined, weightedPair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(weightedPair.liquidityToken)
+  const userPoolBalance = userBalance
+  const totalPoolTokens = totalSupply
 
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
@@ -176,7 +178,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
         weightedPair.getLiquidityValue(weightedPair.token1, totalPoolTokens, userPoolBalance, false),
       ]
       : [undefined, undefined]
-console.log("WP CXD", token0Deposited, token1Deposited)
+  console.log("WP CXD", token0Deposited, token1Deposited)
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
       <Flex justifyContent="space-between" role="button" onClick={() => setShowMore(!showMore)} p="16px">

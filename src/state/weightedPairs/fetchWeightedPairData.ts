@@ -133,6 +133,7 @@ export const reduceDataFromDict = (pairData: { [pastedAddresses: string]: { [wei
       reducedDict[key][key1] = { address: pairData[key][key1].address }
     }
   }
+  console.log("WPRS: ", pairData, "RD", reducedDict)
   return reducedDict
 }
 
@@ -164,6 +165,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
       return {
         address: addr,
         name: 'totalSupply',
+        params: []
       }
     })
 
@@ -185,33 +187,34 @@ export const fetchWeightedPairUserData = createAsyncThunk(
     console.log("WPRS CALLS", [...callsSupply, ...callsBalance, ...callsAllowancePm])
     const rawData = await multicall(chainId, weightedPairABI, [...callsSupply, ...callsBalance, ...callsAllowancePm])
 
-    const supply = rawData.slice(0, callsSupply.length - 1).map((s) => {
+    const sliceLength = callsSupply.length
+    const supply = rawData.slice(0, sliceLength).map((s) => {
       return s.toString()
     })
 
-    const balances = rawData.slice(callsSupply.length, [...callsSupply, ...callsBalance].length - 1).map((b) => {
+    const balances = rawData.slice(sliceLength, 2 * sliceLength).map((b) => {
       return b.toString()
     })
 
-    const allowance = rawData.slice([...callsSupply, ...callsBalance].length, rawData.length - 1).map((a) => {
+    const allowance = rawData.slice(2 * sliceLength, 3 * sliceLength).map((a) => {
       return a.toString()
     })
-    console.log("WPRS: RAWUSER DATA", rawData)
+    console.log("WPRS: RAWUSER DATA", rawData, supply, balances, allowance)
     const returnDict = {}
     for (let i = 0; i < sortedKeys.length; i++) {
 
       const key = sortedKeys[i]
-      returnDict[key] = {}
       const sortedPairDataKeys = Object.keys(pairData[key]).sort()
+      if (sortedPairDataKeys.length > 0)
+        returnDict[key] = {}
       for (let j = 0; j < sortedPairDataKeys.length; j++) {
 
         const keyLv2 = sortedPairDataKeys[j]
         returnDict[key][keyLv2] = {
-          ...pairData[key][keyLv2],
-          totalSupply: supply[i + j],
+          totalSupply: supply[i + j]?.toString(),
           userData: {
-            allowancePairManager: allowance[i + j],
-            balance: balances[i + j]
+            allowancePairManager: allowance[i + j]?.toString(),
+            balance: balances[i + j]?.toString()
           }
         }
 

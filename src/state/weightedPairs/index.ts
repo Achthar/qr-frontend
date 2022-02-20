@@ -99,19 +99,19 @@ export const stablePoolSlice = createSlice({
         state.weightedPairMeta = action.payload
         // initialize weighted pairs
         state.weightedPairs = {}
-        const keys = Object.keys(action.payload)
-        for (let i = 0; i < keys.length; i++) {
-          // get keys for weight-fee constellation
-          const pairKeys = Object.keys(action.payload[keys[i]])
-          for (let j = 0; j < pairKeys.length; j++) {
-            // create entry
-            state.weightedPairs[keys[i]] = {}
-          }
-        }
+        // const keys = Object.keys(action.payload)
+        // for (let i = 0; i < keys.length; i++) {
+        //   // get keys for weight-fee constellation
+        //   const pairKeys = Object.keys(action.payload[keys[i]])
+        //   for (let j = 0; j < pairKeys.length; j++) {
+        //     // create entry
+        //     state.weightedPairs[keys[i]] = {}
+        //   }
+        // }
         state.metaDataLoaded = true;
       })
       .addCase(fetchWeightedPairMetaData.rejected, (state, { error }) => {
-        state.metaDataLoaded = true;
+        state.metaDataLoaded = false;
         console.log(error, state)
         console.error(error.message);
       }).addCase(fetchWeightedPairData.pending, state => {
@@ -126,6 +126,9 @@ export const stablePoolSlice = createSlice({
           const pairKeys = Object.keys(action.payload[keys[i]])
           for (let j = 0; j < pairKeys.length; j++) {
             // add the data
+            if (!state.weightedPairs[keys[i]])
+              state.weightedPairs[keys[i]] = {}
+
             state.weightedPairs[keys[i]][pairKeys[j]] = {
               ...state.weightedPairs[keys[i]][pairKeys[j]],
               ...action.payload[keys[i]][pairKeys[j]]
@@ -142,22 +145,32 @@ export const stablePoolSlice = createSlice({
       // 3) fetch reserves and weights for these pairs
       .addCase(fetchWeightedPairUserData.fulfilled, (state, action) => {
         // get keys for token pairs
+        console.log("WP USERD", action.payload)
         const keys = Object.keys(action.payload)
         for (let i = 0; i < keys.length; i++) {
           // get keys for weight-fee constellation
           const pairKeys = Object.keys(action.payload[keys[i]])
           for (let j = 0; j < pairKeys.length; j++) {
             // add the data
-            state.weightedPairs[keys[i]][pairKeys[j]] = {
-              ...state.weightedPairs[keys[i]][pairKeys[j]],
-              ...action.payload[keys[i]][pairKeys[j]]
-            };
+            if (!state.weightedPairs[keys[i]])
+              state.weightedPairs[keys[i]] = {}
+
+            if (state.weightedPairs[keys[i]][pairKeys[j]]) {
+              state.weightedPairs[keys[i]][pairKeys[j]] = {
+                ...state.weightedPairs[keys[i]][pairKeys[j]],
+                ...action.payload[keys[i]][pairKeys[j]]
+              };
+            } else {
+              state.weightedPairs[keys[i]][pairKeys[j]] = {
+                ...action.payload[keys[i]][pairKeys[j]]
+              };
+            }
           }
         }
         state.userBalancesLoaded = true;
       })
       .addCase(fetchWeightedPairUserData.rejected, (state, { error }) => {
-        state.userBalancesLoaded = true;
+        state.userBalancesLoaded = false;
         console.log(error, state)
         console.error(error.message);
       })

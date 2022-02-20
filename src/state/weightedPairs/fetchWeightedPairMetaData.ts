@@ -5,6 +5,7 @@ import { getAddress } from 'ethers/lib/utils';
 import multicall from 'utils/multicall';
 import pairFactoryABI from 'config/abi/avax/RequiemWeightedPairFactory.json'
 import { BondType, SerializedToken, TokenPair } from 'config/constants/types';
+import { getAllTokenPairs } from 'config/constants/tokenPairs';
 import { Fraction, JSBI, TokenAmount, WeightedPair, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
 import { WeightedPairMetaData } from '../types'
 
@@ -19,15 +20,20 @@ export function bnParser(bn: BigNumber, decNr: BigNumber) {
 
 
 interface PairRequestData {
-  tokenPairs: TokenPair[]
+  tokenPairs?: TokenPair[]
+}
+
+
+interface MetaRequestData {
+  chainId: number
 }
 
 // for a provided list of token pairs the funcktion returns a dictionary with the addresses of the
 // tokens in the pairs as keys and arrays of addresses as values
 export const fetchWeightedPairMetaData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairMetaData",
-  async ({ tokenPairs }: PairRequestData): Promise<{ [pastedAddresses: string]: WeightedPairMetaData[] }> => {
-    const chainId = tokenPairs[0].token0.chainId
+  async ({ chainId }: MetaRequestData): Promise<{ [pastedAddresses: string]: WeightedPairMetaData[] }> => {
+    const tokenPairs = getAllTokenPairs(chainId)
     console.log("WP: INPUT Meta", tokenPairs,)
     // // cals for existing pool addresses
     const calls = tokenPairs.map(pair => {

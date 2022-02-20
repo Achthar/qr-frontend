@@ -79,7 +79,7 @@ export default function PoolFinder({
 
   useEffect(() => {
     const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/liquidity`)
+    history.push(`/${_chain}/find`)
 
   },
     [chain, chainId, history],

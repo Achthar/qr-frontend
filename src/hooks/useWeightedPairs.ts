@@ -29,7 +29,6 @@ export function useWeightedPairs(
   fee?: number[]
 ): [WeightedPairState, WeightedPair | null][] {
 
-  // const { chainId } = useNetworkState()
 
   const tokens = useMemo(
     () =>
@@ -48,9 +47,9 @@ export function useWeightedPairs(
       }),
     [tokens, weightA, fee],
   )
-      console.log("WPA PA", pairAddresses)
+  console.log("WPA PA", pairAddresses)
   const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves')
-console.log("WPA results", results)
+  console.log("WPA results", results)
   return useMemo(() => {
     return results.map((result, i) => {
 
@@ -73,7 +72,7 @@ console.log("WPA results", results)
 }
 
 export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Currency, weightA?: number, fee?: number): [WeightedPairState, WeightedPair | null] {
-  
+
   return useWeightedPairs(chainId, [[tokenA, tokenB]], [weightA], [fee])[0]
 }
 

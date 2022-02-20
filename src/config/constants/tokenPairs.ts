@@ -7,7 +7,6 @@ const getTokenList = (chainId: number) => {
 
 export const getAllTokenPairs = (chainId: number) => {
     const tokens = getTokenList(chainId)
-
     const basePairList: TokenPair[] = []
     for (let i = 0; i < tokens.length; i++) {
         for (let k = i + 1; k < tokens.length; k++) {

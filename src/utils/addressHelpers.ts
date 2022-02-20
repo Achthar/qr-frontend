@@ -23,7 +23,7 @@ export const getMulticallAddress = (chainId: number) => {
   return getAddress(chainId, addresses.multiCall)
 }
 export const getWNetworkCcyAddress = (chainId: number) => {
-  return WRAPPED_NETWORK_TOKENS[chainId].address
+  return ethers.utils.getAddress(WRAPPED_NETWORK_TOKENS[chainId].address)
 }
 export const getLotteryV2Address = (chainId: number) => {
   return getAddress(chainId, addresses.lotteryV2)

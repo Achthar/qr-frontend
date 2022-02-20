@@ -92,7 +92,14 @@ export function useDerivedMintWeightedPairInfo(
 } {
     const { account, chainId } = useActiveWeb3React()
 
-    const { independentField, typedValue, otherTypedValue, independentWeightField, typedWeight, typedFee } = useMintWeightedPairState()
+    const {
+        independentField,
+        typedValue,
+        otherTypedValue,
+        independentWeightField,
+        typedWeight,
+        typedFee
+    } = useMintWeightedPairState()
 
     const dependentField = independentField === WeightedField.CURRENCY_A ? WeightedField.CURRENCY_B : WeightedField.CURRENCY_A
     const dependentWeightField = independentWeightField === WeightedField.WEIGHT_A ? WeightedField.WEIGHT_B : WeightedField.WEIGHT_A
@@ -121,10 +128,10 @@ export function useDerivedMintWeightedPairInfo(
     const usedFee = typedFee === '' ? fee : typedFee
 
     console.log("WPA INP", chainId,
-    currencies[WeightedField.CURRENCY_A],
-    currencies[WeightedField.CURRENCY_B],
-    Number(weights[WeightedField.WEIGHT_A]),
-    Number(usedFee))
+        currencies[WeightedField.CURRENCY_A],
+        currencies[WeightedField.CURRENCY_B],
+        Number(weights[WeightedField.WEIGHT_A]),
+        Number(usedFee))
     // pair
     const [weightedPairState, weightedPair] = useWeightedPair(
         chainId,
