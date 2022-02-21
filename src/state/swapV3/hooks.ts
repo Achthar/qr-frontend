@@ -1,13 +1,20 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool, WeightedPair } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
 import useENS from 'hooks/ENS/useENS'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCurrency } from 'hooks/Tokens'
+
+import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
+import { TokenPair } from 'config/constants/types'
+import { serializeToken } from 'state/user/hooks/helpers'
+import { wrappedCurrency } from 'utils/wrappedCurrency'
+import { useGetWeightedPairsTradeState } from 'hooks/useGetWeightedPairsState'
+
 import { useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
 import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
@@ -111,6 +118,90 @@ function involvesAddress(trade: TradeV4, checksummedAddress: string): boolean {
   )
 }
 
+function containsToken(token: Token, list: Token[]) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].equals(token)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: number): TokenPair[] {
+
+  const [aInBase, bInBase] = useMemo(() =>
+    [
+      tokenA ? containsToken(tokenA, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false,
+      tokenB ? containsToken(tokenB, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false
+    ],
+    [chainId, tokenA, tokenB])
+
+  const expandedTokenList = useMemo(() => {
+    if (!tokenA || !tokenB) {
+      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+    }
+    if (aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && bInBase) {
+      return [...[tokenA], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (aInBase && bInBase) {
+      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+    }
+    return []
+  },
+    [chainId, tokenA, tokenB, aInBase, bInBase])
+
+
+  const basePairList: TokenPair[] = []
+  for (let i = 0; i < expandedTokenList.length; i++) {
+    for (let k = i + 1; k < expandedTokenList.length; k++) {
+      basePairList.push(
+        expandedTokenList[i].address.toLowerCase() < expandedTokenList[k].address.toLowerCase() ?
+          {
+            token0: serializeToken(expandedTokenList[i]),
+            token1: serializeToken(expandedTokenList[k])
+          } : {
+            token0: serializeToken(expandedTokenList[k]),
+            token1: serializeToken(expandedTokenList[i])
+          }
+      )
+    }
+  }
+  return basePairList
+
+}
+
+// funtion to get all relevant weighted pairs
+// requires two calls if ccys are not in base
+// 1) check whether pair exists
+// 2) fetch reserves
+function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Currency): WeightedPair[] {
+  const { chainId } = useNetworkState()
+  const [tokenA, tokenB] = chainId
+    ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+    : [undefined, undefined]
+
+  const tokenPairs = useAllTradeTokenPairs(tokenA, tokenB, chainId)
+  const { slowRefresh } = useRefresh()
+  console.log("RPAIRS in", chainId, '', tokenPairs, slowRefresh, slowRefresh)
+  const { pairs, metaDataLoaded, reservesAndWeightsLoaded } = useGetWeightedPairsTradeState(chainId, tokenPairs, slowRefresh)
+  console.log("RPAIRS out", pairs, metaDataLoaded, reservesAndWeightsLoaded)
+
+  return useMemo(
+    () => {
+      return metaDataLoaded && reservesAndWeightsLoaded ? pairs : []
+    },
+    [metaDataLoaded, reservesAndWeightsLoaded, pairs]
+  )
+
+}
+
 // from the current swap inputs, compute the best trade and return it.
 export function useDerivedSwapV3Info(chainId: number, account: string): {
   currencies: { [field in Field]?: Currency }
@@ -193,8 +284,12 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, stablePool, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, stablePool, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  console.log("RPAIRS: ", inputCurrency, outputCurrency)
+  const relevatPairs = useAllCommonWeightedPairsFromState(inputCurrency, outputCurrency)
+
+
+  const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, stablePool, relevatPairs, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
+  const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, stablePool, relevatPairs, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
 
   const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut

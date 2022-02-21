@@ -217,7 +217,7 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 export function useMulticallContract(chainId: number): Contract | null {
   // const { chainId } = useNetworkState()
   console.log("useMulticallContract")
-  return useContract(getMulticallAddress(chainId), chainId === 110001 ? multiCallAbi_QKC : chainId === 43113 ? multiCallAbi : multiCallAbi_OASIS, false)
+  return useContract(getMulticallAddress(chainId), chainId === 110001 ? multiCallAbi_QKC : multiCallAbi, false)
 }
 
 export function useStableLPContract(stableLpAddress?: string, withSignerIfPossible?: boolean): Contract | null {

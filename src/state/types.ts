@@ -231,19 +231,22 @@ export interface SerializedWeightedPair extends WeightedPairMetaData {
 
 
 export interface WeightedPairState {
-  referenceChain: number,
-  tokenPairs: TokenPair[]
-  weightedPairMeta: {
-    [pastedAddresses: string]: WeightedPairMetaData[]
-  }
-  weightedPairs: {
-    [pastedAddresses: string]: {
-      [weight0Fee: string]: SerializedWeightedPair
+  currentChain: number
+  [chainId: number]: {
+    referenceChain: number,
+    tokenPairs: TokenPair[]
+    weightedPairMeta: {
+      [pastedAddresses: string]: WeightedPairMetaData[]
     }
-  },
-  metaDataLoaded: boolean
-  reservesAndWeightsLoaded: boolean
-  userBalancesLoaded: boolean
+    weightedPairs: {
+      [pastedAddresses: string]: {
+        [weight0Fee: string]: SerializedWeightedPair
+      }
+    },
+    metaDataLoaded: boolean
+    reservesAndWeightsLoaded: boolean
+    userBalancesLoaded: boolean
+  }
 }
 
 export interface FarmsState {

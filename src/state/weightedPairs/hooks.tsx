@@ -11,9 +11,10 @@ import { State, Bond, BondsState, StablePoolsState, WeightedPairState, Serialize
  * Fetches the whole state
  */
 
-export const useWeightedPairsState = (): WeightedPairState => {
+export const useWeightedPairsState = (chainId: number) => {
   const pairState = useSelector((state: State) => state.weightedPairs)
-  return pairState
+  console.log("STATE", pairState)
+  return pairState[chainId]
 }
 
 
@@ -48,8 +49,8 @@ export const deserializeWeightedPair = (tokenPair: TokenPair, pair: SerializedWe
 // returns all pairs as SDK Pair object
 // requires everything to be loaded, otherwise the result
 // will be an empty array
-export const useDeserializedWeightedPairs = (): WeightedPair[] => {
-  const pairState = useSelector((state: State) => state.weightedPairs)
+export const useDeserializedWeightedPairs = (chainId: number): WeightedPair[] => {
+  const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return []
 
@@ -66,8 +67,8 @@ export const useDeserializedWeightedPairs = (): WeightedPair[] => {
 // returns all pairs as SDK Pair object
 // requires everything to be loaded, otherwise the result
 // will be an empty array
-export const useDeserializedWeightedPairsAndLpBalances = (): { pairs: WeightedPair[], balances: TokenAmount[], totalSupply: TokenAmount[] } => {
-  const pairState = useSelector((state: State) => state.weightedPairs)
+export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pairs: WeightedPair[], balances: TokenAmount[], totalSupply: TokenAmount[] } => {
+  const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded || !pairState.userBalancesLoaded)
     return { pairs: [], balances: [], totalSupply: [] }
   console.log("WP PS", pairState)
@@ -80,12 +81,33 @@ export const useDeserializedWeightedPairsAndLpBalances = (): { pairs: WeightedPa
       pairState.tokenPairs.find(x => x.token0.address === keys[i].split('-')[0] && x.token1.address === keys[i].split('-')[1])
     )]
   }
-
-  const chainId = pairState.referenceChain
   return {
     pairs: rawPairs.map((pair, index) => deserializeWeightedPair({ token0: rawTokens[index].token0, token1: rawTokens[index].token1 }, pair)),
     balances: rawPairs.map(pair => new TokenAmount(new Token(chainId, pair.address, 18, ``, 'RLP'), pair.userData?.balance ?? '0')),
     totalSupply: rawPairs.map(pair => new TokenAmount(new Token(chainId, pair.address, 18, ``, 'RLP'), pair?.totalSupply ?? '0'))
+  }
+
+}
+
+// returns all pairs as SDK Pair object
+// requires everything to be loaded, otherwise the result
+// will be an empty array
+export const useDeserializedWeightedPairsData = (chainId: number): { pairs: WeightedPair[] } => {
+  const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
+  if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
+    return { pairs: [] }
+  console.log("WP PS", pairState)
+  let rawPairs = []
+  let rawTokens = []
+  const keys = Object.keys(pairState.weightedPairs).sort()
+  for (let i = 0; i < keys.length; i++) {
+    rawPairs = [...rawPairs, ...Object.values(pairState.weightedPairs[keys[i]])]
+    rawTokens = [...rawTokens, ...Object.values(pairState.weightedPairs[keys[i]]).map((_, j) =>
+      pairState.tokenPairs.find(x => x.token0.address === keys[i].split('-')[0] && x.token1.address === keys[i].split('-')[1])
+    )]
+  }
+  return {
+    pairs: rawPairs.map((pair, index) => deserializeWeightedPair({ token0: rawTokens[index].token0, token1: rawTokens[index].token1 }, pair))
   }
 
 }

@@ -62,8 +62,10 @@ export default function SwapV3({
   const loadedUrlParams = useDefaultsFromURLSearch(chainId)
 
   useEffect(() => {
-    const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/exchange`)
+    const _chain = getChain(chainId ?? 43113)
+    if (chain !== _chain) {
+      history.push(`/${_chain}/exchange`)
+    }
 
   },
     [chain, chainId, history],

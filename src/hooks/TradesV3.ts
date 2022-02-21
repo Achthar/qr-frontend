@@ -11,7 +11,10 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import { StablePoolState } from 'hooks/useStablePool'
 import { useUserSingleHopOnly } from 'state/user/hooks'
 import { useMultipleContractSingleData } from 'state/multicall/hooks'
+import getTokenList from 'utils/getTokenList'
+import { TokenPair } from 'config/constants/types'
 import RequiemPairABI from 'config/abi/avax/RequiemPair.json'
+import { serializeToken } from 'state/user/hooks/helpers'
 import {
   BASES_TO_CHECK_TRADES_AGAINST,
   BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED,
@@ -27,6 +30,8 @@ import { WeightedPairState, useWeightedPairs, useWeightedPairsExist, useGetWeigh
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens } from './Tokens'
+import { useGetWeightedPairsState } from './useGetWeightedPairsState'
+import useRefresh from './useRefresh'
 
 const PAIR_INTERFACE = new Interface(RequiemPairABI)
 
@@ -198,7 +203,8 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
   const weightedPairsData = useWeightedPairsDataLite(
     relevantPairs,
     addressList,
-    chainId)
+    chainId
+  )
 
 
   return useMemo(
@@ -210,7 +216,81 @@ function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): 
 
 }
 
-const MAX_HOPS = 4
+export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: number): TokenPair[] {
+
+  const [aInBase, bInBase] = useMemo(() =>
+    [
+      tokenA ? containsToken(tokenA, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false,
+      tokenB ? containsToken(tokenB, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false
+    ],
+    [chainId, tokenA, tokenB])
+
+  const expandedTokenList = useMemo(() => {
+    if (!tokenA || !tokenB) {
+      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+    }
+    if (aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && !bInBase) {
+      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (!aInBase && bInBase) {
+      return [...[tokenA], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+    }
+    if (aInBase && bInBase) {
+      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+    }
+    return []
+  },
+    [chainId, tokenA, tokenB, aInBase, bInBase])
+
+
+  const basePairList: TokenPair[] = []
+  for (let i = 0; i < expandedTokenList.length; i++) {
+    for (let k = i + 1; k < expandedTokenList.length; k++) {
+      basePairList.push(
+        expandedTokenList[i].address.toLowerCase() < expandedTokenList[k].address.toLowerCase() ?
+          {
+            token0: serializeToken(expandedTokenList[i]),
+            token1: serializeToken(expandedTokenList[k])
+          } : {
+            token0: serializeToken(expandedTokenList[k]),
+            token1: serializeToken(expandedTokenList[i])
+          }
+      )
+    }
+  }
+  return basePairList
+
+}
+
+// funtion to get all relevant weighted pairs
+// requires two calls if ccys are not in base
+// 1) check whether pair exists
+// 2) fetch reserves
+function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Currency): WeightedPair[] {
+  const { chainId } = useNetworkState()
+  const [tokenA, tokenB] = chainId
+    ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+    : [undefined, undefined]
+
+  const tokenPairs = useAllTradeTokenPairs(tokenA, tokenB, chainId)
+  const { slowRefresh } = useRefresh()
+  console.log("RPAIRS in", chainId, '', tokenPairs, slowRefresh, slowRefresh)
+  const { pairs, metaDataLoaded, reservesAndWeightsLoaded } = useGetWeightedPairsState(chainId, '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B', tokenPairs, slowRefresh, slowRefresh)
+  console.log("RPAIRS out", pairs, metaDataLoaded, reservesAndWeightsLoaded)
+
+  return useMemo(
+    () => {
+      return metaDataLoaded && reservesAndWeightsLoaded ? pairs : []
+    },
+    [metaDataLoaded, reservesAndWeightsLoaded, pairs]
+  )
+
+}
+
+const MAX_HOPS = 3
 
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
@@ -218,12 +298,14 @@ const MAX_HOPS = 4
 export function useTradeV3ExactIn(
   publicDataLoaded: boolean,
   stablePool: StablePool,
+  tradePairs:WeightedPair[],
   currencyAmountIn?: CurrencyAmount,
   currencyOut?: Currency
 ): TradeV4 | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()
-  const regularPairs = useAllCommonWeightedPairs(currencyAmountIn?.currency, currencyOut) as Pool[]
+  const regularPairs = tradePairs as Pool[]
+  console.log("RPAIRS", regularPairs)
   return useMemo(() => {
     let allowedPairs = regularPairs
     if (!publicDataLoaded)
@@ -271,12 +353,13 @@ export function useTradeV3ExactIn(
 export function useTradeV3ExactOut(
   publicDataLoaded: boolean,
   stablePool: StablePool,
+  tradePairs:WeightedPair[],
   currencyIn?: Currency,
   currencyAmountOut?: CurrencyAmount
 ): TradeV4 | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()
-  const regularPairs = useAllCommonWeightedPairs(currencyIn, currencyAmountOut?.currency) as Pool[]
+  const regularPairs = tradePairs as Pool[]
   return useMemo(() => {
     let allowedPairs = regularPairs
     if (!publicDataLoaded)

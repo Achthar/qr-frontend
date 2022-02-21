@@ -64,11 +64,15 @@ export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: 
   return [...newPairs, ...referenceTokens]
 }
 
+interface WeightedPairMetaResponse {
+  metaData: { [pastedAddresses: string]: WeightedPairMetaData[] }
+  currentPairs: TokenPair[]
+}
 // for a provided list of token pairs the funcktion returns a dictionary with the addresses of the
 // tokens in the pairs as keys and arrays of addresses as values
 export const fetchWeightedPairMetaData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairMetaData",
-  async ({ chainId, additionalTokens }: MetaRequestData): Promise<{ [pastedAddresses: string]: WeightedPairMetaData[] }> => {
+  async ({ chainId, additionalTokens }: MetaRequestData): Promise<WeightedPairMetaResponse> => {
     const tokenPairs = cleanTokenPairs(additionalTokens, getAllTokenPairs(chainId))
     console.log("WP: INPUT Meta", tokenPairs,)
     // // cals for existing pool addresses
@@ -85,17 +89,20 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
     const existingPairs = rawMetaData.map((entry, index) => entry._tokenPairs.length > 0 ? index : -1).filter((index) => index > -1)
 
     console.log("WP: RAWMETA", rawMetaData, existingPairs)
-    return Object.assign(
-      {}, ...existingPairs.map(
-        (index) =>
-        (
-          {
-            [`${tokenPairs[index].token0.address}-${tokenPairs[index].token1.address}`]:
-              rawMetaData[index]._tokenPairs.map((addr) => ({ address: addr }))
-          }
+    return {
+      metaData: Object.assign(
+        {}, ...existingPairs.map(
+          (index) =>
+          (
+            {
+              [`${tokenPairs[index].token0.address}-${tokenPairs[index].token1.address}`]:
+                rawMetaData[index]._tokenPairs.map((addr) => ({ address: addr }))
+            }
+          )
         )
-      )
-    );
+      ),
+      currentPairs: tokenPairs
+    }
 
   }
 );

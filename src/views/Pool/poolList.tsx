@@ -109,11 +109,13 @@ export default function PoolList({
   const { theme } = useTheme()
 
   useEffect(() => {
-    const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/liquidity`)
+    const _chain = getChain(chainId ?? 43113)
+    if (chain !== _chain) {
+      history.push(`/${_chain}/liquidity`)
+    }
 
   },
-    [chainId, chain, history],
+    [chain, chainId, history],
   )
 
 

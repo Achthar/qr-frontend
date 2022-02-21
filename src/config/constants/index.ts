@@ -203,6 +203,7 @@ export const CHAIN_INFO: ChainInfo = {
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/MATIC.svg',
     nativeCurrency: { name: 'Polygon', symbol: 'MATIC', decimals: 18 },
     statusPage: 'https://optimism.io/status',
+    faucet: 'https://faucet.polygon.technology/'
   },
   [ChainId.OASIS_MAINNET]: {
     blockWaitMsBeforeWarning: ms`10m`,
@@ -225,9 +226,10 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'Oasis Testnet',
     rpcUrls: ['https://testnet.emerald.oasis.dev/'],
     logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg',
-    nativeCurrency: { name: 'Oasis', symbol: 'ROSE', decimals: 10 },
+    nativeCurrency: { name: 'Oasis', symbol: 'ROSE', decimals: 18 },
+    faucet: 'https://faucet.testnet.oasis.dev/?'
     // statusPage: 'https://optimism.io/status',
-  },  
+  },
   [ChainId.QUARKCHAIN_DEV_S0]: {
     blockWaitMsBeforeWarning: ms`10m`,
     // bridge: 'https://gateway.optimism.io/',
@@ -294,11 +296,11 @@ export const BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED: ChainTokenList = {
   ],
   [ChainId.MATIC_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_MAINNET]],
   [ChainId.MATIC_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.MATIC_TESTNET], REQT[ChainId.MATIC_TESTNET],
-   USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]],
+  USDC[ChainId.MATIC_TESTNET], DAI[ChainId.MATIC_TESTNET]],
   [ChainId.OASIS_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_MAINNET]],
-  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], REQT[ChainId.OASIS_TESTNET], 
+  [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], REQT[ChainId.OASIS_TESTNET],
   USDC[ChainId.OASIS_TESTNET], DAI[ChainId.OASIS_TESTNET], TUSD[ChainId.OASIS_TESTNET]],
-  [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], REQT[ChainId.QUARKCHAIN_DEV_S0], 
+  [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], REQT[ChainId.QUARKCHAIN_DEV_S0],
   USDC[ChainId.QUARKCHAIN_DEV_S0], DAI[ChainId.QUARKCHAIN_DEV_S0]],
 
 

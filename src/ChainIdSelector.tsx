@@ -9,7 +9,7 @@ import {
 import { ChainId } from '@requiemswap/sdk'
 import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider, Text, ChevronDownIcon, CogIcon, TuneIcon } from '@requiemswap/uikit'
+import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider, Text, ChevronDownIcon, CogIcon, TuneIcon, TestnetIcon } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
@@ -25,6 +25,7 @@ const FlyoutRow = styled.div<{ active: boolean }>`
   align-items: center;
   background-color: ${({ active, theme }) => (active ? theme.colors.contrast : 'transparent')};
   border-radius: 8px;
+  color:  ${({ active }) => (active ? 'black' : 'white')};
   cursor: pointer;
   display: flex;
   font-weight: 500;
@@ -77,6 +78,10 @@ const Logo = styled.img`
 const NetworkLabel = styled.div`
   flex: 1 1 auto;
   color: #c7c7c7;
+  margin-left: 5px;
+  :hover {
+    text-decoration: underline;
+  }
 `;
 
 const FlyoutRowActiveIndicator = styled.div`
@@ -91,7 +96,7 @@ const StyledLink = styled.a`
   cursor: pointer;
   color: #c7c7c7;
   font-weight: 500;
-
+  
   :hover {
     text-decoration: underline;
   }
@@ -128,10 +133,11 @@ const ActiveRowLinkList = styled.div`
     text-decoration: none;
   }
   & > a:first-child {
-    border-top: 1px solid ${({ theme }) => theme.colors.textSubtle};
+    border-top: 1px solid ${({ theme }) => theme.colors.dropdownDeep};
     margin: 0;
-    margin-top: 6px;
-    padding-top: 10px;
+    margin-top: 1px;
+    padding-top: 2px;
+    align: right;
   }
 `;
 
@@ -278,9 +284,13 @@ const ChainIdSelector = () => {
       <>
         <RowContent />
         {faucetLink && (<ActiveRowLinkList>
-          <StyledLink href={faucetLink}>
-            <div>Testnet Faucet</div> <LinkOutCircle />
-          </StyledLink>
+          <Flex flexDirection="row" mr='3px' alignContent='right'>
+            <TestnetIcon color="white" width='10px' />
+            <StyledLink href={faucetLink}>
+              <Text marginLeft='5px' marginRight='5px'>Testnet Faucet</Text>
+            </StyledLink>
+            <LinkOutCircle color="white"/>
+          </Flex>
         </ActiveRowLinkList>)}
       </>)
   }
@@ -359,10 +369,15 @@ const ChainIdSelector = () => {
               <TuneIcon />
             </Flex>
             <Row targetChain={ChainId.AVAX_TESTNET} />
+            <UserMenuDivider />
             <Row targetChain={ChainId.AVAX_MAINNET} />
+            <UserMenuDivider />
             <Row targetChain={ChainId.OASIS_TESTNET} />
+            <UserMenuDivider />
             <Row targetChain={ChainId.QUARKCHAIN_DEV_S0} />
+            <UserMenuDivider />
             <Row targetChain={ChainId.BSC_TESTNET} />
+            <UserMenuDivider />
             <Row targetChain={ChainId.MATIC_TESTNET} />
           </FlyoutMenu>
 

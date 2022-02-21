@@ -1,5 +1,5 @@
 import { tokenList } from "./tokenLists/tokenlist"
-import { TokenPair } from "./types"
+import { SerializedToken, TokenPair } from "./types"
 
 const getTokenList = (chainId: number) => {
     return tokenList[chainId].tokens
@@ -25,3 +25,4 @@ export const getAllTokenPairs = (chainId: number) => {
     return basePairList
 
 }
+
