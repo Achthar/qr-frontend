@@ -125,7 +125,7 @@ export default function AddStableLiquidity({
   const {
     balances: allBalances,
     isLoadingTokens,
-  } = useUserBalances()
+  } = useUserBalances(chainId)
 
 
   const stableAmounts = useMemo(() =>

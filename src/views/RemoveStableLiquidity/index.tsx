@@ -120,7 +120,7 @@ export default function RemoveStableLiquidity({
       if (!publicDataLoaded) {
         Object.values(pools).map(
           (pool) => {
-            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+            dispatch(fetchStablePoolData({ pool, chainId }))
 
             return 0
           }
@@ -160,7 +160,7 @@ export default function RemoveStableLiquidity({
   const {
     balances: allBalances,
     isLoadingTokens,
-  } = useUserBalances()
+  } = useUserBalances(chainId)
 
 
   const stableAmounts = useMemo(() =>
@@ -271,7 +271,7 @@ export default function RemoveStableLiquidity({
   const atMaxAmount = parsedAmounts[StablesField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
   const userPoolBalance = new TokenAmount(
-    new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
+    new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
     BigNumber.from(0).toBigInt(),
   )
 
@@ -660,7 +660,7 @@ export default function RemoveStableLiquidity({
         <LightGreyCard>
           <Row justify="start" gap="7px">
             <Row justify="start" gap="7px">
-              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][0]} size='15px' style={{ marginRight: '4px' }} />
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId][0]} size='15px' style={{ marginRight: '4px' }} />
               <Text fontSize="14px" >
                 {
                   liquidityTradeValues?.[0]?.toSignificant(6)
@@ -669,7 +669,7 @@ export default function RemoveStableLiquidity({
             </Row>
 
             <Row justify="start" gap="4px">
-              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][1]} size='15px' style={{ marginRight: '4px' }} />
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId][1]} size='15px' style={{ marginRight: '4px' }} />
               <Text fontSize="14px">
                 {
                   liquidityTradeValues?.[1]?.toSignificant(6)
@@ -677,7 +677,7 @@ export default function RemoveStableLiquidity({
               </Text>
             </Row>
             <Row justify="start" gap="4px">
-              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][2]} size='15px' style={{ marginRight: '4px' }} />
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId][2]} size='15px' style={{ marginRight: '4px' }} />
               <Text fontSize="14px">
                 {
                   liquidityTradeValues?.[2]?.toSignificant(6)
@@ -685,7 +685,7 @@ export default function RemoveStableLiquidity({
               </Text>
             </Row>
             <Row justify="start" gap="4px">
-              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][3]} size='15px' style={{ marginRight: '4px' }} />
+              <CurrencyLogo chainId={stablePool?.chainId} currency={STABLES_INDEX_MAP[chainId][3]} size='15px' style={{ marginRight: '4px' }} />
               <Text fontSize="14px">
                 {
                   liquidityTradeValues?.[3]?.toSignificant(6)
@@ -744,16 +744,16 @@ export default function RemoveStableLiquidity({
           <thead>
             <tr>
               <Th textAlign="left">Base</Th>
-              <Th> {STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}</Th>
-              <Th> {STABLES_INDEX_MAP[chainId ?? 43113][1].symbol}</Th>
-              <Th> {STABLES_INDEX_MAP[chainId ?? 43113][2].symbol}</Th>
-              <Th> {STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}</Th>
+              <Th> {STABLES_INDEX_MAP[chainId][0].symbol}</Th>
+              <Th> {STABLES_INDEX_MAP[chainId][1].symbol}</Th>
+              <Th> {STABLES_INDEX_MAP[chainId][2].symbol}</Th>
+              <Th> {STABLES_INDEX_MAP[chainId][3].symbol}</Th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <Td textAlign="left" fontSize={fontsize}>
-                1 {STABLES_INDEX_MAP[chainId ?? 43113][0].symbol} =
+                1 {STABLES_INDEX_MAP[chainId][0].symbol} =
               </Td>
               <Td fontSize={fontsize}>-</Td>
               <Td fontSize={fontsize}>{priceMatrix?.[0][1]?.toSignificant(4) ?? ' '}</Td>
@@ -762,7 +762,7 @@ export default function RemoveStableLiquidity({
             </tr>
             <tr>
               <Td textAlign="left" fontSize={fontsize}>
-                1 {STABLES_INDEX_MAP[chainId ?? 43113][1].symbol} =
+                1 {STABLES_INDEX_MAP[chainId][1].symbol} =
               </Td>
               <Td fontSize={fontsize}>{priceMatrix?.[1][0]?.toSignificant(4) ?? ' '}</Td>
               <Td fontSize={fontsize}>-</Td>
@@ -771,7 +771,7 @@ export default function RemoveStableLiquidity({
             </tr>
             <tr>
               <Td textAlign="left" fontSize={fontsize}>
-                1 {STABLES_INDEX_MAP[chainId ?? 43113][2].symbol} =
+                1 {STABLES_INDEX_MAP[chainId][2].symbol} =
               </Td>
               <Td fontSize={fontsize}>{priceMatrix?.[2][0]?.toSignificant(4) ?? ' '}</Td>
               <Td fontSize={fontsize}>{priceMatrix?.[2][1]?.toSignificant(4) ?? ' '}</Td>
@@ -780,7 +780,7 @@ export default function RemoveStableLiquidity({
             </tr>
             <tr>
               <Td textAlign="left" fontSize={fontsize}>
-                1 {STABLES_INDEX_MAP[chainId ?? 43113][3].symbol} =
+                1 {STABLES_INDEX_MAP[chainId][3].symbol} =
               </Td>
               <Td fontSize={fontsize}>{priceMatrix?.[3][0]?.toSignificant(4) ?? ' '}</Td>
               <Td fontSize={fontsize}>{priceMatrix?.[3][1]?.toSignificant(4) ?? ' '}</Td>
@@ -964,8 +964,8 @@ export default function RemoveStableLiquidity({
           account={account}
           backTo={`/${chain}/liquidity`}
           title="Remove Stable Swap Liquidity"
-          subtitle={`To receive ${STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}, ${STABLES_INDEX_MAP[chainId ?? 43113][1].symbol
-            }, ${STABLES_INDEX_MAP[chainId ?? 43113][2].symbol} and/or ${STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}`}
+          subtitle={`To receive ${STABLES_INDEX_MAP[chainId][0].symbol}, ${STABLES_INDEX_MAP[chainId][1].symbol
+            }, ${STABLES_INDEX_MAP[chainId][2].symbol} and/or ${STABLES_INDEX_MAP[chainId][3].symbol}`}
           noConfig
         />
 
@@ -1053,18 +1053,18 @@ export default function RemoveStableLiquidity({
                     <AutoColumn>
                       <Flex justifyContent="space-between" mb="8px">
                         <Flex>
-                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][0]} />
+                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId][0]} />
                           <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px" mr="8px">
-                            {STABLES_INDEX_MAP[chainId ?? 43113][0].symbol}
+                            {STABLES_INDEX_MAP[chainId][0].symbol}
                           </Text>
                         </Flex>
                         <Text small>{formattedAmounts[StablesField.CURRENCY_1] || '-'}</Text>
                       </Flex>
                       <Flex justifyContent="space-between">
                         <Flex>
-                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][2]} />
+                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId][2]} />
                           <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">
-                            {STABLES_INDEX_MAP[chainId ?? 43113][2].symbol}
+                            {STABLES_INDEX_MAP[chainId][2].symbol}
                           </Text>
                         </Flex>
                         <Text small>{formattedAmounts[StablesField.CURRENCY_3] || '-'}</Text>
@@ -1073,18 +1073,18 @@ export default function RemoveStableLiquidity({
                     <AutoColumn>
                       <Flex justifyContent="space-between" mb="8px">
                         <Flex>
-                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][1]} />
+                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId][1]} />
                           <Text small color="textSubtle" id="remove-liquidity-tokena-symbol" ml="4px" mr="8px">
-                            {STABLES_INDEX_MAP[chainId ?? 43113][1].symbol}
+                            {STABLES_INDEX_MAP[chainId][1].symbol}
                           </Text>
                         </Flex>
                         <Text small>{formattedAmounts[StablesField.CURRENCY_2] || '-'}</Text>
                       </Flex>
                       <Flex justifyContent="space-between">
                         <Flex>
-                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId ?? 43113][3]} />
+                          <CurrencyLogo chainId={chainId} currency={STABLES_INDEX_MAP[chainId][3]} />
                           <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">
-                            {STABLES_INDEX_MAP[chainId ?? 43113][3].symbol}
+                            {STABLES_INDEX_MAP[chainId][3].symbol}
                           </Text>
                         </Flex>
                         <Text small>{formattedAmounts[StablesField.CURRENCY_4] || '-'}</Text>
@@ -1135,7 +1135,7 @@ export default function RemoveStableLiquidity({
                     // }}
                     // showMaxButton={!atMaxAmount}
                     showMaxButton={false}
-                    stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][0]}
+                    stableCurrency={STABLES_INDEX_MAP[chainId][0]}
                     label={t('Output')}
                     id="remove-liquidity-token1"
                     balances={relevantTokenBalances}
@@ -1160,7 +1160,7 @@ export default function RemoveStableLiquidity({
                     // }}
                     // showMaxButton={!atMaxAmount}
                     showMaxButton={false}
-                    stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][1]}
+                    stableCurrency={STABLES_INDEX_MAP[chainId][1]}
                     label={t('Output')}
                     id="remove-liquidity-token2"
                     balances={relevantTokenBalances}
@@ -1179,7 +1179,7 @@ export default function RemoveStableLiquidity({
                     // }}
                     // showMaxButton={!atMaxAmount}
                     showMaxButton={false}
-                    stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][2]}
+                    stableCurrency={STABLES_INDEX_MAP[chainId][2]}
                     label={t('Output')}
                     id="remove-liquidity-token3"
                     balances={relevantTokenBalances}
@@ -1198,7 +1198,7 @@ export default function RemoveStableLiquidity({
                     // }}
                     // showMaxButton={!atMaxAmount}
                     showMaxButton={false}
-                    stableCurrency={STABLES_INDEX_MAP[chainId ?? 43113][3]}
+                    stableCurrency={STABLES_INDEX_MAP[chainId][3]}
                     label={t('Output')}
                     id="remove-liquidity-token4"
                     balances={relevantTokenBalances}
@@ -1244,7 +1244,7 @@ export default function RemoveStableLiquidity({
                 //   onField2Input(StablesField.CURRENCY_SINGLE, '0')
                 // }}
                 showMaxButton={false}
-                currency={STABLES_INDEX_MAP[chainId ?? 43113][parsedAmounts[StablesField.SELECTED_SINGLE]]}
+                currency={STABLES_INDEX_MAP[chainId][parsedAmounts[StablesField.SELECTED_SINGLE]]}
                 id="add-liquidity-input-token-single"
                 showCommonBases
                 label='Recieved Amount'

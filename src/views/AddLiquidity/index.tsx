@@ -165,7 +165,7 @@ export default function AddLiquidity({
     balances: tokenBalancesStrings,
     isLoadingNetworkCcy,
     isLoadingTokens
-  } = useUserBalances()
+  } = useUserBalances(chainId)
 
 
   const isLoading = isLoadingNetworkCcy && isLoadingTokens
@@ -254,7 +254,7 @@ export default function AddLiquidity({
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
-    console.log("ADDL ON", noLiquidity, !chainId || !library || !account, parsedAmounts,  !currencyA || !currencyB || !deadline, deadline)
+    console.log("ADDL ON", noLiquidity, !chainId || !library || !account, parsedAmounts, !currencyA || !currencyB || !deadline, deadline)
     if (!chainId || !library || !account) return
     const pairManager = getPairManagerContract(chainId, library, account)
 

@@ -31,8 +31,10 @@ export const updateUserFarmStakedOnly = createAction<{ userFarmStakedOnly: FarmS
 export const updateGasPrice = createAction<{ gasPrice: string }>('user/updateGasPrice')
 export const toggleURLWarning = createAction<void>('app/toggleURLWarning')
 
-export const refreshBalances = createAction<{ newBalances:{[address:string]:string} }>('user/refreshBalances')
-export const refreshNetworkCcyBalance = createAction<{ newBalance:string }>('user/refreshNetworkCcyBalance')
-export const setBalanceLoadingState = createAction<{ newIsLoading:boolean }>('user/setBalanceLoadingState')
+export const refreshBalances = createAction<{ chainId: number, newBalances: { [address: string]: string } }>('user/refreshBalances')
+export const refreshNetworkCcyBalance = createAction<{ newBalance: string }>('user/refreshNetworkCcyBalance')
+export const setBalanceLoadingState = createAction<{ newIsLoading: boolean }>('user/setBalanceLoadingState')
 // export const refreshBalances = createAction<{ chainId: number, account: string, slot: BalanceField }>('user/refreshBalances')
 export const reset = createAction<void>('user/reset')
+
+export const changeChainId = createAction<{ newChainId: number}>('user/changeChainId')

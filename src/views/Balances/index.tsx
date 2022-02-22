@@ -11,8 +11,9 @@ import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { setChainId } from 'state/globalNetwork/actions'
+import { changeChainId } from 'state/user/actions'
 import useRefresh from 'hooks/useRefresh'
-import { fetchUserNetworkCcyBalanceBalances } from 'state/user/fetchUserNetworkCcyBalance'
+import { fetchUserNetworkCcyBalance } from 'state/user/fetchUserNetworkCcyBalance'
 import {
   getStableAmounts,
   getMainAmounts,
@@ -44,6 +45,7 @@ export default function Balances() {
   useEffect(() => {
     if (chainId !== stateChainId) {
       dispatch(setChainId({ chainId }))
+      dispatch(changeChainId({ newChainId: chainId }))
     }
   }, [chainId, stateChainId, dispatch])
 
@@ -57,7 +59,7 @@ export default function Balances() {
           // additionalTokens 
         }))
 
-        dispatch(fetchUserNetworkCcyBalanceBalances({
+        dispatch(fetchUserNetworkCcyBalance({
           chainId,
           account
         }))
@@ -78,7 +80,7 @@ export default function Balances() {
     isLoadingTokens,
     networkCcyBalance,
     isLoadingNetworkCcy
-  } = useUserBalances()
+  } = useUserBalances(chainId)
 
   const allBalances = balances
 

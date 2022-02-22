@@ -97,7 +97,7 @@ export default function CurrencySearchModal({
       <StyledModalBody>
         {modalView === CurrencyModalView.search ? (
           <CurrencySearch
-            chainId={chainId ?? 43113}
+            chainId={chainId}
             onCurrencySelect={handleCurrencySelect}
             selectedCurrency={selectedCurrency}
             otherSelectedCurrency={otherSelectedCurrency}

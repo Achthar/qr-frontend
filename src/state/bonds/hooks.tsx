@@ -23,7 +23,7 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
   const { slowRefresh } = useRefresh()
 
   useEffect(() => {
-    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId ?? 43113)
+    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId)
     console.log(bondsToFetch)
     const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
     // dispatch(fetchBondsPublicDataAsync())
@@ -45,10 +45,10 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     bondsToFetch.map(
       (bond) => {
         if (bond.type === BondType.PairLP) {
-          dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId ?? 43113), chainId: chainId ?? 43113 }))
+          dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
         }
         if (bond.type === BondType.StableSwapLP) {
-          dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId ?? 43113), chainId: chainId ?? 43113 }))
+          dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
         }
         return 0
       }
@@ -139,11 +139,11 @@ export const usePriceReqtUsd = (chainId: number): BigNumber => {
 
   return useMemo(
     () => {
-      const inAmount = new TokenAmount(REQT[chainId ?? 43113], '1000000000000000000')
+      const inAmount = new TokenAmount(REQT[chainId], '1000000000000000000')
 
       const [outAmount,] = pairState === WeightedPairState.EXISTS
         ? pair.clone().getOutputAmount(inAmount)
-        : [new TokenAmount(DAI[chainId ?? 43113], '1'),]
+        : [new TokenAmount(DAI[chainId], '1'),]
       return new BigNumber(outAmount.raw.toString()) // reqtnetworkCCYBond.token.busdPrice
     },
     [chainId, pair, pairState]

@@ -62,7 +62,7 @@ export default function SwapV3({
   const loadedUrlParams = useDefaultsFromURLSearch(chainId)
 
   useEffect(() => {
-    const _chain = getChain(chainId ?? 43113)
+    const _chain = getChain(chainId)
     if (chain !== _chain) {
       history.push(`/${_chain}/exchange`)
     }
@@ -93,7 +93,7 @@ export default function SwapV3({
     })
 
   // use balances from the balance state instead of manually loading them
-  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoadingNetworkCcy, isLoadingTokens } = useUserBalances()
+  const { networkCcyBalance: networkCcyBalanceString, balances: tokenBalancesStrings, isLoadingNetworkCcy, isLoadingTokens } = useUserBalances(chainId)
 
   const tokenBalances = useMemo(
     () => Object.assign({},

@@ -21,10 +21,11 @@ import {
   refreshBalances,
   reset,
   refreshNetworkCcyBalance,
-  setBalanceLoadingState
+  setBalanceLoadingState,
+  changeChainId
 } from './actions'
 import { GAS_PRICE_GWEI } from './hooks/helpers'
-import { fetchUserNetworkCcyBalanceBalances } from './fetchUserNetworkCcyBalance'
+import { fetchUserNetworkCcyBalance } from './fetchUserNetworkCcyBalance'
 import { fetchUserTokenData } from './fetchUserTokenBalances'
 import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../config/constants'
 import { updateVersion } from '../global/actions'
@@ -46,15 +47,17 @@ const initialData = {
   allowancePairManager: '0'
 }
 
-const initialBalances = {
-  [WRAPPED_NETWORK_TOKENS[initialChainId].address]: initialData,
-  [REQT[initialChainId].address]: initialData,
-  [WETH[initialChainId].address]: initialData,
-  [WBTC[initialChainId].address]: initialData,
-  [STABLES[initialChainId][0].address]: initialData,
-  [STABLES[initialChainId][1].address]: initialData,
-  [STABLES[initialChainId][2].address]: initialData,
-  [STABLES[initialChainId][3].address]: initialData,
+const initialBalances = (chainId: number) => {
+  return {
+    [WRAPPED_NETWORK_TOKENS[chainId].address]: initialData,
+    [REQT[chainId].address]: initialData,
+    [WETH[chainId].address]: initialData,
+    [WBTC[chainId].address]: initialData,
+    [STABLES[chainId][0].address]: initialData,
+    [STABLES[chainId][1].address]: initialData,
+    [STABLES[chainId][2].address]: initialData,
+    [STABLES[chainId][3].address]: initialData,
+  }
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -62,6 +65,7 @@ function pairKey(token0Address: string, token1Address: string) {
 }
 
 export const initialState: UserState = {
+  referenceChainId: 43113,
   userExpertMode: false,
   userSingleHopOnly: false,
   userSlippageTolerance: INITIAL_ALLOWED_SLIPPAGE,
@@ -76,11 +80,20 @@ export const initialState: UserState = {
   gasPrice: GAS_PRICE_GWEI[99999].default,
   URLWarningVisible: true,
   userBalances: {
-    networkCcyBalance: '0',
-    isLoadingTokens: true,
-    isLoadingNetworkCcy: true,
-    balances: initialBalances
-  }
+    43113: {
+      networkCcyBalance: '0',
+      isLoadingTokens: true,
+      isLoadingNetworkCcy: true,
+      balances: initialBalances(43113)
+    },
+    42261: {
+      networkCcyBalance: '0',
+      isLoadingTokens: true,
+      isLoadingNetworkCcy: true,
+      balances: initialBalances(42261)
+
+    }
+  },
 }
 
 export default createReducer<UserState>(initialState, (builder) =>
@@ -179,76 +192,54 @@ export default createReducer<UserState>(initialState, (builder) =>
       state.URLWarningVisible = !state.URLWarningVisible
     })
     // user balances state
-    .addCase(refreshBalances, (state, { payload: { newBalances } }) => {
-
-      // state.userBalances.balances = newBalances
+    .addCase(refreshBalances, (state, { payload: { chainId, newBalances } }) => {
       const keys = Object.keys(newBalances)
       for (let j = 0; j < keys.length; j++) {
-        state.userBalances.balances[keys[j]].balance = newBalances[keys[j]]
+        state.userBalances[chainId].balances[keys[j]].balance = newBalances[keys[j]]
       }
     }
     )
     .addCase(fetchUserTokenData.fulfilled, (state, action) => {
-      // state.userBalances.isLoadingTokens = false
-      // state.userBalances.balances = action.payload
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          balances: action.payload,
-          isLoadingTokens: false
-        }
+      const chainId = action.payload.chainId
+      state.referenceChainId = chainId
+      
+      if (!state.userBalances[chainId])
+        state.userBalances[chainId] = {}
+
+      if (!state.userBalances[chainId].balances)
+        state.userBalances[chainId] = { ...state.userBalances[chainId], balances: {} }
+
+      const changedKeys = Object.keys(action.payload.data)
+      for (let i = 0; i < changedKeys.length; i++) {
+        state.userBalances[chainId].balances[changedKeys[i]] = action.payload.data[changedKeys[i]]
       }
+
+      state.userBalances[chainId] = { ...state.userBalances[chainId], isLoadingTokens: false }
     }
     )
-    .addCase(fetchUserTokenData.pending, (state, action) => {
-      // state.userBalances.isLoadingTokens = true
-
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          isLoadingTokens: true
-        }
-      }
+    .addCase(fetchUserTokenData.pending, (state) => {
+      if (!state.userBalances[state.referenceChainId])
+        state.userBalances[state.referenceChainId] = { ...state.userBalances[state.referenceChainId], isLoadingTokens: true }
+      state.userBalances[state.referenceChainId].isLoadingTokens = true
     }
     )
-    .addCase(fetchUserNetworkCcyBalanceBalances.fulfilled, (state, action) => {
-      // state.userBalances.networkCcyBalance = action.payload.networkCcyBalance
-      // state.userBalances.isLoadingNetworkCcy = false
-
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          networkCcyBalance: action.payload.networkCcyBalance,
-          isLoadingNetworkCcy: false
-        }
-      }
+    .addCase(fetchUserNetworkCcyBalance.fulfilled, (state, action) => {
+      const chainId = action.payload.chainId
+      state.referenceChainId = chainId
+      state.userBalances[chainId].networkCcyBalance = action.payload.networkCcyBalance
+      state.userBalances[chainId].isLoadingNetworkCcy = false
     }
     )
-    .addCase(fetchUserNetworkCcyBalanceBalances.pending, (state, action) => {
-      // state.userBalances.isLoadingNetworkCcy = true
-
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          isLoadingNetworkCcy: true,
-        }
-      }
+    .addCase(fetchUserNetworkCcyBalance.pending, (state, action) => {
+      state.userBalances[state.referenceChainId].isLoadingNetworkCcy = true
     }
     )
     .addCase(refreshNetworkCcyBalance, (state, { payload: { newBalance } }) => {
-      // state.userBalances.networkCcyBalance = newBalance
-
-      return {
-        ...state,
-        userBalances: {
-          ...state.userBalances,
-          networkCcyBalance: newBalance,
-        }
-      }
+      state.userBalances[state.referenceChainId].networkCcyBalance = newBalance
+    }
+    )
+    .addCase(changeChainId, (state, { payload: { newChainId } }) => {
+      state.referenceChainId = newChainId
     }
     ),
 )

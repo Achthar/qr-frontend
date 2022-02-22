@@ -25,7 +25,7 @@ export interface UserTokenDataResponse {
 
 export const fetchUserTokenData = createAsyncThunk(
     "user/fetchUserTokenData",
-    async ({ chainId, account, additionalTokens }: UserProps): Promise<{ [address: string]: UserTokenDataResponse }> => {
+    async ({ chainId, account, additionalTokens }: UserProps): Promise<{ data: { [address: string]: UserTokenDataResponse }, chainId: number }> => {
 
         const allTokensAddresses = additionalTokens ? [
             ...getMainTokens(chainId).map(token => token.address),
@@ -93,18 +93,21 @@ export const fetchUserTokenData = createAsyncThunk(
             return a.toString()
         })
 
-        return Object.assign(
-            {}, ...allTokensAddresses.map(
-                (token, index) => (
-                    {
-                        [allTokensAddresses[index]]: {
-                            balance: balances[index],
-                            allowanceRouter: allowanceRouter[index],
-                            allowancePairManager: allowancePairManager[index],
+        return {
+            data: Object.assign(
+                {}, ...allTokensAddresses.map(
+                    (token, index) => (
+                        {
+                            [allTokensAddresses[index]]: {
+                                balance: balances[index],
+                                allowanceRouter: allowanceRouter[index],
+                                allowancePairManager: allowancePairManager[index],
+                            }
                         }
-                    }
+                    )
                 )
-            )
-        );
+            ),
+            chainId
+        }
     },
 );

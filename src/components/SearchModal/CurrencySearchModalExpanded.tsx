@@ -105,7 +105,7 @@ export default function CurrencySearchModalExpanded({
       <StyledModalBody>
         {modalView === CurrencyModalView.search ? (
           <CurrencySearchExpanded
-            chainId={chainId ?? 43113}
+            chainId={chainId}
             account={account}
             networkCcyAmount={networkCcyAmount}
             tokenAmounts={tokenAmounts}

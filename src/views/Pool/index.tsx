@@ -66,7 +66,7 @@ export default function Pool() {
   // const userPoolBalance = new TokenAmount(new Token(chainId, StablePool.getAddress(chainId), 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'), BigNumber.from(123).toBigInt())
   const [userPoolBalance, fetchingUserPoolBalance] = useTokenBalancesWithLoadingIndicator(
     account ?? undefined,
-    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId ?? 43113], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
+    [new Token(chainId, STABLE_POOL_LP_ADDRESS[chainId], 18, 'RequiemStable-LP', 'Requiem StableSwap LPs')],
   )
 
   const renderBody = () => {
@@ -86,9 +86,9 @@ export default function Pool() {
     }
 
     return (<Column>
-      {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
+      {userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId]]?.toBigNumber().gt(0) && stablePool != null && stablePoolState === StablePoolState.EXISTS && (
         <FullStablesPositionCard
-          userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]}
+          userLpPoolBalance={userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId]]}
           stablePool={stablePool}
           mb='20px'
         />)}
@@ -100,7 +100,7 @@ export default function Pool() {
           mb={index < allV2PairsWithLiquidity.length - 1 ? '16px' : 0}
         />)))}
 
-      {(userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId ?? 43113]]?.toBigNumber().eq(0) && allV2PairsWithLiquidity?.length === 0) && (
+      {(userPoolBalance?.[STABLE_POOL_LP_ADDRESS[chainId]]?.toBigNumber().eq(0) && allV2PairsWithLiquidity?.length === 0) && (
         <Text color="textSubtle" textAlign="center">
           {t('No liquidity found.')}
         </Text>

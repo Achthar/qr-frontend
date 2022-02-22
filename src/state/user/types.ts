@@ -27,23 +27,34 @@ export interface UserProps {
 
 
 export interface UserBalanceState {
-    // we save all balance values as strings for each address
-    networkCcyBalance: string
+    // that component is stpored separately for different chainIds
+    // to simplify the management of chain switches
+    balanceState: {
+        [chainId: number]: {
+            // we save all balance values as strings for each address
+            networkCcyBalance: string
 
-    balances: {
-        [address: string]: {
-            balance: string
-            allowanceRouter: string
-            allowancePairManager: string
+            balances: {
+
+                [address: string]: {
+                    balance: string
+                    allowanceRouter: string
+                    allowancePairManager: string
+                }
+            }
+
+
+            isLoadingTokens: boolean
+
+            isLoadingNetworkCcy: boolean
         }
     }
-
-    isLoadingTokens: boolean
-
-    isLoadingNetworkCcy: boolean
 }
 
 export interface UserState {
+
+    referenceChainId: number
+
     // the timestamp of the last updateVersion action
     lastUpdateVersionTimestamp?: number
 
@@ -71,7 +82,26 @@ export interface UserState {
         }
     }
 
-    userBalances: UserBalanceState
+    userBalances: {
+        [chainId: number]: {
+            // we save all balance values as strings for each address
+            networkCcyBalance?: string
+
+            balances?: {
+
+                [address: string]: {
+                    balance: string
+                    allowanceRouter: string
+                    allowancePairManager: string
+                }
+            }
+
+
+            isLoadingTokens?: boolean
+
+            isLoadingNetworkCcy?: boolean
+        }
+    }
 
     weightedPairs: {
         [chainId: number]: {

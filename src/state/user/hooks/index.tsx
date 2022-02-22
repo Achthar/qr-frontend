@@ -48,12 +48,14 @@ export function useIsExpertMode(): boolean {
   return useSelector<AppState, AppState['user']['userExpertMode']>((state) => state.user.userExpertMode)
 }
 
-export function useUserBalances(): UserBalanceState {
-  return useSelector<AppState, AppState['user']['userBalances']>((state) => state.user?.userBalances) ?? {
+export function useUserBalances(chainId: number) {
+  const user = useSelector<AppState, AppState['user']>((state) => state.user)
+  return user.userBalances?.[chainId] ?? {
     networkCcyBalance: '0',
     isLoadingTokens: true,
     isLoadingNetworkCcy: true,
     balances: {}
+
   }
 }
 
