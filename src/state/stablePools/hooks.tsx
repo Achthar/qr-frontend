@@ -5,7 +5,7 @@ import { Price, StablePool, STABLES_LP_TOKEN, SwapStorage, Token, TokenAmount } 
 import { BondType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
-import { State, Bond, BondsState, StablePoolsState } from '../types'
+import { State, Bond, BondsState, StablePoolsState, PoolData } from '../types'
 
 
 
@@ -13,9 +13,13 @@ import { State, Bond, BondsState, StablePoolsState } from '../types'
  * Fetches the "core" bond data used globally
  */
 
-export const useStablePools = (): StablePoolsState => {
+export const useStablePools = (chainId: number): PoolData => {
   const pools = useSelector((state: State) => state.stablePools)
-  return pools
+  return pools.poolData[chainId]
+}
+
+export const useStablePoolReferenceChain = () => {
+  return useSelector((state: State) => state.stablePools.referenceChain)
 }
 
 export const useBondFromBondId = (bondId): Bond => {
@@ -32,15 +36,16 @@ function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]:
   )
 }
 
-export const useStablePoolLpBalance = (id: number) => {
-  const {pools} = useSelector((state: State) => state.stablePools)
-  const lpToken = pools[id]?.lpToken ? deserializeToken(pools[id]?.lpToken) : STABLE_POOL_LP[43113] // fallback
+export const useStablePoolLpBalance = (chainId: number, id: number) => {
+  const poolState = useSelector((state: State) => state.stablePools)
+  const pools = poolState.poolData[chainId].pools[id]
+  const lpToken = pools?.lpToken ? deserializeToken(pools[id]?.lpToken) : STABLE_POOL_LP[43113] // fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
 
-export const useDeserializedStablePools = (): StablePool[] => {
-  const { pools, publicDataLoaded: dataLoaded } = useSelector((state: State) => state.stablePools)
-
+export const useDeserializedStablePools = (chainId: number): StablePool[] => {
+  const poolState = useSelector((state: State) => state.stablePools)
+  const { pools, publicDataLoaded: dataLoaded } = poolState.poolData[chainId]
   const currentBlock = useSelector((state: State) => state.block.currentBlock)
 
   if (!dataLoaded)

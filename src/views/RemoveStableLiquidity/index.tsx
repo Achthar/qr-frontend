@@ -30,7 +30,7 @@ import {
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router-dom'
-import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
+import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
@@ -41,7 +41,7 @@ import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
 import { useStablePool } from 'hooks/useStablePool'
 import Row from 'components/Row'
 import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
-
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -68,6 +68,7 @@ import {
 
 import { StablesField } from '../../state/burnStables/actions'
 import { getStableAmounts, useGasPrice, useUserBalances, useUserSlippageTolerance } from '../../state/user/hooks'
+
 
 // const function getStableIndex(token)
 
@@ -111,67 +112,16 @@ export default function RemoveStableLiquidity({
 
   // call pool from state
   const { slowRefresh } = useRefresh()
+  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
 
-  const dispatch = useAppDispatch()
-
-  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
-  useEffect(
-    () => {
-      if (!publicDataLoaded) {
-        Object.values(pools).map(
-          (pool) => {
-            dispatch(fetchStablePoolData({ pool, chainId }))
-
-            return 0
-          }
-        )
-      }
-
-    },
-    [
-      chainId,
-      dispatch,
-      slowRefresh,
-      pools,
-      library,
-      publicDataLoaded
-    ])
-
-  useEffect(() => {
-    if (account && !userDataLoaded && publicDataLoaded) {
-      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
-    }
-  },
-    [
-      account,
-      chainId,
-      pools,
-      userDataLoaded,
-      publicDataLoaded,
-      slowRefresh,
-      dispatch
-    ]
-  )
+  const stablePool = stablePools[0]
 
 
-  const deserializedPools = useDeserializedStablePools()
-  const stablePool = deserializedPools[0]
-
-  const {
-    balances: allBalances,
-    isLoadingTokens,
-  } = useUserBalances(chainId)
-
-
-  const stableAmounts = useMemo(() =>
-    getStableAmounts(chainId, allBalances),
-    [chainId, allBalances]
-  )
-
+  const stableLpBalance = useStablePoolLpBalance(chainId, 0)
   // all balances are loaded from state
   const relevantTokenBalances = useMemo(() => {
     return {
-      [STABLE_POOL_LP[chainId].address]: new TokenAmount(STABLE_POOL_LP[chainId], pools[0]?.userData?.lpBalance ?? '0'),
+      [STABLE_POOL_LP[chainId].address]: stableLpBalance,
       [STABLES_INDEX_MAP[chainId][0].address]: stableAmounts[0],
       [STABLES_INDEX_MAP[chainId][1].address]: stableAmounts[1],
       [STABLES_INDEX_MAP[chainId][2].address]: stableAmounts[2],
@@ -181,7 +131,7 @@ export default function RemoveStableLiquidity({
     [
       stableAmounts,
       chainId,
-      pools
+      stableLpBalance
     ]
   )
 

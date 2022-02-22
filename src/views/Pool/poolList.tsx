@@ -7,26 +7,15 @@ import { WeightedPair, Token, STABLE_POOL_LP_ADDRESS, TokenAmount } from '@requi
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
-import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { fetchWeightedPairMetaData } from 'state/weightedPairs/fetchWeightedPairMetaData'
-import { fetchWeightedPairData, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
 import getChain from 'utils/getChain'
-// import { resetWeightedPairChainId } from 'state/weightedPairs'
 import Column from 'components/Column'
-import { changeChainIdWeighted } from 'state/weightedPairs/actions'
-import { fetchStablePoolUserDataAsync } from 'state/stablePools'
-import { useAppDispatch } from 'state'
-import { changeChainId } from 'state/stablePools/actions'
-import { useDeserializedWeightedPairsAndLpBalances, useWeightedPairsState } from 'state/weightedPairs/hooks'
-import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
 import FullWeightedPositionCardExtended from '../../components/PositionCard/WeightedPairPositionExtended'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
-import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
-import { WeightedPairState, useWeightedPairsDataLite, useGetWeightedPairs } from '../../hooks/useWeightedPairs'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
@@ -34,69 +23,6 @@ import Page from '../Page'
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
 `
-
-function useRelevantWeightedPairs(chainId: number): WeightedPair[] {
-
-  const basePairs = useMemo(() => {
-    const basePairList: [Token, Token][] = []
-    for (let i = 0; i < BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId].length; i++) {
-      for (let k = i; k < BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId].length; k++) {
-        basePairList.push(
-          [
-            BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId][i],
-            BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId][k]
-          ]
-        )
-      }
-    }
-    return basePairList
-  }, [chainId])
-
-  const allPairCombinations: [Token, Token][] = useMemo(
-    () =>
-      basePairs
-        .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
-        .filter(([t0, t1]) => t0.address !== t1.address),
-    [basePairs],
-  )
-
-  const addressesRaw = useGetWeightedPairs(allPairCombinations, chainId)
-
-  const pairData = useMemo(
-    () =>
-      addressesRaw
-        ? addressesRaw
-          .map((addressData, index) => [addressData[0], allPairCombinations[index], addressData[1]])
-          .filter(x => x[0] === WeightedPairState.EXISTS)
-        : [],
-    [addressesRaw, allPairCombinations]
-  )
-
-  const [relevantPairs, addressList] = useMemo(() => {
-    const data: [Token, Token][] = []
-    const dataAddress: string[] = []
-    for (let j = 0; j < pairData.length; j++) {
-      for (let k = 0; k < (pairData[j][2] as string[]).length; k++) {
-        data.push(pairData[j][1] as [Token, Token])
-        dataAddress.push(pairData[j][2][k])
-      }
-    }
-    return [data, dataAddress]
-  }, [pairData])
-
-  const weightedPairsData = useWeightedPairsDataLite(
-    relevantPairs,
-    addressList,
-    chainId)
-
-
-  return useMemo(
-    () => {
-      return weightedPairsData.filter(x => x[0] === WeightedPairState.EXISTS).map(entry => entry[1])
-    },
-    [weightedPairsData]
-  )
-}
 
 export default function PoolList({
   history,
@@ -121,52 +47,8 @@ export default function PoolList({
 
   const { slowRefresh, fastRefresh } = useRefresh()
 
-  const dispatch = useAppDispatch()
-
-  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
-
-  useEffect(
-    () => {
-      if (chainId !== pools[0].tokens[0].chainId) {
-        dispatch(changeChainId({ newChainId: chainId }))
-      }
-      if (!publicDataLoaded) {
-        Object.values(pools).map(
-          (pool) => {
-            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
-            return 0
-          }
-        )
-      }
-    },
-    [
-      chainId,
-      dispatch,
-      slowRefresh,
-      pools,
-      library,
-      publicDataLoaded
-    ])
-
-  useEffect(() => {
-    if (account && !userDataLoaded && publicDataLoaded) {
-      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
-    }
-  },
-    [
-      account,
-      chainId,
-      pools,
-      userDataLoaded,
-      publicDataLoaded,
-      slowRefresh,
-      dispatch
-    ]
-  )
-
-
-  const deserializedPools = useDeserializedStablePools()
-  const stablePoolReceived = deserializedPools[0]
+  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const stablePoolReceived = stablePools[0]
 
   const {
     pairs,
@@ -202,7 +84,7 @@ export default function PoolList({
 
   console.log("RELEVANT PAIR", allWeightedDataWithLiquidity, allWeightedPairsWithLiquidity?.[0]?.token0Price.toSignificant(18))
 
-  const stablePoolBalance = useStablePoolLpBalance(0)
+  const stablePoolBalance = useStablePoolLpBalance(chainId, 0)
 
   const renderBody = () => {
     if (!account) {

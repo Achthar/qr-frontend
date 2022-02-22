@@ -20,6 +20,7 @@ import { useDeserializedStablePools, useStablePools } from 'state/stablePools/ho
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import useParsedQueryString from 'hooks/useParsedQueryString'
 import { useTranslation } from 'contexts/Localization'
@@ -224,50 +225,10 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   // call pool from state
   const { slowRefresh } = useRefresh()
 
-  const dispatch = useAppDispatch()
 
-  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
+  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
 
-  useEffect(
-    () => {
-      if (!publicDataLoaded) {
-        Object.values(pools).map(
-          (pool) => {
-            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
-
-            return 0
-          }
-        )
-      }
-
-    },
-    [
-      chainId,
-      dispatch,
-      slowRefresh,
-      pools,
-      publicDataLoaded
-    ])
-
-  useEffect(() => {
-    if (account && !userDataLoaded && publicDataLoaded) {
-      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
-    }
-  },
-    [
-      account,
-      chainId,
-      pools,
-      userDataLoaded,
-      publicDataLoaded,
-      slowRefresh,
-      dispatch
-    ]
-  )
-
-
-  const deserializedPools = useDeserializedStablePools()
-  const stablePool = deserializedPools[0]
+  const stablePool = stablePools[0]
   console.log("INPS", inputCurrencyId, outputCurrencyId)
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)

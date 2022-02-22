@@ -8,7 +8,7 @@ import { getContractForReserve } from 'utils/contractHelpers';
 import { bnParser, fetchStablePoolData } from './fetchStablePoolData';
 import { StablePoolConfig, StablePoolsState } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchStablePoolUserData';
-import { changeChainId } from './actions';
+import { changeChainIdStables } from './actions';
 
 
 // import { chain } from 'lodash'
@@ -20,7 +20,7 @@ function baseStablePool(chainId: number) {
   return stableSwapInitialData[chainId]
 }
 
-function initialState(chainId: number): StablePoolsState {
+function initialState(chainId: number) {
   return {
     pools: baseStablePool(chainId),
     publicDataLoaded: false,
@@ -68,33 +68,44 @@ export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataRespons
 
 export const stablePoolSlice = createSlice({
   name: 'stablePools',
-  initialState: initialState(chainIdFromState), // TODO: make that more flexible
+  initialState: {
+    referenceChain: 43113,
+    poolData: {
+      43113: initialState(43113),
+      42261: initialState(42261)
+
+    }
+  }, // TODO: make that more flexible
   reducers: {
   },
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
       .addCase(fetchStablePoolData.pending, state => {
-        state.publicDataLoaded = false;
+        state.poolData[state.referenceChain].publicDataLoaded = false;
       })
       .addCase(fetchStablePoolData.fulfilled, (state, action) => {
         const pool = action.payload
-        state.pools[pool.key] = { ...state.pools[pool.key], ...action.payload };
-        state.publicDataLoaded = true;
+        state.poolData[state.referenceChain].pools[pool.key] = { ...state.poolData[state.referenceChain].pools[pool.key], ...action.payload };
+        state.poolData[state.referenceChain].publicDataLoaded = true;
       })
       .addCase(fetchStablePoolData.rejected, (state, { error }) => {
-        state.publicDataLoaded = true;
+        state.poolData[state.referenceChain].publicDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })
       // Update pools with user data
       .addCase(fetchStablePoolUserDataAsync.fulfilled, (state, action) => {
         action.payload.forEach((userDataEl) => {
-          state.pools[userDataEl.index] = { ...state.pools[userDataEl.index], userData: userDataEl }
+          state.poolData[state.referenceChain].pools[userDataEl.index] = {
+            ...state.poolData[state.referenceChain].pools[userDataEl.index],
+            userData: userDataEl
+          }
         })
-        state.userDataLoaded = true
-      }).addCase(changeChainId, (state, action) => {
-        state = initialState(action.payload.newChainId)
+        state.poolData[state.referenceChain].userDataLoaded = true
+      }).addCase(changeChainIdStables, (state, action) => {
+        state.referenceChain = action.payload.newChainId
+
       })
   },
 })

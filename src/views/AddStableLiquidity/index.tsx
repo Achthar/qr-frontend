@@ -26,6 +26,7 @@ import { useDeserializedStablePools, useStablePools } from 'state/stablePools/ho
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
 import { useAppDispatch } from 'state'
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
@@ -77,61 +78,10 @@ export default function AddStableLiquidity({
   // we separate loading the stablepool to avoid rerendering on every input
   const { slowRefresh } = useRefresh()
 
-  const dispatch = useAppDispatch()
 
-  const { pools, publicDataLoaded, userDataLoaded } = useStablePools()
-  useEffect(
-    () => {
-      if (!publicDataLoaded) {
-        Object.values(pools).map(
-          (pool) => {
-            dispatch(fetchStablePoolData({ pool, chainId: chainId ?? 43113 }))
+  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const stablePool = stablePools[0]
 
-            return 0
-          }
-        )
-      }
-
-    },
-    [
-      chainId,
-      dispatch,
-      slowRefresh,
-      pools,
-      library,
-      publicDataLoaded
-    ])
-
-  useEffect(() => {
-    if (account && !userDataLoaded && publicDataLoaded) {
-      dispatch(fetchStablePoolUserDataAsync({ chainId, account, pools }))
-    }
-  },
-    [
-      account,
-      chainId,
-      pools,
-      userDataLoaded,
-      publicDataLoaded,
-      slowRefresh,
-      dispatch
-    ]
-  )
-
-
-  const deserializedPools = useDeserializedStablePools()
-  const stablePool = deserializedPools[0]
-
-  const {
-    balances: allBalances,
-    isLoadingTokens,
-  } = useUserBalances(chainId)
-
-
-  const stableAmounts = useMemo(() =>
-    getStableAmounts(chainId, allBalances),
-    [chainId, allBalances]
-  )
 
 
   const {
@@ -372,7 +322,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval2 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
+                width={account && approval2 !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue2}
                 onUserInput={onField2Input}
                 onMax={() => {
@@ -401,7 +351,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval3 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
+                width={account && approval3 !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue3}
                 onUserInput={onField3Input}
                 onMax={() => {
@@ -430,7 +380,7 @@ export default function AddStableLiquidity({
               <CurrencyInputPanelStable
                 chainId={chainId}
                 account={account}
-                width={account && approval4 !== ApprovalState.APPROVED ?  isMobile ? '100px' : '300px' : '100%'}
+                width={account && approval4 !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
                 value={typedValue4}
                 onUserInput={onField4Input}
                 onMax={() => {

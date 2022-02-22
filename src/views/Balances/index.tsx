@@ -13,6 +13,8 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import { setChainId } from 'state/globalNetwork/actions'
 import { changeChainId } from 'state/user/actions'
 import useRefresh from 'hooks/useRefresh'
+import { changeChainIdWeighted } from 'state/weightedPairs/actions'
+import { changeChainIdStables } from 'state/stablePools/actions'
 import { fetchUserNetworkCcyBalance } from 'state/user/fetchUserNetworkCcyBalance'
 import {
   getStableAmounts,
@@ -46,6 +48,8 @@ export default function Balances() {
     if (chainId !== stateChainId) {
       dispatch(setChainId({ chainId }))
       dispatch(changeChainId({ newChainId: chainId }))
+      dispatch(changeChainIdWeighted({ newChainId: chainId }))
+      dispatch(changeChainIdStables({ newChainId: chainId }))
     }
   }, [chainId, stateChainId, dispatch])
 

@@ -206,10 +206,15 @@ export interface SerializedStablePool extends StablePoolConfig {
   }
 }
 
-export interface StablePoolsState {
+export interface PoolData{
   pools: SerializedStablePool[]
   publicDataLoaded: boolean
   userDataLoaded: boolean
+}
+
+export interface StablePoolsState {
+  referenceChain: number
+  poolData:{ [chainId:number]:PoolData}
 }
 
 export interface WeightedPairMetaData extends TokenPair {
