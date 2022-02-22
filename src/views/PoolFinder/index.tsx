@@ -78,8 +78,10 @@ export default function PoolFinder({
   )
 
   useEffect(() => {
-    const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/find`)
+    const _chain = getChain(chainId ?? 43113)
+    if (chain !== _chain) {
+      history.push(`/${_chain}/find`)
+    }
 
   },
     [chain, chainId, history],

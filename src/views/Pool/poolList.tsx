@@ -74,15 +74,12 @@ export default function PoolList({
       ),
     [pairs, balances],
   )
-  console.log("WP DWU", dataWithUserBalances)
 
   const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
 
   const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
 
   const allWeightedDataWithLiquidity = dataWithUserBalances.filter((data) => Boolean(data.pair))
-
-  console.log("RELEVANT PAIR", allWeightedDataWithLiquidity, allWeightedPairsWithLiquidity?.[0]?.token0Price.toSignificant(18))
 
   const stablePoolBalance = useStablePoolLpBalance(chainId, 0)
 

@@ -38,8 +38,8 @@ function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]:
 
 export const useStablePoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.stablePools)
-  const pools = poolState.poolData[chainId].pools[id]
-  const lpToken = pools?.lpToken ? deserializeToken(pools[id]?.lpToken) : STABLE_POOL_LP[43113] // fallback
+  const pools = poolState.poolData[chainId].pools
+  const lpToken = pools[id]?.lpToken ? deserializeToken(pools[id]?.lpToken) : STABLE_POOL_LP[chainId] // fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
 
