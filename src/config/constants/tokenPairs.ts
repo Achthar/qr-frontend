@@ -6,6 +6,9 @@ const getTokenList = (chainId: number) => {
     return tokenList[chainId].tokens
 }
 
+// gets all token pairs from list 
+// vaidates the addresses in a separate instance
+// so that these can be used as keys for dictionaries
 export const getAllTokenPairs = (chainId: number) => {
     const tokens = getTokenList(chainId)
     const basePairList: TokenPair[] = []
