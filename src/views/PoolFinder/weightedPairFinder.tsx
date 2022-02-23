@@ -10,6 +10,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { useAddPair, useGetWeightedPairsState, useTokenPair } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
+import { MinimalWeightedPositionCardExtended } from 'components/PositionCard/WeightedPairPositionExtended'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import { CurrencyLogo } from '../../components/Logo'
@@ -39,8 +40,6 @@ const StyledButton = styled(Button)`
   color: ${({ theme }) => theme.colors.text};
   box-shadow: none;
   border-radius: 16px;
-  width: 80%;
-  align: right;
 `
 
 
@@ -71,6 +70,11 @@ export default function WeightedPairFinder({
   const [currency0, setCurrency0] = useState<Currency | null>(NETWORK_CCY[chainId])
   const [currency1, setCurrency1] = useState<Currency | null>(STABLECOINS[chainId][0])
 
+  useEffect(() => {
+    setCurrency0(NETWORK_CCY[chainId])
+    setCurrency1(STABLECOINS[chainId][0])
+  }, [chainId])
+
 
   const tA = wrappedCurrency(currency0, chainId)
   const tB = wrappedCurrency(currency1, chainId)
@@ -79,7 +83,7 @@ export default function WeightedPairFinder({
 
   const tokenPair = useTokenPair(tA, tB, chainId)
 
-  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
+  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
 
 
   const pairsAvailable = pairs.filter(pair => pair.token0.address === tokenPair.token0.address && pair.token1.address === tokenPair.token1.address)
@@ -95,14 +99,15 @@ export default function WeightedPairFinder({
 
 
 
-  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount }[] = useMemo(
+  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, totalSupply: TokenAmount }[] = useMemo(
     () =>
-      pairsAvailable.map((pair, index) => { return { pair, balance: balances[index] } }).filter((data) =>
+      pairsAvailable.map((pair, index) => { return { pair, balance: balances[index], totalSupply: totalSupply[index] } }).filter((data) =>
         data.balance?.greaterThan('0'),
       ),
-    [pairsAvailable, balances],
+    [pairsAvailable, balances, totalSupply],
   )
 
+  console.log("DATA WUB", dataWithUserBalances)
   const lpWithUserBalances = useMemo(
     () =>
       pairsAvailable.filter((_, index) =>
@@ -167,80 +172,47 @@ export default function WeightedPairFinder({
           subtitle={t('Import an existing pool')}
           backTo="/pool" />
         <AutoColumn style={{ padding: '1rem' }} gap="md">
-          <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-            <PercentageInputPanel
-              width='10px'
-              borderRadius='13px'
-              value={String(weight0)}
-              onUserInput={value => setWeight0(Number(value))}
-              label='Weight'
-              id='feePanel'
-            />
+          <StyledButton
+            endIcon={<ChevronDownIcon />}
+            onClick={() => {
+              onPresentCurrencyModal()
+              setActiveField(Fields.TOKEN0)
+            }}
+          >
+            {currency0 ? (
+              <Row>
+                <CurrencyLogo chainId={chainId} currency={currency0} />
+                <Text ml="8px">{currency0.symbol}</Text>
+              </Row>
+            ) : (
+              <Text ml="8px">{t('Select a Token')}</Text>
+            )}
+          </StyledButton>
 
-            <StyledButton
-              endIcon={<ChevronDownIcon />}
-              onClick={() => {
-                onPresentCurrencyModal()
-                setActiveField(Fields.TOKEN0)
-              }}
-            >
-              {currency0 ? (
-                <Row>
-                  <CurrencyLogo chainId={chainId} currency={currency0} />
-                  <Text ml="8px">{currency0.symbol}</Text>
-                </Row>
-              ) : (
-                <Text ml="8px">{t('Select a Token')}</Text>
-              )}
-            </StyledButton>
-          </Flex>
           <ColumnCenter>
-            <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-              <AddIcon />
-
-              <BpsInputPanel
-                width='20px'
-                borderRadius='16px'
-                value={String(fee)}
-                onUserInput={value => setFee(Number(value))}
-                label='fee'
-                id='feePanel'
-              />
-            </Flex>
+            <AddIcon />
           </ColumnCenter>
-
-
-          <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-            <PercentageInputPanel
-              width='10px'
-              borderRadius='16px'
-              value={String(100 - weight0)}
-              onUserInput={value => null}
-              label='Weight'
-              id='weightPanel2'
-            />
-            <StyledButton
-              endIcon={<ChevronDownIcon />}
-              onClick={() => {
-                onPresentCurrencyModal()
-                setActiveField(Fields.TOKEN1)
-              }}
-            >
-              {currency1 ? (
-                <Row>
-                  <CurrencyLogo chainId={chainId} currency={currency1} />
-                  <Text ml="8px">{currency1.symbol}</Text>
-                </Row>
-              ) : (
-                <Text as={Row}>{t('Select a Token')}</Text>
-              )}
-            </StyledButton>
-          </Flex>
+          <StyledButton
+            endIcon={<ChevronDownIcon />}
+            onClick={() => {
+              onPresentCurrencyModal()
+              setActiveField(Fields.TOKEN1)
+            }}
+          >
+            {currency1 ? (
+              <Row>
+                <CurrencyLogo chainId={chainId} currency={currency1} />
+                <Text ml="8px">{currency1.symbol}</Text>
+              </Row>
+            ) : (
+              <Text as={Row}>{t('Select a Token')}</Text>
+            )}
+          </StyledButton>
           {hasPosition && (
             <ColumnCenter
               style={{ justifyItems: 'center', backgroundColor: '', padding: '12px 0px', borderRadius: '12px' }}
             >
-              <Text textAlign="center">{t('Pool Found!')}</Text>
+              <Text textAlign="center">{t('Pools Found!')}</Text>
               <StyledInternalLink to="/pool">
                 <Text textAlign="center">{t('Manage this pool.')}</Text>
               </StyledInternalLink>
@@ -249,8 +221,8 @@ export default function WeightedPairFinder({
 
           {currency0 && currency1 ? (
             pairsAvailable.length > 0 ? (
-              hasPosition ? pairsAvailable.map((pair) => (
-                <MinimalWeightedPositionCard weightedPair={pair} />
+              hasPosition ? dataWithUserBalances.map((pairData) => (
+                <MinimalWeightedPositionCardExtended weightedPair={pairData.pair} totalSupply={pairData.totalSupply} userBalance={pairData.balance} showUnwrapped={false} />
               )
               )
                 : (
@@ -292,43 +264,6 @@ export default function WeightedPairFinder({
             ) : null
           ) : (
             prerequisiteMessage
-          )}
-
-          {pairsAvailable.length > 0 && (
-            <Box>
-              <AutoColumn gap="sm" justify="center">
-                <Text bold fontSize='15px'>
-                  Available constellations
-                </Text>
-                {pairsAvailable.map((pairData) => (
-                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                    <AutoColumn>
-                      <Text fontSize='13px' width='100px'>
-                        {`${tA.symbol} ${aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()}%`}
-                      </Text>
-                      <Text fontSize='13px' width='100px'>
-                        {`${tB.symbol} ${aIs0 ? pairData.weight1.toString() : pairData.weight0.toString()}%`}
-                      </Text>
-                    </AutoColumn>
-                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                      {`Fee ${pairData.fee0.toString()}Bps`}
-                    </Text>
-                    <StyledButton
-                      height='20px'
-                      endIcon={<ArrowUpIcon />}
-                      onClick={() => {
-                        setFee(Number(pairData.fee0.toString()))
-                        setWeight0(Number(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()))
-                      }}
-                    >
-                      <Text fontSize='15px'>
-                        Set
-                      </Text>
-                    </StyledButton>
-                  </Flex>
-                ))}
-              </AutoColumn>
-            </Box>
           )}
         </AutoColumn>
       </AppBody>

@@ -56,7 +56,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
 
   const userPoolBalance = userBalance
   const totalPoolTokens = totalSupply
-  console.log("WP DUH", userPoolBalance, totalPoolTokens)
+
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
@@ -91,7 +91,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
                 <RowFixed>
                   <DoubleCurrencyLogo chainId={chainId} currency0={currency0} currency1={currency1} margin size={20} />
                   <Text small color="textSubtle">
-                    {currency0.symbol}-{currency1.symbol} LP
+                    {weightedPair.weight0.toString()}-{currency0.symbol}/{weightedPair.weight1.toString()}-{currency1.symbol}@{weightedPair.fee0.toString()}bps
                   </Text>
                 </RowFixed>
                 <RowFixed>
@@ -147,7 +147,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
   )
 }
 
-export default function FullWeightedPositionCard({ weightedPair, totalSupply, userBalance,  ...props }: WeightedPositionCardProps) {
+export default function FullWeightedPositionCard({ weightedPair, totalSupply, userBalance, ...props }: WeightedPositionCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(weightedPair.token0)
