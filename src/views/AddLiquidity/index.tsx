@@ -35,7 +35,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { REQUIEM_PAIR_MANAGER } from 'config/constants'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
-import { deserializeToken } from 'state/user/hooks/helpers'
+import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -108,11 +108,11 @@ export default function AddLiquidity({
       const tokenB = wrappedCurrency(currencyB, chainId)
       return tokenA?.address.toLowerCase() < tokenB?.address.toLocaleLowerCase() ?
         [{
-          token0: deserializeToken(tokenA),
-          token1: deserializeToken(tokenB),
+          token0: serializeToken(tokenA),
+          token1: serializeToken(tokenB),
         }, true] : [{
-          token1: deserializeToken(tokenA),
-          token0: deserializeToken(tokenB),
+          token1: serializeToken(tokenA),
+          token0: serializeToken(tokenB),
         }, false]
     },
     [chainId, currencyA, currencyB],
@@ -127,7 +127,6 @@ export default function AddLiquidity({
     userBalancesLoaded,
     totalSupply: supplyLp
   } = useGetWeightedPairsState(chainId, account, tokens.token0 && tokens.token1 ? [tokens] : [], slowRefresh, fastRefresh)
-  console.log("WP INP AL P", pairs, fee)
 
   // get derived info for selected pair
   const {
@@ -254,7 +253,6 @@ export default function AddLiquidity({
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
-    console.log("ADDL ON", noLiquidity, !chainId || !library || !account, parsedAmounts, !currencyA || !currencyB || !deadline, deadline)
     if (!chainId || !library || !account) return
     const pairManager = getPairManagerContract(chainId, library, account)
 

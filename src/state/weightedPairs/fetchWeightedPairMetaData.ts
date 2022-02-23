@@ -95,7 +95,7 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
           (index) =>
           (
             {
-              [`${tokenPairs[index].token0.address}-${tokenPairs[index].token1.address}`]:
+              [`${getAddress(tokenPairs[index].token0.address)}-${getAddress(tokenPairs[index].token1.address)}`]:
                 rawMetaData[index]._tokenPairs.map((addr) => ({ address: addr }))
             }
           )

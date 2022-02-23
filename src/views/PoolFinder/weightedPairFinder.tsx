@@ -83,7 +83,7 @@ export default function WeightedPairFinder({
 
   const tokenPair = useTokenPair(tA, tB, chainId)
 
-  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
+  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, isContained ? [] : [tokenPair], slowRefresh, slowRefresh)
 
 
   const pairsAvailable = pairs.filter(pair => pair.token0.address === tokenPair.token0.address && pair.token1.address === tokenPair.token1.address)
@@ -91,20 +91,21 @@ export default function WeightedPairFinder({
   const addPair = useWeightedPairAdder()
 
   useEffect(() => {
-    if (pairsAvailable.length > 0) {
-      pairsAvailable.map((pair) => addPair(pair))
+    if (pairsAvailable.length > 0 && !isContained) {
+      // pairsAvailable.map((pair) => addPair(pair))
     }
-  }, [pairsAvailable, addPair])
+  }, [pairsAvailable, addPair, isContained])
 
 
 
 
   const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, totalSupply: TokenAmount }[] = useMemo(
     () =>
-      pairsAvailable.map((pair, index) => { return { pair, balance: balances[index], totalSupply: totalSupply[index] } }).filter((data) =>
-        data.balance?.greaterThan('0'),
-      ),
-    [pairsAvailable, balances, totalSupply],
+      pairs.map((pair, index) => { return { pair, balance: balances[index], totalSupply: totalSupply[index] } })
+        .filter(data => data.pair.token0.address === tokenPair.token0.address && data.pair.token1.address === tokenPair.token1.address).filter((data) =>
+          data.balance?.greaterThan('0'),
+        ),
+    [pairs, balances, totalSupply, tokenPair],
   )
 
   console.log("DATA WUB", dataWithUserBalances)
@@ -213,8 +214,8 @@ export default function WeightedPairFinder({
               style={{ justifyItems: 'center', backgroundColor: '', padding: '12px 0px', borderRadius: '12px' }}
             >
               <Text textAlign="center">{t('Pools Found!')}</Text>
-              <StyledInternalLink to="/pool">
-                <Text textAlign="center">{t('Manage this pool.')}</Text>
+              <StyledInternalLink to={`/${getChain(chainId)}/liquidity`}>
+                <Text textAlign="center">{t('Manage these pools.')}</Text>
               </StyledInternalLink>
             </ColumnCenter>
           )}

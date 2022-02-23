@@ -13,7 +13,6 @@ import { State, Bond, BondsState, StablePoolsState, WeightedPairState, Serialize
 
 export const useWeightedPairsState = (chainId: number) => {
   const pairState = useSelector((state: State) => state.weightedPairs)
-  console.log("STATE", pairState)
   return pairState[chainId]
 }
 

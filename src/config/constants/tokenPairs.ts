@@ -1,3 +1,4 @@
+import { getAddress } from "ethers/lib/utils"
 import { tokenList } from "./tokenLists/tokenlist"
 import { SerializedToken, TokenPair } from "./types"
 
@@ -13,11 +14,23 @@ export const getAllTokenPairs = (chainId: number) => {
             basePairList.push(
                 tokens[i].address.toLowerCase() < tokens[k].address.toLowerCase() ?
                     {
-                        token0: tokens[i],
-                        token1: tokens[k]
+                        token0: {
+                            ...tokens[i],
+                             address: getAddress(tokens[i].address)
+                        },
+                        token1: {
+                            ...tokens[k],
+                             address: getAddress(tokens[k].address)
+                        }
                     } : {
-                        token0: tokens[k],
-                        token1: tokens[i]
+                        token1: {
+                            ...tokens[i],
+                             address: getAddress(tokens[i].address)
+                        },
+                        token0: {
+                            ...tokens[k],
+                             address: getAddress(tokens[k].address)
+                        }
                     }
             )
         }
