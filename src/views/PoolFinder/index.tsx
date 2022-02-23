@@ -160,7 +160,7 @@ export default function PoolFinder({
               style={{ justifyItems: 'center', backgroundColor: '', padding: '12px 0px', borderRadius: '12px' }}
             >
               <Text textAlign="center">{t('Pool Found!')}</Text>
-              <StyledInternalLink to={`/${getChain(chainId)}/pool`}>
+              <StyledInternalLink to={`/${getChain(chainId)}/liquidity`}>
                 <Text textAlign="center">{t('Manage this pool.')}</Text>
               </StyledInternalLink>
             </ColumnCenter>
@@ -174,7 +174,7 @@ export default function PoolFinder({
                 <LightCard padding="45px 10px">
                   <AutoColumn gap="sm" justify="center">
                     <Text textAlign="center">{t('You don’t have liquidity in this pool yet.')}</Text>
-                    <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
+                    <StyledInternalLink to={`/add/50-${currencyId(chainId, currency0)}/50-${currencyId(chainId, currency1)}/25`}>
                       <Text textAlign="center">{t('Add Liquidity')}</Text>
                     </StyledInternalLink>
                   </AutoColumn>
@@ -184,7 +184,7 @@ export default function PoolFinder({
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
                   <Text textAlign="center">{t('No pool found.')}</Text>
-                  <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
+                  <StyledInternalLink to={`/add/50-${currencyId(chainId, currency0)}/50-${currencyId(chainId, currency1)}/25`}>
                     {t('Create pool.')}
                   </StyledInternalLink>
                 </AutoColumn>

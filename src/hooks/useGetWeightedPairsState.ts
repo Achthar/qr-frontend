@@ -4,11 +4,13 @@ import { TokenList } from '@uniswap/token-lists'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { TokenPair } from 'config/constants/types'
-import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, useWeightedPairsState } from 'state/weightedPairs/hooks'
-import { changeChainIdWeighted } from 'state/weightedPairs/actions'
+import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, usePairIsInState, useWeightedPairsState } from 'state/weightedPairs/hooks'
+import { addTokenPair, changeChainIdWeighted } from 'state/weightedPairs/actions'
 import { fetchWeightedPairMetaData, isNewTokenPair } from 'state/weightedPairs/fetchWeightedPairMetaData'
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
-import { TokenAmount, WeightedPair } from '@requiemswap/sdk'
+import { Currency, TokenAmount, WeightedPair } from '@requiemswap/sdk'
+import { wrappedCurrency } from 'utils/wrappedCurrency'
+import { serializeToken } from 'state/user/hooks/helpers'
 import { AppDispatch } from '../state'
 
 export function useGetWeightedPairsState(
@@ -190,4 +192,49 @@ export function useGetWeightedPairsTradeState(
         metaDataLoaded,
         reservesAndWeightsLoaded
     }
+}
+
+export function useAddPair(currencyA: Currency, currencyB: Currency, chainId: number): boolean {
+
+    const [tokenA, tokenB] = chainId
+        ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+        : [undefined, undefined]
+
+    const tokenPair = tokenA && tokenB ? (tokenA.address.toLowerCase() < tokenB.address.toLowerCase() ? {
+        token0: serializeToken(tokenA),
+        token1: serializeToken(tokenB)
+    } : {
+        token0: serializeToken(tokenB),
+        token1: serializeToken(tokenA)
+    }) : null
+
+    const pairContained = usePairIsInState(chainId, tokenPair)
+    const dispatch = useDispatch<AppDispatch>()
+    useEffect(() => {
+        if (!pairContained) {
+            dispatch(addTokenPair({ tokenPair }))
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pairContained])
+
+    return pairContained
+}
+
+
+export function useTokenPair(currencyA: Currency, currencyB: Currency, chainId: number): TokenPair {
+
+    const [tokenA, tokenB] = chainId
+        ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+        : [undefined, undefined]
+
+    const tokenPair = tokenA && tokenB ? (tokenA.address.toLowerCase() < tokenB.address.toLowerCase() ? {
+        token0: serializeToken(tokenA),
+        token1: serializeToken(tokenB)
+    } : {
+        token0: serializeToken(tokenB),
+        token1: serializeToken(tokenA)
+    }) : null
+
+
+    return tokenPair
 }

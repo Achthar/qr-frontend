@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
-import { Currency, JSBI, TokenAmount, NETWORK_CCY, STABLECOINS } from '@requiemswap/sdk'
+import { Currency, JSBI, TokenAmount, NETWORK_CCY, STABLECOINS, WeightedPair } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, AddIcon, useModal, Flex, ArrowUpIcon, Box } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -8,6 +8,8 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import getChain from 'utils/getChain'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { RouteComponentProps, Link } from 'react-router-dom'
+import { useAddPair, useGetWeightedPairsState, useTokenPair } from 'hooks/useGetWeightedPairsState'
+import useRefresh from 'hooks/useRefresh'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import { CurrencyLogo } from '../../components/Logo'
@@ -49,38 +51,6 @@ export default function WeightedPairFinder({
   },
 }: RouteComponentProps<{ chain: string }>) {
   const { account, chainId } = useActiveWeb3React()
-  const { t } = useTranslation()
-
-  const [activeField, setActiveField] = useState<number>(Fields.TOKEN1)
-
-  const [fee, setFee] = useState<number>(20)
-  const [weight0, setWeight0] = useState<number>(50)
-  const [currency0, setCurrency0] = useState<Currency | null>(NETWORK_CCY[chainId])
-  const [currency1, setCurrency1] = useState<Currency | null>(STABLECOINS[chainId][0])
-
-
-  const addressesRaw = useGetWeightedPairs([[currency0, currency1]], chainId)
-
-  const validatedAddresses = useMemo(
-    () =>
-      addressesRaw ? addressesRaw.filter(x => x[0] === WeightedPairState.EXISTS).map((data) => data[1]) : [],
-    [addressesRaw]
-  )
-
-  const tA = wrappedCurrency(currency0, chainId)
-  const tB = wrappedCurrency(currency1, chainId)
-
-  const weightedPairsAvailable = useWeightedPairsDataLite([[tA, tB]], validatedAddresses?.[0], chainId)
-
-  const [pairState, pair] = useWeightedPair(chainId, currency0 ?? undefined, currency1 ?? undefined, weight0, fee)
-  const addPair = useWeightedPairAdder()
-
-  useEffect(() => {
-    if (pair) {
-      addPair(pair)
-    }
-  }, [pair, addPair])
-
 
   useEffect(() => {
     const _chain = chain ?? getChain(chainId)
@@ -91,16 +61,67 @@ export default function WeightedPairFinder({
   )
 
 
-  const validPairNoLiquidity: boolean =
-    pairState === WeightedPairState.NOT_EXISTS ||
-    Boolean(
-      pairState === WeightedPairState.EXISTS &&
-      pair &&
-      JSBI.equal(pair.reserve0.raw, JSBI.BigInt(0)) &&
-      JSBI.equal(pair.reserve1.raw, JSBI.BigInt(0)),
-    )
 
-  const position: TokenAmount | undefined = useTokenBalance(chainId, account ?? undefined, pair?.liquidityToken)
+  const { t } = useTranslation()
+  const { slowRefresh } = useRefresh()
+  const [activeField, setActiveField] = useState<number>(Fields.TOKEN1)
+
+  const [fee, setFee] = useState<number>(20)
+  const [weight0, setWeight0] = useState<number>(50)
+  const [currency0, setCurrency0] = useState<Currency | null>(NETWORK_CCY[chainId])
+  const [currency1, setCurrency1] = useState<Currency | null>(STABLECOINS[chainId][0])
+
+
+  const tA = wrappedCurrency(currency0, chainId)
+  const tB = wrappedCurrency(currency1, chainId)
+
+  const isContained = useAddPair(tA, tB, chainId)
+
+  const tokenPair = useTokenPair(tA, tB, chainId)
+
+  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
+
+
+  const pairsAvailable = pairs.filter(pair => pair.token0.address === tokenPair.token0.address && pair.token1.address === tokenPair.token1.address)
+
+  const addPair = useWeightedPairAdder()
+
+  useEffect(() => {
+    if (pairsAvailable.length > 0) {
+      pairsAvailable.map((pair) => addPair(pair))
+    }
+  }, [pairsAvailable, addPair])
+
+
+
+
+  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount }[] = useMemo(
+    () =>
+      pairsAvailable.map((pair, index) => { return { pair, balance: balances[index] } }).filter((data) =>
+        data.balance?.greaterThan('0'),
+      ),
+    [pairsAvailable, balances],
+  )
+
+  const lpWithUserBalances = useMemo(
+    () =>
+      pairsAvailable.filter((_, index) =>
+        balances[index]?.greaterThan('0'),
+      ),
+    [pairsAvailable, balances],
+  )
+
+  const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
+
+  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
+
+  const allWeightedDataWithLiquidity = dataWithUserBalances.filter((data) => Boolean(data.pair))
+
+  const validPairNoLiquidity: boolean =
+    pairsAvailable.length > 0 && allWeightedDataWithLiquidity.length === 0
+
+
+  const position = dataWithUserBalances[0]?.balance
   const hasPosition = Boolean(position && JSBI.greaterThan(position.raw, JSBI.BigInt(0)))
 
   const handleCurrencySelect = useCallback(
@@ -227,29 +248,31 @@ export default function WeightedPairFinder({
           )}
 
           {currency0 && currency1 ? (
-            pairState === WeightedPairState.EXISTS ? (
-              hasPosition && pair ? (
+            pairsAvailable.length > 0 ? (
+              hasPosition ? pairsAvailable.map((pair) => (
                 <MinimalWeightedPositionCard weightedPair={pair} />
-              ) : (
-                <LightCard padding="45px 10px">
-                  <AutoColumn gap="sm" justify="center">
-                    <Text textAlign="center">{t('You don’t have liquidity in this pool yet.')}</Text>
-                    <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
-                      <Text textAlign="center">{t('Add Liquidity')}</Text>
-                    </StyledInternalLink>
-                  </AutoColumn>
-                </LightCard>
               )
+              )
+                : (
+                  <LightCard padding="45px 10px">
+                    <AutoColumn gap="sm" justify="center">
+                      <Text textAlign="center">{t('You don’t have liquidity in this pool yet.')}</Text>
+                      <StyledInternalLink to={`/add/50-${currencyId(chainId, currency0)}/50-${currencyId(chainId, currency1)}/25`}>
+                        <Text textAlign="center">{t('Add Liquidity')}</Text>
+                      </StyledInternalLink>
+                    </AutoColumn>
+                  </LightCard>
+                )
             ) : validPairNoLiquidity ? (
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
                   <Text textAlign="center">{t('No pool found.')}</Text>
-                  <StyledInternalLink to={`/add/${currencyId(chainId, currency0)}/${currencyId(chainId, currency1)}`}>
+                  <StyledInternalLink to={`/add/50-${currencyId(chainId, currency0)}/50-${currencyId(chainId, currency1)}/25`}>
                     {t('Create pool.')}
                   </StyledInternalLink>
                 </AutoColumn>
               </LightCard>
-            ) : pairState === WeightedPairState.INVALID ? (
+            ) : tokenPair?.token0.address === tokenPair?.token1.address ? (
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
                   <Text textAlign="center" fontWeight={500}>
@@ -257,7 +280,7 @@ export default function WeightedPairFinder({
                   </Text>
                 </AutoColumn>
               </LightCard>
-            ) : pairState === WeightedPairState.LOADING ? (
+            ) : weightedIsLoading ? (
               <LightCard padding="45px 10px">
                 <AutoColumn gap="sm" justify="center">
                   <Text textAlign="center">
@@ -271,40 +294,38 @@ export default function WeightedPairFinder({
             prerequisiteMessage
           )}
 
-          {weightedPairsAvailable.length > 0 && (
+          {pairsAvailable.length > 0 && (
             <Box>
               <AutoColumn gap="sm" justify="center">
                 <Text bold fontSize='15px'>
                   Available constellations
                 </Text>
-                {weightedPairsAvailable.map((pairData) => (
-
-                  pairData[0] === WeightedPairState.EXISTS && (
-                    <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                      <AutoColumn>
-                        <Text fontSize='13px' width='100px'>
-                          {`${currency0.symbol} ${aIs0 ? pairData[1].weight0.toString() : pairData[1].weight1.toString()}%`}
-                        </Text>
-                        <Text fontSize='13px' width='100px'>
-                          {`${currency1.symbol} ${aIs0 ? pairData[1].weight1.toString() : pairData[1].weight0.toString()}%`}
-                        </Text>
-                      </AutoColumn>
-                      <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                        {`Fee ${pairData[1].fee0.toString()}Bps`}
+                {pairsAvailable.map((pairData) => (
+                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
+                    <AutoColumn>
+                      <Text fontSize='13px' width='100px'>
+                        {`${tA.symbol} ${aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()}%`}
                       </Text>
-                      <StyledButton
-                        height='20px'
-                        endIcon={<ArrowUpIcon />}
-                        onClick={() => {
-                          setFee(Number(pairData[1].fee0.toString()))
-                          setWeight0(aIs0 ? Number(pairData[1].weight0.toString()) : Number(pairData[1].weight1.toString()))
-                        }}
-                      >
-                        <Text fontSize='15px'>
-                          Set
-                        </Text>
-                      </StyledButton>
-                    </Flex>)
+                      <Text fontSize='13px' width='100px'>
+                        {`${tB.symbol} ${aIs0 ? pairData.weight1.toString() : pairData.weight0.toString()}%`}
+                      </Text>
+                    </AutoColumn>
+                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
+                      {`Fee ${pairData.fee0.toString()}Bps`}
+                    </Text>
+                    <StyledButton
+                      height='20px'
+                      endIcon={<ArrowUpIcon />}
+                      onClick={() => {
+                        setFee(Number(pairData.fee0.toString()))
+                        setWeight0(Number(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()))
+                      }}
+                    >
+                      <Text fontSize='15px'>
+                        Set
+                      </Text>
+                    </StyledButton>
+                  </Flex>
                 ))}
               </AutoColumn>
             </Box>

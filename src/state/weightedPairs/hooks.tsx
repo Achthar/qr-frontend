@@ -120,3 +120,15 @@ function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]:
   )
 }
 
+export function usePairIsInState(chainId: number, tokenPair: TokenPair): boolean {
+  const tokenPairs = useSelector((state: State) => state.weightedPairs[chainId].tokenPairs)
+
+  if (!tokenPair)
+    return false
+
+  for (let i = 0; i < tokenPairs.length; i++) {
+    if (tokenPair.token0.address === tokenPairs[i].token0.address && tokenPair.token0.address === tokenPairs[i].token0.address)
+      return true
+  }
+  return false
+}

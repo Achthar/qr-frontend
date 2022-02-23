@@ -521,9 +521,9 @@ const GeneralNav: React.FC = () => {
   const isConnected = Boolean(account)
 
   const current = menuItems[activeIndex]
-  
-  const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') ? getMenuIcon('Liquidity') : current?.icon
-  const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') ? 'Liquidity' : current?.label
+
+  const fbIcon = location.pathname.includes('remove') || location.pathname.includes('add') || location.pathname.includes('find') ? getMenuIcon('Liquidity') : current?.icon
+  const fbLabel = location.pathname.includes('remove') || location.pathname.includes('add') || location.pathname.includes('find') ? 'Liquidity' : current?.label
   const activatorRef = React.useRef<HTMLButtonElement | null>(null);
   return (
     <div ref={wrapperRef}>
@@ -555,7 +555,7 @@ const GeneralNav: React.FC = () => {
             alignItems: 'center'
           }}
         >
-          <MenuBar chainId={chainId} onClick={handleClick}/>
+          <MenuBar chainId={chainId} onClick={handleClick} />
         </div>
       )}
 

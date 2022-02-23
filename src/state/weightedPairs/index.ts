@@ -8,7 +8,7 @@ import { getAllTokenPairs } from 'config/constants/tokenPairs';
 import { bnParser, fetchWeightedPairMetaData } from './fetchWeightedPairMetaData';
 import { StablePoolConfig, StablePoolsState, WeightedPairState } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchWeightedPairUserData';
-import { changeChainIdWeighted, metaDataChange, triggerRefreshUserData } from './actions';
+import { addTokenPair, changeChainIdWeighted, metaDataChange, triggerRefreshUserData } from './actions';
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData } from './fetchWeightedPairData';
 
 
@@ -210,15 +210,10 @@ export const stablePoolSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
-    // // Update pools with user data
-    // .addCase(fetchStablePoolUserDataAsync.fulfilled, (state, action) => {
-    //   action.payload.forEach((userDataEl) => {
-    //     state.pools[userDataEl.index] = { ...state.pools[userDataEl.index], userData: userDataEl }
-    //   })
-    //   state.userDataLoaded = true
-    // }).addCase(changeChainId, (state, action) => {
-    //   state = initialState(action.payload.newChainId)
-    // })
+      .addCase(addTokenPair, (state, action) => {
+        state[state.currentChain].metaDataLoaded = false;
+        state[state.currentChain].tokenPairs.push(action.payload.tokenPair)
+      })
   },
 })
 

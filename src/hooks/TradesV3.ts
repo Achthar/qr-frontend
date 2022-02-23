@@ -30,7 +30,7 @@ import { WeightedPairState, useWeightedPairs, useWeightedPairsExist, useGetWeigh
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens } from './Tokens'
-import { useGetWeightedPairsState } from './useGetWeightedPairsState'
+import { useGetWeightedPairsTradeState } from './useGetWeightedPairsState'
 import useRefresh from './useRefresh'
 
 const PAIR_INTERFACE = new Interface(RequiemPairABI)
@@ -265,31 +265,6 @@ export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: num
 
 }
 
-// funtion to get all relevant weighted pairs
-// requires two calls if ccys are not in base
-// 1) check whether pair exists
-// 2) fetch reserves
-function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Currency): WeightedPair[] {
-  const { chainId } = useNetworkState()
-  const [tokenA, tokenB] = chainId
-    ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
-    : [undefined, undefined]
-
-  const tokenPairs = useAllTradeTokenPairs(tokenA, tokenB, chainId)
-  const { slowRefresh } = useRefresh()
-  console.log("RPAIRS in", chainId, '', tokenPairs, slowRefresh, slowRefresh)
-  const { pairs, metaDataLoaded, reservesAndWeightsLoaded } = useGetWeightedPairsState(chainId, '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B', tokenPairs, slowRefresh, slowRefresh)
-  console.log("RPAIRS out", pairs, metaDataLoaded, reservesAndWeightsLoaded)
-
-  return useMemo(
-    () => {
-      return metaDataLoaded && reservesAndWeightsLoaded ? pairs : []
-    },
-    [metaDataLoaded, reservesAndWeightsLoaded, pairs]
-  )
-
-}
-
 const MAX_HOPS = 3
 
 /**
@@ -298,7 +273,7 @@ const MAX_HOPS = 3
 export function useTradeV3ExactIn(
   publicDataLoaded: boolean,
   stablePool: StablePool,
-  tradePairs:WeightedPair[],
+  tradePairs: WeightedPair[],
   currencyAmountIn?: CurrencyAmount,
   currencyOut?: Currency
 ): TradeV4 | null {
@@ -353,7 +328,7 @@ export function useTradeV3ExactIn(
 export function useTradeV3ExactOut(
   publicDataLoaded: boolean,
   stablePool: StablePool,
-  tradePairs:WeightedPair[],
+  tradePairs: WeightedPair[],
   currencyIn?: Currency,
   currencyAmountOut?: CurrencyAmount
 ): TradeV4 | null {
