@@ -172,7 +172,7 @@ export function useCombinedActiveList(chainId: number): TokenAddressMap {
   // const { chainId } = useNetworkState();
   const activeListUrls = useActiveListUrls()
   const activeTokens = useCombinedTokenMapFromUrls(activeListUrls)
-  const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST[chainId])
+  const defaultTokenMap = listToTokenMap(DEFAULT_TOKEN_LIST[chainId ?? 43113])
   return combineMaps(activeTokens, defaultTokenMap)
 }
 

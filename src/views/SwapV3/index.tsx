@@ -2,11 +2,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { CurrencyAmount, JSBI, Token, TokenAmount, TradeV4 } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
+import { useWeb3React } from '@web3-react/core'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import SwapWarningTokens from 'config/constants/swapWarningTokens'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import { getAddress } from 'utils/addressHelpers'
 import getChain from 'utils/getChain'
 import AddressInputPanel from './components/AddressInputPanel'
@@ -57,12 +60,15 @@ export default function SwapV3({
   },
 }: RouteComponentProps<{ chain: string }>) {
 
-  const { account, chainId, library } = useActiveWeb3React()
+
+  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
 
   const loadedUrlParams = useDefaultsFromURLSearch(chainId)
 
   useEffect(() => {
-    const _chain = getChain(chainId)
+    const _chain = getChain(chainId ?? 43113)
     if (chain !== _chain) {
       history.push(`/${_chain}/exchange`)
     }

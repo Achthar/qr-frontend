@@ -97,17 +97,7 @@ const StyledButton = styled(Button) <{ mB: string, width: string }>`
 `
 
 const Balances = () => {
-  // global network chainId
-  // const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
   const { account } = useWeb3React()
-  // const dispatch = useDispatch<AppDispatch>()
-  // if (chainIdState !== chainId) {
-  // useEffect(
-  //   () => {
-  //     onChainChange(chainId)
-  //     return;
-  //   }, [chainId, onChainChange])
-  // }
   const [balanceShown, showBalance] = useState<boolean>(false)
   const handleClick = () => showBalance(!balanceShown)
   return (

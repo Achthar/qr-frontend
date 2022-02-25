@@ -8,7 +8,10 @@ import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import getChain from 'utils/getChain'
+import { useWeb3React } from '@web3-react/core'
 import Column from 'components/Column'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
@@ -30,7 +33,9 @@ export default function PoolList({
     params: { chain },
   },
 }: RouteComponentProps<{ chain: string }>) {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
   const { t } = useTranslation()
   const { theme } = useTheme()
 

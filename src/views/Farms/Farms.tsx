@@ -19,6 +19,8 @@ import isArchivedPid from 'utils/farmHelpers'
 import { latinise } from 'utils/latinise'
 import getChain from 'utils/getChain'
 import { ViewMode } from 'state/user/types'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import {
   useUserFarmStakedOnly,
   //  useUserFarmsViewMode 
@@ -135,7 +137,11 @@ function Farms({
   const cakePrice = usePriceCakeBusd()
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
-  const { account, chainId } = useWeb3React()
+
+  const { account, chainId:chainIdWeb3,  } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const {chainId} = useNetworkState()
+
   const [sortOption, setSortOption] = useState('hot')
   const { observerRef, isIntersecting } = useIntersectionObserver()
   const chosenFarmsLength = useRef(0)

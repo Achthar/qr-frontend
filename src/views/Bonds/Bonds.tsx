@@ -128,7 +128,7 @@ function Bonds({
 
   const [query, setQuery] = useState('')
   const { account, chainId:chainIdWeb3, library } = useWeb3React()
-  useChainIdHandling(chainIdWeb3)
+  useChainIdHandling(chainIdWeb3, account)
   const {chainId} = useNetworkState()
   const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')

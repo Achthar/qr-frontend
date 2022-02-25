@@ -9,12 +9,10 @@ import Column from 'components/Column'
 import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
+
 import { useNetworkState } from 'state/globalNetwork/hooks'
-import { setChainId } from 'state/globalNetwork/actions'
-import { changeChainId } from 'state/user/actions'
 import useRefresh from 'hooks/useRefresh'
-import { changeChainIdWeighted } from 'state/weightedPairs/actions'
-import { changeChainIdStables } from 'state/stablePools/actions'
 import { fetchUserNetworkCcyBalance } from 'state/user/fetchUserNetworkCcyBalance'
 import {
   getStableAmounts,
@@ -37,21 +35,13 @@ export const BodyWrapper = styled(Card)`
 `
 
 export default function Balances() {
-  const { chainId, account } = useActiveWeb3React()
   const { slowRefresh } = useRefresh()
   const dispatch = useDispatch<AppDispatch>()
 
   // const additionalTokens =  Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
-
-  const { chainId: stateChainId } = useNetworkState()
-  useEffect(() => {
-    if (chainId !== stateChainId) {
-      dispatch(setChainId({ chainId }))
-      dispatch(changeChainId({ newChainId: chainId }))
-      dispatch(changeChainIdWeighted({ newChainId: chainId }))
-      dispatch(changeChainIdStables({ newChainId: chainId }))
-    }
-  }, [chainId, stateChainId, dispatch])
+  const { account, chainId: chainIdWeb3 } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
 
   useEffect(
     () => {

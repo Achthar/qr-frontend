@@ -55,7 +55,7 @@ function CurrencySearchExpanded({
 
   const [invertSearchOrder] = useState<boolean>(false)
 
-  const allTokens = useAllTokens(chainId)
+  const allTokens = useAllTokens(chainId ?? 43113)
 
   // if they input an address, use it
   const searchToken = useToken(chainId, debouncedQuery)

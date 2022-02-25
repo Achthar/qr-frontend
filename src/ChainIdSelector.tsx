@@ -11,10 +11,15 @@ import { ArrowDownCircle, ChevronDown } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
 import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider, Text, ChevronDownIcon, CogIcon, TuneIcon, TestnetIcon } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import { useGlobalNetworkActionHandlers } from "state/globalNetwork/hooks";
+import { useGlobalNetworkActionHandlers, useNetworkState } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useToggleModal } from 'state/application/hooks'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import { useOnClickOutside } from "hooks/useOnClickOutside";
+import { useDispatch } from "react-redux";
+import { setChainId } from "state/globalNetwork/actions";
+import { AppDispatch } from "state";
+import { useWeb3React } from "@web3-react/core";
 
 
 export const Wrapper = styled.div`
@@ -226,8 +231,10 @@ const ChainIdSelector = () => {
   // global network chainId
   const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
 
-  const { chainId, library, account } = useActiveWeb3React()
-
+  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
+  const dispatch = useDispatch<AppDispatch>()
   const open = useModalOpen(ApplicationModal.NETWORK_SELECTOR)
   const toggle = useToggleModal(ApplicationModal.NETWORK_SELECTOR)
 
@@ -242,11 +249,17 @@ const ChainIdSelector = () => {
   const showSelector = Boolean(isOnL2)
   function Row({ targetChain }: { targetChain: number }) {
     const handleRowClick = () => {
-      switchToNetwork({ library, chainId: targetChain })
-      onChainChange(targetChain)
-      onAccountChange(account)
-      // useToggleModal()
-      toggle()
+      if (chainIdWeb3) {
+        switchToNetwork({ library, chainId: targetChain })
+        onChainChange(targetChain)
+        onAccountChange(account)
+        // useToggleModal()
+        toggle()
+      }
+
+      if (!chainIdWeb3 && !account) {
+        dispatch(setChainId({ chainId: targetChain }))
+      }
       //  useToggleModal(ApplicationModal.NETWORK_SELECTOR)
     }
     const faucetLink = CHAIN_INFO[targetChain as SupportedL2ChainId].faucet
@@ -289,7 +302,7 @@ const ChainIdSelector = () => {
             <StyledLink href={faucetLink}>
               <Text marginLeft='5px' marginRight='5px'>Testnet Faucet</Text>
             </StyledLink>
-            <LinkOutCircle color="white"/>
+            <LinkOutCircle color="white" />
           </Flex>
         </ActiveRowLinkList>)}
       </>)

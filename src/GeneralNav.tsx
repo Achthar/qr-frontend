@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import React, { useCallback, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import logo from './assets/logoTransparent.svg'
 import bgSidebar from './assets/sidebar/bg-sidebar.png';
 import iconHome from './assets/sidebar/ic-home.svg';
@@ -497,8 +497,11 @@ const GeneralNav: React.FC = () => {
   const history = useHistory()
   const location = useLocation()
   const { isMobile } = useMatchBreakpoints()
-  const { chainId, account } = useWeb3React()
-  const menuItems = configDataEntries(chainId) // config(t)
+
+  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
+  const menuItems = configDataEntries(chainId)
 
   const activeIndex = menuItems.findIndex((i) => {
     const pathname = location.pathname.match(new RegExp(`^${LIQUIDITY_ROUTES.join('|^')}`))
