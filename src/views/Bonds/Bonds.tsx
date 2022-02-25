@@ -11,6 +11,8 @@ import { Bond } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router'
 import { getBondApr } from 'utils/apr'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays } from 'config'
@@ -125,7 +127,9 @@ function Bonds({
   const { data: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
-  const { account, chainId, library } = useWeb3React()
+  const { account, chainId:chainIdWeb3, library } = useWeb3React()
+  useChainIdHandling(chainIdWeb3)
+  const {chainId} = useNetworkState()
   const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
