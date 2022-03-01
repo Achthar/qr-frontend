@@ -3,8 +3,7 @@ import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
 
-import { useDispatch, useSelector } from 'react-redux'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useDispatch } from 'react-redux'
 import Column from 'components/Column'
 import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
@@ -20,7 +19,7 @@ import {
   useUserBalances,
 } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
-import { AppDispatch, AppState } from '../../state'
+import { AppDispatch } from '../../state'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -38,7 +37,6 @@ export default function Balances() {
   const { slowRefresh } = useRefresh()
   const dispatch = useDispatch<AppDispatch>()
 
-  // const additionalTokens =  Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
   const { account, chainId: chainIdWeb3 } = useWeb3React()
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()

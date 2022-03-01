@@ -28,7 +28,6 @@ import { AppHeader, AppBody } from '../../components/App'
 import ConnectWalletButton from '../../components/ConnectWalletButton'
 
 import { INITIAL_ALLOWED_SLIPPAGE } from '../../config/constants'
-import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency, useAllTokens } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTradeV3 } from '../../hooks/useApproveCallback'
 import { useSwapV3Callback } from '../../hooks/useSwapV3Callback'

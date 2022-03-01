@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   TokenAmount,
   STABLE_POOL_ADDRESS,
@@ -22,22 +22,17 @@ import Row, { RowBetween } from 'components/Layout/Row'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { StablesField } from 'state/mintStables/actions'
-import { useDeserializedStablePools, useStablePools } from 'state/stablePools/hooks'
-import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
-import { fetchStablePoolUserDataAsync } from 'state/stablePools'
-import { useAppDispatch } from 'state'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import { useDerivedMintStablesInfo, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { getStableAmounts, useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
+import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { useStablePool } from 'hooks/useStablePool'
 import StablePoolPriceBar from './StablePoolPriceBar'
 import Page from '../Page'
 
@@ -59,8 +54,6 @@ export default function AddStableLiquidity({
     [chainId, chain, history],
   )
 
-  const expertMode = useIsExpertMode()
-
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
@@ -79,7 +72,12 @@ export default function AddStableLiquidity({
   const { slowRefresh } = useRefresh()
 
 
-  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const {
+    stablePools,
+    stableAmounts,
+    // userDataLoaded,
+    publicDataLoaded
+  } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
   const stablePool = stablePools[0]
 
 
@@ -90,7 +88,7 @@ export default function AddStableLiquidity({
     parsedStablesAmounts,
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
-    stablesError,
+    // stablesError,
   } = useDerivedMintStablesInfo(stablePool, publicDataLoaded, stableAmounts, account)
 
   const formattedStablesAmounts = {

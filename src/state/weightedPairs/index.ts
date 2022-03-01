@@ -1,22 +1,9 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import isArchivedBondId from 'utils/bondHelpers'
-import { bonds as bondList, bondList as bondsDict } from 'config/constants/bonds'
-import { BondConfig } from 'config/constants/types'
-import { stableSwapInitialData } from 'config/constants/stablePools';
+import { createSlice } from '@reduxjs/toolkit'
 import { getAllTokenPairs } from 'config/constants/tokenPairs';
-import { bnParser, fetchWeightedPairMetaData } from './fetchWeightedPairMetaData';
-import { StablePoolConfig, StablePoolsState, WeightedPairState } from '../types'
-import { fetchPoolUserAllowancesAndBalances } from './fetchWeightedPairUserData';
+import { fetchWeightedPairMetaData } from './fetchWeightedPairMetaData';
 import { addTokenPair, changeChainIdWeighted, metaDataChange, triggerRefreshUserData } from './actions';
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData } from './fetchWeightedPairData';
-
-
-// import { chain } from 'lodash'
-
-
-const chainIdFromState = 43113 // useAppSelector((state) => state.application.chainId)
-
 
 function initialState(chainId: number) {
   return {
@@ -29,43 +16,6 @@ function initialState(chainId: number) {
     userBalancesLoaded: false
   }
 }
-
-export function nonArchivedBonds(chainId: number): BondConfig[] { return bondList(chainId).filter(({ bondId }) => !isArchivedBondId(bondId)) }
-
-interface PoolUserDataResponse {
-  index: number
-  allowances: string[]
-  lpAllowance: string
-  lpBalance: string
-  userWithdarawFee: string
-}
-
-
-
-export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: StablePoolConfig[] }>(
-  'stablePools/fetchStablePoolsUserDataAsync',
-  async ({ chainId, account, pools }) => {
-
-    const {
-      allowances,
-      balances
-    } = await fetchPoolUserAllowancesAndBalances(chainId, account, pools)
-
-
-
-
-    return allowances.map((_, index) => {
-      return {
-        index,
-        lpAllowance: allowances[index],
-        lpBalance: balances[index],
-        userWithdrawFee: '0',
-        allowances: ['0', '0', '0', '0']
-      }
-    })
-  },
-)
-
 
 export const stablePoolSlice = createSlice({
   name: 'weightedPairs',

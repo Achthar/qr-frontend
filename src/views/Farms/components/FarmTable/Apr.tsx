@@ -57,7 +57,6 @@ const Apr: React.FC<AprProps> = ({
 }) => {
   const liquidityUrlPathParts = getLiquidityUrlPathParts({ chainId, quoteTokenAddress, tokenAddress })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-
   return originalValue !== 0 ? (
     <Container>
       {originalValue ? (

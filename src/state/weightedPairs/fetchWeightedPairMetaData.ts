@@ -1,27 +1,13 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ethers, BigNumber, BigNumberish } from 'ethers'
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import multicall from 'utils/multicall';
 import pairFactoryABI from 'config/abi/avax/RequiemWeightedPairFactory.json'
-import { BondType, SerializedToken, TokenPair } from 'config/constants/types';
+import { TokenPair } from 'config/constants/types';
 import { getAllTokenPairs } from 'config/constants/tokenPairs';
-import { Fraction, JSBI, TokenAmount, WeightedPair, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
+import { Fraction, JSBI, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
 import { WeightedPairMetaData } from '../types'
-
-
-const E_NINE = BigNumber.from('1000000000')
-const E_EIGHTEEN = BigNumber.from('1000000000000000000')
-
-
-export function bnParser(bn: BigNumber, decNr: BigNumber) {
-  return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
-}
-
-
-interface PairRequestData {
-  tokenPairs?: TokenPair[]
-}
 
 
 interface MetaRequestData {
@@ -96,7 +82,7 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
           (
             {
               [`${getAddress(tokenPairs[index].token0.address)}-${getAddress(tokenPairs[index].token1.address)}`]:
-                rawMetaData[index]._tokenPairs.map((addr) => ({ address: addr }))
+                rawMetaData[index]._tokenPairs.map((addr) => ({ address: addr, token0: tokenPairs[index].token0, token1: tokenPairs[index].token1 }))
             }
           )
         )

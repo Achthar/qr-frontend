@@ -1,26 +1,21 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
 import { Currency, JSBI, TokenAmount, NETWORK_CCY, STABLECOINS, WeightedPair } from '@requiemswap/sdk'
-import { Button, ChevronDownIcon, Text, AddIcon, useModal, Flex, ArrowUpIcon, Box } from '@requiemswap/uikit'
+import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-import PercentageInputPanel from 'components/CurrencyInputPanel/PercentageInputPanel'
-import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import getChain from 'utils/getChain'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import { useAddPair, useGetWeightedPairsState, useTokenPair } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
 import { MinimalWeightedPositionCardExtended } from 'components/PositionCard/WeightedPairPositionExtended'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import { CurrencyLogo } from '../../components/Logo'
-import { MinimalWeightedPositionCard } from '../../components/PositionCard/WeightedPairPosition'
 import Row from '../../components/Layout/Row'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
-import { WeightedPairState, useWeightedPair, useGetWeightedPairs, useWeightedPairsDataLite } from '../../hooks/useWeightedPairs'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useWeightedPairAdder } from '../../state/user/hooks'
-import { useTokenBalance } from '../../state/wallet/hooks'
 import StyledInternalLink from '../../components/Links'
 import { currencyId } from '../../utils/currencyId'
 import Dots from '../../components/Loader/Dots'
@@ -65,8 +60,6 @@ export default function WeightedPairFinder({
   const { slowRefresh } = useRefresh()
   const [activeField, setActiveField] = useState<number>(Fields.TOKEN1)
 
-  const [fee, setFee] = useState<number>(20)
-  const [weight0, setWeight0] = useState<number>(50)
   const [currency0, setCurrency0] = useState<Currency | null>(NETWORK_CCY[chainId])
   const [currency1, setCurrency1] = useState<Currency | null>(STABLECOINS[chainId][0])
 

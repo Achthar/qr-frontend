@@ -206,7 +206,7 @@ export interface SerializedStablePool extends StablePoolConfig {
   }
 }
 
-export interface PoolData{
+export interface PoolData {
   pools: SerializedStablePool[]
   publicDataLoaded: boolean
   userDataLoaded: boolean
@@ -214,7 +214,7 @@ export interface PoolData{
 
 export interface StablePoolsState {
   referenceChain: number
-  poolData:{ [chainId:number]:PoolData}
+  poolData: { [chainId: number]: PoolData }
 }
 
 export interface WeightedPairMetaData extends TokenPair {
@@ -224,9 +224,15 @@ export interface WeightedPairMetaData extends TokenPair {
 }
 
 export interface SerializedWeightedPair extends WeightedPairMetaData {
+  // data from chain
   reserve0?: SerializedBigNumber
   reserve1?: SerializedBigNumber
   totalSupply?: SerializedBigNumber
+  // price as a ratio of reserve0 / reserve1
+  price0?: number
+  price1?: number
+  value0?: number
+  value1?: number
   userData?: {
     allowanceRouter?: SerializedBigNumber
     allowancePairManager?: SerializedBigNumber
@@ -238,6 +244,7 @@ export interface SerializedWeightedPair extends WeightedPairMetaData {
 export interface WeightedPairState {
   currentChain: number
   [chainId: number]: {
+    pairsPriced: boolean
     referenceChain: number,
     tokenPairs: TokenPair[]
     weightedPairMeta: {
@@ -701,6 +708,7 @@ export interface SerializedFarm extends SerializedFarmConfig {
   lpTotalSupply?: SerializedBigNumber
   tokenPriceVsQuote?: SerializedBigNumber
   poolWeight?: SerializedBigNumber
+  lpTokenRatio?: SerializedBigNumber
   userData?: SerializedFarmUserData
 }
 
@@ -713,7 +721,9 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   tokenPriceVsQuote?: BigNumber
   poolWeight?: BigNumber
   userData?: DeserializedFarmUserData
+  lpTokenRatio?: number
 }
+
 
 export interface SerializedFarmsState {
   data: SerializedFarm[]

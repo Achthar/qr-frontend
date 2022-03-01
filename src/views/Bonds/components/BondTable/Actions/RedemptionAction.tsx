@@ -98,7 +98,6 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
       lpPrice={lpPrice}
       lpLabel={lpLabel}
       apr={apr}
-      displayApr={displayApr}
       stakedBalance={stakedBalance}
       onConfirm={handleRedemption}
       tokenName={name}

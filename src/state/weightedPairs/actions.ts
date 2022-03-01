@@ -9,3 +9,5 @@ export const metaDataChange = createAction<{ chainId: number }>('weightedPairs/m
 export const triggerRefreshUserData = createAction<{ chainId: number }>('weightedPairs/triggerRefreshUserData')
 
 export const addTokenPair = createAction<{ tokenPair:TokenPair }>('weightedPairs/addTokenPair')
+
+export const pricePairs = createAction('weightedPairs/pricePairs')

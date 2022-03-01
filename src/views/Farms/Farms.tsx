@@ -4,14 +4,17 @@ import BigNumber from 'bignumber.js'
 import { RouteComponentProps } from 'react-router'
 import { useWeb3React } from '@web3-react/core'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@requiemswap/uikit'
-import { ChainId } from '@requiemswap/sdk'
+import { ChainId, Fraction, PoolType } from '@requiemswap/sdk'
 import styled from 'styled-components'
 import FlexLayout from 'components/Layout/Flex'
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Page from 'components/Layout/Page'
-import { useFarms, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
+import { useFarms, usePollFarmsPublicData, usePollFarmsWithUserData, usePriceCakeBusd } from 'state/farms/hooks'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { DeserializedFarm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
+import useRefresh from 'hooks/useRefresh'
+import { useGetRawWeightedPairsState, useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { getFarmApr } from 'utils/apr'
 import { orderBy } from 'lodash'
@@ -21,15 +24,10 @@ import getChain from 'utils/getChain'
 import { ViewMode } from 'state/user/types'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import { useNetworkState } from 'state/globalNetwork/hooks'
-import {
-  useUserFarmStakedOnly,
-  //  useUserFarmsViewMode 
-} from 'state/user/hooks'
-import { fetchFarmsPublicDataAsync } from 'state/farms'
-import { useAppDispatch } from 'state'
+import { useUserFarmStakedOnly } from 'state/user/hooks'
+import { priceStableFarm, priceWeightedFarm } from 'utils/farmPricer'
 
 import usePersistState from 'hooks/usePersistState'
-import PageHeader from 'components/PageHeader'
 import SearchInput from 'components/SearchInput'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
@@ -138,9 +136,9 @@ function Farms({
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
 
-  const { account, chainId:chainIdWeb3,  } = useWeb3React()
+  const { account, chainId: chainIdWeb3, } = useWeb3React()
   useChainIdHandling(chainIdWeb3, account)
-  const {chainId} = useNetworkState()
+  const { chainId } = useNetworkState()
 
   const [sortOption, setSortOption] = useState('hot')
   const { observerRef, isIntersecting } = useIntersectionObserver()
@@ -150,7 +148,30 @@ function Farms({
   const isInactive = pathname.includes('history')
   const isActive = !isInactive && !isArchived
 
+
+  usePollFarmsPublicData(chainId, isArchived)
+
   usePollFarmsWithUserData(isArchived)
+
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  const {
+    pairs,
+    metaDataLoaded,
+    reservesAndWeightsLoaded,
+  } = useGetRawWeightedPairsState(chainId, account, [], slowRefresh)
+
+  const {
+    stablePools,
+    stableAmounts,
+    // userDataLoaded,
+    publicDataLoaded
+  } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const stablePool = stablePools[0]
+
+
+
+
 
   // const dispatch = useAppDispatch()
   // dispatch(fetchFarmsPublicDataAsync({ chainId, pids: farmsLP.map(f => f.pid) }))
@@ -183,6 +204,7 @@ function Farms({
           return farm
         }
         const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+
         const { reqtRewardsApr, lpRewardsApr } = isActive
           ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[chainId])
           : { reqtRewardsApr: 0, lpRewardsApr: 0 }
@@ -287,10 +309,23 @@ function Farms({
     const quoteTokenAddress = quoteToken.address[chainId]
     const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
 
+    const value = farm && pairs && (farm.lpData.poolType === PoolType.StablePairWrapper ?
+      publicDataLoaded && priceStableFarm(farm, stablePool) :
+      reservesAndWeightsLoaded && priceWeightedFarm(farm, pairs))
+
+    // console.log("PRICE", farm.lpSymbol, value, value * Number(farm.lpTokenRatio), farm.lpTokenRatio)
+
+
+    const { reqtRewardsApr, lpRewardsApr } = isActive
+      ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, new BigNumber(value), farm.lpAddresses[chainId])
+      : { reqtRewardsApr: 0, lpRewardsApr: 0 }
+
+    // console.log("PRICE APR", reqtRewardsApr, lpRewardsApr, getDisplayApr(reqtRewardsApr, lpRewardsApr))
+
     const row: RowProps = {
       apr: {
         chainId,
-        value: getDisplayApr(farm.apr, farm.lpRewardsApr),
+        value: getDisplayApr(reqtRewardsApr, lpRewardsApr),
         pid: farm.pid,
         multiplier: farm.multiplier,
         lpLabel,
@@ -298,7 +333,7 @@ function Farms({
         tokenAddress,
         quoteTokenAddress,
         cakePrice,
-        originalValue: farm.apr,
+        originalValue: reqtRewardsApr,
       },
       farm: {
         chainId,
@@ -316,6 +351,7 @@ function Farms({
       },
       liquidity: {
         liquidity: farm.liquidity,
+        liquidityStaked: value
       },
       multiplier: {
         multiplier: farm.multiplier,

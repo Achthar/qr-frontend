@@ -33,22 +33,31 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       },
       token: serializedTokens.reqt,
       quoteToken: serializedTokens.dai,
-      lpData:{
-        weight:80,
-        fee:25,
-        poolType: PoolType.WeightedPair
+      lpData: {
+        weight: 80, // weightToken
+        fee: 25,
+        poolType: PoolType.WeightedPair,
+        pricerKey: ['0x2d90e6d9368b2838a9558B0a609750243C5C4679-0xaEA51E4FEe50a980928B4353E852797b54deacd8']
       }
     },
     {
       pid: 1,
-      lpSymbol: 'WBTC-WETH LP',
+      lpSymbol: 'wBTC-DAI LP',
       lpAddresses: {
         97: '',
         56: '',
         43113: '0x77bd5141C1c868aa601fE68f062fBEe84Ff34bde'
       },
-      token: serializedTokens.weth,
-      quoteToken: serializedTokens.wbtc,
+      token: serializedTokens.wbtc,
+      quoteToken: serializedTokens.dai,
+      lpData: {
+        weight: 30, // weightToken
+        fee: 10,
+        poolType: PoolType.WeightedPair,
+        pricerKey: [
+          '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289-0xaEA51E4FEe50a980928B4353E852797b54deacd8'
+        ]
+      }
     },
     {
       pid: 2,
@@ -56,14 +65,15 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpAddresses: {
         97: '',
         56: '',
-        43113: '0x1152803c660f86d262f9a235612ddc82f705c0bd'
+        43113: '0x1152803C660f86D262f9A235612ddc82f705c0bD'
       },
       token: serializedTokens.wavax,
       quoteToken: serializedTokens.usdc,
-      lpData:{
-        weight:50,
-        fee:15,
-        poolType: PoolType.WeightedPair
+      lpData: {
+        weight: 50,
+        fee: 10,
+        poolType: PoolType.WeightedPair,
+        pricerKey: ['0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA-0xd00ae08403B9bbb9124bB305C09058E32C39A48c']
       }
     },
     {
@@ -78,10 +88,30 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       quoteToken: serializedTokens.usdc,
       token2: serializedTokens.dai,
       token3: serializedTokens.tusd,
-      lpData:{
+      lpData: {
         poolType: PoolType.StablePairWrapper
       }
     },
+    {
+      pid: 4,
+      lpSymbol: 'wBTC-wETH LP',
+      lpAddresses: {
+        97: '',
+        56: '',
+        43113: '0x8CDD0529B4Afe692798aFEb83974bB9F34934CEf'
+      },
+      token: serializedTokens.weth,
+      quoteToken: serializedTokens.wbtc,
+      lpData: {
+        weight: 50, // weightToken
+        fee: 15,
+        poolType: PoolType.WeightedPair,
+        pricerKey: [
+          '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289-0x70dC2c5F81BC18e115759398aF197e99f228f713',
+          '0x70dC2c5F81BC18e115759398aF197e99f228f713-0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA'
+        ]
+      }
+    }
   ]
 }
 

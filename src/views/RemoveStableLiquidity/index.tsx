@@ -30,15 +30,10 @@ import {
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router-dom'
-import { useDeserializedStablePools, useStablePoolLpBalance, useStablePools } from 'state/stablePools/hooks'
-import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
-import { fetchStablePoolUserDataAsync } from 'state/stablePools'
-import { useAppDispatch } from 'state'
+import { useStablePoolLpBalance } from 'state/stablePools/hooks'
 import useRefresh from 'hooks/useRefresh'
 import getChain from 'utils/getChain'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
-import { useTokenBalancesWithLoadingIndicator } from 'state/wallet/hooks'
-import { useStablePool } from 'hooks/useStablePool'
 import Row from 'components/Row'
 import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
@@ -67,7 +62,7 @@ import {
 } from '../../state/burnStables/hooks'
 
 import { StablesField } from '../../state/burnStables/actions'
-import { getStableAmounts, useGasPrice, useUserBalances, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
 
 
 // const function getStableIndex(token)

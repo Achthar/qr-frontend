@@ -149,6 +149,7 @@ interface FarmConfigBaseProps {
     poolType: PoolType
     weight?: number
     fee?: number
+    pricerKey?:string[]
   }
   multiplier?: string
   isCommunity?: boolean

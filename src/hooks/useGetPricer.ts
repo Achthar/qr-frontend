@@ -1,7 +1,7 @@
-import { Currency, TokenAmount, WeightedPair, Token, JSBI } from '@requiemswap/sdk'
+import { TokenAmount, WeightedPair, Token, JSBI } from '@requiemswap/sdk'
 import { STABLES } from 'config/constants/tokens'
 import { useMemo } from 'react'
-import { useGetWeightedPairsPricerState, useGetWeightedPairsTradeState } from './useGetWeightedPairsState'
+import { useGetWeightedPairsPricerState } from './useGetWeightedPairsState'
 
 
 const tokenInList = (token: Token, tokenList: Token[]): boolean => {
@@ -63,3 +63,6 @@ export function useGetValueCryptoUSD(tokenIn: TokenAmount, refreshGeneral: numbe
     }
     return price
 }
+
+
+// export const usePricePairs = ()

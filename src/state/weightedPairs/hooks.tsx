@@ -70,7 +70,7 @@ export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pa
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded || !pairState.userBalancesLoaded)
     return { pairs: [], balances: [], totalSupply: [] }
-  console.log("WP PS", pairState)
+
   let rawPairs = []
   let rawTokens = []
   const keys = Object.keys(pairState.weightedPairs).sort()
@@ -95,7 +95,7 @@ export const useDeserializedWeightedPairsData = (chainId: number): { pairs: Weig
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return { pairs: [] }
-  console.log("WP PS", pairState)
+
   let rawPairs = []
   let rawTokens = []
   const keys = Object.keys(pairState.weightedPairs).sort()
@@ -130,4 +130,18 @@ export function usePairIsInState(chainId: number, tokenPair: TokenPair): boolean
       return true
   }
   return false
+}
+
+// returns all pairs as SDK Pair object
+// requires everything to be loaded, otherwise the result
+// will be an empty array
+export const useSerializedWeightedPairsData = (chainId: number): { pairs: { [key1: string]: { [key2: string]: SerializedWeightedPair } } } => {
+  const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
+  if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
+    return { pairs: {} }
+  
+  return {
+    pairs: pairState.weightedPairs
+  }
+
 }

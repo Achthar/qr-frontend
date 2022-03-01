@@ -4,13 +4,14 @@ import { TokenList } from '@uniswap/token-lists'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { TokenPair } from 'config/constants/types'
-import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, usePairIsInState, useWeightedPairsState } from 'state/weightedPairs/hooks'
+import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, usePairIsInState, useSerializedWeightedPairsData, useWeightedPairsState } from 'state/weightedPairs/hooks'
 import { addTokenPair, changeChainIdWeighted } from 'state/weightedPairs/actions'
 import { fetchWeightedPairMetaData, isNewTokenPair } from 'state/weightedPairs/fetchWeightedPairMetaData'
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
 import { Currency, TokenAmount, WeightedPair } from '@requiemswap/sdk'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { serializeToken } from 'state/user/hooks/helpers'
+import { SerializedWeightedPair } from 'state/types'
 import { AppDispatch } from '../state'
 
 export function useGetWeightedPairsState(
@@ -144,7 +145,6 @@ export function useGetWeightedPairsTradeState(
 
     const {
         metaDataLoaded,
-        weightedPairMeta,
         reservesAndWeightsLoaded,
         userBalancesLoaded
     } = useWeightedPairsState(chainId)
@@ -163,6 +163,10 @@ export function useGetWeightedPairsTradeState(
     )
 
 
+    const {
+        weightedPairMeta,
+    } = useWeightedPairsState(chainId)
+
     // reserves are fetched in cycles
     // weights and fee should be separated from reserves later on
     useEffect(() => {
@@ -170,7 +174,8 @@ export function useGetWeightedPairsTradeState(
             dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
         }
     },
-        [dispatch, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded, referenceChain]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dispatch, metaDataLoaded, chainId, reservesAndWeightsLoaded, referenceChain]
     )
 
     // reserves are fetched in cycles
@@ -271,7 +276,6 @@ export function useGetWeightedPairsPricerState(
 
     const {
         metaDataLoaded,
-        weightedPairMeta,
         reservesAndWeightsLoaded,
     } = useWeightedPairsState(chainId)
 
@@ -289,6 +293,10 @@ export function useGetWeightedPairsPricerState(
     )
 
 
+    const {
+        weightedPairMeta,
+    } = useWeightedPairsState(chainId)
+
     // reserves are fetched in cycles
     // weights and fee should be separated from reserves later on
     useEffect(() => {
@@ -296,7 +304,8 @@ export function useGetWeightedPairsPricerState(
             dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
         }
     },
-        [dispatch, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded, referenceChain]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dispatch, metaDataLoaded, chainId, reservesAndWeightsLoaded, referenceChain]
     )
 
     // reserves are fetched in cycles
@@ -325,6 +334,88 @@ export function useGetWeightedPairsPricerState(
 
     return {
         pairs,
+        metaDataLoaded,
+        reservesAndWeightsLoaded
+    }
+}
+
+
+
+export function useGetRawWeightedPairsState(
+    chainId: number,
+    account: string,
+    additionalTokenPairs: TokenPair[],
+    refreshGeneral: number,
+): {
+    pairs: { [key1: string]: { [key2: string]: SerializedWeightedPair } }
+    metaDataLoaded: boolean,
+    reservesAndWeightsLoaded: boolean,
+} {
+    const dispatch = useDispatch<AppDispatch>()
+
+
+    const {
+        referenceChain
+    } = useWeightedPairsState(chainId ?? 43113)
+
+    // a chainId change should reset everything
+    useEffect(() => {
+        if (referenceChain !== chainId) {
+            dispatch(changeChainIdWeighted({ newChainId: chainId }))
+        }
+    },
+        [dispatch, referenceChain, chainId]
+    )
+
+    const {
+        metaDataLoaded,
+        weightedPairMeta,
+        reservesAndWeightsLoaded
+    } = useWeightedPairsState(chainId)
+
+    // metatedata is supposed to be fetched once
+    // actions in the reducer allow a re-trigger of the metaData fetch
+    // by setting metaDataLoaded to false
+    useEffect(() => {
+        if (!metaDataLoaded && referenceChain === chainId) {
+            dispatch(fetchWeightedPairMetaData({ chainId, additionalTokens: additionalTokenPairs }))
+        }
+
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dispatch, refreshGeneral, metaDataLoaded, referenceChain, chainId, additionalTokenPairs]
+    )
+
+
+    // reserves are fetched in cycles
+    // weights and fee should be separated from reserves later on
+    useEffect(() => {
+        if (metaDataLoaded && !reservesAndWeightsLoaded && referenceChain === chainId) {
+            dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
+        }
+    },
+        [dispatch, metaDataLoaded, chainId, weightedPairMeta, reservesAndWeightsLoaded, referenceChain, refreshGeneral]
+    )
+
+    const {
+        weightedPairs
+    } = useWeightedPairsState(chainId)
+
+    // use reduced data (to addresses) for next input
+    const pairData = useMemo(() => {
+        if (metaDataLoaded) {
+            return reduceDataFromDict(weightedPairs)
+        }
+        return {}
+    },
+        [weightedPairs, metaDataLoaded]
+    )
+
+    // finally we get all data as class objects in arrays to be used in the respective views
+    const { pairs: allWeightedPairs } = useSerializedWeightedPairsData(chainId)
+
+    return {
+        pairs: allWeightedPairs,
         metaDataLoaded,
         reservesAndWeightsLoaded
     }

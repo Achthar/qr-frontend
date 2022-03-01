@@ -3,11 +3,8 @@
 import styled from "styled-components";
 import React, { useState } from 'react'
 
-import { useDispatch } from 'react-redux'
 import { Button, Box, CurrencyIcon } from '@requiemswap/uikit'
 import { useWeb3React } from "@web3-react/core";
-import { AppDispatch } from 'state'
-import { useGlobalNetworkActionHandlers, useNetworkState } from "state/globalNetwork/hooks";
 
 import UserBalances from 'views/Balances'
 
@@ -112,10 +109,6 @@ const Balances = () => {
             handleClick
           }
         />
-        {/* <Text fontSize='15px'>
-            Balances
-          </Text>
-        </StyledButton> */}
       </div>
       <RowBetween align='left'>
         <BalanceContainer balanceShown={balanceShown}>

@@ -10,6 +10,7 @@ const ReferenceElement = styled.div`
 
 export interface LiquidityProps {
   liquidity: BigNumber
+  liquidityStaked: number
 }
 
 const LiquidityWrapper = styled.div`
@@ -29,10 +30,10 @@ const Container = styled.div`
   align-items: center;
 `
 
-const Liquidity: React.FunctionComponent<LiquidityProps> = ({ liquidity }) => {
+const Liquidity: React.FunctionComponent<LiquidityProps> = ({ liquidity, liquidityStaked }) => {
   const displayLiquidity =
-    liquidity && liquidity.gt(0) ? (
-      `$${Number(liquidity).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+    liquidityStaked && liquidityStaked > 0 ? (
+      `$${Number(liquidityStaked).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
     ) : (
       <Skeleton width={60} />
     )

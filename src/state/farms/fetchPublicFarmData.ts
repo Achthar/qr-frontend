@@ -1,3 +1,4 @@
+import { Fraction } from '@requiemswap/sdk'
 import BigNumber from 'bignumber.js'
 // import masterchefABI from 'config/abi/masterchef.json'
 import requiemChefABI from 'config/abi/avax/RequiemChef.json'
@@ -14,12 +15,13 @@ type PublicFarmData = {
   tokenPriceVsQuote: SerializedBigNumber
   poolWeight: SerializedBigNumber
   multiplier: string
+  lpTokenRatio: SerializedBigNumber
 }
 
 const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const { pid, lpAddresses, token, quoteToken } = farm
 
-  const chainId = token.chainId 
+  const chainId = token.chainId
   const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
     // Balance of token in the LP contract
@@ -93,8 +95,6 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
   const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
   const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO
 
-  console.log("LP", lpTotalInQuoteToken)
-
   return {
     tokenAmountTotal: tokenAmountTotal.toJSON(),
     lpTotalSupply: new BigNumber(lpTotalSupply).toJSON(),
@@ -102,6 +102,7 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
     tokenPriceVsQuote: quoteTokenAmountTotal.div(tokenAmountTotal).toJSON(),
     poolWeight: poolWeight.toJSON(),
     multiplier: `${allocPoint.div(100).toString()}X`,
+    lpTokenRatio: new Fraction(lpTokenBalanceMC, lpTotalSupply).toSignificant(18)
   }
 }
 

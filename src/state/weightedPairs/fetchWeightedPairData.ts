@@ -1,15 +1,50 @@
 /** eslint no-empty-interface: 0 */
 /* eslint no-continue: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ethers, BigNumber, BigNumberish } from 'ethers'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { getAddress } from 'ethers/lib/utils';
 import multicall from 'utils/multicall';
 import formulaABI from 'config/abi/avax/RequiemFormula.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import { BigNumber } from 'ethers';
 import { REQUIEM_PAIR_MANAGER, REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants';
-import { BondType, SerializedToken, TokenPair } from 'config/constants/types';
 import { Fraction, JSBI, TokenAmount, WeightedPair, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
 import { SerializedWeightedPair, WeightedPairMetaData } from '../types'
+
+const TEN = JSBI.BigInt(10)
+
+const pricePair = (reserve0: string, reserve1: string, dec0: number, dec1: number, weight0: number): { price0: number, price1: number, value0: number, value1: number } => {
+
+  // multipliers to convert BigNumbers
+  const multiplier0 = JSBI.exponentiate(TEN, JSBI.BigInt(dec0))
+  const multiplier1 = JSBI.exponentiate(TEN, JSBI.BigInt(dec1))
+
+  const scalar = new Fraction(multiplier1, multiplier0)
+  // fraction of reserves
+  const fraction = new Fraction(reserve0, reserve1)
+
+  const fraction1 = new Fraction(
+    reserve1,
+    JSBI.exponentiate(TEN, JSBI.BigInt(dec1)))
+
+  const fraction0 = new Fraction(
+    reserve0,
+    JSBI.exponentiate(TEN, JSBI.BigInt(dec0)))
+
+  // price rate token0/token1
+  const price0 = Number(fraction.multiply(scalar).toSignificant(18)) * (100 - weight0) / weight0
+  // price rate token1/token0
+  const price1 = Number(fraction.multiply(scalar).invert().toSignificant(18)) * weight0 / (100 - weight0)
+
+  return {
+    price0,
+    price1,
+    // value in token0
+    value0: Number(fraction0.toSignificant(18)) + Number(fraction1.toSignificant(18)) * price0,
+    // value in token1
+    value1: Number(fraction1.toSignificant(18)) + Number(fraction0.toSignificant(18)) * price1
+  }
+}
+
 
 
 const indexAt = (dataPoints: number[], index) => {
@@ -33,7 +68,7 @@ interface PairRequestMetaData {
 export const fetchWeightedPairData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairData",
   async ({ chainId, pairMetaData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: { [weight0Fee: string]: SerializedWeightedPair } }> => {
-    console.log("WP: INPUT DATA", pairMetaData)
+    console.log("WP: INPUT DATA WWW", pairMetaData)
 
     // // cals for existing pool addresses
     let pairAddresses = []
@@ -67,13 +102,21 @@ export const fetchWeightedPairData = createAsyncThunk(
             {
               [key]: Object.assign(
                 {}, ...pairMetaData[key].map((data, subIndex) => {
+                  const prices = pricePair(
+                    rawData[dataIndex + subIndex].reserveA.toString(),
+                    rawData[dataIndex + subIndex].reserveB.toString(),
+                    pairMetaData[key][0].token0.decimals,
+                    pairMetaData[key][0].token1.decimals,
+                    rawData[dataIndex + subIndex].tokenWeightA
+                  )
                   return {
                     [`${rawData[dataIndex + subIndex].tokenWeightA}-${rawData[dataIndex + subIndex].swapFee}`]: {
                       ...data,
                       reserve0: rawData[dataIndex + subIndex].reserveA.toString(),
                       reserve1: rawData[dataIndex + subIndex].reserveB.toString(),
                       weight0: rawData[dataIndex + subIndex].tokenWeightA,
-                      fee: rawData[dataIndex + subIndex].swapFee
+                      fee: rawData[dataIndex + subIndex].swapFee,
+                      ...prices
                     }
                   }
                 }

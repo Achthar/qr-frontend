@@ -33,14 +33,12 @@ interface RedemptionModalProps {
   bondId: number
   max: BigNumber
   stakedBalance: BigNumber
-  multiplier?: string
   lpPrice: BigNumber
   lpLabel?: string
   onConfirm: (amount: string) => void
   onDismiss?: () => void
   tokenName?: string
   apr?: number
-  displayApr?: string
   addLiquidityUrl?: string
   reqtPrice?: BigNumber
 }
@@ -52,8 +50,6 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   onConfirm,
   onDismiss,
   tokenName = '',
-  multiplier,
-  displayApr,
   lpPrice,
   lpLabel,
   apr,
@@ -65,14 +61,12 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-  const [showRoiCalculator, setShowRoiCalculator] = useState(false)
   const { t } = useTranslation()
   const fullBalance = useMemo(() => {
     return getFullDisplayBalance(max)
   }, [max])
 
   const lpTokensToStake = new BigNumber(val)
-  const fullBalanceNumber = new BigNumber(fullBalance)
 
   const usdToStake = lpTokensToStake.times(lpPrice)
 
@@ -83,20 +77,8 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   })
 
   const annualRoi = reqtPrice.times(interestBreakdown[3])
-  const formattedAnnualRoi = formatNumber(
-    annualRoi.toNumber(),
-    annualRoi.gt(10000) ? 0 : 2,
-    annualRoi.gt(10000) ? 0 : 2,
-  )
 
-  const handleChange = useCallback(
-    (e: React.FormEvent<HTMLInputElement>) => {
-      if (e.currentTarget.validity.valid) {
-        setVal(e.currentTarget.value.replace(/,/g, '.'))
-      }
-    },
-    [setVal],
-  )
+ 
 
   const { currentBlock } = useBlock()
 

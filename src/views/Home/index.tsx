@@ -1,29 +1,16 @@
 /* eslint react/no-children-prop: 0 */
 import React from 'react'
-import styled from 'styled-components'
 import PageSection from 'components/PageSection'
-import useTheme from 'hooks/useTheme'
 import Container from 'components/Layout/Container'
 import { Text, Step, Stepper, Card, CardBody, Image, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
 import iconREQTransparent from 'assets/REQ_Transparent.png';
 
-// import * as fs from 'fs';
-// import { readFile } from 'fs'
-// import { swapSectionData, earnSectionData, REQTSectionData } from './components/SalesSection/data'
-// import MetricsSection from './components/MetricsSection'
-// import SalesSection from './components/SalesSection'
-// import FarmsPoolsRow from './components/FarmsPoolsRow'
-// import Footer from './components/Footer'
-// import REQTDataRow from './components/REQTDataRow'
 import Row from 'components/Row'
-import Column, { AutoColumn } from 'components/Column'
 
 const Home: React.FC = () => {
-  const { theme } = useTheme()
   const { isMobile } = useMatchBreakpoints()
 
-  const HomeSectionContainerStyles = { padding: '5px', width: '100%', maxWidth: '2000px' }
 
   const intro = 'Requiem Finance is a decentralized platform that will give traders easy access to the most powerful tools in DeFi. At its core, it is a decentralized exchange with a stable swap built-in -ensuring traders get access to the best pricing. We already have a beta of our DEX  deployed on the AVAX testnet on requiem.finance. However, this is just the beginning. The following features are on our immediate release roadmap:'
   const headers = ['Swap', 'Stable Swap', 'Lending', 'Margin Trading', 'Farm Swap', 'Yield swap']
@@ -86,14 +73,14 @@ const Home: React.FC = () => {
                 :
                 (
                   <>
-                  <Image
-                    src={iconREQTransparent}
-                    width={991 / 4}
-                    height={927 / 4}
-                    alt="REQT"
-                  />
+                    <Image
+                      src={iconREQTransparent}
+                      width={991 / 4}
+                      height={927 / 4}
+                      alt="REQT"
+                    />
 
-                  <Text marginTop='50px' marginLeft='10px' fontSize='30px' bold>Requiem Finance</Text>
+                    <Text marginTop='50px' marginLeft='10px' fontSize='30px' bold>Requiem Finance</Text>
                   </>
                 )
               }
