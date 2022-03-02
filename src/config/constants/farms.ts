@@ -61,7 +61,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
     },
     {
       pid: 2,
-      lpSymbol: `${NETWORK_CCY[chainId ?? 43113].symbol}-USDC LP`,
+      lpSymbol: `(w)${NETWORK_CCY[chainId ?? 43113].symbol}-USDC LP`,
       lpAddresses: {
         97: '',
         56: '',

@@ -65,6 +65,7 @@ export const stablePoolSlice = createSlice({
         // initialize weighted pairs
         state[chainId].weightedPairs = {}
         state[chainId].metaDataLoaded = true;
+        state[chainId].reservesAndWeightsLoaded = false;
       })
       .addCase(fetchWeightedPairMetaData.rejected, (state, { error },) => {
         state[state.currentChain].metaDataLoaded = false;

@@ -307,7 +307,7 @@ function Farms({
     const { token, quoteToken } = farm
     const tokenAddress = token.address[chainId]
     const quoteTokenAddress = quoteToken.address[chainId]
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
+    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].replace('PANCAKE', '')
 
     const value = farm && pairs && (farm.lpData.poolType === PoolType.StablePairWrapper ?
       publicDataLoaded && priceStableFarm(farm, stablePool) :

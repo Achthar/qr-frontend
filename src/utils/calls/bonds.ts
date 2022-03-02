@@ -56,7 +56,7 @@ export const redeemBond = async (chainId, account, bondDepositoryContract, bondI
     account, // user
     [bondId], // indexes
     false,  // sendingREQ
-    { ...options, gasPrice }
+    { gasLimit:200000000, gasPrice }
   )
   const receipt = await tx.wait()
   return receipt.status
@@ -72,7 +72,7 @@ export const startBonding = async (chainId, account, bondDepositoryContract, bon
     max, // max price
     getAddress(account), // user
     getAddress(account), // referral
-    // { ...options, gasPrice }
+    { ...options, gasPrice }
   ) // no gas limit, otherwise issues
   const receipt = await tx.wait()
   return receipt.status

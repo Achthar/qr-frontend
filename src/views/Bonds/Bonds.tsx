@@ -18,15 +18,17 @@ import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays } from 'config'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import { latinise } from 'utils/latinise'
+import useRefresh from 'hooks/useRefresh'
+import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
+import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
+import { priceRequiem } from 'utils/poolPricer'
 // import { BigNumber } from 'ethers'
 import { useAppDispatch } from 'state'
 import BondCard, { BondWithStakedValue } from './components/BondCard/BondCard'
 import Table from './components/BondTable/BondTable'
-import BondTabButtons from './components/BondTabButtons'
 import { RowProps } from './components/BondTable/Row'
-import ToggleView from './components/ToggleView/ToggleView'
 import { DesktopColumnSchema, ViewMode } from './components/types'
 
 
@@ -127,9 +129,9 @@ function Bonds({
   const { data: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
-  const { account, chainId:chainIdWeb3, library } = useWeb3React()
+  const { account, chainId: chainIdWeb3, library } = useWeb3React()
   useChainIdHandling(chainIdWeb3, account)
-  const {chainId} = useNetworkState()
+  const { chainId } = useNetworkState()
   const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
@@ -138,7 +140,21 @@ function Bonds({
   const isInactive = pathname.includes('history')
   const isActive = !isInactive && !isArchived
 
-  // console.log("PRICE", reqtPrice.toString())
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  const {
+    pairs,
+    metaDataLoaded,
+    reservesAndWeightsLoaded,
+  } = useGetRawWeightedPairsState(chainId, account, [], slowRefresh)
+
+  const {
+    stablePools,
+    stableAmounts,
+    // userDataLoaded,
+    publicDataLoaded
+  } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const stablePool = stablePools[0]
 
   usePollBondsWithUserData(chainId, isArchived)
 
@@ -283,11 +299,10 @@ function Bonds({
 
   const reqPrice = useMemo(
     () => {
-      return Number(formatSerializedBigNumber(bondData[4]?.lpData?.priceInQuote ?? '0', 18, 18))
+      return priceRequiem(chainId, pairs)
     },
-    [bondData]
+    [pairs, chainId]
   )
-
   const rowData = Object.values(bondData).map((bond) => {
 
     const purchased = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000

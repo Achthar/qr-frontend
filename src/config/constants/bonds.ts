@@ -9,7 +9,7 @@ import { BondConfig, BondType } from './types'
 export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
   [ChainId.AVAX_TESTNET]: [
     {
-      bondId: 4,
+      bondId: 1,
       isBondable: {
         [ChainId.AVAX_TESTNET]: true,
         [ChainId.AVAX_MAINNET]: false
@@ -22,37 +22,7 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
       name: "80% REQT - 20% DAI",
       displayName: "80% REQT - 20% DAI",
       bondToken: "DAI REQT LP",
-      payoutToken: "REQT",
-      bondIconSvg: 'CvxImg',
-      // bondContractABI: new ethers.utils.Interface(DaiBondContract),
-      // reserveContract: '',
-      type: BondType.PairLP,
-      displayUnits: '4',
-      reserveAddress: {
-        43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
-        43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
-      },
-      lpProperties: {
-        weightToken: 80,
-        weightQuoteToken: 20,
-        fee: 25
-      }
-    },
-    {
-      bondId: 5,
-      isBondable: {
-        [ChainId.AVAX_TESTNET]: true,
-        [ChainId.AVAX_MAINNET]: false
-      },
-      isClaimable: {
-        [ChainId.AVAX_TESTNET]: true,
-        [ChainId.AVAX_MAINNET]: false
-      },
-      isLP: false,
-      name: "REQT SLP",
-      displayName: "REQT - Stable LP",
-      bondToken: "Stable Swap LP",
-      payoutToken: "REQT",
+      payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
@@ -79,10 +49,40 @@ export const bondList: { [chainId in ChainId]?: BondConfig[] } = {
         [ChainId.AVAX_MAINNET]: false
       },
       isLP: false,
+      name: "REQT SLP",
+      displayName: "REQT - Stable LP",
+      bondToken: "Stable Swap LP",
+      payoutToken: "abREQ",
+      bondIconSvg: 'CvxImg',
+      // bondContractABI: new ethers.utils.Interface(DaiBondContract),
+      // reserveContract: '',
+      type: BondType.PairLP,
+      displayUnits: '4',
+      reserveAddress: {
+        43114: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c",
+        43113: "0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
+      }
+    },
+    {
+      bondId: 2,
+      isBondable: {
+        [ChainId.AVAX_TESTNET]: true,
+        [ChainId.AVAX_MAINNET]: false
+      },
+      isClaimable: {
+        [ChainId.AVAX_TESTNET]: true,
+        [ChainId.AVAX_MAINNET]: false
+      },
+      isLP: false,
       name: "REQ Stable Swap LP",
       displayName: "REQT - Stable LP",
       bondToken: "Stable Swap LP",
-      payoutToken: "REQT",
+      payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
@@ -115,7 +115,7 @@ export const bonds = (chainId: number): BondConfig[] => {
   const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
   return [
     {
-      bondId: 4,
+      bondId: 1,
       isBondable: {
         [ChainId.AVAX_TESTNET]: true,
         [ChainId.AVAX_MAINNET]: false
@@ -128,7 +128,7 @@ export const bonds = (chainId: number): BondConfig[] => {
       name: "80/20 REQT-DAI",
       displayName: "80% REQT - 20% DAI",
       bondToken: "DAI REQT LP",
-      payoutToken: "REQT",
+      payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
@@ -147,7 +147,7 @@ export const bonds = (chainId: number): BondConfig[] => {
       }
     },
     {
-      bondId: 5,
+      bondId: 3,
       isBondable: {
         [ChainId.AVAX_TESTNET]: true,
         [ChainId.AVAX_MAINNET]: false
@@ -160,7 +160,7 @@ export const bonds = (chainId: number): BondConfig[] => {
       name: " 50/50 WAVAX-USDC LP",
       displayName: "REQT LP",
       bondToken: "Swap LP",
-      payoutToken: "REQT",
+      payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
@@ -179,7 +179,7 @@ export const bonds = (chainId: number): BondConfig[] => {
       }
     },
     {
-      bondId: 3,
+      bondId: 2,
       isBondable: {
         [ChainId.AVAX_TESTNET]: true,
         [ChainId.AVAX_MAINNET]: false
@@ -192,7 +192,7 @@ export const bonds = (chainId: number): BondConfig[] => {
       name: "req4USD LP",
       displayName: "REQT - Stable LP",
       bondToken: "Stable Swap LP",
-      payoutToken: "REQT",
+      payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
       // reserveContract: '',
