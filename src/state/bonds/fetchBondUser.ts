@@ -102,7 +102,7 @@ export const fetchBondUserAllowancesAndBalances = async (chainId: number, accoun
   })
 
   const rawData = await multicall(chainId, erc20ABI, [...callsAllowance, ...callsBalances])
-  const parsedAllowance = rawData.slice(bondsToFetch.length).map((allowance) => {
+  const parsedAllowance = rawData.slice(0, bondsToFetch.length).map((allowance) => {
     return new BigNumber(allowance).toJSON()
   })
 

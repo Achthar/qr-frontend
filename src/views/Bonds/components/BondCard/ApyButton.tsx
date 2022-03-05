@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { Flex, IconButton, useModal, CalculateIcon } from '@requiemswap/uikit'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { useTranslation } from 'contexts/Localization'
-import { useBondUser, useLpTokenPrice } from 'state/bonds/hooks'
+import { useBondUser } from 'state/bonds/hooks'
 
 const ApyLabelContainer = styled(Flex)`
   cursor: pointer;
@@ -38,7 +38,7 @@ const ApyButton: React.FC<ApyButtonProps> = ({
   addLiquidityUrl,
 }) => {
   const { t } = useTranslation()
-  const lpPrice = useLpTokenPrice(lpSymbol)
+  const lpPrice = new BigNumber(0)
   const { tokenBalance, stakedBalance } = useBondUser(bondId)
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal

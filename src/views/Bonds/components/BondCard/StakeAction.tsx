@@ -8,7 +8,7 @@ import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { useBondFromBondId, useLpTokenPrice } from 'state/bonds/hooks'
+import { useBondFromBondId } from 'state/bonds/hooks'
 import { getBalanceAmount, getBalanceNumber } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../BondingModal'
@@ -56,7 +56,6 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
   const location = useLocation()
   const dispatch = useAppDispatch()
 
-  const lpPrice = useLpTokenPrice(tokenName)
 
   const handleStake = async (amount: string) => {
     await onStake(amount)
@@ -83,11 +82,9 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
     <BondingModal
       bondId={bondId}
       max={tokenBalance}
-      stakedBalance={stakedBalance}
       onConfirm={handleStake}
       tokenName={tokenName}
       multiplier={multiplier}
-      lpPrice={lpPrice}
       lpLabel={lpLabel}
       apr={apr}
       displayApr={displayApr}
@@ -127,16 +124,6 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
     <Flex justifyContent="space-between" alignItems="center">
       <Flex flexDirection="column" alignItems="flex-start">
         <Heading color={stakedBalance.eq(0) ? 'textDisabled' : 'text'}>{displayBalance()}</Heading>
-        {stakedBalance.gt(0) && lpPrice.gt(0) && (
-          <Balance
-            fontSize="12px"
-            color="textSubtle"
-            decimals={2}
-            value={getBalanceNumber(lpPrice.times(stakedBalance))}
-            unit=" USD"
-            prefix="~"
-          />
-        )}
       </Flex>
       {renderStakingButtons()}
     </Flex>

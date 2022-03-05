@@ -1,7 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
-import { bonds as bondList, bondList as bondsDict } from 'config/constants/bonds'
+import { bonds as bondList } from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
 import { getContractForReserve } from 'utils/contractHelpers';
 import {
@@ -49,11 +49,10 @@ function noAccountBondConfig(chainId: number) {
 
 function initialState(chainId: number): BondsState {
   return {
-    data: noAccountBondConfig(chainId),
+    bondData:  {}, // noAccountBondConfig(chainId),
     loadArchivedBondsData: false,
     userDataLoaded: false,
-    status: 'idle',
-    bondData: {}
+    status: 'idle'
   }
 }
 

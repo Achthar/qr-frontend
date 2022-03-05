@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
-import { useBondFromBondId, useBondUser, useLpTokenPrice, usePriceReqtUsd } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser, usePriceReqtUsd } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
@@ -53,11 +53,9 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
-  const lpPrice = useLpTokenPrice(name)
   const reqtPrice = new BigNumber(useReqtPrice(chainId))
 
-  // console.log("PRICE", useReqtPrice(chainId))
-
+  console.log("ALLOWANCE", allowance.toString(), tokenBalance, bondId, bond)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
   const lpAddress = getAddress(chainId, reserveAddress)
@@ -97,15 +95,10 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     <BondingModal
       bondId={bondId}
       max={tokenBalance}
-      lpPrice={lpPrice}
       lpLabel={lpLabel}
-      apr={apr}
-      displayApr={displayApr}
-      stakedBalance={stakedBalance}
       onConfirm={handleStake}
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
-      reqtPrice={reqtPrice}
     />,
   )
   const [onPresentWithdraw] = useModal(
@@ -158,16 +151,6 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
           <ActionContent>
             <div>
               <Heading>{displayBalance()}</Heading>
-              {stakedBalance.gt(0) && lpPrice.gt(0) && (
-                <Balance
-                  fontSize="12px"
-                  color="textSubtle"
-                  decimals={2}
-                  value={getBalanceNumber(lpPrice.times(stakedBalance))}
-                  unit=" USD"
-                  prefix="~"
-                />
-              )}
             </div>
             <IconButtonWrapper>
               <IconButton variant="secondary" onClick={onPresentWithdraw} mr="6px">

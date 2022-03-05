@@ -33,7 +33,6 @@ interface RedemptionModalProps {
   bondId: number
   max: BigNumber
   stakedBalance: BigNumber
-  lpPrice: BigNumber
   lpLabel?: string
   onConfirm: (amount: string) => void
   onDismiss?: () => void
@@ -50,7 +49,6 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   onConfirm,
   onDismiss,
   tokenName = '',
-  lpPrice,
   lpLabel,
   apr,
   addLiquidityUrl,
@@ -68,17 +66,6 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
 
   const lpTokensToStake = new BigNumber(val)
 
-  const usdToStake = lpTokensToStake.times(lpPrice)
-
-  const interestBreakdown = getInterestBreakdown({
-    principalInUSD: !lpTokensToStake.isNaN() ? usdToStake.toNumber() : 0,
-    apr,
-    earningTokenPrice: reqtPrice.toNumber(),
-  })
-
-  const annualRoi = reqtPrice.times(interestBreakdown[3])
-
- 
 
   const { currentBlock } = useBlock()
 

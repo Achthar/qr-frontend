@@ -1,7 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
-import { bonds as bondList, bondList as bondsDict } from 'config/constants/bonds'
+import { bonds as bondList} from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
 import { stableSwapInitialData } from 'config/constants/stablePools';
 import { getContractForReserve } from 'utils/contractHelpers';
@@ -10,11 +10,6 @@ import { StablePoolConfig, StablePoolsState } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchStablePoolUserData';
 import { changeChainIdStables } from './actions';
 
-
-// import { chain } from 'lodash'
-
-
-const chainIdFromState = 43113 // useAppSelector((state) => state.application.chainId)
 
 function baseStablePool(chainId: number) {
   return stableSwapInitialData[chainId]

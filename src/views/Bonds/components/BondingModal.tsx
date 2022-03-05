@@ -29,9 +29,7 @@ const AnnualRoiDisplay = styled(Text)`
 interface BondingModalProps {
   bondId: number
   max: BigNumber
-  stakedBalance: BigNumber
   multiplier?: string
-  lpPrice: BigNumber
   lpLabel?: string
   onConfirm: (amount: string) => void
   onDismiss?: () => void
@@ -46,17 +44,10 @@ const BondingModal: React.FC<BondingModalProps> = (
   {
     bondId,
     max,
-    stakedBalance,
     onConfirm,
     onDismiss,
     tokenName = '',
-    multiplier,
-    displayApr,
-    lpPrice,
-    lpLabel,
-    apr,
     addLiquidityUrl,
-    reqtPrice,
   }
 ) => {
   const bond = useBondFromBondId(bondId)
@@ -71,20 +62,6 @@ const BondingModal: React.FC<BondingModalProps> = (
   const lpTokensToStake = new BigNumber(val)
   const fullBalanceNumber = new BigNumber(fullBalance)
 
-  const usdToStake = lpTokensToStake.times(lpPrice)
-
-  const interestBreakdown = getInterestBreakdown({
-    principalInUSD: !lpTokensToStake.isNaN() ? usdToStake.toNumber() : 0,
-    apr,
-    earningTokenPrice: reqtPrice.toNumber(),
-  })
-
-  const annualRoi = reqtPrice.times(interestBreakdown[3])
-  const formattedAnnualRoi = formatNumber(
-    annualRoi.toNumber(),
-    annualRoi.gt(10000) ? 0 : 2,
-    annualRoi.gt(10000) ? 0 : 2,
-  )
 
   const token = deserializeToken(bond.token)
   const quoteToken = deserializeToken(bond.quoteToken)

@@ -8,7 +8,7 @@ import Balance from 'components/Balance'
 import { useTranslation } from 'contexts/Localization'
 import { useAppDispatch } from 'state'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { useBondFromBondId, useLpTokenPrice } from 'state/bonds/hooks'
+import { useBondFromBondId } from 'state/bonds/hooks'
 import { getBalanceAmount, getBalanceNumber } from 'utils/formatBalance'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../BondingModal'
@@ -55,7 +55,7 @@ const BondAction: React.FC<BondCardActionsProps> = ({
   const location = useLocation()
   const dispatch = useAppDispatch()
 
-  const lpPrice = useLpTokenPrice(tokenName)
+  const lpPrice = new BigNumber(0)
 
   const handleStake = async (amount: string) => {
     await onStake(amount)
@@ -82,11 +82,9 @@ const BondAction: React.FC<BondCardActionsProps> = ({
     <BondingModal
       bondId={bondId}
       max={tokenBalance}
-      stakedBalance={stakedBalance}
       onConfirm={handleStake}
       tokenName={tokenName}
       multiplier={multiplier}
-      lpPrice={lpPrice}
       lpLabel={lpLabel}
       apr={apr}
       displayApr={displayApr}

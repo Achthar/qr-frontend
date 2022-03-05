@@ -126,7 +126,7 @@ function Bonds({
   const { path } = useRouteMatch()
   const { pathname } = useLocation()
   const { t } = useTranslation()
-  const { data: bondsLP, userDataLoaded } = useBonds()
+  const { bondData: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
   const { account, chainId: chainIdWeb3, library } = useWeb3React()
@@ -164,9 +164,9 @@ function Bonds({
 
   // const [stakedOnly, setStakedOnly] = useUserBondStakedOnly(isActive)
 
-  const activeBonds = bondsLP // .filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
-  const inactiveBonds = bondsLP.filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
-  const archivedBonds = bondsLP.filter((bond) => isArchivedPid(bond.bondId))
+  const activeBonds = Object.values(bondsLP) // .filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
+  const inactiveBonds = Object.values(bondsLP).filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
+  const archivedBonds = Object.values(bondsLP).filter((bond) => isArchivedPid(bond.bondId))
 
   // const stakedOnlyBonds = activeBonds.filter(
   //   (bond) => bond.userData && new BigNumber(bond.userData.stakedBalance).isGreaterThan(0),
@@ -262,7 +262,7 @@ function Bonds({
   const dispatch = useAppDispatch()
 
   const { bondData } = useBonds()
-  console.log("BDATA", bondData)
+  // console.log("BDATA", bondData)
   chosenBondsLength.current = chosenBondsMemoized.length
 
   useEffect(() => {

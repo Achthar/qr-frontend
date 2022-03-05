@@ -78,11 +78,6 @@ export const useBondFromBondId = (bondId): Bond => {
   return bond
 }
 
-export const useBondFromBondName = (name: string): Bond => {
-  const bond = useSelector((state: State) => state.bonds.data.find((f) => f.name === name))
-  return bond
-}
-
 export const useBondUser = (bondId) => {
   const bond = useBondFromBondId(bondId)
   if (bond) {
@@ -102,29 +97,6 @@ export const useBondUser = (bondId) => {
   }
 }
 
-// Return the base token price for a bond, from a given bondId
-export const useUsdPriceFromBondId = (bondId: number): BigNumber => {
-  const bond = useBondFromBondId(bondId)
-  return bond && new BigNumber(12) // new BigNumber(bond.token.busdPrice)
-}
-
-export const useLpTokenPrice = (symbol: string) => {
-  const bond = useBondFromBondName(symbol)
-  const bondTokenPriceInUsd = useUsdPriceFromBondId(bond.bondId)
-  let lpTokenPrice = BIG_ZERO
-
-  if (bond.lpTotalSupply && bond.lpTotalInQuoteToken) {
-    // Total value of base token in LP
-    const valueOfBaseTokenInBond = bondTokenPriceInUsd.times(bond.tokenAmountTotal)
-    // Double it to get overall value in LP
-    const overallValueOfAllTokensInBond = valueOfBaseTokenInBond.times(2)
-    // Divide total value of all tokens, by the number of LP tokens
-    const totalLpTokens = getBalanceAmount(new BigNumber(bond.lpTotalSupply))
-    lpTokenPrice = overallValueOfAllTokensInBond.div(totalLpTokens)
-  }
-
-  return lpTokenPrice
-}
 
 // /!\ Deprecated , use the BUSD hook in /hooks
 

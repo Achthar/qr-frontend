@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
-import { useBondFromBondId, useBondUser, useLpTokenPrice, usePriceReqtUsd } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser, usePriceReqtUsd } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
@@ -51,7 +51,6 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const { onStake } = useStakeBonds(chainId, bond)
   const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
-  const lpPrice = useLpTokenPrice(name)
   const reqtPrice = usePriceReqtUsd(chainId ?? 43113)
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
@@ -94,11 +93,9 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
     <DepositModal
       bondId={bondId}
       max={tokenBalance}
-      lpPrice={lpPrice}
       lpLabel={lpLabel}
       apr={apr}
       displayApr={displayApr}
-      stakedBalance={stakedBalance}
       onConfirm={handleStake}
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
@@ -153,19 +150,6 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
             </Text>
           </ActionTitles>
           <ActionContent>
-            <div>
-              <Heading>{displayBalance()}</Heading>
-              {stakedBalance.gt(0) && lpPrice.gt(0) && (
-                <Balance
-                  fontSize="12px"
-                  color="textSubtle"
-                  decimals={2}
-                  value={getBalanceNumber(lpPrice.times(stakedBalance))}
-                  unit=" USD"
-                  prefix="~"
-                />
-              )}
-            </div>
             <IconButtonWrapper>
               <IconButton variant="secondary" onClick={onPresentWithdraw} mr="6px">
                 <MinusIcon color="primary" width="14px" />

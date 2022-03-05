@@ -426,7 +426,6 @@ export const BLOCKED_ADDRESSES: string[] = [
 export { default as farmsConfig } from './farms'
 export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'
-export { bondList as bondsConfig } from './bonds'
 
 // data for weighted pools
 export const STANDARD_FEES = [5, 10, 15, 20, 25]

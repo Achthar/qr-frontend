@@ -87,23 +87,6 @@ export interface IBondDetails {
   bondPrice?: number;
   marketPrice?: SerializedBigNumber;
 }
-// export interface IUserBondDetails {
-//   // bond: string;
-//   allowance: number;
-//   interestDue: number;
-//   bondMaturationBlock: number;
-//   pendingPayout: string; // Payout formatted in gwei.
-// }
-// export interface IBondData extends IUserBondDetails {
-//   bond: string
-//   displayName: string
-//   isLP: boolean
-//   allowance: number
-//   balance: string
-//   interestDue: number
-//   bondMaturationBlock: number
-//   pendingPayout: string
-// }
 
 export interface Bond extends BondConfig, IBondDetails {
   tokenAmount?: SerializedBigNumber
@@ -164,7 +147,6 @@ export interface Bond extends BondConfig, IBondDetails {
 }
 
 export interface BondsState {
-  data: Bond[]
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   status?: string

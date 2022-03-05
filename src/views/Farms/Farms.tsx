@@ -313,14 +313,14 @@ function Farms({
       publicDataLoaded && priceStableFarm(farm, stablePool) :
       reservesAndWeightsLoaded && priceWeightedFarm(farm, pairs))
 
-    // console.log("PRICE", farm.lpSymbol, value, value * Number(farm.lpTokenRatio), farm.lpTokenRatio)
+    console.log("PRICE", farm.lpSymbol, value, value * Number(farm.lpTokenRatio), farm.lpTokenRatio)
 
 
     const { reqtRewardsApr, lpRewardsApr } = isActive
       ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, new BigNumber(value), farm.lpAddresses[chainId])
       : { reqtRewardsApr: 0, lpRewardsApr: 0 }
 
-    // console.log("PRICE APR", reqtRewardsApr, lpRewardsApr, getDisplayApr(reqtRewardsApr, lpRewardsApr))
+    console.log("PRICE APR", reqtRewardsApr, lpRewardsApr, getDisplayApr(reqtRewardsApr, lpRewardsApr), farm?.liquidity?.toString())
 
     const row: RowProps = {
       apr: {
