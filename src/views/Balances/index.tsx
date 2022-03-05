@@ -9,6 +9,9 @@ import { useWeb3React } from '@web3-react/core'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
+import { Token } from '@requiemswap/sdk'
+import { serializeToken } from 'state/user/hooks/helpers'
 
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import useRefresh from 'hooks/useRefresh'
@@ -41,6 +44,8 @@ export default function Balances() {
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()
 
+  const userAddedTokens: Token[] = useUserAddedTokens()
+
   useEffect(
     () => {
       if (account) {
@@ -48,7 +53,7 @@ export default function Balances() {
         dispatch(fetchUserTokenData({
           chainId,
           account,
-          // additionalTokens 
+          additionalTokens : userAddedTokens.map(token => serializeToken(token))
         }))
 
         dispatch(fetchUserNetworkCcyBalance({
@@ -58,6 +63,7 @@ export default function Balances() {
       }
       return;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       chainId,
       account,

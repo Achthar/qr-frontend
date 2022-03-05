@@ -100,8 +100,9 @@ export function useDerivedMintWeightedPairInfo(
     poolTokenPercentage?: Percent
     error?: string
     fee: string
+    priceActual?: Price
 } {
-    
+
     const {
         independentField,
         typedValue,
@@ -254,6 +255,24 @@ export function useDerivedMintWeightedPairInfo(
         return weightedPair && wrappedCurrencyA ? weightedPair.priceOf(wrappedCurrencyA) : undefined
     }, [chainId, currencyA, noLiquidity, weightedPair, parsedAmounts])
 
+    const priceActual = useMemo(() => {
+        if (noLiquidity) {
+            const { [WeightedField.CURRENCY_A]: currencyAAmount, [WeightedField.CURRENCY_B]: currencyBAmount } = parsedAmounts
+            if (currencyAAmount && currencyBAmount && weightA && weightB) {
+                return new Price(
+                    currencyAAmount.currency,
+                    currencyBAmount.currency,
+                    JSBI.multiply(currencyAAmount.raw, JSBI.BigInt(weightB)),
+                    JSBI.multiply(currencyBAmount.raw, JSBI.BigInt(weightA)))
+            }
+            return undefined
+        }
+        const wrappedCurrencyA = wrappedCurrency(currencyA, chainId)
+        return weightedPair && wrappedCurrencyA ? weightedPair.priceRatioOf(wrappedCurrencyA) : undefined
+    }, [chainId, currencyA, noLiquidity, weightedPair, parsedAmounts, weightA, weightB])
+
+
+
     // liquidity minted
     const liquidityMinted = useMemo(() => {
         const { [WeightedField.CURRENCY_A]: currencyAAmount, [WeightedField.CURRENCY_B]: currencyBAmount } = parsedAmounts
@@ -311,6 +330,7 @@ export function useDerivedMintWeightedPairInfo(
         liquidityMinted,
         poolTokenPercentage,
         error,
-        fee: usedFee
+        fee: usedFee,
+        priceActual
     }
 }

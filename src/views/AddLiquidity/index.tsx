@@ -142,7 +142,8 @@ export default function AddLiquidity({
     liquidityMinted,
     poolTokenPercentage,
     error,
-    fee: _fee
+    fee: _fee,
+    priceActual
   } = useDerivedMintWeightedPairInfo(
     chainId,
     account,
@@ -577,7 +578,7 @@ export default function AddLiquidity({
               </ColumnCenter>
             )}
             <Box>
-              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
+              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px'>
                 <span>
                   <CurrencyInputPanelExpanded
                     chainId={chainId}
@@ -586,14 +587,14 @@ export default function AddLiquidity({
                     networkCcyBalance={networkCcyBalance}
                     isLoading={isLoading}
                     borderRadius='5px'
-                    width='250px'
+                    width='280px'
                     value={formattedAmounts[WeightedField.CURRENCY_A]}
                     onUserInput={onFieldAInput}
                     onMax={() => {
                       onFieldAInput(maxAmounts[WeightedField.CURRENCY_A]?.toExact() ?? '')
                     }}
                     onCurrencySelect={handleCurrencyASelect}
-                    showMaxButton={!atMaxAmounts[WeightedField.CURRENCY_A]}
+                    showMaxButton={false}
                     currency={currencies[WeightedField.CURRENCY_A]}
                     id="add-liquidity-input-tokena"
                     showCommonBases
@@ -635,7 +636,7 @@ export default function AddLiquidity({
                 </Flex>
               </Box>
             </ColumnCenter>
-            <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' >
+            <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px' >
               <span>
                 <CurrencyInputPanelExpanded
                   chainId={chainId}
@@ -644,14 +645,14 @@ export default function AddLiquidity({
                   networkCcyBalance={networkCcyBalance}
                   isLoading={isLoading}
                   borderRadius='5px'
-                  width='250px'
+                  width='280px'
                   value={formattedAmounts[WeightedField.CURRENCY_B]}
                   onUserInput={onFieldBInput}
                   onCurrencySelect={handleCurrencyBSelect}
                   onMax={() => {
                     onFieldBInput(maxAmounts[WeightedField.CURRENCY_B]?.toExact() ?? '')
                   }}
-                  showMaxButton={!atMaxAmounts[WeightedField.CURRENCY_B]}
+                  showMaxButton={false}
                   currency={currencies[WeightedField.CURRENCY_B]}
                   id="add-liquidity-input-tokenb"
                   showCommonBases
@@ -684,6 +685,7 @@ export default function AddLiquidity({
                       poolTokenPercentage={poolTokenPercentage}
                       noLiquidity={noLiquidity}
                       price={price}
+                      priceRatio={priceActual}
                     />
                   </LightCard>
                 </LightCard>
