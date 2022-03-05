@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import useENS from 'hooks/ENS/useENS'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCurrency } from 'hooks/Tokens'
+import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
 
 import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import { TokenPair } from 'config/constants/types'
@@ -124,33 +125,40 @@ function containsToken(token: Token, list: Token[]) {
 }
 
 export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: number): TokenPair[] {
+  const userAdded = useUserAddedTokens()
+  const relevantTokens = useMemo(() => {
+
+    return [...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId], ...userAdded]
+  },
+    [chainId, userAdded]
+  )
 
   const [aInBase, bInBase] = useMemo(() =>
     [
-      tokenA ? containsToken(tokenA, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false,
-      tokenB ? containsToken(tokenB, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false
+      tokenA ? containsToken(tokenA, relevantTokens) : false,
+      tokenB ? containsToken(tokenB, relevantTokens) : false
     ],
-    [chainId, tokenA, tokenB])
+    [tokenA, tokenB, relevantTokens])
 
   const expandedTokenList = useMemo(() => {
     if (!tokenA || !tokenB) {
-      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+      return relevantTokens
     }
     if (aInBase && !bInBase) {
-      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+      return [...[tokenA], ...[tokenB], ...relevantTokens]
     }
     if (!aInBase && !bInBase) {
-      return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+      return [...[tokenA], ...[tokenB], ...relevantTokens]
     }
     if (!aInBase && bInBase) {
-      return [...[tokenA], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
+      return [...[tokenA], ...relevantTokens]
     }
     if (aInBase && bInBase) {
-      return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
+      return relevantTokens
     }
     return []
   },
-    [chainId, tokenA, tokenB, aInBase, bInBase])
+    [tokenA, tokenB, aInBase, bInBase, relevantTokens])
 
 
   const basePairList: TokenPair[] = []
