@@ -677,7 +677,7 @@ export default function AddLiquidity({
                 <LightCard padding="0px" borderRadius="20px">
                   <RowBetween padding="1rem">
                     <Text fontSize="14px">
-                      {noLiquidity ? t('Initial prices and pool share') : t('Prices and pool share')}
+                      {noLiquidity ? t('Initial pool ratio, market prices and pool share') : t('Pool ratios, market prices and pool share')}
                     </Text>
                   </RowBetween>{' '}
                   <LightCard padding="1rem" borderRadius="20px">
