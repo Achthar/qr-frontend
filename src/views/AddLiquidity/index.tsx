@@ -21,7 +21,8 @@ import {
   AddIcon,
   ChevronLeftIcon,
   ArrowUpIcon,
-  Box
+  Box,
+  useMatchBreakpoints
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
@@ -184,7 +185,7 @@ export default function AddLiquidity({
     [chainId, networkCcyBalanceString]
   )
 
-
+  const { isMobile, isDesktop } = useMatchBreakpoints()
   const {
     onFieldAInput,
     onFieldBInput,
@@ -578,7 +579,7 @@ export default function AddLiquidity({
               </ColumnCenter>
             )}
             <Box>
-              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px'>
+              <Row grid-row-gap='5px'>
                 <span>
                   <CurrencyInputPanelExpanded
                     chainId={chainId}
@@ -587,7 +588,7 @@ export default function AddLiquidity({
                     networkCcyBalance={networkCcyBalance}
                     isLoading={isLoading}
                     borderRadius='5px'
-                    width='280px'
+                    width={isMobile ? '210px' : '280px'}
                     value={formattedAmounts[WeightedField.CURRENCY_A]}
                     onUserInput={onFieldAInput}
                     onMax={() => {
@@ -614,7 +615,7 @@ export default function AddLiquidity({
                     onHover
                   />
                 </span>
-              </Flex>
+              </Row>
             </Box>
             <ColumnCenter>
               <Box>
@@ -636,7 +637,7 @@ export default function AddLiquidity({
                 </Flex>
               </Box>
             </ColumnCenter>
-            <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px' >
+            <Row grid-row-gap='5px'>
               <span>
                 <CurrencyInputPanelExpanded
                   chainId={chainId}
@@ -645,7 +646,7 @@ export default function AddLiquidity({
                   networkCcyBalance={networkCcyBalance}
                   isLoading={isLoading}
                   borderRadius='5px'
-                  width='280px'
+                  width={isMobile ? '210px' : '280px'}
                   value={formattedAmounts[WeightedField.CURRENCY_B]}
                   onUserInput={onFieldBInput}
                   onCurrencySelect={handleCurrencyBSelect}
@@ -670,7 +671,7 @@ export default function AddLiquidity({
                   onHover
                 />
               </span>
-            </Flex>
+            </Row>
             {currencies[WeightedField.CURRENCY_A] && currencies[WeightedField.CURRENCY_B] && weightedPairState !== WeightedPairState.INVALID && (
               <>
                 <LightCard padding="0px" borderRadius="20px">
@@ -684,8 +685,8 @@ export default function AddLiquidity({
                       currencies={currencies}
                       poolTokenPercentage={poolTokenPercentage}
                       noLiquidity={noLiquidity}
-                      price={price}
-                      priceRatio={priceActual}
+                      price={priceActual}
+                      priceRatio={price}
                     />
                   </LightCard>
                 </LightCard>

@@ -252,7 +252,7 @@ export function useDerivedMintWeightedPairInfo(
             return undefined
         }
         const wrappedCurrencyA = wrappedCurrency(currencyA, chainId)
-        return weightedPair && wrappedCurrencyA ? weightedPair.priceOf(wrappedCurrencyA) : undefined
+        return weightedPair && wrappedCurrencyA ? weightedPair.clone().priceOf(wrappedCurrencyA) : undefined
     }, [chainId, currencyA, noLiquidity, weightedPair, parsedAmounts])
 
     const priceActual = useMemo(() => {
