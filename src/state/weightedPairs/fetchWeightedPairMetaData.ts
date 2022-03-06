@@ -12,7 +12,7 @@ import { WeightedPairMetaData } from '../types'
 
 interface MetaRequestData {
   chainId: number
-  additionalTokens?: TokenPair[]
+  tokenPairs?: TokenPair[]
 }
 
 // checks whether this specific token pair is new
@@ -29,26 +29,7 @@ export const isNewTokenPair = (additionalTokenPair: TokenPair, referenceTokens: 
 }
 
 
-// that function is  supposed to remove duplicate token pairs
-// assumes that the pair is already ordered by addresses of tokens
-export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: TokenPair[]): TokenPair[] => {
-  if (additionalTokens.length === 0)
-    return referenceTokens
 
-  const newPairs = []
-  for (let i = 0; i < additionalTokens.length; i++) {
-    let pairNew = false
-    for (let j = 0; j < referenceTokens.length; j++) {
-      if (additionalTokens[i].token0.address !== referenceTokens[j].token0.address &&
-        additionalTokens[i].token1.address !== referenceTokens[j].token1.address) {
-        pairNew = true
-        break;
-      }
-    }
-    newPairs.push(additionalTokens[i])
-  }
-  return [...newPairs, ...referenceTokens]
-}
 
 interface WeightedPairMetaResponse {
   metaData: { [pastedAddresses: string]: WeightedPairMetaData[] }
@@ -58,8 +39,8 @@ interface WeightedPairMetaResponse {
 // tokens in the pairs as keys and arrays of addresses as values
 export const fetchWeightedPairMetaData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairMetaData",
-  async ({ chainId, additionalTokens }: MetaRequestData): Promise<WeightedPairMetaResponse> => {
-    const tokenPairs = cleanTokenPairs(additionalTokens, getAllTokenPairs(chainId))
+  async ({ chainId, tokenPairs }: MetaRequestData): Promise<WeightedPairMetaResponse> => {
+    // const tokenPairs = cleanTokenPairs(tokenPairs, getAllTokenPairs(chainId))
     console.log("WP: INPUT Meta", tokenPairs,)
     // // cals for existing pool addresses
     const calls = tokenPairs.map(pair => {

@@ -4,6 +4,7 @@ import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/u
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import getChain from 'utils/getChain'
+import { serializeToken } from 'state/user/hooks/helpers'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { RouteComponentProps } from 'react-router-dom'
 import { useAddPair, useGetWeightedPairsState, useTokenPair } from 'hooks/useGetWeightedPairsState'
@@ -15,7 +16,7 @@ import { CurrencyLogo } from '../../components/Logo'
 import Row from '../../components/Layout/Row'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { useWeightedPairAdder } from '../../state/user/hooks'
+import { usePairAdder, useSerializedPairAdder, useWeightedPairAdder } from '../../state/user/hooks'
 import StyledInternalLink from '../../components/Links'
 import { currencyId } from '../../utils/currencyId'
 import Dots from '../../components/Loader/Dots'
@@ -72,22 +73,22 @@ export default function WeightedPairFinder({
   const tA = wrappedCurrency(currency0, chainId)
   const tB = wrappedCurrency(currency1, chainId)
 
-  const isContained = useAddPair(tA, tB, chainId)
-
   const tokenPair = useTokenPair(tA, tB, chainId)
 
-  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, isContained ? [] : [tokenPair], slowRefresh, slowRefresh)
+  const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
 
+  const pairsAvailable = useMemo(() => pairs.filter(
+    pair => pair.token0.address === tokenPair.token0.address
+      && pair.token1.address === tokenPair.token1.address),
+    [pairs, tokenPair])
 
-  const pairsAvailable = pairs.filter(pair => pair.token0.address === tokenPair.token0.address && pair.token1.address === tokenPair.token1.address)
-
-  const addPair = useWeightedPairAdder()
+  const addPair = useSerializedPairAdder()
 
   useEffect(() => {
-    if (pairsAvailable.length > 0 && !isContained) {
-      // pairsAvailable.map((pair) => addPair(pair))
+    if (pairsAvailable.length > 0) {
+      addPair({ token0: serializeToken(pairsAvailable[0].token0), token1: serializeToken(pairsAvailable[0].token1) })
     }
-  }, [pairsAvailable, addPair, isContained])
+  }, [pairsAvailable, addPair])
 
 
 

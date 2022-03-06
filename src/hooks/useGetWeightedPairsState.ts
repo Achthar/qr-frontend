@@ -14,6 +14,28 @@ import { serializeToken } from 'state/user/hooks/helpers'
 import { SerializedWeightedPair } from 'state/types'
 import { AppDispatch } from '../state'
 
+
+// that function is  supposed to remove duplicate token pairs
+// assumes that the pair is already ordered by addresses of tokens
+export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: TokenPair[]): TokenPair[] => {
+    if (additionalTokens.length === 0)
+      return referenceTokens
+  
+    const newPairs = []
+    for (let i = 0; i < additionalTokens.length; i++) {
+      let pairNew = false
+      for (let j = 0; j < referenceTokens.length; j++) {
+        if (additionalTokens[i].token0.address !== referenceTokens[j].token0.address &&
+          additionalTokens[i].token1.address !== referenceTokens[j].token1.address) {
+          pairNew = true
+          break;
+        }
+      }
+      newPairs.push(additionalTokens[i])
+    }
+    return [...newPairs, ...referenceTokens]
+  }
+
 export function useGetWeightedPairsState(
     chainId: number,
     account: string,
@@ -45,9 +67,9 @@ export function useGetWeightedPairsState(
     )
 
     const {
+        tokenPairs,
         metaDataLoaded,
         weightedPairMeta,
-        reservesAndWeightsLoaded,
         userBalancesLoaded
     } = useWeightedPairsState(chainId)
 
@@ -56,7 +78,7 @@ export function useGetWeightedPairsState(
     // by setting metaDataLoaded to false
     useEffect(() => {
         if (!metaDataLoaded && referenceChain === chainId) {
-            dispatch(fetchWeightedPairMetaData({ chainId, additionalTokens: additionalTokenPairs }))
+            dispatch(fetchWeightedPairMetaData({ chainId, tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs) }))
         }
 
     },
@@ -64,6 +86,10 @@ export function useGetWeightedPairsState(
         [dispatch, refreshGeneral, metaDataLoaded, referenceChain, chainId, additionalTokenPairs]
     )
 
+
+    const {
+        reservesAndWeightsLoaded
+    } = useWeightedPairsState(chainId)
 
     // reserves are fetched in cycles
     // weights and fee should be separated from reserves later on
@@ -146,6 +172,7 @@ export function useGetWeightedPairsTradeState(
     const {
         metaDataLoaded,
         reservesAndWeightsLoaded,
+        tokenPairs,
         userBalancesLoaded
     } = useWeightedPairsState(chainId)
 
@@ -154,7 +181,7 @@ export function useGetWeightedPairsTradeState(
     // by setting metaDataLoaded to false
     useEffect(() => {
         if (!metaDataLoaded && referenceChain === chainId) {
-            dispatch(fetchWeightedPairMetaData({ chainId, additionalTokens: additionalTokenPairs }))
+            dispatch(fetchWeightedPairMetaData({ chainId, tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs) }))
         }
 
     },
@@ -214,13 +241,14 @@ export function useAddPair(currencyA: Currency, currencyB: Currency, chainId: nu
     }) : null
 
     const pairContained = usePairIsInState(chainId, tokenPair)
+
     const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
         if (!pairContained) {
             dispatch(addTokenPair({ tokenPair }))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pairContained])
+    }, [pairContained, tokenPair])
 
     return pairContained
 }
@@ -369,6 +397,7 @@ export function useGetRawWeightedPairsState(
 
     const {
         metaDataLoaded,
+        tokenPairs,
         weightedPairMeta,
         reservesAndWeightsLoaded
     } = useWeightedPairsState(chainId)
@@ -378,7 +407,7 @@ export function useGetRawWeightedPairsState(
     // by setting metaDataLoaded to false
     useEffect(() => {
         if (!metaDataLoaded && referenceChain === chainId) {
-            dispatch(fetchWeightedPairMetaData({ chainId, additionalTokens: additionalTokenPairs }))
+            dispatch(fetchWeightedPairMetaData({ chainId,  tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs)  }))
         }
 
     },

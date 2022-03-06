@@ -11,6 +11,7 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import getChain from 'utils/getChain'
 import { useWeb3React } from '@web3-react/core'
+import { useUserPairs } from 'state/user/hooks'
 import Column from 'components/Column'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
@@ -54,6 +55,8 @@ export default function PoolList({
   const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
   const stablePoolReceived = stablePools[0]
 
+  const userPairs = useUserPairs(chainId)
+
   const {
     pairs,
     balances,
@@ -61,7 +64,7 @@ export default function PoolList({
     metaDataLoaded,
     reservesAndWeightsLoaded,
     userBalancesLoaded
-  } = useGetWeightedPairsState(chainId, account, [], slowRefresh, fastRefresh)
+  } = useGetWeightedPairsState(chainId, account, userPairs, slowRefresh, fastRefresh)
 
   const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
     () =>

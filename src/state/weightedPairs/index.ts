@@ -163,6 +163,7 @@ export const stablePoolSlice = createSlice({
       })
       .addCase(addTokenPair, (state, action) => {
         state[state.currentChain].metaDataLoaded = false;
+        state[state.currentChain].reservesAndWeightsLoaded = false;
         state[state.currentChain].tokenPairs.push(action.payload.tokenPair)
       })
   },

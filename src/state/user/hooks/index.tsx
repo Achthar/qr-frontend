@@ -6,8 +6,8 @@ import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } fro
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
 import { REQT, WBTC, WETH } from 'config/constants/tokens'
-import { SerializedToken } from 'config/constants/types'
-import { SerializedWeightedPair, WeightedPairMetaData } from 'state/types'
+import { SerializedToken, TokenPair } from 'config/constants/types'
+import { SerializedWeightedPair, State, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
 import { AppDispatch, AppState } from '../../index'
 import {
@@ -235,6 +235,18 @@ export function usePairAdder(): (pair: Pair) => void {
   )
 }
 
+export function useSerializedPairAdder(): (pair: TokenPair) => void {
+  const dispatch = useDispatch<AppDispatch>()
+
+  return useCallback(
+    (pair: TokenPair) => {
+      dispatch(addSerializedPair({ serializedPair: pair as SerializedPair }))
+    },
+    [dispatch],
+  )
+}
+
+
 /**
  * Given two tokens return the liquidity token that represents its liquidity shares
  * @param tokenA one of the two tokens
@@ -338,6 +350,16 @@ export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
     [dispatch],
   )
 }
+
+export function useUserPairs(chainId: number): TokenPair[] {
+  const savedPairs = useSelector<AppState, AppState['user']['pairs']>(({ user: { pairs } }) => pairs)
+
+  if (!savedPairs[chainId])
+    return []
+    
+  return Object.values(savedPairs[chainId])
+}
+
 
 /**
  * Returns all the pairs of tokens that are tracked by the user for the current chain ID.

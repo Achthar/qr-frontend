@@ -73,6 +73,7 @@ export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pa
 
   let rawPairs = []
   let rawTokens = []
+  const pairs = []
   const keys = Object.keys(pairState.weightedPairs).sort()
   for (let i = 0; i < keys.length; i++) {
     rawPairs = [...rawPairs, ...Object.values(pairState.weightedPairs[keys[i]])]
@@ -80,8 +81,14 @@ export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pa
       pairState.tokenPairs.find(x => x.token0.address === keys[i].split('-')[0] && x.token1.address === keys[i].split('-')[1])
     )]
   }
+
+  for (let i = 0; i < rawTokens.length; i++) {
+    if (rawTokens[i]) {
+      pairs.push(deserializeWeightedPair({ token0: rawTokens[i].token0, token1: rawTokens[i].token1 }, rawPairs[i]))
+    }
+  }
   return {
-    pairs: rawPairs.map((pair, index) => deserializeWeightedPair({ token0: rawTokens[index].token0, token1: rawTokens[index].token1 }, pair)),
+    pairs,
     balances: rawPairs.map(pair => new TokenAmount(new Token(chainId, pair.address, 18, ``, 'RLP'), pair.userData?.balance ?? '0')),
     totalSupply: rawPairs.map(pair => new TokenAmount(new Token(chainId, pair.address, 18, ``, 'RLP'), pair?.totalSupply ?? '0'))
   }
@@ -98,15 +105,20 @@ export const useDeserializedWeightedPairsData = (chainId: number): { pairs: Weig
 
   let rawPairs = []
   let rawTokens = []
+  const pairs = []
   const keys = Object.keys(pairState.weightedPairs).sort()
   for (let i = 0; i < keys.length; i++) {
     rawPairs = [...rawPairs, ...Object.values(pairState.weightedPairs[keys[i]])]
-    rawTokens = [...rawTokens, ...Object.values(pairState.weightedPairs[keys[i]]).map((_, j) =>
-      pairState.tokenPairs.find(x => x.token0.address === keys[i].split('-')[0] && x.token1.address === keys[i].split('-')[1])
-    )]
+    rawTokens = [...rawTokens, ...Object.values(pairState.weightedPairs[keys[i]]).map(pair => { return { token0: pair.token0, token1: pair.token1 } })]
+  }
+
+  for (let i = 0; i < rawTokens.length; i++) {
+    if (rawTokens[i]) {
+      pairs.push(deserializeWeightedPair({ token0: rawTokens[i].token0, token1: rawTokens[i].token1 }, rawPairs[i]))
+    }
   }
   return {
-    pairs: rawPairs.map((pair, index) => deserializeWeightedPair({ token0: rawTokens[index].token0, token1: rawTokens[index].token1 }, pair))
+    pairs
   }
 
 }
@@ -122,14 +134,17 @@ function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]:
 export function usePairIsInState(chainId: number, tokenPair: TokenPair): boolean {
   const tokenPairs = useSelector((state: State) => state.weightedPairs[chainId].tokenPairs)
 
-  if (!tokenPair)
-    return false
-
-  for (let i = 0; i < tokenPairs.length; i++) {
-    if (tokenPair.token0.address === tokenPairs[i].token0.address && tokenPair.token0.address === tokenPairs[i].token0.address)
+  return useMemo(() => {
+    if (!tokenPair) {
       return true
-  }
-  return false
+    }
+
+    for (let i = 0; i < tokenPairs.length; i++) {
+      if (tokenPair.token0.address === tokenPairs[i].token0.address && tokenPair.token1.address === tokenPairs[i].token1.address)
+        return true
+    }
+    return false
+  }, [tokenPairs, tokenPair])
 }
 
 // returns all pairs as SDK Pair object
@@ -139,7 +154,7 @@ export const useSerializedWeightedPairsData = (chainId: number): { pairs: { [key
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return { pairs: {} }
-  
+
   return {
     pairs: pairState.weightedPairs
   }
