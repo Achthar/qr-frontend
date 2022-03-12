@@ -356,7 +356,7 @@ export function useUserPairs(chainId: number): TokenPair[] {
 
   if (!savedPairs[chainId])
     return []
-    
+
   return Object.values(savedPairs[chainId])
 }
 
@@ -480,3 +480,13 @@ export function getMainAmounts(chainId: number, balances: {
 
 }
 
+
+export function useGetRequiemAmount(chainId: number) {
+  const balState = useUserBalances(chainId)
+
+  return {
+    balance: new TokenAmount(REQT[chainId], balState?.balances[REQT[chainId].address].balance ?? '0'),
+    isLoading: balState.isLoadingTokens
+  }
+
+}

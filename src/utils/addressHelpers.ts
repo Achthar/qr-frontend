@@ -19,6 +19,12 @@ export const getRequiemAddress = (chainId: number) => {
 export const getMasterChefAddress = (chainId: number) => {
   return getAddress(chainId, addresses.masterChef)
 }
+export const getRedRequiemAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.redRequiem)
+}
+export const getRedRequiemStakingAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.redRequiemStaking)
+}
 export const getMulticallAddress = (chainId: number) => {
   return getAddress(chainId, addresses.multiCall)
 }

@@ -77,6 +77,25 @@ export function useSwapV3ActionHandlers(chainId: number): {
 }
 
 // try to parse a user entered amount for a given token
+export function tryParseTokenAmount(chainId: number, value?: string, token?: Token): TokenAmount | undefined {
+  if (!value || !token) {
+    return undefined
+  }
+  try {
+    const typedValueParsed = parseUnits(value, token.decimals).toString()
+    if (typedValueParsed !== '0') {
+      return new TokenAmount(token, JSBI.BigInt(typedValueParsed))
+
+    }
+  } catch (error: any) {
+    // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
+    console.debug(`Failed to parse input amount: "${value}"`, error)
+  }
+  // necessary for all paths to return a value
+  return undefined
+}
+
+// try to parse a user entered amount for a given token
 export function tryParseAmount(chainId: number, value?: string, currency?: Currency): CurrencyAmount | undefined {
   if (!value || !currency) {
     return undefined

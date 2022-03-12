@@ -73,9 +73,9 @@ function PoolPriceBar({
       <BodyWrapper>
         <AutoRow justify="space-around" gap="4px">
           <AutoColumn justify="center">
-            <Text fontSize="14px" pt={1} bold>
+            <Text fontSize="14px" pt={1} bold marginLeft='3px' marginBottom='1px' marginTop='2px'>
               Market
-              <br/>
+              <br />
               prices
             </Text>
           </AutoColumn>

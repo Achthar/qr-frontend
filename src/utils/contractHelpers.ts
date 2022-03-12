@@ -25,7 +25,8 @@ import {
   getAddressForBondingCalculator,
   getAddressForWeightedPairFactory,
   getAddressForLpReserve,
-  getBondingDepositoryAddress
+  getBondingDepositoryAddress,
+  getRedRequiemStakingAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -217,4 +218,12 @@ export const getBondCalculatorContract = (chainId: number, signer?: ethers.Signe
 
 export const getBondingDepositoryContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, chainId === 43113 ? new Interface(bondReserveAVAX) : bondReserveAVAX, getBondingDepositoryContract(chainId), signer)
+}
+
+export const getRedRequiemContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getRequiemAddress(chainId), signer)
+}
+
+export const getRedRequiemStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getRedRequiemStakingAddress(chainId), signer)
 }

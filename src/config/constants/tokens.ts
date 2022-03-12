@@ -95,6 +95,44 @@ export const REQT: { [chainId: number]: Token } = {
   ),
 }
 
+export const RREQT: { [chainId: number]: Token } = {
+  [ChainId.BSC_MAINNET]: new Token(
+    ChainId.BSC_MAINNET,
+    '0x8ae2294fc64b41bd0945be663d551ea245d24a99',
+    18,
+    'CAKE',
+    'PancakeSwap Token',
+  ),
+  [ChainId.MATIC_TESTNET]: new Token(
+    ChainId.MATIC_TESTNET,
+    '0x8ae2294fc64b41bd0945be663d551ea245d24a99',
+    18,
+    'REQT',
+    'Requiem Token',
+  ),
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x8ae2294fC64b41bD0945BE663d551eA245d24A99',
+    18,
+    'RREQ',
+    'Red Requiem Token',
+  ), // not deployed yet, but dummy needed
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0x8ae2294fc64b41bd0945be663d551ea245d24a99',
+    18,
+    'REQT',
+    'Requiem Token',
+  ),
+  [ChainId.QUARKCHAIN_DEV_S0]: new Token(
+    ChainId.QUARKCHAIN_DEV_S0,
+    '0x8ae2294fc64b41bd0945be663d551ea245d24a99',
+    18,
+    'WETH',
+    'Wrapped ETH',
+  ),
+}
+
 export const CAKE: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
     ChainId.BSC_MAINNET,

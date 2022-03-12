@@ -110,6 +110,12 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
           Bonds
         </StyledNavLink>
       </StyledNavItem>
+      <StyledNavItem onClick={handleClick}>
+        <StyledNavLink to={`/${chain}/governance`}>
+          <img src={iconGovernment} alt='' />
+          Governance
+        </StyledNavLink>
+      </StyledNavItem>
 
       <StyledNavItem onClick={handleClick}>
         <StyledLinkHref
@@ -249,7 +255,7 @@ const StyledSidebar = styled.div`
   position: fixed;
   padding-top: 32px;
   width: 100%;
-  height: 450px;
+  height: 490px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -485,6 +491,12 @@ export const configDataEntries: (chainId: number) => MenuEntry[] = (chainId) => 
       iconSelected: bond,
       href: `/${chain}/bonds`,
     },
+    {
+      label: 'Governance',
+      icon: iconGovernment,
+      iconSelected: iconGovernment,
+      href: `/${chain}/governance`,
+    },
     // {
     //   label: 'Pools'),
     //   icon: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/icons/menu/staking.svg',
@@ -540,7 +552,7 @@ const GeneralNav: React.FC = () => {
       >
         <Flex flexDirection="row">
           <ImageContainer>
-            <img src={fbIcon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'} alt='' />
+            <img src={fbIcon ?? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png'} alt='' width='40px' />
           </ImageContainer>
           <Text bold textAlign='center' paddingTop='9px' marginLeft='15px'>
             {fbLabel}

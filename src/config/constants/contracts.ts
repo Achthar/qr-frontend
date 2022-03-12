@@ -232,6 +232,12 @@ export const addresses = {
   },
   authority:{
     43113:"0x94490C52990A38982851C4AD712390B858f63062"
+  },
+  redRequiem:{
+    43113:"0x8ae2294fC64b41bD0945BE663d551eA245d24A99"
+  },
+  redRequiemStaking:{
+    43113:"0x402b4bC758Cf5828F8367A43CE6C822741620877"
   }
 
 

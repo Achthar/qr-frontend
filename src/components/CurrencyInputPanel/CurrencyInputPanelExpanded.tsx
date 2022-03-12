@@ -1,6 +1,6 @@
 import React from 'react'
 import { Currency, Pair, WeightedPair, TokenAmount, CurrencyAmount, Token } from '@requiemswap/sdk'
-import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
+import { Button, ChevronDownIcon, Text, useModal, Flex, UserMenuDivider } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import CircleLoader from 'components/Loader/CircleLoader'
@@ -8,6 +8,15 @@ import { RowBetween } from '../Layout/Row'
 import { Input as NumericalInput } from './NumericalInput'
 import CurrencySearchModalExpanded from '../SearchModal/CurrencySearchModalExpanded'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
+
+const Line = styled.hr`
+  height: 1px;
+  border:  none;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  color: white;
+  width: 90%;
+  size: 0.1;
+`;
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -123,6 +132,7 @@ export default function CurrencyInputPanelExpanded({
             </RowBetween>
           </LabelRow>
         )}
+        <Line />
         <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
           {!hideInput && (
             <>

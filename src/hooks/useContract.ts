@@ -18,6 +18,8 @@ import {
   getLotteryV2Contract,
   getFarmAuctionContract,
   getBondingDepositoryContract,
+  getRedRequiemContract,
+  getRedRequiemStakingContract,
 } from 'utils/contractHelpers'
 
 
@@ -245,4 +247,14 @@ export const useRequiemChef = (chainId, library) => {
 
 export function useBondDepositoryContract(chainId: number, library): Contract | null {
   return useMemo(() => getBondingDepositoryContract(chainId, library.getSigner()), [chainId, library])
+}
+
+export const useRedRequiemContract = () => {
+  const { library, chainId } = useActiveWeb3React("useRREQ")
+  return useMemo(() => getRedRequiemContract(chainId, library.getSigner()), [chainId, library])
+}
+
+export const useRedRequiemStakingContract = () => {
+  const { library, chainId } = useActiveWeb3React("useRREQS")
+  return useMemo(() => getRedRequiemStakingContract(chainId, library.getSigner()), [chainId, library])
 }

@@ -14,6 +14,7 @@ import stablePoolsReducer from './stablePools'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
+import governance from './governance/reducer'
 import weightedPairReducer from './weightedPairs'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
@@ -33,7 +34,7 @@ const store = configureStore({
     voting: votingReducer,
     stablePools: stablePoolsReducer,
     weightedPairs: weightedPairReducer,
-
+    governance,
     // Exchange
     user,
     transactions,
