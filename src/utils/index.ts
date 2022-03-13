@@ -9,6 +9,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
+import RedRequiem from 'config/abi/avax/RedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
 import { JSBI, Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from '../config/constants'
@@ -17,6 +18,7 @@ import { TokenAddressMap } from '../state/lists/hooks'
 import RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
 import RequiemQPairManagerOasis from '../config/abi/oasis/RequiemQPairManager.json'
 import RequiemQRouter from '../config/abi/avax/RequiemQRouter.json'
+import { getRedRequiemAddress } from './addressHelpers'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -106,7 +108,7 @@ export function getRouterContract(chainId: number, library: Web3Provider, accoun
 
 // account is optional
 export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43221 ? RequiemQPairManager: RequiemQPairManagerOasis
+  const ABI = chainId === 43221 ? RequiemQPairManager : RequiemQPairManagerOasis
   return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
 }
 
@@ -125,6 +127,13 @@ export function getStableRouterContract(chainId: number, library: Web3Provider, 
   console.log("getStableRouterContract")
   return getContract(STABLE_POOL_ADDRESS[chainId], ABI, library, account)
 }
+
+export function getRedRequiemContract(chainId: number, library: Web3Provider, account?: string): Contract {
+  const ABI = RedRequiem
+  console.log("getRRContract")
+  return getContract(getRedRequiemAddress(chainId), ABI, library, account)
+}
+
 
 
 export function escapeRegExp(string: string): string {

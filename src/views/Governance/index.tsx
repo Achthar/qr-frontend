@@ -2,20 +2,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, JSBI, NETWORK_CCY, Percent, TokenAmount, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import { Button, Text, AddIcon, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal } from '@requiemswap/uikit'
+import { Percent, TokenAmount } from '@requiemswap/sdk'
+import { Button, Text, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, useMatchBreakpoints } from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
-import { DAI, REQT, RREQT } from 'config/constants/tokens'
-import { tryParseAmount, tryParseTokenAmount } from 'state/swapV3/hooks'
+import { REQT, RREQT } from 'config/constants/tokens'
+import { tryParseTokenAmount } from 'state/swapV3/hooks'
 import { useTranslation } from 'contexts/Localization'
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
-import { useGovernanceActionHandlers, useGovernanceInfo, useGovernanceState } from 'state/governance/hooks'
+import { useGovernanceInfo } from 'state/governance/hooks'
+import { useWeb3React } from '@web3-react/core'
+import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 import { getRedRequiemAddress } from 'utils/addressHelpers'
 import Row from 'components/Row'
 import getChain from 'utils/getChain'
-import { getRedRequiemContract } from 'utils/contractHelpers'
 import { deposit_for_value } from './helper/calculator'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -26,23 +28,13 @@ import { RowBetween, RowFixed } from '../../components/Layout/Row'
 import ConnectWalletButton from '../../components/ConnectWalletButton'
 import { LightGreyCard } from '../../components/Card'
 
-import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
-import { REQUIEM_PAIR_MANAGER } from '../../config/constants'
-import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { useCurrency } from '../../hooks/Tokens'
-import useTransactionDeadline from '../../hooks/useTransactionDeadline'
+import { CurrencyLogo } from '../../components/Logo'
 
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import StyledInternalLink from '../../components/Links'
-import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from '../../utils'
-import { currencyId } from '../../utils/currencyId'
-import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
-import { wrappedCurrency } from '../../utils/wrappedCurrency'
+import { calculateGasMargin, getRedRequiemContract } from '../../utils'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
-import { useBurnActionHandlers, useDerivedBurnInfo, useBurnState } from '../../state/burn/hooks'
-
 import { Field } from '../../state/burn/actions'
 import { useGasPrice, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
 import Page from '../Page'
@@ -60,7 +52,10 @@ export default function Governance({
   },
 }: RouteComponentProps<{ chain: string }>) {
 
-  const { account, chainId, library } = useActiveWeb3React()
+  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  useChainIdHandling(chainIdWeb3, account)
+  const { chainId } = useNetworkState()
+
 
   // const [tokenA, tokenB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]
   const [tokenA, tokenB] = useMemo(
@@ -88,6 +83,8 @@ export default function Governance({
     increaseAmount
   }
 
+  const { isMobile } = useMatchBreakpoints()
+
   const { balance: redReqBal, staked, lock, dataLoaded
   } = useGovernanceInfo(chainId, account)
 
@@ -100,10 +97,9 @@ export default function Governance({
 
 
   const [action, setAction] = useState(lock && lock.end > 0 ? Action.increaseTime : Action.createLock)
+  const [inputValue, onCurrencyInput] = useState('0')
 
-
-  console.log("GOV", redReqBal, staked, lock, timeDiff)
-
+  const [inputTime, onTimeInput] = useState('0')
   // this one is executed once if it turns out that the user
   // already a lock
   useEffect(() => {
@@ -115,10 +111,15 @@ export default function Governance({
     , [dataLoaded]
   )
 
+  const [formattedInputTime, formattedInputTimeNumber] = useMemo(() => {
+    const floored = Math.floor(Number(inputTime))
+    return [
+      String(floored),
+      floored
+    ]
+  }, [inputTime])
 
-  const [inputValue, onCurrencyInput] = useState('0')
 
-  const [inputTime, onTimeInput] = useState('0')
 
   // wrapped onUserInput to clear signatures
   const timeInput = useCallback(
@@ -127,29 +128,27 @@ export default function Governance({
     },
     [onTimeInput])
 
-  console.log("LOCK GOV", lock, now)
+  const lockedAmount = useMemo(() => { return new TokenAmount(tokenA, lock.amount) }, [lock, tokenA])
 
   const parsedAmounts = useMemo(() => {
     return {
-      [Field.CURRENCY_A]: tryParseTokenAmount(chainId, inputValue, tokenA),
+      [Field.CURRENCY_A]: tryParseTokenAmount(inputValue, tokenA),
       [Field.CURRENCY_B]: new TokenAmount(tokenB,
         deposit_for_value(
-          action !== Action.increaseTime ? BigNumber.from(tryParseTokenAmount(chainId, inputValue, tokenA)?.raw.toString() ?? 0) : BigNumber.from(0),
-          action !== Action.increaseAmount ? Number(inputTime ?? 0) : 0,
+          action !== Action.increaseTime ? BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0) : BigNumber.from(0),
+          action !== Action.increaseAmount ? formattedInputTimeNumber : 0,
           BigNumber.from(lock.amount),
           lock.end,
         ).toString() ?? '0')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenA, tokenB, inputValue, chainId, inputTime, action])
+  }, [tokenA, tokenB, inputValue, formattedInputTimeNumber, action])
 
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
-  const deadline = useTransactionDeadline(chainId)
-  const [allowedSlippage] = useUserSlippageTolerance()
 
   const formattedAmounts = useMemo(() => {
     return {
@@ -176,117 +175,76 @@ export default function Governance({
 
   const { balance, isLoading } = useGetRequiemAmount(chainId)
 
-  const noLock = useMemo(() => { return lock.end === 0 || lock.end < now }, [lock, now])
   // tx sending
   const addTransaction = useTransactionAdder()
 
+
+  const maxTimeInput = useMemo(() => {
+    return action !== Action.createLock ? Math.floor(1095 - timeDiff / 3600 / 24) : 1095
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [action, timeDiff])
+
+  const buttonText = action === Action.createLock ? 'Create Lock' : action === Action.increaseTime ? 'Increase Time' : 'Increase Amount'
   // function to create a lock or deposit on existing lock
-  async function onCreateLock() {
+  async function onGovernanceLock() {
     if (!chainId || !library || !account) return
-    const redRequiemContract = getRedRequiemContract(chainId, library)
+
+    const redRequiemContract = getRedRequiemContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
-    if (!parsedAmountA || !parsedAmountB || !deadline) {
+
+    if (action === Action.increaseTime ? formattedInputTimeNumber === 0 : !parsedAmountA) {
       return
     }
 
     let estimate
     let method: (...args: any) => Promise<TransactionResponse>
-    let args: Array<string | string[] | number>
-    let value: BigNumber | null
+    let args: Array<string | string[] | number | BigNumber>
+    let summaryText: string
+    const value = BigNumber.from(0)
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
-    if (noLock) {
+    if (action === Action.createLock) {
 
       estimate = redRequiemContract.estimateGas.create_lock
       method = redRequiemContract.create_lock
       args = [
-        parsedAmountA.raw.toString(),
-        Math.round(Number(inputTime)),
+        parsedAmountA.toBigNumber().toHexString(),
+        BigNumber.from(formattedInputTimeNumber),
       ]
-    } else {
-      estimate = redRequiemContract.estimateGas.deposit_for
-      method = redRequiemContract.deposit_for
+      summaryText = `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
+        } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`
+    } else if (action === Action.increaseAmount) {
+      estimate = redRequiemContract.estimateGas.increase_amount
+      method = redRequiemContract.increase_amount
       args = [
-        account,
-        parsedAmountA.raw.toString(),
+        parsedAmountA.toBigNumber().toHexString(),
       ]
+      summaryText = `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
+        } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
+    }
+    else { // increase time
+      estimate = redRequiemContract.estimateGas.increase_unlock_time
+      method = redRequiemContract.increase_unlock_time
+      args = [
+        formattedInputTimeNumber,
+      ]
+      summaryText = `Add ${formattedInputTimeNumber
+        } days for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
     }
 
     setAttemptingTxn(true)
-    await estimate(...args, value ? { value } : {})
+    await estimate(...args)
       .then((estimatedGasLimit) =>
         method(...args, {
-          ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
           gasPrice,
         }).then((response) => {
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
-              } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`,
-          })
-
-          setTxHash(response.hash)
-        }),
-      )
-      .catch((err) => {
-        setAttemptingTxn(false)
-        // we only care if the error is something _other_ than the user rejected the tx
-        if (err?.code !== 4001) {
-          console.error(err)
-        }
-      })
-  }
-
-
-  // function to create a lock or deposit on existing lock
-  async function onIncreaseAmount() {
-    if (!chainId || !library || !account) return
-    const redRequiemContract = getRedRequiemContract(chainId, library)
-
-    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
-    if (!parsedAmountA || !parsedAmountB || !deadline) {
-      return
-    }
-
-    let estimate
-    let method: (...args: any) => Promise<TransactionResponse>
-    let args: Array<string | string[] | number>
-    let value: BigNumber | null
-
-    // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
-    if (noLock) {
-
-      estimate = redRequiemContract.estimateGas.create_lock
-      method = redRequiemContract.create_lock
-      args = [
-        parsedAmountA.raw.toString(),
-        Math.round(Number(inputTime)),
-      ]
-    } else {
-      estimate = redRequiemContract.estimateGas.deposit_for
-      method = redRequiemContract.deposit_for
-      args = [
-        account,
-        parsedAmountA.raw.toString(),
-      ]
-    }
-
-    setAttemptingTxn(true)
-    await estimate(...args, value ? { value } : {})
-      .then((estimatedGasLimit) =>
-        method(...args, {
-          ...(value ? { value } : {}),
-          gasLimit: calculateGasMargin(estimatedGasLimit),
-          gasPrice,
-        }).then((response) => {
-          setAttemptingTxn(false)
-
-          addTransaction(response, {
-            summary: `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
-              } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`,
+            summary: summaryText,
           })
 
           setTxHash(response.hash)
@@ -305,32 +263,32 @@ export default function Governance({
     return (
       <AutoColumn gap="md">
         <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}</Text>
+          <Text fontSize="24px" marginRight='4px'>{action !== Action.increaseTime ? parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) : 'Increased Time'}</Text>
           <RowFixed gap="4px">
+            <Text fontSize="24px" ml="10px" marginRight='8px'>
+              {tokenA?.name}
+            </Text>
             <CurrencyLogo chainId={chainId} currency={tokenA} size="24px" />
-            <Text fontSize="24px" ml="10px">
-              {tokenA?.symbol}
-            </Text>
           </RowFixed>
         </RowBetween>
-        <RowFixed>
-          <AddIcon width="16px" />
+        <RowFixed align='flex-end'>
+          <ArrowDownIcon width="16px" />
         </RowFixed>
-        <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}</Text>
+        <RowBetween align="flex-end" >
+          <Text fontSize="24px" marginRight='4px'>{parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={tokenB} size="24px" />
-            <Text fontSize="24px" ml="10px">
-              {tokenB?.symbol}
+            <Text fontSize="24px" ml="10px" marginRight='8px'>
+              {tokenB?.name}
             </Text>
+            <CurrencyLogo chainId={chainId} currency={tokenB} size="24px" />
           </RowFixed>
         </RowBetween>
-
+        {/* 
         <Text small textAlign="left" pt="12px">
           {t('Output is estimated. If the price changes by more than %slippage%% your transaction will revert.', {
             slippage: allowedSlippage / 100,
           })}
-        </Text>
+        </Text> */}
       </AutoColumn>
     )
   }
@@ -338,7 +296,7 @@ export default function Governance({
   function modalBottom() {
     return (
       <>
-        <RowBetween>
+        {/* <RowBetween>
           <Text>
             {t('%assetA%/%assetB% Burned', { assetA: tokenA?.symbol ?? '', assetB: tokenB?.symbol ?? '' })}
           </Text>
@@ -346,20 +304,15 @@ export default function Governance({
             <DoubleCurrencyLogo chainId={chainId} currency0={tokenA} currency1={tokenB} margin />
             <Text>{parsedAmounts[Field.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
-        </RowBetween>
-        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onCreateLock}>
+        </RowBetween> */}
+        <Button disabled={!(approval === ApprovalState.APPROVED) && !(action === Action.increaseTime)} onClick={onGovernanceLock}>
           {t('Confirm')}
         </Button>
       </>
     )
   }
 
-  const pendingText = t('Removing %amountA% %symbolA% and %amountB% %symbolB%', {
-    amountA: parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
-    symbolA: tokenA?.symbol ?? '',
-    amountB: parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
-    symbolB: tokenB?.symbol ?? '',
-  })
+  const pendingText = action === Action.createLock ? 'Creating Lock' : action === Action.increaseTime ? 'Increase time on Lock' : 'Add funds to Lock'
 
   const handleDismissConfirmation = useCallback(() => {
     setSignatureData(null) // important that we clear signature data to avoid bad sigs
@@ -372,9 +325,9 @@ export default function Governance({
 
 
 
-  const [onPresentRemoveLiquidity] = useModal(
+  const [onPresentGovernanceLock] = useModal(
     <TransactionConfirmationModal
-      title={t('You will receive')}
+      title={action === Action.createLock ? 'You will Lock Requiem for Red Requiem' : action === Action.increaseTime ? ' You will increase the time on your Lock' : 'You will add more funds to the Lock'}
       customOnDismiss={handleDismissConfirmation}
       attemptingTxn={attemptingTxn}
       hash={txHash || ''}
@@ -385,7 +338,7 @@ export default function Governance({
     true,
     'lockForGovernance',
   )
-  console.log("INP GOV", inputTime, Math.round(Number(inputTime) * 100 / 365 / 24 / 3600) / 100, parsedAmounts[Field.CURRENCY_B].toSignificant(18))
+
   return (
     <Page>
       <AppBody>
@@ -444,57 +397,94 @@ export default function Governance({
                       {action !== Action.increaseTime ? 'Define your lock period and amount to lock.' : ' Select time to add to your lock.'}
                     </Text>
 
-                    <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? `${Math.round(Number(inputTime) * 100 / 365) / 100} year(s)` :
-                        `Extend lock to ${Math.round((Number(inputTime) + timeDiff / 3600 / 24) * 100 / 365) / 100} year(s)`}
+                    <Text fontSize="25px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {action !== Action.increaseTime ? `${Math.round(formattedInputTimeNumber * 100 / 365) / 100} year(s)` :
+                        `Extend lock to ${Math.round((formattedInputTimeNumber + timeDiff / 3600 / 24) * 100 / 365) / 100} year(s)`}
                     </Text>
                     <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? `${Math.round(Number(inputTime) * 100) / 100} days` : ` Add ${Math.round(Number(inputTime) * 100) / 100} days to Lock`}
+                      {action !== Action.increaseTime ? `${Math.round(formattedInputTimeNumber * 100) / 100} days` : ` Add ${Math.round(formattedInputTimeNumber * 100) / 100} days to Lock`}
                     </Text>
 
                     <Slider
                       name="lp-amount"
                       min={0}
-                      max={action !== Action.increaseTime? 1095:(1095 - timeDiff / 3600 / 24)}
-                      value={Number(inputTime)}
+                      max={action !== Action.increaseTime ? 1095 : (1095 - timeDiff / 3600 / 24)}
+                      value={formattedInputTimeNumber}
                       onValueChanged={(value) => { onTimeInput(String(Math.round(value))) }}
                       mb="16px"
                     />
-                    <Flex flexWrap="wrap" justifyContent="space-evenly">
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('7')} width='110px'>
-                        1 Week
-                      </Button>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('30')} width='110px'>
-                        1 Month
-                      </Button>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('182')} width='110px'>
-                        6 Months
-                      </Button>
-                    </Flex>
-                    <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('365')} width='110px'>
-                        1 Year
-                      </Button>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('730')} width='110px'>
-                        2 Years
-                      </Button>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('1095')} width='110px'>
-                        3 Years
-                      </Button>
-                    </Flex>
-                  </>) : (<>
+                    {!isMobile ? (
+                      <>
+                        <Flex flexWrap="wrap" justifyContent="space-evenly">
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(7, maxTimeInput)))} width='110px'>
+                            1 Week
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(30, maxTimeInput)))} width='110px'>
+                            1 Month
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(182, maxTimeInput)))} width='110px'>
+                            6 Months
+                          </Button>
+                        </Flex>
+                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(365, maxTimeInput)))} width='110px'>
+                            1 Year
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(730, maxTimeInput)))} width='110px'>
+                            2 Years
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(1095, maxTimeInput)))} width='110px'>
+                            3 Years
+                          </Button>
+                        </Flex>
+                      </>
+                    ) : (
+                      <>
+                        <Flex flexWrap="wrap" justifyContent="space-evenly">
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(7, maxTimeInput)))} width='110px'>
+                            1 Week
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(30, maxTimeInput)))} width='110px'>
+                            1 Month
+                          </Button>
+                        </Flex>
+                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(182, maxTimeInput)))} width='110px'>
+                            6 Months
+                          </Button>
+
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(365, maxTimeInput)))} width='110px'>
+                            1 Year
+                          </Button>
+                        </Flex>
+                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(730, maxTimeInput)))} width='110px'>
+                            2 Years
+                          </Button>
+                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(1095, maxTimeInput)))} width='110px'>
+                            3 Years
+                          </Button>
+                        </Flex>
+                      </>)
+                    }
+                  </>
+                ) : (
+                  <>
                     <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
                       {`${Math.round(timeDiff * 100 / 365 / 24 / 3600) / 100} year(s)`}
                     </Text>
                     <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
                       {`${Math.round(timeDiff * 100 / 3600 / 24) / 100} days remain until unlock`}
                     </Text>
-                  </>)}
+                  </>
+                )
+              }
             </BorderCard>
           </AutoColumn>
           <Box my="16px">
             <CurrencyInputPanelExpanded
-              balances={{ [REQT[chainId].address]: balance }}
+              balanceText={action === Action.increaseTime ? 'Locked' : 'Balance'}
+              balances={{ [REQT[chainId].address]: action === Action.increaseTime ? lockedAmount : balance }}
               isLoading={isLoading}
               chainId={chainId}
               account={account}
@@ -503,8 +493,9 @@ export default function Governance({
               onMax={() => onCurrencyInput(balance?.toSignificant(18))}
               showMaxButton={!atMaxAmount}
               currency={tokenA}
-              label={action === Action.increaseTime ? 'No input required' : 'Input'}
+              label={action === Action.increaseTime ? `No additional ${tokenA.symbol} required` : 'Input'}
               hideInput={action === Action.increaseTime}
+              reducedLine={action === Action.increaseTime}
               onCurrencySelect={() => { return null }}
               disableCurrencySelect
               id="remove-liquidity-tokena"
@@ -550,17 +541,17 @@ export default function Governance({
                 </Button>
                 <Button
                   variant={
-                    !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                    (!!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]) || (action === Action.increaseTime && formattedInputTimeNumber > 0)
                       ? 'primary'
                       : 'danger'
                   }
                   onClick={() => {
-                    onPresentRemoveLiquidity()
+                    onPresentGovernanceLock()
                   }}
                   width="100%"
-                  disabled={(signatureData === null && approval !== ApprovalState.APPROVED)}
+                  disabled={(approval !== ApprovalState.APPROVED) || (action === Action.increaseTime && formattedInputTimeNumber === 0)}
                 >
-                  Lock
+                  {buttonText}
                 </Button>
               </RowBetween>
             )}

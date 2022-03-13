@@ -51,6 +51,8 @@ const Container = styled.div<{ hideInput: boolean, borderRadius: string }>`
   box-shadow: ${({ theme }) => theme.shadows.inset};
 `
 interface CurrencyInputPanelExpandedProps {
+  reducedLine?: boolean
+  balanceText?: string
   borderRadius?: string
   width?: string
   value: string
@@ -74,6 +76,8 @@ interface CurrencyInputPanelExpandedProps {
   showCommonBases?: boolean
 }
 export default function CurrencyInputPanelExpanded({
+  reducedLine = false,
+  balanceText = 'Balance',
   borderRadius = '16px',
   width = '100%',
   value,
@@ -118,7 +122,7 @@ export default function CurrencyInputPanelExpanded({
   return (
     <InputPanel id={id} width={width} >
       <Container hideInput={hideInput} borderRadius={borderRadius}>
-        {!hideInput && (
+        {(!hideInput || reducedLine) && (
           <>
             <LabelRow>
               <RowBetween>
@@ -126,7 +130,7 @@ export default function CurrencyInputPanelExpanded({
                 {account && (
                   <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                     {!hideBalance && !!currency && selectedCurrencyBalance
-                      ? isLoading ? <CircleLoader /> : t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                      ? isLoading ? <CircleLoader /> : t(`${balanceText}: %amount%`, { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
                       : ' -'}
                   </Text>
                 )}
@@ -137,7 +141,9 @@ export default function CurrencyInputPanelExpanded({
           </>
         )}
 
-        <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
+        <InputRow style={hideInput ? reducedLine ?
+          { padding: '0', borderRadius: '8px', marginLeft: '35%' }
+          : { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
           {!hideInput && (
             <>
               <NumericalInput

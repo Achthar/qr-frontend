@@ -492,7 +492,7 @@ export const configDataEntries: (chainId: number) => MenuEntry[] = (chainId) => 
       href: `/${chain}/bonds`,
     },
     {
-      label: 'Governance',
+      label: 'Governing',
       icon: iconGovernment,
       iconSelected: iconGovernment,
       href: `/${chain}/governance`,

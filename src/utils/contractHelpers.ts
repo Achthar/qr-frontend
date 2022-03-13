@@ -26,7 +26,8 @@ import {
   getAddressForWeightedPairFactory,
   getAddressForLpReserve,
   getBondingDepositoryAddress,
-  getRedRequiemStakingAddress
+  getRedRequiemStakingAddress,
+  getRedRequiemAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -58,7 +59,8 @@ import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.js
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 
 import bondingCalculatorAVAX from 'config/abi/avax/RequiemQBondingCalculator.json'
-
+import redRequiem from 'config/abi/avax/RedRequiem.json'
+import redRequiemStaking from 'config/abi/avax/RedRequiemStaking.json'
 // ABI polygon
 import lpTokenAbiPolygon from 'config/abi/polygon/IRequiemPair.json'
 
@@ -221,9 +223,9 @@ export const getBondingDepositoryContract = (chainId: number, signer?: ethers.Si
 }
 
 export const getRedRequiemContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getRequiemAddress(chainId), signer)
+  return getContract(chainId, chainId === 43113 ? new Interface(redRequiem) : redRequiem, getRedRequiemAddress(chainId), signer)
 }
 
 export const getRedRequiemStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getRedRequiemStakingAddress(chainId), signer)
+  return getContract(chainId, chainId === 43113 ? new Interface(redRequiemStaking) : redRequiemStaking, getRedRequiemStakingAddress(chainId), signer)
 }
