@@ -383,7 +383,7 @@ export default function Governance({
     />,
     true,
     true,
-    'removeLiquidityModal',
+    'lockForGovernance',
   )
   console.log("INP GOV", inputTime, Math.round(Number(inputTime) * 100 / 365 / 24 / 3600) / 100, parsedAmounts[Field.CURRENCY_B].toSignificant(18))
   return (
@@ -440,24 +440,22 @@ export default function Governance({
               {((lock && lock.end === 0 && action !== Action.increaseAmount) || action === Action.increaseTime) ?
                 (
                   <>
-                    {/* <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
-                    No lock set up
-                  </Text> */}
                     <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? 'Define your lock period and amount to lock.' : ' Select amount of time to add to lock.'}
+                      {action !== Action.increaseTime ? 'Define your lock period and amount to lock.' : ' Select time to add to your lock.'}
                     </Text>
 
                     <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {`${Math.round(Number(inputTime) * 100 / 365) / 100} year(s)`}
+                      {action !== Action.increaseTime ? `${Math.round(Number(inputTime) * 100 / 365) / 100} year(s)` :
+                        `Extend lock to ${Math.round((Number(inputTime) + timeDiff / 3600 / 24) * 100 / 365) / 100} year(s)`}
                     </Text>
                     <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {`${Math.round(Number(inputTime) * 100) / 100} days`}
+                      {action !== Action.increaseTime ? `${Math.round(Number(inputTime) * 100) / 100} days` : ` Add ${Math.round(Number(inputTime) * 100) / 100} days to Lock`}
                     </Text>
 
                     <Slider
                       name="lp-amount"
                       min={0}
-                      max={730}
+                      max={action !== Action.increaseTime? 1095:(1095 - timeDiff / 3600 / 24)}
                       value={Number(inputTime)}
                       onValueChanged={(value) => { onTimeInput(String(Math.round(value))) }}
                       mb="16px"
@@ -469,19 +467,19 @@ export default function Governance({
                       <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('30')} width='110px'>
                         1 Month
                       </Button>
-                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('91')} width='110px'>
-                        3 Months
-                      </Button>
-                    </Flex>
-                    <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
                       <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('182')} width='110px'>
                         6 Months
                       </Button>
+                    </Flex>
+                    <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
                       <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('365')} width='110px'>
                         1 Year
                       </Button>
                       <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('730')} width='110px'>
                         2 Years
+                      </Button>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('1095')} width='110px'>
+                        3 Years
                       </Button>
                     </Flex>
                   </>) : (<>
