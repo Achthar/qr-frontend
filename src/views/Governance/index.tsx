@@ -12,7 +12,11 @@ import { useTranslation } from 'contexts/Localization'
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { useGovernanceActionHandlers, useGovernanceInfo, useGovernanceState } from 'state/governance/hooks'
 
+import { getRedRequiemAddress } from 'utils/addressHelpers'
+import Row from 'components/Row'
 import getChain from 'utils/getChain'
+import { getRedRequiemContract } from 'utils/contractHelpers'
+import { deposit_for_value } from './helper/calculator'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -28,6 +32,7 @@ import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
+
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import StyledInternalLink from '../../components/Links'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from '../../utils'
@@ -41,7 +46,6 @@ import { useBurnActionHandlers, useDerivedBurnInfo, useBurnState } from '../../s
 import { Field } from '../../state/burn/actions'
 import { useGasPrice, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
 import Page from '../Page'
-import { deposit_for_value } from './helper/calculator'
 
 const BorderCard = styled.div`
   border: solid 1px ${({ theme }) => theme.colors.cardBorder};
@@ -77,26 +81,67 @@ export default function Governance({
     [chain, chainId, history],
   )
 
-  const x = useGovernanceInfo(chainId, account)
-  console.log("GOV", x)
+
+  enum Action {
+    createLock,
+    increaseTime,
+    increaseAmount
+  }
+
+  const { balance: redReqBal, staked, lock, dataLoaded
+  } = useGovernanceInfo(chainId, account)
+
+  const now = Math.round((new Date()).getTime() / 1000);
+
+  const timeDiff = useMemo(() => {
+
+    return lock.end - now
+  }, [lock, now])
+
+
+  const [action, setAction] = useState(lock && lock.end > 0 ? Action.increaseTime : Action.createLock)
+
+
+  console.log("GOV", redReqBal, staked, lock, timeDiff)
+
+  // this one is executed once if it turns out that the user
+  // already a lock
+  useEffect(() => {
+    if (dataLoaded && lock.end > 0) {
+      setAction(Action.increaseTime)
+    }
+  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    , [dataLoaded]
+  )
+
+
   const [inputValue, onCurrencyInput] = useState('0')
 
   const [inputTime, onTimeInput] = useState('0')
-  // burn state
-  // const { inputTime, inputValue } = useGovernanceState()
 
-  const error = ''
+  // wrapped onUserInput to clear signatures
+  const timeInput = useCallback(
+    (value: string) => {
+      return onTimeInput(value)
+    },
+    [onTimeInput])
+
+  console.log("LOCK GOV", lock, now)
 
   const parsedAmounts = useMemo(() => {
     return {
       [Field.CURRENCY_A]: tryParseTokenAmount(chainId, inputValue, tokenA),
       [Field.CURRENCY_B]: new TokenAmount(tokenB,
-        deposit_for_value(BigNumber.from(tryParseTokenAmount(chainId, inputValue, tokenA)?.raw.toString() ?? 0), Number(inputTime ?? 0), BigNumber.from(0), 0).toString() ?? '0')
+        deposit_for_value(
+          action !== Action.increaseTime ? BigNumber.from(tryParseTokenAmount(chainId, inputValue, tokenA)?.raw.toString() ?? 0) : BigNumber.from(0),
+          action !== Action.increaseAmount ? Number(inputTime ?? 0) : 0,
+          BigNumber.from(lock.amount),
+          lock.end,
+        ).toString() ?? '0')
     }
-  }, [tokenA, tokenB, inputValue, chainId, inputTime])
-
-  // const { onCurrencyInput, onTimeInput } = useGovernanceActionHandlers()
-  const isValid = !error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenA, tokenB, inputValue, chainId, inputTime, action])
 
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -114,12 +159,12 @@ export default function Governance({
         parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
     }
   }, [parsedAmounts])
-  
+
   const atMaxAmount = parsedAmounts[Field.CURRENCY_A]?.equalTo(new Percent('1'))
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.LIQUIDITY], REQUIEM_PAIR_MANAGER[chainId])
+  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.CURRENCY_A], getRedRequiemAddress(chainId))
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -131,19 +176,129 @@ export default function Governance({
 
   const { balance, isLoading } = useGetRequiemAmount(chainId)
 
-  // wrapped onUserInput to clear signatures
-  const timeInput = useCallback(
-    (value: string) => {
-      return onTimeInput(value)
-    },
-    [onTimeInput],
-  )
-
+  const noLock = useMemo(() => { return lock.end === 0 || lock.end < now }, [lock, now])
   // tx sending
   const addTransaction = useTransactionAdder()
 
-  async function onRemove() {
-    return 0;
+  // function to create a lock or deposit on existing lock
+  async function onCreateLock() {
+    if (!chainId || !library || !account) return
+    const redRequiemContract = getRedRequiemContract(chainId, library)
+
+    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
+    if (!parsedAmountA || !parsedAmountB || !deadline) {
+      return
+    }
+
+    let estimate
+    let method: (...args: any) => Promise<TransactionResponse>
+    let args: Array<string | string[] | number>
+    let value: BigNumber | null
+
+    // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
+    if (noLock) {
+
+      estimate = redRequiemContract.estimateGas.create_lock
+      method = redRequiemContract.create_lock
+      args = [
+        parsedAmountA.raw.toString(),
+        Math.round(Number(inputTime)),
+      ]
+    } else {
+      estimate = redRequiemContract.estimateGas.deposit_for
+      method = redRequiemContract.deposit_for
+      args = [
+        account,
+        parsedAmountA.raw.toString(),
+      ]
+    }
+
+    setAttemptingTxn(true)
+    await estimate(...args, value ? { value } : {})
+      .then((estimatedGasLimit) =>
+        method(...args, {
+          ...(value ? { value } : {}),
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          gasPrice,
+        }).then((response) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary: `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
+              } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`,
+          })
+
+          setTxHash(response.hash)
+        }),
+      )
+      .catch((err) => {
+        setAttemptingTxn(false)
+        // we only care if the error is something _other_ than the user rejected the tx
+        if (err?.code !== 4001) {
+          console.error(err)
+        }
+      })
+  }
+
+
+  // function to create a lock or deposit on existing lock
+  async function onIncreaseAmount() {
+    if (!chainId || !library || !account) return
+    const redRequiemContract = getRedRequiemContract(chainId, library)
+
+    const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
+    if (!parsedAmountA || !parsedAmountB || !deadline) {
+      return
+    }
+
+    let estimate
+    let method: (...args: any) => Promise<TransactionResponse>
+    let args: Array<string | string[] | number>
+    let value: BigNumber | null
+
+    // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
+    if (noLock) {
+
+      estimate = redRequiemContract.estimateGas.create_lock
+      method = redRequiemContract.create_lock
+      args = [
+        parsedAmountA.raw.toString(),
+        Math.round(Number(inputTime)),
+      ]
+    } else {
+      estimate = redRequiemContract.estimateGas.deposit_for
+      method = redRequiemContract.deposit_for
+      args = [
+        account,
+        parsedAmountA.raw.toString(),
+      ]
+    }
+
+    setAttemptingTxn(true)
+    await estimate(...args, value ? { value } : {})
+      .then((estimatedGasLimit) =>
+        method(...args, {
+          ...(value ? { value } : {}),
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          gasPrice,
+        }).then((response) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary: `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
+              } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`,
+          })
+
+          setTxHash(response.hash)
+        }),
+      )
+      .catch((err) => {
+        setAttemptingTxn(false)
+        // we only care if the error is something _other_ than the user rejected the tx
+        if (err?.code !== 4001) {
+          console.error(err)
+        }
+      })
   }
 
   function modalHeader() {
@@ -192,7 +347,7 @@ export default function Governance({
             <Text>{parsedAmounts[Field.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
         </RowBetween>
-        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onRemove}>
+        <Button disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onCreateLock}>
           {t('Confirm')}
         </Button>
       </>
@@ -206,7 +361,6 @@ export default function Governance({
     symbolB: tokenB?.symbol ?? '',
   })
 
-
   const handleDismissConfirmation = useCallback(() => {
     setSignatureData(null) // important that we clear signature data to avoid bad sigs
     // if there was a tx hash, we want to clear the input
@@ -215,6 +369,7 @@ export default function Governance({
     }
     setTxHash('')
   }, [onUserInput, txHash])
+
 
 
   const [onPresentRemoveLiquidity] = useModal(
@@ -230,7 +385,7 @@ export default function Governance({
     true,
     'removeLiquidityModal',
   )
-
+  console.log("INP GOV", inputTime, Math.round(Number(inputTime) * 100 / 365 / 24 / 3600) / 100, parsedAmounts[Field.CURRENCY_B].toSignificant(18))
   return (
     <Page>
       <AppBody>
@@ -241,46 +396,102 @@ export default function Governance({
           subtitle={`Lock\n ${tokenA?.name ?? ''} to get ${tokenB?.name ?? ''}.`}
           noConfig
         />
-
+        <Row width='90%' height='50px' gap='9px' marginTop='7px' >
+          <Button
+            onClick={() => {
+              setAction(Action.createLock)
+            }}
+            variant={lock && lock.end > 0 ? "secondary" : "primary"}
+            width="100%"
+            mb="8px"
+            disabled={action === Action.createLock || (lock && lock.end > 0)}
+            marginLeft='5px'
+          >
+            {lock && lock.end > 0 ? 'Lock existis' : 'Create Lock'}
+          </Button>
+          <Button
+            onClick={() => {
+              setAction(Action.increaseTime)
+            }}
+            variant={lock.end === 0 ? "secondary" : "primary"}
+            width="100%"
+            mb="8px"
+            disabled={action === Action.increaseTime || lock.end === 0}
+          >
+            {(lock.end === 0) ? 'No Lock' : (lock.end < now) ? 'Lock expired' : 'Increase Time'}
+          </Button>
+          <Button
+            onClick={() => {
+              setAction(Action.increaseAmount)
+              onCurrencyInput('0')
+            }}
+            variant={lock.end === 0 ? "secondary" : "primary"}
+            width="100%"
+            mb="8px"
+            disabled={action === Action.increaseAmount || lock.end === 0}
+            marginRight='5px'
+          >
+            {(lock.end === 0) ? 'No Lock' : (lock.end < now) ? 'Lock expired' : 'Increase Amount'}
+          </Button>
+        </Row>
         <CardBody>
           <AutoColumn gap="20px">
             <BorderCard>
-              <Text fontSize="40px" bold mb="16px" style={{ lineHeight: 1 }}>
-                {`${Math.round(Number(inputTime) * 100 / 365) / 100} year(s)`}
-              </Text>
-              <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                {`${inputTime} days`}
-              </Text>
-              <Slider
-                name="lp-amount"
-                min={0}
-                max={730}
-                value={Number(inputTime)}
-                onValueChanged={(value) => { onTimeInput(String(Math.round(value))) }}
-                mb="16px"
-              />
-              <Flex flexWrap="wrap" justifyContent="space-evenly">
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('7')} width='110px'>
-                  1 Week
-                </Button>
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('30')} width='110px'>
-                  1 Month
-                </Button>
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('91')} width='110px'>
-                  3 Months
-                </Button>
-              </Flex>
-              <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('182')} width='110px'>
-                  6 Months
-                </Button>
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('365')} width='110px'>
-                  1 Year
-                </Button>
-                <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('730')} width='110px'>
-                  2 Years
-                </Button>
-              </Flex>
+              {((lock && lock.end === 0 && action !== Action.increaseAmount) || action === Action.increaseTime) ?
+                (
+                  <>
+                    {/* <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
+                    No lock set up
+                  </Text> */}
+                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {action !== Action.increaseTime ? 'Define your lock period and amount to lock.' : ' Select amount of time to add to lock.'}
+                    </Text>
+
+                    <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {`${Math.round(Number(inputTime) * 100 / 365) / 100} year(s)`}
+                    </Text>
+                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {`${Math.round(Number(inputTime) * 100) / 100} days`}
+                    </Text>
+
+                    <Slider
+                      name="lp-amount"
+                      min={0}
+                      max={730}
+                      value={Number(inputTime)}
+                      onValueChanged={(value) => { onTimeInput(String(Math.round(value))) }}
+                      mb="16px"
+                    />
+                    <Flex flexWrap="wrap" justifyContent="space-evenly">
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('7')} width='110px'>
+                        1 Week
+                      </Button>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('30')} width='110px'>
+                        1 Month
+                      </Button>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('91')} width='110px'>
+                        3 Months
+                      </Button>
+                    </Flex>
+                    <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('182')} width='110px'>
+                        6 Months
+                      </Button>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('365')} width='110px'>
+                        1 Year
+                      </Button>
+                      <Button variant="tertiary" scale="sm" onClick={() => onTimeInput('730')} width='110px'>
+                        2 Years
+                      </Button>
+                    </Flex>
+                  </>) : (<>
+                    <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {`${Math.round(timeDiff * 100 / 365 / 24 / 3600) / 100} year(s)`}
+                    </Text>
+                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                      {`${Math.round(timeDiff * 100 / 3600 / 24) / 100} days remain until unlock`}
+                    </Text>
+                  </>)}
             </BorderCard>
           </AutoColumn>
           <Box my="16px">
@@ -294,7 +505,8 @@ export default function Governance({
               onMax={() => onCurrencyInput(balance?.toSignificant(18))}
               showMaxButton={!atMaxAmount}
               currency={tokenA}
-              label='Input'
+              label={action === Action.increaseTime ? 'No input required' : 'Input'}
+              hideInput={action === Action.increaseTime}
               onCurrencySelect={() => { return null }}
               disableCurrencySelect
               id="remove-liquidity-tokena"
@@ -309,7 +521,7 @@ export default function Governance({
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={() => { return null }}
 
-              onMax={() => onUserInput('100')}
+              onMax={() => { return null }}
               showMaxButton={false}
               currency={tokenB}
               label='Received Red Requiem'
@@ -340,17 +552,17 @@ export default function Governance({
                 </Button>
                 <Button
                   variant={
-                    !isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
-                      ? 'danger'
-                      : 'primary'
+                    !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]
+                      ? 'primary'
+                      : 'danger'
                   }
                   onClick={() => {
                     onPresentRemoveLiquidity()
                   }}
                   width="100%"
-                  disabled={!isValid || (signatureData === null && approval !== ApprovalState.APPROVED)}
+                  disabled={(signatureData === null && approval !== ApprovalState.APPROVED)}
                 >
-                  {error || t('Remove')}
+                  Lock
                 </Button>
               </RowBetween>
             )}

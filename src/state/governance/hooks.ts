@@ -46,7 +46,13 @@ export function useGovernanceInfo(
     account: string
     // this is input from the balances state
 ): {
-
+    dataLoaded: boolean
+    balance: string
+    lock: {
+        amount: string
+        end: number
+    }
+    staked: string
 } {
     const { dataLoaded } = useGovernanceState(chainId)
 
@@ -55,15 +61,16 @@ export function useGovernanceInfo(
     const { slowRefresh } = useRefresh()
 
     useEffect(() => {
-        if (!dataLoaded) {
+        if (!dataLoaded && account) {
             dispatch(fetchGovernanceDetails({ chainId, account }))
         }
 
-    })
+    }, [account, chainId, dataLoaded, slowRefresh, dispatch])
 
     const { balance, lock, staked } = useGovernanceState(chainId)
 
     return {
+        dataLoaded,
         balance,
         lock,
         staked

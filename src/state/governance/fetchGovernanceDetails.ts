@@ -40,7 +40,7 @@ export interface GovernanceResponse {
 
 }
 export const fetchGovernanceDetails = createAsyncThunk(
-  "bonds/calcBondDetails",
+  "bonds/fetchGovernanceDetails",
   async ({ chainId, account }: GovernanceUserRequest): Promise<GovernanceResponse> => {
 
     const redRequiemAddress = getRedRequiemAddress(chainId)

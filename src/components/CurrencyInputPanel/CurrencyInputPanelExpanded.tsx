@@ -119,20 +119,24 @@ export default function CurrencyInputPanelExpanded({
     <InputPanel id={id} width={width} >
       <Container hideInput={hideInput} borderRadius={borderRadius}>
         {!hideInput && (
-          <LabelRow>
-            <RowBetween>
-              <Text fontSize="14px">{translatedLabel}</Text>
-              {account && (
-                <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                  {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? isLoading ? <CircleLoader /> : t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
-                    : ' -'}
-                </Text>
-              )}
-            </RowBetween>
-          </LabelRow>
+          <>
+            <LabelRow>
+              <RowBetween>
+                <Text fontSize="14px">{translatedLabel}</Text>
+                {account && (
+                  <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                    {!hideBalance && !!currency && selectedCurrencyBalance
+                      ? isLoading ? <CircleLoader /> : t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                      : ' -'}
+                  </Text>
+                )}
+              </RowBetween>
+
+            </LabelRow>
+            <Line />
+          </>
         )}
-        <Line />
+
         <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
           {!hideInput && (
             <>
