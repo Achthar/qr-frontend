@@ -18,7 +18,15 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import { getRedRequiemAddress } from 'utils/addressHelpers'
 import Row from 'components/Row'
 import getChain from 'utils/getChain'
-import { deposit_for_value } from './helper/calculator'
+import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
+import { priceRequiem } from 'utils/poolPricer'
+import useRefresh from 'hooks/useRefresh'
+import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler'
+
+import { getStartDate, timeConverter } from './helper/constants'
+import { deposit_for_value, get_amount_and_multiplier } from './helper/calculator'
+import LockCard from './components/lock'
+import { Action, LockConfigurator } from './components/lockConfigurator'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -39,10 +47,19 @@ import { Field } from '../../state/burn/actions'
 import { useGasPrice, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
 import Page from '../Page'
 
+
 const BorderCard = styled.div`
   border: solid 1px ${({ theme }) => theme.colors.cardBorder};
   border-radius: 16px;
   padding: 16px;
+`
+
+const BorderCardLockList = styled.div`
+  margin-top: 10px;
+  border: solid 2px ${({ theme }) => theme.colors.cardBorder};
+  border-radius: 5px;
+  padding: 1px;
+  background-color: white;
 `
 
 export default function Governance({
@@ -76,73 +93,113 @@ export default function Governance({
     [chain, chainId, history],
   )
 
-
-  enum Action {
-    createLock,
-    increaseTime,
-    increaseAmount
-  }
-
   const { isMobile } = useMatchBreakpoints()
 
-  const { balance: redReqBal, staked, lock, dataLoaded
+  const { balance: redReqBal, staked, locks, dataLoaded
   } = useGovernanceInfo(chainId, account)
 
   const now = Math.round((new Date()).getTime() / 1000);
 
-  const timeDiff = useMemo(() => {
+  // start time for slider - standardized to gmt midnight of next day
+  const startTime = useMemo(() => { return getStartDate() },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [])
 
-    return lock.end - now
-  }, [lock, now])
 
+  // select maturity with slider component
+  const [selectedMaturity, onSelectMaturity] = useState(Math.round(startTime))
 
-  const [action, setAction] = useState(lock && lock.end > 0 ? Action.increaseTime : Action.createLock)
+  // sets boolean for selected lock
+  const [lockSelected, toggleLock] = useState(false)
+
+  // sets selected lock end of existing user locks
+  const [toggledLockEnd, toggleLockEnd] = useState(0)
+
+  // define which action to take
+  const [action, setAction] = useState(Action.createLock)
+
+  // value for currency input panel
   const [inputValue, onCurrencyInput] = useState('0')
 
-  const [inputTime, onTimeInput] = useState('0')
-  // this one is executed once if it turns out that the user
-  // already a lock
-  useEffect(() => {
-    if (dataLoaded && lock.end > 0) {
-      setAction(Action.increaseTime)
+  const { slowRefresh } = useRefresh()
+
+  // debouncer for slider
+  const [maturity, selectMaturity] = useDebouncedChangeHandler(
+    selectedMaturity,
+    onSelectMaturity,
+    200
+  )
+  // console.log("VOTE MAT", selectedMaturity)
+  // const lock = useMemo(() => {
+  //   if (account && dataLoaded && locks[selectedMaturity] && action !== Action.createLock) {
+  //     return locks[selectedMaturity]
+  //   }
+  //   return {
+  //     minted: '0',
+  //     end: 0,
+  //     amount: '0',
+  //     multiplier: '0'
+  //   }
+  // }, [locks, account, dataLoaded, selectedMaturity, action])
+
+  // console.log("VOTE selected LOCK", lock, locks)
+
+
+  // the user-selected lock
+  const lock = useMemo(() => {
+    if (lockSelected && account && dataLoaded) {
+      return locks[toggledLockEnd]
     }
-  }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [dataLoaded]
+
+    return undefined
+  }, [lockSelected, account, dataLoaded, locks, toggledLockEnd])
+
+
+  const {
+    pairs,
+    metaDataLoaded,
+    reservesAndWeightsLoaded,
+  } = useGetRawWeightedPairsState(chainId, account, [], slowRefresh)
+
+
+
+
+  const timeDiff = useMemo(() => {
+    return action !== Action.increaseAmount || (lock.end === 0 || !lock) ? selectedMaturity - now : lock.end - now
+  }, [lock, now, selectedMaturity, action])
+
+
+  const reqPrice = useMemo(
+    () => {
+      return priceRequiem(chainId, pairs)
+    },
+    [pairs, chainId]
   )
 
-  const [formattedInputTime, formattedInputTimeNumber] = useMemo(() => {
-    const floored = Math.floor(Number(inputTime))
+  // useEffect(() => {
+  //   if (action !== Action.createLock && selectedMaturity < lock?.end) {
+  //     selectMaturity(lock.end + 1000)
+  //   }
+  // }, [action, selectedMaturity, selectMaturity, lock])
+
+  const lockedAmount = useMemo(() => { return new TokenAmount(tokenA, lock?.amount ?? '0') }, [lock, tokenA])
+
+  const [parsedAmounts, parsedMultiplier] = useMemo(() => {
+    const input = BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0)
+    console.log("VOTE inpt", action, now, input, lock, selectedMaturity)
+    const { voting, multiplier } = get_amount_and_multiplier(action, now, input, selectedMaturity, lock, Object.values(locks))
+    console.log("VOTE output", voting?.toString(), multiplier?.toString())
     return [
-      String(floored),
-      floored
+      {
+        [Field.CURRENCY_A]: tryParseTokenAmount(inputValue, tokenA),
+        [Field.CURRENCY_B]: new TokenAmount(tokenB, voting.gte(0) ? voting.toString() : '0')
+      },
+      multiplier
     ]
-  }, [inputTime])
-
-
-
-  // wrapped onUserInput to clear signatures
-  const timeInput = useCallback(
-    (value: string) => {
-      return onTimeInput(value)
-    },
-    [onTimeInput])
-
-  const lockedAmount = useMemo(() => { return new TokenAmount(tokenA, lock.amount) }, [lock, tokenA])
-
-  const parsedAmounts = useMemo(() => {
-    return {
-      [Field.CURRENCY_A]: tryParseTokenAmount(inputValue, tokenA),
-      [Field.CURRENCY_B]: new TokenAmount(tokenB,
-        deposit_for_value(
-          action !== Action.increaseTime ? BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0) : BigNumber.from(0),
-          action !== Action.increaseAmount ? formattedInputTimeNumber : 0,
-          BigNumber.from(lock.amount),
-          lock.end,
-        ).toString() ?? '0')
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenA, tokenB, inputValue, formattedInputTimeNumber, action])
+  }, [tokenA, tokenB, inputValue, selectedMaturity, action])
+
+
 
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -179,11 +236,6 @@ export default function Governance({
   const addTransaction = useTransactionAdder()
 
 
-  const maxTimeInput = useMemo(() => {
-    return action !== Action.createLock ? Math.floor(1095 - timeDiff / 3600 / 24) : 1095
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [action, timeDiff])
 
   const buttonText = action === Action.createLock ? 'Create Lock' : action === Action.increaseTime ? 'Increase Time' : 'Increase Amount'
   // function to create a lock or deposit on existing lock
@@ -193,10 +245,6 @@ export default function Governance({
     const redRequiemContract = getRedRequiemContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
-
-    if (action === Action.increaseTime ? formattedInputTimeNumber === 0 : !parsedAmountA) {
-      return
-    }
 
     let estimate
     let method: (...args: any) => Promise<TransactionResponse>
@@ -211,26 +259,29 @@ export default function Governance({
       method = redRequiemContract.create_lock
       args = [
         parsedAmountA.toBigNumber().toHexString(),
-        BigNumber.from(formattedInputTimeNumber),
+        BigNumber.from(selectedMaturity),
       ]
       summaryText = `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
         } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}`
     } else if (action === Action.increaseAmount) {
-      estimate = redRequiemContract.estimateGas.increase_amount
-      method = redRequiemContract.increase_amount
+      estimate = redRequiemContract.estimateGas.increase_position
+      method = redRequiemContract.increase_position
       args = [
         parsedAmountA.toBigNumber().toHexString(),
+        lock.end
       ]
       summaryText = `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
         } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
     }
     else { // increase time
-      estimate = redRequiemContract.estimateGas.increase_unlock_time
-      method = redRequiemContract.increase_unlock_time
+      estimate = redRequiemContract.estimateGas.increase_time_to_maturity
+      method = redRequiemContract.increase_time_to_maturity
       args = [
-        formattedInputTimeNumber,
+        parsedAmountA.toBigNumber().toHexString(),
+        lock.end,
+        selectedMaturity,
       ]
-      summaryText = `Add ${formattedInputTimeNumber
+      summaryText = `Add ${timeDiff / 3600 / 24
         } days for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
     }
 
@@ -338,7 +389,8 @@ export default function Governance({
     true,
     'lockForGovernance',
   )
-
+  const indexMax = Object.values(locks).length - 1
+  console.log("VOTE LE", lock?.end)
   return (
     <Page>
       <AppBody>
@@ -352,135 +404,74 @@ export default function Governance({
         <Row width='90%' height='50px' gap='9px' marginTop='7px' >
           <Button
             onClick={() => {
+              toggleLock(false)
+              toggleLockEnd(0)
               setAction(Action.createLock)
             }}
             variant={lock && lock.end > 0 ? "secondary" : "primary"}
             width="100%"
             mb="8px"
-            disabled={action === Action.createLock || (lock && lock.end > 0)}
+            // disabled={action === Action.createLock || (lock && lock.end > 0)}
             marginLeft='5px'
           >
-            {lock && lock.end > 0 ? 'Lock existis' : 'Create Lock'}
+            Create Lock
           </Button>
           <Button
             onClick={() => {
               setAction(Action.increaseTime)
             }}
-            variant={lock.end === 0 ? "secondary" : "primary"}
+            variant={!lockSelected ? "secondary" : "primary"}
             width="100%"
             mb="8px"
-            disabled={action === Action.increaseTime || lock.end === 0}
+            disabled={action === Action.increaseTime || !lockSelected}
           >
-            {(lock.end === 0) ? 'No Lock' : (lock.end < now) ? 'Lock expired' : 'Increase Time'}
+            {!lockSelected ? 'Select Lock' : (lock?.end < now) ? 'Lock expired' : 'Increase Time'}
           </Button>
           <Button
             onClick={() => {
               setAction(Action.increaseAmount)
               onCurrencyInput('0')
             }}
-            variant={lock.end === 0 ? "secondary" : "primary"}
+            variant={!lockSelected ? "secondary" : "primary"}
             width="100%"
             mb="8px"
-            disabled={action === Action.increaseAmount || lock.end === 0}
+            disabled={action === Action.increaseAmount || !lockSelected}
             marginRight='5px'
           >
-            {(lock.end === 0) ? 'No Lock' : (lock.end < now) ? 'Lock expired' : 'Increase Amount'}
+            {(!lockSelected) ? 'Select Lock' : (lock?.end < now) ? 'Lock expired' : 'Increase Amount'}
           </Button>
         </Row>
-        <CardBody>
-          <AutoColumn gap="20px">
+        {lockSelected ? (
+
+          <>
             <BorderCard>
-              {((lock && lock.end === 0 && action !== Action.increaseAmount) || action === Action.increaseTime) ?
-                (
-                  <>
-                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? 'Define your lock period and amount to lock.' : ' Select time to add to your lock.'}
-                    </Text>
+              <Text bold textAlign='center'>{`Manage the ${timeConverter(lock.end)} lock`}</Text>
 
-                    <Text fontSize="25px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? `${Math.round(formattedInputTimeNumber * 100 / 365) / 100} year(s)` :
-                        `Extend lock to ${Math.round((formattedInputTimeNumber + timeDiff / 3600 / 24) * 100 / 365) / 100} year(s)`}
-                    </Text>
-                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {action !== Action.increaseTime ? `${Math.round(formattedInputTimeNumber * 100) / 100} days` : ` Add ${Math.round(formattedInputTimeNumber * 100) / 100} days to Lock`}
-                    </Text>
-
-                    <Slider
-                      name="lp-amount"
-                      min={0}
-                      max={action !== Action.increaseTime ? 1095 : (1095 - timeDiff / 3600 / 24)}
-                      value={formattedInputTimeNumber}
-                      onValueChanged={(value) => { onTimeInput(String(Math.round(value))) }}
-                      mb="16px"
-                    />
-                    {!isMobile ? (
-                      <>
-                        <Flex flexWrap="wrap" justifyContent="space-evenly">
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(7, maxTimeInput)))} width='110px'>
-                            1 Week
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(30, maxTimeInput)))} width='110px'>
-                            1 Month
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(182, maxTimeInput)))} width='110px'>
-                            6 Months
-                          </Button>
-                        </Flex>
-                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(365, maxTimeInput)))} width='110px'>
-                            1 Year
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(730, maxTimeInput)))} width='110px'>
-                            2 Years
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(1095, maxTimeInput)))} width='110px'>
-                            3 Years
-                          </Button>
-                        </Flex>
-                      </>
-                    ) : (
-                      <>
-                        <Flex flexWrap="wrap" justifyContent="space-evenly">
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(7, maxTimeInput)))} width='110px'>
-                            1 Week
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(30, maxTimeInput)))} width='110px'>
-                            1 Month
-                          </Button>
-                        </Flex>
-                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(182, maxTimeInput)))} width='110px'>
-                            6 Months
-                          </Button>
-
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(365, maxTimeInput)))} width='110px'>
-                            1 Year
-                          </Button>
-                        </Flex>
-                        <Flex flexWrap="wrap" justifyContent="space-evenly" marginTop='5px'>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(730, maxTimeInput)))} width='110px'>
-                            2 Years
-                          </Button>
-                          <Button variant="tertiary" scale="sm" onClick={() => onTimeInput(String(Math.min(1095, maxTimeInput)))} width='110px'>
-                            3 Years
-                          </Button>
-                        </Flex>
-                      </>)
-                    }
-                  </>
-                ) : (
-                  <>
-                    <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {`${Math.round(timeDiff * 100 / 365 / 24 / 3600) / 100} year(s)`}
-                    </Text>
-                    <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                      {`${Math.round(timeDiff * 100 / 3600 / 24) / 100} days remain until unlock`}
-                    </Text>
-                  </>
-                )
-              }
+              <LockCard
+                chainId={chainId}
+                lock={lock}
+                onSelect={() => { return null }}
+                reqPrice={reqPrice}
+                refTime={now}
+                isFirst
+                isLast
+                selected
+                hideSelect
+              />
             </BorderCard>
-          </AutoColumn>
+          </>
+        ) : (<Text textAlign='center'>No lock selected</Text>)
+        }
+        <CardBody>
+          <LockConfigurator
+            lock={lock}
+            selectMaturity={onSelectMaturity}
+            startTime={startTime}
+            selectedMaturity={maturity}
+            isMobile={isMobile}
+            action={action}
+            now={now}
+          />
           <Box my="16px">
             <CurrencyInputPanelExpanded
               balanceText={action === Action.increaseTime ? 'Locked' : 'Balance'}
@@ -490,12 +481,12 @@ export default function Governance({
               account={account}
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onCurrencyInput}
-              onMax={() => onCurrencyInput(balance?.toSignificant(18))}
+              onMax={() => onCurrencyInput((action === Action.increaseTime ? lockedAmount : balance)?.toSignificant(18))}
               showMaxButton={!atMaxAmount}
               currency={tokenA}
-              label={action === Action.increaseTime ? `No additional ${tokenA.symbol} required` : 'Input'}
-              hideInput={action === Action.increaseTime}
-              reducedLine={action === Action.increaseTime}
+              label={action === Action.increaseTime ? `Select amount ${tokenA.symbol} locked` : 'Input'}
+              // hideInput={action === Action.increaseTime}
+              // reducedLine={action === Action.increaseTime}
               onCurrencySelect={() => { return null }}
               disableCurrencySelect
               id="remove-liquidity-tokena"
@@ -541,7 +532,7 @@ export default function Governance({
                 </Button>
                 <Button
                   variant={
-                    (!!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]) || (action === Action.increaseTime && formattedInputTimeNumber > 0)
+                    (!!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]) || (action === Action.increaseTime)
                       ? 'primary'
                       : 'danger'
                   }
@@ -549,13 +540,38 @@ export default function Governance({
                     onPresentGovernanceLock()
                   }}
                   width="100%"
-                  disabled={(approval !== ApprovalState.APPROVED) || (action === Action.increaseTime && formattedInputTimeNumber === 0)}
+                  disabled={(approval !== ApprovalState.APPROVED)}
                 >
                   {buttonText}
                 </Button>
               </RowBetween>
             )}
           </Box>
+          <BorderCardLockList>
+            <Text textAlign='center'>{Object.values(locks).length > 0 ? 'Your Lock(s)' : 'No locks found'}</Text>
+            {
+
+              Object.values(locks).map((lockData, index) => {
+
+                return (
+                  <LockCard
+                    chainId={chainId}
+                    lock={lockData}
+                    onSelect={() => {
+                      setAction(Action.increaseTime)
+                      toggleLock(true)
+                      selectMaturity(lockData.end)
+                      toggleLockEnd(lockData.end)
+                    }}
+                    reqPrice={reqPrice}
+                    refTime={now}
+                    isFirst={index === 0}
+                    isLast={indexMax === index}
+                    selected={lockData.end === toggledLockEnd}
+                    hideSelect={lockData.end === toggledLockEnd} />)
+              })
+            }
+          </BorderCardLockList>
         </CardBody>
       </AppBody>
     </Page>

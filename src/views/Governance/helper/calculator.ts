@@ -1,10 +1,15 @@
 /* eslint-disable camelcase */
 import { BigNumber } from 'ethers'
+import { Lock } from 'state/governance/reducer'
+import { Action } from '../components/lockConfigurator'
 
 
 const zero = BigNumber.from(0)
+const ONE_18 = BigNumber.from('1000000000000000000')
 const MAXDAYS = BigNumber.from(3 * 365)
 const MAXTIME = 3 * 365 * 24 * 60 * 60
+const REF_DATE = 1640991600
+
 
 function voting_power_unlock_time(_value: BigNumber, _unlock_time: number) {
     const _now = Math.floor((new Date()).getTime() / 1000);
@@ -41,4 +46,86 @@ export function deposit_for_value(
         _vp = voting_power_locked_days(_amount, _days);
     }
     return _vp
+}
+
+
+export function get_amount_minted(_value: BigNumber, _unlock_time: number) {
+    return _value.mul(BigNumber.from(_unlock_time - REF_DATE)).div(MAXTIME);
+}
+
+export function get_multiplier_and_minted(action: Action, _amount: BigNumber, _newEnd: number, _now: number, _selectedLock:Lock, _locks: Lock[]): { minted: BigNumber, multiplier: BigNumber } {
+    const _vp = BigNumber.from(_selectedLock.minted)
+    const _vpNew = get_amount_minted(_amount, _newEnd);
+    let multiplier: BigNumber
+    // adjust multipliers
+    if (action === Action.increaseAmount) {
+        // position exists
+        multiplier = _calculate_adjusted_multiplier_position(
+            _amount,
+            _now,
+            _newEnd,
+            BigNumber.from(_selectedLock.amount),
+            BigNumber.from(_selectedLock.multiplier)
+        );
+
+    } else {
+        // position does not exist
+        multiplier = _calculate_adjusted_multiplier_maturity(
+            _now,
+            _selectedLock.end,
+            _newEnd,
+            BigNumber.from(_selectedLock.multiplier)
+        )
+    }
+
+
+    return { multiplier, minted: _vpNew.sub(_vp) }
+}
+
+
+export function _calculate_adjusted_multiplier_position(
+    _amount: BigNumber,
+    _ref: number,
+    _end: number,
+    _position: BigNumber,
+    _oldMultiplier: BigNumber
+) {
+    return _position.mul(_oldMultiplier).add(
+        _amount.mul(_calculate_multiplier(_ref, _end)
+        )).div
+        (_amount.add(_position)).div(ONE_18)
+}
+
+
+export function _calculate_adjusted_multiplier_maturity(
+    _ref: number,
+    _endOld: number,
+    _end: number,
+    _oldMultiplier: BigNumber
+) {
+    return BigNumber.from(_endOld).mul(_oldMultiplier).add(
+        BigNumber.from(_end - _endOld).mul(
+            _calculate_multiplier(_ref, _end))).div(BigNumber.from(
+                _end)).div(ONE_18)
+}
+
+
+export function _calculate_multiplier(_ref: number, _end: number) {
+    return BigNumber.from(_end - _ref).mul(ONE_18).div(BigNumber.from(_end - REF_DATE))
+}
+
+
+export function get_amount_and_multiplier(action: Action, _now: number, _amount: BigNumber, _newEnd: number, _selectedLock:Lock, _locks: Lock[]): { voting: BigNumber, multiplier: BigNumber } {
+    let multiplier: BigNumber
+    let voting: BigNumber
+    if (action === Action.createLock) {
+        multiplier = _calculate_multiplier(_now, _newEnd)
+        voting = get_amount_minted(_amount, _newEnd);
+    } else {
+
+        const { multiplier: multiplierAlt, minted } = get_multiplier_and_minted(action, _amount, _newEnd, _now, _selectedLock,_locks)
+        multiplier = multiplierAlt
+        voting = minted
+    }
+    return { voting, multiplier }
 }

@@ -9,7 +9,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
-import RedRequiem from 'config/abi/avax/RedRequiem.json'
+import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
 import { JSBI, Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from '../config/constants'

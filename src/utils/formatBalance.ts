@@ -56,7 +56,7 @@ export const formatBigNumberToFixed = (number: ethers.BigNumber, displayDecimals
  * Method to format the display of wei given a sting to be interpreted as ethers.BigNumber object with toFixed
  * Note: rounds
  */
- export const formatSerializedBigNumber = (number: string, displayDecimals = 18, decimals = 18) => {
+export const formatSerializedBigNumber = (number: string, displayDecimals = 18, decimals = 18) => {
   return formatBigNumber(ethers.BigNumber.from(number), displayDecimals, decimals)
 }
 
@@ -78,6 +78,14 @@ export const formatLocalisedCompactNumber = (number: number): string => {
     compactDisplay: 'long',
     maximumSignificantDigits: 2,
   }).format(number)
+}
+
+export const formatGeneralNumber = (num: number | string, decs: number): string => {
+  const scale = 10 ** decs
+  return (Math.round(Number(num) * scale) / scale).toLocaleString(undefined, {
+    minimumFractionDigits: decs,
+    maximumFractionDigits: decs
+  })
 }
 
 export default formatLocalisedCompactNumber

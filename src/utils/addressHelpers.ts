@@ -1,4 +1,4 @@
-import { ChainId, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
 import { addresses } from 'config/constants/contracts'
 import tokens from 'config/constants/tokens'
 import { Address, BondConfig } from 'config/constants/types'
@@ -20,7 +20,7 @@ export const getMasterChefAddress = (chainId: number) => {
   return getAddress(chainId, addresses.masterChef)
 }
 export const getRedRequiemAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.redRequiem)
+  return getAddress(chainId, addresses.bloodRedRequiem)
 }
 export const getRedRequiemStakingAddress = (chainId: number) => {
   return getAddress(chainId, addresses.redRequiemStaking)

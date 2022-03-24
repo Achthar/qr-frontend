@@ -2,9 +2,9 @@ import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Pri
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useRefresh from 'hooks/useRefresh'
-import { fetchGovernanceDetails } from './fetchGovernanceDetails'
+import { fetchGovernanceData } from './fetchGovernanceData'
 import { typeInput, typeInputTime } from './actions'
-import { AppDispatch, AppState } from '../index'
+import { AppDispatch, AppState, useAppDispatch } from '../index'
 import { tryParseAmount, tryParseTokenAmount } from '../swapV3/hooks'
 
 
@@ -48,31 +48,35 @@ export function useGovernanceInfo(
 ): {
     dataLoaded: boolean
     balance: string
-    lock: {
-        amount: string
-        end: number
+    locks: {
+        [end: number]: {
+            amount: string
+            end: number
+            minted: string
+            multiplier: string
+        }
     }
     staked: string
 } {
     const { dataLoaded } = useGovernanceState(chainId)
 
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useAppDispatch()
 
     const { slowRefresh } = useRefresh()
 
     useEffect(() => {
         if (!dataLoaded && account) {
-            dispatch(fetchGovernanceDetails({ chainId, account }))
+            dispatch(fetchGovernanceData({ chainId, account }))
         }
 
     }, [account, chainId, dataLoaded, slowRefresh, dispatch])
 
-    const { balance, lock, staked } = useGovernanceState(chainId)
+    const { balance, locks, staked } = useGovernanceState(chainId)
 
     return {
         dataLoaded,
         balance,
-        lock,
+        locks,
         staked
     }
 }

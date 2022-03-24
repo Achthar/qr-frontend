@@ -233,6 +233,9 @@ export const addresses = {
   authority:{
     43113:"0x94490C52990A38982851C4AD712390B858f63062"
   },
+  bloodRedRequiem:{
+    43113:"0x7De7E0Fc5A8a3D6789aD248d511845f9f37934E3"
+  },
   redRequiem:{
     43113:"0x8ae2294fC64b41bD0945BE663d551eA245d24A99"
   },

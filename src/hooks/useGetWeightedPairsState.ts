@@ -12,7 +12,7 @@ import { Currency, TokenAmount, WeightedPair } from '@requiemswap/sdk'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { SerializedWeightedPair } from 'state/types'
-import { AppDispatch } from '../state'
+import { AppDispatch, useAppDispatch } from '../state'
 
 
 // that function is  supposed to remove duplicate token pairs
@@ -50,7 +50,7 @@ export function useGetWeightedPairsState(
     reservesAndWeightsLoaded: boolean,
     userBalancesLoaded: boolean
 } {
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useAppDispatch()
 
 
     const {
@@ -153,7 +153,7 @@ export function useGetWeightedPairsTradeState(
     metaDataLoaded: boolean,
     reservesAndWeightsLoaded: boolean
 } {
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useAppDispatch()
 
 
     const {
@@ -286,7 +286,7 @@ export function useGetWeightedPairsPricerState(
     metaDataLoaded: boolean,
     reservesAndWeightsLoaded: boolean
 } {
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useAppDispatch()
 
 
     const {
@@ -379,8 +379,7 @@ export function useGetRawWeightedPairsState(
     metaDataLoaded: boolean,
     reservesAndWeightsLoaded: boolean,
 } {
-    const dispatch = useDispatch<AppDispatch>()
-
+    const dispatch = useAppDispatch()
 
     const {
         referenceChain

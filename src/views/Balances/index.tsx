@@ -22,7 +22,7 @@ import {
   useUserBalances,
 } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
-import { AppDispatch } from '../../state'
+import { AppDispatch, useAppDispatch } from '../../state'
 
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
@@ -38,7 +38,7 @@ export const BodyWrapper = styled(Card)`
 
 export default function Balances() {
   const { slowRefresh } = useRefresh()
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   const { account, chainId: chainIdWeb3 } = useWeb3React()
   useChainIdHandling(chainIdWeb3, account)
