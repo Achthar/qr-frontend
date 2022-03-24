@@ -34,6 +34,13 @@ const BorderCardLockList = styled.div`
   padding: 1px;
 `
 
+const DropdownContainer = styled.div`
+  width: 100%;
+  height: 24px;
+  zoom: 0.66;
+  -moz-transform: scale(0.66);
+`
+
 function sliceIntoChunks(arr, chunkSize) {
     const res = [];
     for (let i = 0; i < arr.length; i += chunkSize) {
@@ -49,11 +56,6 @@ export enum Action {
     increaseTime,
     increaseAmount
 }
-
-const selectDates = (dates: any[]) => {
-    return [dates[0], dates[1], dates[2], dates[5], dates[8], dates[11]]
-}
-
 
 interface SeparatorProps {
     text: string
@@ -201,7 +203,11 @@ const ScaleSelection = (selectedScale: Scale, selectScale: (scale: Scale) => voi
 
 const DropDownYears = (years: number[], selectYear: ({ label, value }: OptionProps) => void) => {
 
-    return (<Select options={years.map((y) => { return { label: String(y), value: y } })} onChange={selectYear} />)
+    return (
+        <DropdownContainer>
+            <Select options={years.map((y) => { return { label: String(y), value: y } })} onChange={selectYear} />
+        </DropdownContainer>
+    )
 }
 
 const DropDownMonths = (months: string[], selectMonth: ({ label, value }: OptionProps) => void) => {
@@ -235,7 +241,7 @@ export const LockConfigurator: React.FC<LockConfiguratorProps> = ({
     const onSelectYear = useCallback(({ label, value }: OptionProps) => { return selectYear(value) }, [selectYear])
     const onSelectMonth = useCallback(({ label, value }: OptionProps) => { return selectMonth(value) }, [selectMonth])
 
-    const fridays = useMemo(() => { return (fridaysUnix()) }, [])
+    const fridays = useMemo(() => { return (fridaysUnix().slice(0, 48)) }, [])
     const months = [...new Set(fridays.map(d => d.aod))]
 
     const day = 24 * 3600
@@ -269,14 +275,18 @@ export const LockConfigurator: React.FC<LockConfiguratorProps> = ({
                                 value={selectedMaturity}
                                 onValueChanged={(val) => { selectMaturity(val) }}
                                 mb="16px"
+                                width={isMobile ? '90%' : '95%'}
                             />
                             {!isMobile ? (
                                 <>
-                                    <Flex justifyContent="space-evenly" marginBottom='10px'>
+                                    <Flex marginBottom='10px' alignContent='right'>
                                         {ScaleSelection(selectedScale, selectScale)}
+
+
                                         {(selectedScale === Scale.weekly ? DropDownMonths(months, onSelectMonth)
                                             : DropDownYears(years, onSelectYear))}
                                     </Flex>
+
                                     {selectedScale === Scale.monthly ?
                                         ButtonContainerYear({
                                             splitAt: 3,

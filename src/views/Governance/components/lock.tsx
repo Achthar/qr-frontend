@@ -37,8 +37,8 @@ const LockBox = styled(Box) <{ isFirst: boolean, isLast: boolean, selected: bool
   margin-top: 5px;
   align-self: baseline;
   border-radius: 2px;
-  background: black;
-  border-color: ${({ theme, selected }) => selected ? 'white' : theme.colors.cardBorder};
+  background:  #121212;
+  border: solid 2px ${({ theme, selected }) => selected ? 'white' : theme.colors.cardBorder};
   border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   border-top-right-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   border-bottom-left-radius: ${({ isLast }) => isLast ? '16px' : '0px'};
@@ -100,8 +100,6 @@ const LockHeading: React.FC<LockHeaderProps> = ({ onSelect, lock, refTime, hideS
 }
 
 const LockCard: React.FC<LockCardProps> = ({ chainId, lock, onSelect, reqPrice, refTime, selected, isFirst, isLast, hideSelect }) => {
-
-  console.log("LOCK", reqPrice, lock, Number(formatSerializedBigNumber(lock.amount, 10, 18)) * reqPrice)
 
   return (
     <LockBox isFirst={isFirst} isLast={isLast} selected={selected}>

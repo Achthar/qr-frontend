@@ -57,9 +57,9 @@ const BorderCard = styled.div`
 const BorderCardLockList = styled.div`
   margin-top: 10px;
   border: solid 2px ${({ theme }) => theme.colors.cardBorder};
-  border-radius: 5px;
+  border-radius: 16px;
   padding: 1px;
-  background-color: white;
+  background-color: #121212;
 `
 
 export default function Governance({
@@ -548,30 +548,31 @@ export default function Governance({
             )}
           </Box>
           <BorderCardLockList>
-            <Text textAlign='center'>{Object.values(locks).length > 0 ? 'Your Lock(s)' : 'No locks found'}</Text>
-            {
-
-              Object.values(locks).map((lockData, index) => {
-
-                return (
-                  <LockCard
-                    chainId={chainId}
-                    lock={lockData}
-                    onSelect={() => {
-                      setAction(Action.increaseTime)
-                      toggleLock(true)
-                      selectMaturity(lockData.end)
-                      toggleLockEnd(lockData.end)
-                    }}
-                    reqPrice={reqPrice}
-                    refTime={now}
-                    isFirst={index === 0}
-                    isLast={indexMax === index}
-                    selected={lockData.end === toggledLockEnd}
-                    hideSelect={lockData.end === toggledLockEnd} />)
-              })
-            }
+            <Text textAlign='center' bold>{Object.values(locks).length > 0 ? 'Your Lock(s)' : 'No locks found'}</Text>
           </BorderCardLockList>
+          {
+
+            Object.values(locks).map((lockData, index) => {
+
+              return (
+                <LockCard
+                  chainId={chainId}
+                  lock={lockData}
+                  onSelect={() => {
+                    setAction(Action.increaseTime)
+                    toggleLock(true)
+                    selectMaturity(lockData.end)
+                    toggleLockEnd(lockData.end)
+                  }}
+                  reqPrice={reqPrice}
+                  refTime={now}
+                  isFirst={index === 0}
+                  isLast={indexMax === index}
+                  selected={lockData.end === toggledLockEnd}
+                  hideSelect={lockData.end === toggledLockEnd} />)
+            })
+          }
+
         </CardBody>
       </AppBody>
     </Page>
