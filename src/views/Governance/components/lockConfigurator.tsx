@@ -331,7 +331,7 @@ export const LockConfigurator: React.FC<LockConfiguratorProps> = ({
                                 </>)
                             }
                         </>
-                    ) : (
+                    ) : lock && (
                         <>
                             <Row width='90%' height='50px' gap='9px' marginTop='7px' align="space-evenly" >
                                 <Text fontSize="20px" mb="16px" style={{ lineHeight: 1 }} marginRight='5px' width='120px'>

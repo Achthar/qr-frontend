@@ -3,7 +3,7 @@ import { ethers, Contract } from 'ethers'
 import { useMasterchef, useRedRequiemContract } from 'hooks/useContract'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
 
-const useCreateLock = (lpContract: Contract) => {
+const useCreateLock_1 = (lpContract: Contract) => {
   const redRequiemContract = useRedRequiemContract()
   const { callWithGasPrice } = useCallWithGasPrice()
   const handleApprove = useCallback(async (amount:string, time:string) => {
@@ -22,4 +22,4 @@ const useCreateLock = (lpContract: Contract) => {
   return { onApprove: handleApprove }
 }
 
-export default useCreateLock
+export default useCreateLock_1

@@ -9,6 +9,7 @@ import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatB
 import { fetchGovernanceData } from 'state/governance/fetchGovernanceData'
 import { useAppDispatch } from 'state'
 import useToast from 'hooks/useToast'
+import Dots from 'components/Loader/Dots'
 
 import { Lock } from 'state/governance/reducer'
 import { prettifySeconds } from 'config'
@@ -86,7 +87,7 @@ interface LockCardProps {
   approval: ApprovalState
   approveCallback: () => void
   hideActionButton: boolean
-  toggleLock?: (set:boolean)=>void
+  toggleLock?: (set: boolean) => void
 }
 
 interface LockHeaderProps {
@@ -118,7 +119,7 @@ const LockHeading: React.FC<LockHeaderProps> = ({ onSelect, lock, refTime, hideS
   )
 }
 
-const LockCard: React.FC<LockCardProps> = ({ 
+const LockCard: React.FC<LockCardProps> = ({
   chainId, account, lock, onSelect, reqPrice, refTime, selected, isFirst, isLast, hideSelect, approval, approveCallback, hideActionButton: hideApproval, toggleLock }) => {
 
 
@@ -138,7 +139,8 @@ const LockCard: React.FC<LockCardProps> = ({
     toggleLock(false)
     dispatch(fetchGovernanceData({ chainId, account }))
   }
-
+  if (!lock)
+    return null;
   return (
     <LockBox isFirst={isFirst} isLast={isLast} selected={selected}>
       <InnerContainer>
@@ -180,7 +182,7 @@ const LockCard: React.FC<LockCardProps> = ({
               setPendingTx(true)
               try {
                 await handleWithdraw(lock)
-                toastSuccess('Unlocked!', 'Your amounts have been sent to your wallet')
+                toastSuccess('Unlocked!', `Your amounts have been unlocked${lock.end - refTime > 0 && ' and penalty has been charged'}.`)
                 // onDismiss()
               } catch (e) {
                 toastError(
@@ -195,7 +197,9 @@ const LockCard: React.FC<LockCardProps> = ({
             disabled={false || pendingTx}
             width="100%"
             mr="0.5rem"
-          >{lock.end - refTime > 0 ? 'Withdraw with penalty' : 'Withdraw'}</ApprovalButton>
+          >{!pendingTx ? lock.end - refTime > 0 ? 'Withdraw with penalty' : 'Withdraw' : (
+            <Dots>{lock.end - refTime > 0 ? 'Withdrawing with penalty' : 'Withdrawing'}</Dots>
+          )}</ApprovalButton>
         )
         )
         }

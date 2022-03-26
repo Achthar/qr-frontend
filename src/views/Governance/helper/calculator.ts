@@ -119,19 +119,21 @@ export function get_amount_and_multiplier(action: Action, _now: number, _amount:
     let multiplier: BigNumber
     let voting: BigNumber
 
-    console.log("VOTE ACT", action, Action.increaseAmount, _amount.toString(), _selectedLock)
     if (action === Action.createLock) {
         multiplier = _calculate_multiplier(_now, _newEnd)
         voting = get_amount_minted(_amount, _newEnd);
     }
     if (action === Action.increaseAmount) {
-        multiplier = _calculate_adjusted_multiplier_position(_amount, _now, _selectedLock.end, BigNumber.from(_selectedLock.amount), BigNumber.from(_selectedLock.multiplier))
-        console.log("VOTING INCR", _amount.toString(), BigNumber.from(_selectedLock.amount).toString())
-        voting = get_amount_minted(_amount.add(BigNumber.from(_selectedLock.amount)), _selectedLock.end).sub(get_amount_minted(_amount, _selectedLock.end))
+        if (_selectedLock) {
+            multiplier = _calculate_adjusted_multiplier_position(_amount, _now, _selectedLock.end, BigNumber.from(_selectedLock.amount), BigNumber.from(_selectedLock.multiplier))
+            voting = get_amount_minted(_amount, _selectedLock.end)
+        }
     }
     if (action === Action.increaseTime) {
-        multiplier = _calculate_adjusted_multiplier_maturity(_now, _selectedLock.end, _newEnd, BigNumber.from(_selectedLock.multiplier))
-        voting = get_amount_minted(_amount, _newEnd).sub(get_amount_minted(_amount, _selectedLock.end))
+        if (_selectedLock) {
+            multiplier = _calculate_adjusted_multiplier_maturity(_now, _selectedLock.end, _newEnd, BigNumber.from(_selectedLock.multiplier))
+            voting = get_amount_minted(_amount, _newEnd).sub(get_amount_minted(_amount, _selectedLock.end))
+        }
     }
 
     return { voting, multiplier }
