@@ -6,9 +6,14 @@ import { DeserializedFarm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import ExpandableSectionButton from 'components/ExpandableSectionButton'
 import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber, formatGeneralNumber } from 'utils/formatBalance'
+import { fetchGovernanceData } from 'state/governance/fetchGovernanceData'
+import { useAppDispatch } from 'state'
+import useToast from 'hooks/useToast'
 
 import { Lock } from 'state/governance/reducer'
 import { prettifySeconds } from 'config'
+import { ApprovalState } from 'hooks/useApproveCallback'
+import { useEmergencyWithdrawFromLock, useWithdrawFromLock } from '../hooks/useWithdrawFromLock'
 
 
 
@@ -28,6 +33,15 @@ const StyledButton = styled(Button) <{ mB: string, width: string }>`
   align: right;
   marginBottom: ${({ mB }) => mB};
 `
+
+const ApprovalButton = styled(Button)`
+  background-color:none;
+  color: none;
+  height: 25px;
+  box-shadow: none;
+  border-radius: 2px;
+`
+
 
 const MultiplierTag = styled(Tag)`
   margin-left: 4px;
@@ -60,6 +74,7 @@ const ExpandingWrapper = styled.div`
 
 interface LockCardProps {
   chainId: number
+  account: string
   lock: Lock
   onSelect: () => void
   reqPrice: number
@@ -68,6 +83,10 @@ interface LockCardProps {
   isFirst: boolean
   isLast: boolean
   hideSelect: boolean
+  approval: ApprovalState
+  approveCallback: () => void
+  hideActionButton: boolean
+  toggleLock?: (set:boolean)=>void
 }
 
 interface LockHeaderProps {
@@ -99,7 +118,26 @@ const LockHeading: React.FC<LockHeaderProps> = ({ onSelect, lock, refTime, hideS
   )
 }
 
-const LockCard: React.FC<LockCardProps> = ({ chainId, lock, onSelect, reqPrice, refTime, selected, isFirst, isLast, hideSelect }) => {
+const LockCard: React.FC<LockCardProps> = ({ 
+  chainId, account, lock, onSelect, reqPrice, refTime, selected, isFirst, isLast, hideSelect, approval, approveCallback, hideActionButton: hideApproval, toggleLock }) => {
+
+
+  const { toastSuccess, toastError } = useToast()
+  const [pendingTx, setPendingTx] = useState(false)
+  const dispatch = useAppDispatch()
+
+  const { onWithdraw } = useWithdrawFromLock()
+  const { onEmergencyWithdraw } = useEmergencyWithdrawFromLock()
+
+  const handleWithdraw = async (_lock: Lock) => {
+    if (_lock.end - refTime > 0) {
+      await onEmergencyWithdraw(_lock)
+    } else {
+      await onWithdraw(_lock)
+    }
+    toggleLock(false)
+    dispatch(fetchGovernanceData({ chainId, account }))
+  }
 
   return (
     <LockBox isFirst={isFirst} isLast={isLast} selected={selected}>
@@ -122,6 +160,45 @@ const LockCard: React.FC<LockCardProps> = ({ chainId, lock, onSelect, reqPrice, 
           <Text size='5px'>Minted</Text>
           <Text >{formatGeneralNumber(formatSerializedBigNumber(lock.minted, 10, 18), 2)}</Text>
         </Flex>
+        <Flex justifyContent="space-between">
+          <Text size='5px'>Multiplier</Text>
+          <Text >{`${formatGeneralNumber(formatSerializedBigNumber(lock.multiplier, 10, 18), 2)}x`}</Text>
+        </Flex>
+        {!hideApproval && (approval !== ApprovalState.APPROVED ? (
+          <ApprovalButton
+            variant='primary'
+            onClick={approveCallback} // {onAttemptToApprove}
+            disabled={approval !== ApprovalState.NOT_APPROVED}
+            width="100%"
+            mr="0.5rem"
+          >Approve withdrawl</ApprovalButton>
+
+        ) : (
+          <ApprovalButton
+            variant='primary'
+            onClick={async () => {
+              setPendingTx(true)
+              try {
+                await handleWithdraw(lock)
+                toastSuccess('Unlocked!', 'Your amounts have been sent to your wallet')
+                // onDismiss()
+              } catch (e) {
+                toastError(
+                  'Error',
+                  'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+                )
+                console.error(e)
+              } finally {
+                setPendingTx(false)
+              }
+            }} // {onAttemptToApprove}
+            disabled={false || pendingTx}
+            width="100%"
+            mr="0.5rem"
+          >{lock.end - refTime > 0 ? 'Withdraw with penalty' : 'Withdraw'}</ApprovalButton>
+        )
+        )
+        }
       </InnerContainer>
 
 

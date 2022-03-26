@@ -53,8 +53,10 @@ export const eomsUnix = (): DateEntry[] => {
     const current = new Date(now.getFullYear(), now.getMonth(), 1)
     current.setUTCHours(0, 0, 0, 0)
     const dates = []
+    
     for (let month = 1; month <= maxMonths; month++) {
         current.setMonth(current.getMonth() + 1)
+        current.setUTCHours(0, 0, 0, 0)
         dates.push({
             date: current.getDay(),
             unix: toUnix(current),

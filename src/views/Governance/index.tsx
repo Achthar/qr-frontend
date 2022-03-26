@@ -24,7 +24,7 @@ import useRefresh from 'hooks/useRefresh'
 import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler'
 
 import { getStartDate, timeConverter } from './helper/constants'
-import { deposit_for_value, get_amount_and_multiplier } from './helper/calculator'
+import { bn_maxer, deposit_for_value, get_amount_and_multiplier } from './helper/calculator'
 import LockCard from './components/lock'
 import { Action, LockConfigurator } from './components/lockConfigurator'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
@@ -129,21 +129,6 @@ export default function Governance({
     onSelectMaturity,
     200
   )
-  // console.log("VOTE MAT", selectedMaturity)
-  // const lock = useMemo(() => {
-  //   if (account && dataLoaded && locks[selectedMaturity] && action !== Action.createLock) {
-  //     return locks[selectedMaturity]
-  //   }
-  //   return {
-  //     minted: '0',
-  //     end: 0,
-  //     amount: '0',
-  //     multiplier: '0'
-  //   }
-  // }, [locks, account, dataLoaded, selectedMaturity, action])
-
-  // console.log("VOTE selected LOCK", lock, locks)
-
 
   // the user-selected lock
   const lock = useMemo(() => {
@@ -160,9 +145,6 @@ export default function Governance({
     metaDataLoaded,
     reservesAndWeightsLoaded,
   } = useGetRawWeightedPairsState(chainId, account, [], slowRefresh)
-
-
-
 
   const timeDiff = useMemo(() => {
     return action !== Action.increaseAmount || (lock.end === 0 || !lock) ? selectedMaturity - now : lock.end - now
@@ -187,7 +169,7 @@ export default function Governance({
   const [parsedAmounts, parsedMultiplier] = useMemo(() => {
     const input = BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0)
     console.log("VOTE inpt", action, now, input, lock, selectedMaturity)
-    const { voting, multiplier } = get_amount_and_multiplier(action, now, input, selectedMaturity, lock, Object.values(locks))
+    const { voting, multiplier } = get_amount_and_multiplier(action, now, input, selectedMaturity, lock, locks)
     console.log("VOTE output", voting?.toString(), multiplier?.toString())
     return [
       {
@@ -221,6 +203,13 @@ export default function Governance({
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.CURRENCY_A], getRedRequiemAddress(chainId))
+
+  const [approvalRreq, approveCallbackRreq] = useApproveCallback(
+    chainId, account,
+    new TokenAmount(RREQT[chainId], bn_maxer(Object.values(locks).map(l => l.minted)).toString()),
+    getRedRequiemAddress(chainId)
+  )
+
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -445,10 +434,11 @@ export default function Governance({
 
           <>
             <BorderCard>
-              <Text bold textAlign='center'>{`Manage the ${timeConverter(lock.end)} lock`}</Text>
+              <Text bold textAlign='center'>{`Manage the ${timeConverter(lock?.end) ?? ''} lock`}</Text>
 
               <LockCard
                 chainId={chainId}
+                account={account}
                 lock={lock}
                 onSelect={() => { return null }}
                 reqPrice={reqPrice}
@@ -457,6 +447,9 @@ export default function Governance({
                 isLast
                 selected
                 hideSelect
+                approval={null}
+                approveCallback={() => { return null }}
+                hideActionButton
               />
             </BorderCard>
           </>
@@ -557,6 +550,7 @@ export default function Governance({
               return (
                 <LockCard
                   chainId={chainId}
+                  account={account}
                   lock={lockData}
                   onSelect={() => {
                     setAction(Action.increaseTime)
@@ -569,7 +563,12 @@ export default function Governance({
                   isFirst={index === 0}
                   isLast={indexMax === index}
                   selected={lockData.end === toggledLockEnd}
-                  hideSelect={lockData.end === toggledLockEnd} />)
+                  hideSelect={lockData.end === toggledLockEnd}
+                  approval={approvalRreq}
+                  approveCallback={approveCallbackRreq}
+                  hideActionButton={false} 
+                  toggleLock={toggleLock}
+                  />)
             })
           }
 

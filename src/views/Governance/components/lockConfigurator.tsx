@@ -8,7 +8,8 @@ import { Button, Text, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, use
 import { Lock } from 'state/governance/reducer'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import Select, { OptionProps } from 'components/Select/Select'
-import { DateEntry, eomsUnix, fridaysUnix } from '../helper/constants'
+import Row from 'components/Row'
+import { DateEntry, eomsUnix, fridaysUnix, timeConverter } from '../helper/constants'
 
 
 
@@ -27,14 +28,8 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
-const BorderCardLockList = styled.div`
-  margin-top: 10px;
-  border: solid 1px ${({ theme }) => theme.colors.cardBorder};
-  border-radius: 2px;
-  padding: 1px;
-`
-
 const DropdownContainer = styled.div`
+  margin-left:4px
   width: 100%;
   height: 24px;
   zoom: 0.66;
@@ -131,7 +126,8 @@ const ButtonRowWeeklies: React.FC<ButtonRowProps> = ({
                     )
                 })}
             </Flex>
-        </>)
+        </>
+    )
 }
 
 
@@ -188,6 +184,7 @@ const ScaleSelection = (selectedScale: Scale, selectScale: (scale: Scale) => voi
                 Weekly
             </Button>
             <Button
+                marginRight='4px'
                 width='80px'
                 height='24px'
                 value="Button 2"
@@ -211,7 +208,11 @@ const DropDownYears = (years: number[], selectYear: ({ label, value }: OptionPro
 }
 
 const DropDownMonths = (months: string[], selectMonth: ({ label, value }: OptionProps) => void) => {
-    return (<Select options={months.map((y) => { return { label: String(y), value: y } })} onChange={selectMonth} />)
+    return (
+        <DropdownContainer>
+            <Select options={months.map((y) => { return { label: String(y), value: y } })} onChange={selectMonth} />
+        </DropdownContainer>
+    )
 }
 
 
@@ -332,12 +333,26 @@ export const LockConfigurator: React.FC<LockConfiguratorProps> = ({
                         </>
                     ) : (
                         <>
-                            <Text fontSize="30px" bold mb="16px" style={{ lineHeight: 1 }}>
-                                {`${Math.round(timeDiff * 100 / 365 / 24 / 3600) / 100} year(s)`}
-                            </Text>
-                            <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
-                                {`${Math.round(timeDiff * 100 / 3600 / 24) / 100} days remain until unlock`}
-                            </Text>
+                            <Row width='90%' height='50px' gap='9px' marginTop='7px' align="space-evenly" >
+                                <Text fontSize="20px" mb="16px" style={{ lineHeight: 1 }} marginRight='5px' width='120px'>
+                                    Maturity:
+                                </Text>
+                                <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                                    {`${timeConverter(lock.end)}`}
+                                </Text>
+                            </Row>
+                            {lock.end - now > 0 ? (<Row width='90%' height='50px' gap='9px' marginTop='7px' align="space-evenly">
+                                <Text fontSize="20px" mb="16px" style={{ lineHeight: 1 }} marginRight='5px' width='120px'>
+                                    Remaining:
+                                </Text>
+                                <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                                    {`${prettifySeconds(lock.end - now, 'h')}`}
+                                </Text>
+                            </Row>) : (
+                                <Text fontSize="20px" bold mb="16px" style={{ lineHeight: 1 }}>
+                                    Lock expired
+                                </Text>)}
+
                         </>
                     )
                 }

@@ -31,11 +31,11 @@ import iconREQTransparent from './assets/REQ_Transparent.png';
 
 
 export const ExternalLinks = {
-  twitter: 'https://twitter.com/xz',
+  twitter: 'https://twitter.com/requiem_finance',
   documentations: 'https://docs.requiem.finance',
-  codes: 'https://github.com/Achthar',
+  codes: 'https://github.com/Requiem-Finance',
   discord: 'https://discord.gg/HuekxzYj3p',
-  medium: 'https://medium.com/@x',
+  medium: 'https://medium.com/@requiem-finance',
   telegram: 'https://t.me/+Lbc1zHODTQw3YWM6',
   buyShareHref:
     'https://requiem.finance/avax-test/exchange',

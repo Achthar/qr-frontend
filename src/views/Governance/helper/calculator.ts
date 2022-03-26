@@ -53,12 +53,12 @@ export function get_amount_minted(_value: BigNumber, _unlock_time: number) {
     return _value.mul(BigNumber.from(_unlock_time - REF_DATE)).div(MAXTIME);
 }
 
-export function get_multiplier_and_minted(action: Action, _amount: BigNumber, _newEnd: number, _now: number, _selectedLock:Lock, _locks: Lock[]): { minted: BigNumber, multiplier: BigNumber } {
+export function get_multiplier_and_minted(action: Action, _amount: BigNumber, _newEnd: number, _now: number, _selectedLock: Lock, _locks: { [end: number]: Lock }): { minted: BigNumber, multiplier: BigNumber } {
     const _vp = BigNumber.from(_selectedLock.minted)
     const _vpNew = get_amount_minted(_amount, _newEnd);
     let multiplier: BigNumber
     // adjust multipliers
-    if (action === Action.increaseAmount) {
+    if (_locks[_newEnd]) {
         // position exists
         multiplier = _calculate_adjusted_multiplier_position(
             _amount,
@@ -115,17 +115,35 @@ export function _calculate_multiplier(_ref: number, _end: number) {
 }
 
 
-export function get_amount_and_multiplier(action: Action, _now: number, _amount: BigNumber, _newEnd: number, _selectedLock:Lock, _locks: Lock[]): { voting: BigNumber, multiplier: BigNumber } {
+export function get_amount_and_multiplier(action: Action, _now: number, _amount: BigNumber, _newEnd: number, _selectedLock: Lock, _locks: { [end: number]: Lock }): { voting: BigNumber, multiplier: BigNumber } {
     let multiplier: BigNumber
     let voting: BigNumber
+
+    console.log("VOTE ACT", action, Action.increaseAmount, _amount.toString(), _selectedLock)
     if (action === Action.createLock) {
         multiplier = _calculate_multiplier(_now, _newEnd)
         voting = get_amount_minted(_amount, _newEnd);
-    } else {
-
-        const { multiplier: multiplierAlt, minted } = get_multiplier_and_minted(action, _amount, _newEnd, _now, _selectedLock,_locks)
-        multiplier = multiplierAlt
-        voting = minted
     }
+    if (action === Action.increaseAmount) {
+        multiplier = _calculate_adjusted_multiplier_position(_amount, _now, _selectedLock.end, BigNumber.from(_selectedLock.amount), BigNumber.from(_selectedLock.multiplier))
+        console.log("VOTING INCR", _amount.toString(), BigNumber.from(_selectedLock.amount).toString())
+        voting = get_amount_minted(_amount.add(BigNumber.from(_selectedLock.amount)), _selectedLock.end).sub(get_amount_minted(_amount, _selectedLock.end))
+    }
+    if (action === Action.increaseTime) {
+        multiplier = _calculate_adjusted_multiplier_maturity(_now, _selectedLock.end, _newEnd, BigNumber.from(_selectedLock.multiplier))
+        voting = get_amount_minted(_amount, _newEnd).sub(get_amount_minted(_amount, _selectedLock.end))
+    }
+
     return { voting, multiplier }
+}
+
+export function bn_maxer(bnArray: string[]) {
+    const bns = bnArray.map(str => BigNumber.from(str))
+    let max = zero
+    for (let j = 0; j < bnArray.length; j++) {
+        if (bns[j] > max) {
+            max = bns[j]
+        }
+    }
+    return max
 }

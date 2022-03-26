@@ -59,7 +59,7 @@ import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.js
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 
 import bondingCalculatorAVAX from 'config/abi/avax/RequiemQBondingCalculator.json'
-import redRequiem from 'config/abi/avax/RedRequiem.json'
+import redRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import redRequiemStaking from 'config/abi/avax/RedRequiemStaking.json'
 // ABI polygon
 import lpTokenAbiPolygon from 'config/abi/polygon/IRequiemPair.json'
