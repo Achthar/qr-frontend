@@ -28,9 +28,13 @@ export enum GAS_PRICE {
   instant = '7',
   testnet = '10',
   avaxTest = '900',
-  avaxDefault= '100',
-  avaxFast= '150',
-  avaxInstant= '200',
+  avaxDefault = '100',
+  avaxFast = '150',
+  avaxInstant = '200',
+  oasisTest = '30',
+  oasisDefault = '10',
+  oasisFast = '15',
+  oasisInstant = '20',
 }
 
 export const GAS_PRICE_GWEI = {
@@ -65,10 +69,10 @@ export const GAS_PRICE_GWEI = {
     testnet: parseUnits(GAS_PRICE.testnet, 'gwei').toString(),
   },
   [ChainId.AVAX_TESTNET]: {
-    default: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    fast: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    instant: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    testnet: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+    default: parseUnits(GAS_PRICE.avaxDefault, 'gwei').toString(),
+    fast: parseUnits(GAS_PRICE.avaxFast, 'gwei').toString(),
+    instant: parseUnits(GAS_PRICE.avaxInstant, 'gwei').toString(),
+    testnet: parseUnits(GAS_PRICE.testnet, 'gwei').toString(),
   },
   [ChainId.QUARKCHAIN_DEV_S0]: {
     default: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
@@ -77,12 +81,12 @@ export const GAS_PRICE_GWEI = {
     testnet: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
   },
   [ChainId.OASIS_TESTNET]: {
-    default: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    fast: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    instant: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
-    testnet: parseUnits(GAS_PRICE.avaxTest, 'gwei').toString(),
+    default: parseUnits(GAS_PRICE.oasisDefault, 'gwei').toString(),
+    fast: parseUnits(GAS_PRICE.oasisFast, 'gwei').toString(),
+    instant: parseUnits(GAS_PRICE.oasisInstant, 'gwei').toString(),
+    testnet: parseUnits(GAS_PRICE.oasisTest, 'gwei').toString(),
   },
-  99999:{default: parseUnits('5', 'gwei').toString(),},
+  99999: { default: parseUnits('5', 'gwei').toString(), },
   default: parseUnits('5', 'gwei').toString(),
 
 }

@@ -284,7 +284,7 @@ export const tokenList = {
             {
                 "name": "Red Requiem Token",
                 "symbol": "RREQ",
-                "address": "0x8ae2294fc64b41bd0945be663d551ea245d24a99",
+                "address": "0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/RREQ.png"
