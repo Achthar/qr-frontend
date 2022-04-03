@@ -1,12 +1,20 @@
 /* eslint react/no-children-prop: 0 */
 import React from 'react'
+import styled from "styled-components";
 import PageSection from 'components/PageSection'
 import Container from 'components/Layout/Container'
 import { Text, Step, Stepper, Card, CardBody, Image, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
 import iconREQTransparent from 'assets/REQ_Transparent.png';
+import requiem from 'assets/requiem-finance.png';
+import requiemMid from 'assets/requiem-finance-logo-mid.png';
 
 import Row from 'components/Row'
+
+
+const RequiemImage = styled.img`
+  width: 100%;
+`;
 
 const Home: React.FC = () => {
   const { isMobile } = useMatchBreakpoints()
@@ -59,32 +67,11 @@ const Home: React.FC = () => {
           >
             <Row align="space-between" style={{ marginBottom: 20, justifyContent: 'center', ...iconStyle }}>
 
-              {!isMobile ? (
-                <>
-                  <Text marginTop='50px' marginRight='10px' {...titleFont}>Requiem</Text>
 
-                  <Image
-                    src={iconREQTransparent}
-                    width={991 / 4}
-                    height={927 / 4}
-                    alt="REQT"
-                  />
-                  <Text marginTop='50px' marginLeft='10px' {...titleFont}>Finance</Text>
-                </>)
-                :
-                (
-                  <>
-                    <Image
-                      src={iconREQTransparent}
-                      width={991 / 4}
-                      height={927 / 4}
-                      alt="REQT"
-                    />
+              <RequiemImage
+                src={isMobile ? requiem : requiemMid}
+              />
 
-                    <Text marginTop='50px' marginLeft='10px' fontSize='30px' bold>Requiem Finance</Text>
-                  </>
-                )
-              }
             </Row>
           </div>
           <Text fontSize="24px" color='white'>

@@ -176,20 +176,8 @@ export const addresses = {
     42261: '0x274B1F7F8e66B044B2DC773E017750957f70490c',
     110001: '0xe092CB3124aF36a0B851839D8EC51CaaD9a3DCD0'
   },
-  // bond: {
-  //   43113: '0x95e7415e619d6D3ae4a140C23137DAaF3Acf7608' // depository contract
-  // },
-  reserve: {
-    43113: '0xaea51e4fee50a980928b4353e852797b54deacd8' // DAI address
-  },
   bondingCalculator: {
     43113: '0x2A03A0B4e33B922d381B9f7DF16111cd2C77b4b3' // calculator for DAI-ReQT pool
-  },
-  bondingCalculatorNew: { // new calculator respecting the decimal differences
-    43113: '0x9838Be44B28dCF60d3875B5F716D39C58f2Af44b'
-  },
-  reserveLp: {
-    43113: '0xcde9f3be9786e91b3b309bcf5f6de69c9ea8739c' // 80reqt 20dai 25bps LP address
   },
   reqtRewarder: {
     43113: '0xF5d2E7bAC75673d2D1761B5B98f6209ae5B39203'
@@ -204,7 +192,7 @@ export const addresses = {
     43113: "0x0122829337D9432D72382C7C8DEe57361D8BfD73"
   },
   requiemStaking: {
-    43113: '0xa897b72505C39E2e43523966659E959827ac5C11'
+    43113: '0x8B047E942DA91c98221E2Ca9aa81864966E208A7'
   },
   weightedBondingCalculator: {
     43113: '0xf6E44b8210d6d0b07ff90ABD23d40b937079b161'

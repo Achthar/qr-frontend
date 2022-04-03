@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const ActionContainer = styled.div`
-  padding: 16px;
+  padding: 4px;
   border: 2px solid ${({ theme }) => theme.colors.input};
   border-radius: 16px;
   flex-grow: 1;
@@ -9,21 +9,43 @@ export const ActionContainer = styled.div`
   margin-bottom: 16px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    margin-left: 12px;
-    margin-right: 12px;
-    margin-bottom: 0;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5;
     max-height: 100px;
   }
 
   ${({ theme }) => theme.mediaQueries.xl} {
     margin-left: 48px;
     margin-right: 0;
-    margin-bottom: 0;
+    margin-bottom: 5;
     max-height: 100px;
   }
 `
 
-export const ActionTitles = styled.div`
+export const BondActionContainer = styled.div<{ isMobile: boolean }>`
+  padding: 16px;
+  width: ${({ isMobile }) => isMobile ? '40%' : '80%'};
+  border: 2px solid ${({ theme }) => theme.colors.input};
+  border-radius: 16px;
+  flex-grow: 1;
+  flex-basis: 0;
+  margin-bottom: 16px;
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    max-height: 110px;
+  }
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+
+    max-height: 110px;
+  }
+
+  
+`
+
+export const ActionTitles = styled.div` 
+height:40px;
   display: flex;
 `
 

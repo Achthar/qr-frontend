@@ -9,7 +9,7 @@ import { Lock } from 'state/governance/reducer'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import Select, { OptionProps } from 'components/Select/Select'
 import Row from 'components/Row'
-import { DateEntry, eomsUnix, fridaysUnix, timeConverter } from '../helper/constants'
+import { DateEntry, eomsUnix, fridaysUnix, timeConverter } from 'utils/time'
 
 
 

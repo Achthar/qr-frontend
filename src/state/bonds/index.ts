@@ -30,13 +30,7 @@ function noAccountBondConfig(chainId: number) {
       interestDue: '0',
       balance: '0',
       bondMaturationBlock: 0,
-      notes: {
-        payout: '0',
-        created: '0',
-        matured: '0',
-        redeemed: '0',
-        marketId: '0',
-      }
+      notes: []
     },
     bond: '',
     allowance: 0,
@@ -49,7 +43,7 @@ function noAccountBondConfig(chainId: number) {
 
 function initialState(chainId: number): BondsState {
   return {
-    bondData:  {}, // noAccountBondConfig(chainId),
+    bondData: {}, // noAccountBondConfig(chainId),
     loadArchivedBondsData: false,
     userDataLoaded: false,
     status: 'idle'
@@ -59,7 +53,7 @@ function initialState(chainId: number): BondsState {
 export function nonArchivedBonds(chainId: number): BondConfig[] { return bondList(chainId).filter(({ bondId }) => !isArchivedBondId(bondId)) }
 
 interface BondUserDataResponse {
-  bondId: number
+  // bondId: number
   allowance: string
   tokenBalance: string
   stakedBalance: string
@@ -68,18 +62,19 @@ interface BondUserDataResponse {
   interestDue: string
   balance: string
   bondMaturationBlock: number
-  notes: {
+  notes: [{
     payout: string
-    created: string
-    matured: string
+    created: number
+    matured: number
     redeemed: string
-    marketId?: string
-  }
+    marketId: number
+    noteIndex: number
+  }]
 }
 
 
 
-export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], { chainId: number, account: string; bondIds: number[] }>(
+export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondUserDataResponse }, { chainId: number, account: string; bondIds: number[] }>(
   'bonds/fetchBondUserDataAsync',
   async ({ chainId, account, bondIds }) => {
 
@@ -90,35 +85,56 @@ export const fetchBondUserDataAsync = createAsyncThunk<BondUserDataResponse[], {
       balances: userBondTokenBalances
     } = await fetchBondUserAllowancesAndBalances(chainId, account, bondsToFetch)
     let notesFinal = []
-    try {
-      const {
-        notes
-      } = await fetchBondUserPendingPayoutData(chainId, account, bondsToFetch)
-      notesFinal = notes
-    } catch {
-      notesFinal = []
-    }
+    // try {
+    const {
+      notes
+    } = await fetchBondUserPendingPayoutData(chainId, account)
+    notesFinal = notes
+    // } catch {
+    //   notesFinal = []
+    // }
     const interestDue = notesFinal.map((info) => {
       return info.payout.toString();
     })
-    return userBondAllowances.map((_, index) => {
+
+    console.log("NOTES b4 ST", userBondAllowances.map((_, index) => {
+      console.log("NOTES INDEX", index, notesFinal.filter(note => note.marketId === bondIds[index]))
       return {
-        bondId: bondIds[index],
+        // bondId: bondIds[index],
         allowance: userBondAllowances[index],
         tokenBalance: userBondTokenBalances[index],
         stakedBalance: 0, // userStakedBalances[index],
         earnings: 0, //  userBondEarnings[index],
-        notes: {
-          payout: notesFinal[index]?.payout?.toString(),
-          created: notesFinal[index]?.created?.toString(),
-          matured: notesFinal[index]?.matured?.toString(),
-          redeemed: notesFinal[index]?.redeemed?.toString(),
-          marketId: notesFinal[index]?.marketdId?.toString()
-        },
+        notes: notesFinal.filter(note => note.marketId === bondIds[index]).map(note => {
+          return {
+            payout: note[index]?.payout,
+            created: note[index]?.created,
+            matured: note[index]?.matured,
+            redeemed: note[index]?.redeemed,
+            marketId: note[index]?.marketdId
+          }
+        }),
         interestDue: interestDue[index],
         balance: userBondTokenBalances[index]
       }
+    }))
+
+    return Object.assign({}, ...userBondAllowances.map((_, index) => {
+      console.log("NOTES INDEX", index, notesFinal.filter(note => note.marketId === bondIds[index]))
+      return {
+        [bondIds[index]]: {
+          bondId: bondIds[index],
+          allowance: userBondAllowances[index],
+          tokenBalance: userBondTokenBalances[index],
+          stakedBalance: 0, // userStakedBalances[index],
+          earnings: 0, //  userBondEarnings[index],
+          notes: notesFinal.filter(note => note.marketId === bondIds[index]),
+          interestDue: interestDue[index],
+          balance: userBondTokenBalances[index]
+        }
+      }
     })
+    )
   },
 )
 
@@ -166,8 +182,11 @@ export const bondsSlice = createSlice({
       })
       // Update bonds with user data
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
-        action.payload.forEach((userDataEl) => {
-          state.bondData[userDataEl.bondId] = { ...state.bondData[userDataEl.bondId], userData: userDataEl }
+
+        console.log("NOTES USER PAYLOAD", action.payload)
+        Object.keys(action.payload).forEach((bondId) => {
+          console.log("NOTES ID", bondId, action.payload[bondId], state.bondData[bondId])
+          state.bondData[bondId].userData = { ...state.bondData[bondId].userData, ...action.payload[bondId] }
         })
         state.userDataLoaded = true
       })

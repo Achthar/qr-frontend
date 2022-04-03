@@ -31,6 +31,7 @@ const AnnualRoiDisplay = styled(Text)`
 
 interface RedemptionModalProps {
   bondId: number
+  noteIndex:number
   max: BigNumber
   stakedBalance: BigNumber
   lpLabel?: string
@@ -44,6 +45,7 @@ interface RedemptionModalProps {
 
 const RedemptionModal: React.FC<RedemptionModalProps> = ({
   bondId,
+  noteIndex,
   max,
   stakedBalance,
   onConfirm,
@@ -68,16 +70,18 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
 
 
   const { currentBlock } = useBlock()
-
+  const now = Math.round((new Date()).getTime() / 1000);
   const vestingTime = () => {
-    return prettyVestingPeriod(chainId, currentBlock, bond.userData.bondMaturationBlock);
+    const maturity = Number(bond.userData.notes[noteIndex].matured)
+    // return prettyVestingPeriod(chainId, currentBlock, Number(bond.userData.notes.matured));
+    return prettifySeconds(maturity - now, "day");
   };
-  console.log("VESTING", currentBlock, vestingTime(), bond.userData.bondMaturationBlock)
+  console.log("VESTING", currentBlock, vestingTime(), bond.userData.notes[noteIndex].matured)
 
   const vestingPeriod = () => {
-    const vestingBlock = parseInt(currentBlock.toString()) + parseInt(bond.bondTerms.vesting);
-    const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
-    return prettifySeconds(seconds, "day");
+    const vestingTerm = parseInt(bond.bondTerms.vesting);
+    // const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
+    return prettifySeconds(vestingTerm, "");
   };
 
   const handleSelectMax = useCallback(() => {
@@ -100,7 +104,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Claimable Rewards
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${(new TokenAmount(deserializeToken(bond.token), bond.userData.pendingPayout ?? '0')).toSignificant(4)} REQ`}
+          {`${(new TokenAmount(deserializeToken(bond.token), bond.userData.notes[noteIndex].payout ?? '0')).toSignificant(4)} REQ`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -116,7 +120,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Debt Ratio
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(bnParser(ethers.BigNumber.from(bond.debtRatio), ethers.BigNumber.from('1000000000')) * 10000) / 100}%`}
+          {`${Math.round(bnParser(ethers.BigNumber.from(bond.debtRatio), ethers.BigNumber.from('1000000000000000000')) * 10000) / 100}%`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

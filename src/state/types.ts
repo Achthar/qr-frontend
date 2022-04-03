@@ -88,6 +88,15 @@ export interface IBondDetails {
   marketPrice?: SerializedBigNumber;
 }
 
+export interface Note {
+  payout: SerializedBigNumber;
+  created: number;
+  matured: number;
+  redeemed: SerializedBigNumber;
+  marketId: number;
+  noteIndex: number;
+}
+
 export interface Bond extends BondConfig, IBondDetails {
   tokenAmount?: SerializedBigNumber
   quoteTokenAmountMc?: SerializedBigNumber
@@ -107,13 +116,7 @@ export interface Bond extends BondConfig, IBondDetails {
     interestDue: string
     balance: string
     bondMaturationBlock: number
-    notes: {
-      payout: SerializedBigNumber;
-      created: SerializedBigNumber;
-      matured: SerializedBigNumber;
-      redeemed: SerializedBigNumber;
-      marketId?: SerializedBigNumber;
-    }
+    notes: Note[]
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber

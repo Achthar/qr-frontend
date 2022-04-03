@@ -30,19 +30,38 @@ export interface BondUserData {
   notes: any[]
 }
 // payout and interest fetch
-export const fetchBondUserPendingPayoutData = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondUserData> => {
+export const fetchBondUserPendingPayoutData = async (chainId: number, account: string): Promise<BondUserData> => {
 
   const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
 
-  const callsInfo = bondsToFetch.map((bond) => {
-    return { address: bondDepositoryAddress, name: 'notes', params: [account, bond.bondId] }
+  const callInfoIndexes = [{ address: bondDepositoryAddress, name: 'indexesFor', params: [account] }]
+
+  // fetch indexres
+  const indexes = await multicall(chainId, bondReserveAVAX, callInfoIndexes)
+  console.log("NOTES INDEX", indexes[0][0])
+  const callsInfo = indexes[0][0].map((index) => {
+    return { address: bondDepositoryAddress, name: 'notes', params: [account, index] }
   })
+
+  console.log("NOTES CALLS", callsInfo)
 
   const notes = await multicall(chainId, bondReserveAVAX, callsInfo)
 
+  console.log("NOTES NOTE RAW", notes)
 
   return {
-    notes
+    notes: notes.map((note, index) => {
+      return {
+        payout: note.payout.toString(),
+        created: Number(note.created),
+        matured: Number(note.matured),
+        redeemed: note.redeemed.toString(),
+        marketId: Number(note.marketID),
+        noteIndex: index
+
+      }
+    }
+    )
   }
 }
 

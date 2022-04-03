@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
-import { LinkExternal, Text } from '@requiemswap/uikit'
+import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
@@ -11,10 +11,10 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import getChain from 'utils/getChain'
 import HarvestAction from './HarvestAction'
 import BondingAction from './BondingAction'
-import RedemptionAction from './RedemptionAction'
+import ClaimAction from './ClaimAction'
+// import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
-import Multiplier, { MultiplierProps } from '../Multiplier'
-import Liquidity, { LiquidityProps } from '../Liquidity'
+import NoteRow from '../NoteRow'
 
 
 export interface ActionPanelProps {
@@ -42,7 +42,8 @@ const collapseAnimation = keyframes`
   }
 `
 
-const Container = styled.div<{ expanded }>`
+const Container = styled.div<{ expanded, isMobile: boolean }>`
+  box-sizing: ${({ isMobile }) => isMobile ? 'border-box' : 'content-box'};
   animation: ${({ expanded }) =>
     expanded
       ? css`
@@ -65,12 +66,15 @@ const Container = styled.div<{ expanded }>`
 `
 
 const StyledLinkExternal = styled(LinkExternal)`
+align-self:flex-start;
   font-weight: 400;
 `
 
-const StakeContainer = styled.div`
+const StakeContainer = styled.div<{ isMobile: boolean }>`
   color: ${({ theme }) => theme.colors.text};
   align-items: center;
+  flex-direction: ${({ isMobile }) => isMobile ? 'row' : 'column'};
+  width: ${({ isMobile }) => isMobile ? '300px' : '100%'};
   display: flex;
   justify-content: space-between;
 
@@ -100,24 +104,60 @@ const TagsContainer = styled.div`
   }
 `
 
-const ActionContainer = styled.div`
+const NoteContainer = styled.div<{ isMobile: boolean }>`
+  margin-top:0px;
+  width:100%;
   display: flex;
   flex-direction: column;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    flex-direction: row;
-    align-items: center;
-    flex-grow: 1;
-    flex-basis: 0;
-  }
+  padding: 2px;
+  ${({ isMobile }) => isMobile && `
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 12px;
+  }`}
 `
+
+const GeneralActionContainer = styled.div`
+  display: flex;
+  fle-wrap: nowrap;
+  flex-direction: column;
+  width: 100%;
+  margin-top:10px;
+`
+
+const GeneralActionContainerMobile = styled.div`
+  display: flex;
+  fle-wrap: nowrap;
+  flex-direction: row;
+  width: 100%;
+  margin-top:10px;
+`
+
+const ActionContainerNoBond = styled.div`
+  align-items: center;
+  display: flex;
+  fle-wrap: nowrap;
+  flex-direction: row;
+  width: 80%;
+  margin-top:2px;
+`
+
+
+const ActionContainerNoBondButton = styled.div`
+  width: 50%;
+  margin-left:20%;
+`
+
 
 const InfoContainer = styled.div`
   min-width: 200px;
+  flex-direction: column;
 `
+
 
 const ValueContainer = styled.div`
   display: block;
+  flex-direction: column;
 
   ${({ theme }) => theme.mediaQueries.lg} {
     display: none;
@@ -131,6 +171,15 @@ const ValueWrapper = styled.div`
   margin: 4px 0px;
 `
 
+const Line = styled.hr`
+  z-index:5;
+  height: 1px;
+  background-color: ${({ theme }) => theme.colors.text};
+  color: white;
+  width: 100%;
+  size: 0.1;
+`;
+
 const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   details,
   roi,
@@ -138,9 +187,10 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   expanded,
 }) => {
   const bond = details
+
+  const { isMobile, isTablet, isDesktop } = useMatchBreakpoints()
   const { chainId } = useNetworkState()
   const { t } = useTranslation()
-  const isActive = true
   // const { quoteToken, token, dual } = bond
   const lpLabel = 'Bond'
   const chain = getChain(chainId)
@@ -153,39 +203,77 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
     fee: bond?.lpProperties?.fee
   })
   const lpAddress = getAddress(chainId, bond.reserveAddress)
-  const bsc = getNetworkExplorerLink(lpAddress, 'address')
+  const explorer = getNetworkExplorerLink(lpAddress, 'address')
   const info = `https://requiem.info/pool/${lpAddress}`
 
+  console.log("NOTE", details?.userData?.notes, !details?.userData?.notes || details?.userData?.notes.length)
   return (
-    <Container expanded={expanded}>
+    <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>
-        {isActive && (
-          <StakeContainer>
-            <StyledLinkExternal href={`/${chain}/add/${liquidityUrlPathParts}`}>
-              {t('Get %symbol%', { symbol: lpLabel })}
-            </StyledLinkExternal>
-          </StakeContainer>
-        )}
-        <StyledLinkExternal href={bsc}>{t('View Contract')}</StyledLinkExternal>
-        <StyledLinkExternal href={info}>{t('See Pair Info')}</StyledLinkExternal>
+        <StakeContainer isMobile={isMobile}>
+          <StyledLinkExternal href={`/${chain}/add/${liquidityUrlPathParts}`}>
+            Get LP for Bond
+          </StyledLinkExternal>
+          <StyledLinkExternal href={explorer}>{t('View Contract')}</StyledLinkExternal>
+        </StakeContainer>
+
+
         <TagsContainer>
           <CoreTag />
         </TagsContainer>
+        {!isMobile && (details?.userData?.notes && details?.userData?.notes.length > 0) && (
+          <GeneralActionContainer>
+            <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+            <ClaimAction
+              {...bond}
+              userDataReady={userDataReady}
+              lpLabel={lpLabel}
+              displayApr={roi.value}
+              isMobile={isMobile}
+              noBond={details?.userData?.notes.length === 0}
+            />
+          </GeneralActionContainer>
+        )}
+        {
+          isMobile && (
+            <GeneralActionContainerMobile>
+              <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+              <ClaimAction
+                {...bond}
+                userDataReady={userDataReady}
+                lpLabel={lpLabel}
+                displayApr={roi.value}
+                isMobile={isMobile}
+                noBond={details?.userData?.notes.length === 0}
+              />
+            </GeneralActionContainerMobile>
+          )
+        }
       </InfoContainer>
-      <ValueContainer>
-        <ValueWrapper>
-          <Text>{t('Roi')}</Text>
-          <Roi {...roi} />
-        </ValueWrapper>
-        {/* <ValueWrapper>
-          <Text>{t('Multiplier')}</Text>
-          <Multiplier {...multiplier} />
-        </ValueWrapper> */}
-      </ValueContainer>
-      <ActionContainer>
-        <RedemptionAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
-        <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} />
-      </ActionContainer>
+
+      <NoteContainer isMobile={isMobile}>
+        {details?.userData?.notes.map((
+          note, index) => {
+          const isLast = index === details?.userData?.notes.length - 1
+          return (<>
+            <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} />
+            {!isLast && (<Line />)}
+          </>)
+        }
+        )}
+
+        {(!isMobile && details?.userData?.notes && details?.userData?.notes.length === 0 && (
+          <ActionContainerNoBond>
+            <Text width="30%" bold textAlign='center' marginLeft='50px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
+            <ActionContainerNoBondButton>
+              <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+            </ActionContainerNoBondButton>
+          </ActionContainerNoBond>
+        ))}
+
+        {/* <RedemptionAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} noteIndex={0} />
+        <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} /> */}
+      </NoteContainer>
     </Container>
   )
 }

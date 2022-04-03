@@ -21,7 +21,7 @@ import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import useStakeBonds from 'views/Bonds/hooks/useStakeBonds'
 import useApproveBond from 'views/Bonds/hooks/useApproveBond'
 import useRedeemBond from 'views/Bonds/hooks/useRedeemBond'
-import { ActionContainer, ActionTitles, ActionContent } from './styles'
+import {  ActionTitles, ActionContent } from './styles'
 import RedemptionModal from '../../RedemptionModal'
 import WithdrawModal from '../../WithdrawModal'
 
@@ -29,14 +29,39 @@ const IconButtonWrapper = styled.div`
   display: flex;
 `
 
+export const ButtonContainer = styled.div`
+  padding: 16px;
+  border-radius: 2px;
+  flex-grow: 1;
+  flex-basis: 0;
+  margin-bottom: 16px;
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-bottom: 0;
+    max-height: 100px;
+  }
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+    margin-left: 48px;
+    margin-right: 0;
+    margin-bottom: 0;
+    max-height: 100px;
+  }
+`
+
+
 interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
+  noteIndex:number,
   lpLabel?: string
   displayApr?: string
 }
 
 const Redemption: React.FunctionComponent<StackedActionProps> = ({
   bondId,
+  noteIndex,
   apr,
   name,
   lpLabel,
@@ -90,9 +115,10 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
     return stakedBalanceBigNumber.toFixed(3, BigNumber.ROUND_DOWN)
   }, [stakedBalance])
 
-  const [onPresentDeposit] = useModal(
+  const [onPresentClaim] = useModal(
     <RedemptionModal
       bondId={bondId}
+      noteIndex={noteIndex}
       max={tokenBalance}
       lpLabel={lpLabel}
       apr={apr}
@@ -125,31 +151,18 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   if (!account) {
     return (
-      <ActionContainer>
-        <ActionTitles>
-          <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-            {t('Redeem Bond / claim Rewards ')}
-          </Text>
-        </ActionTitles>
+      <ButtonContainer>
         <ActionContent>
           <ConnectWalletButton width="100%" />
         </ActionContent>
-      </ActionContainer>
+      </ButtonContainer>
     )
   }
 
   if (isApproved) {
     if (stakedBalance.gt(0)) {
       return (
-        <ActionContainer>
-          <ActionTitles>
-            <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
-              {name}
-            </Text>
-            <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-              {t('Redemption')}
-            </Text>
-          </ActionTitles>
+        <ButtonContainer>
           <ActionContent>
             <div>
               <Heading>{displayBalance()}</Heading>
@@ -160,69 +173,45 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
               </IconButton>
               <IconButton
                 variant="secondary"
-                onClick={onPresentDeposit}
+                onClick={onPresentClaim}
                 disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
               >
                 <AddIcon color="primary" width="14px" />
               </IconButton>
             </IconButtonWrapper>
           </ActionContent>
-        </ActionContainer>
+        </ButtonContainer>
       )
     }
 
     return (
-      <ActionContainer>
-        <ActionTitles>
-          <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px">
-            {t('Redeem').toUpperCase()}
-          </Text>
-          <Text bold textTransform="uppercase" color="secondary" fontSize="12px">
-            {name}
-          </Text>
-        </ActionTitles>
+      <ButtonContainer>
         <ActionContent>
           <Button
             width="100%"
-            onClick={onPresentDeposit}
+            onClick={onPresentClaim}
             variant="secondary"
-            disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
+            disabled
           >
-            {t('Redeem Bond')}
+            {t('Redeem')}
           </Button>
         </ActionContent>
-      </ActionContainer>
+      </ButtonContainer>
     )
   }
 
   if (!userDataReady) {
     return (
-      <ActionContainer>
-        <ActionTitles>
-          <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-            {t('Start Bonding')}
-          </Text>
-        </ActionTitles>
+      <ButtonContainer>
         <ActionContent>
           <Skeleton width={180} marginBottom={28} marginTop={14} />
         </ActionContent>
-      </ActionContainer>
+      </ButtonContainer>
     )
   }
 
   return (
-    <ActionContainer>
-      <ActionTitles>
-        <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-          {t('Enable Bond')}
-        </Text>
-      </ActionTitles>
-      <ActionContent>
-        <Button width="100%" disabled={requestedApproval} onClick={handleApprove} variant="secondary">
-          {t('Enable')}
-        </Button>
-      </ActionContent>
-    </ActionContainer>
+    <ButtonContainer/>
   )
 }
 

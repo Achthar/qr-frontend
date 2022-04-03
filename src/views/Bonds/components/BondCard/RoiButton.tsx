@@ -38,34 +38,16 @@ const RoiButton: React.FC<RoiButtonProps> = ({
   const { t } = useTranslation()
   const lpPrice = new BigNumber(1) // useLpTokenPrice(lpSymbol)
   const { tokenBalance, stakedBalance } = useBondUser(bondId)
-  const [onPresentRoiModal] = useModal(
-    <BondRoiCalculatorModal
-      linkLabel={t('Get %symbol%', { symbol: lpLabel })}
-      stakingTokenBalance={stakedBalance.plus(tokenBalance)}
-      stakingTokenSymbol={lpSymbol}
-      stakingTokenPrice={lpPrice.toNumber()}
-      earningTokenPrice={reqtPrice.toNumber()}
-      roi={roi}
-      displayApr={displayRoi}
-      linkHref={addLiquidityUrl}
-      isBond
-    />,
-  )
-
-  const handleClickButton = (event): void => {
-    event.stopPropagation()
-    onPresentRoiModal()
-  }
 
   return (
-    <RoiLabelContainer alignItems="center" onClick={handleClickButton}>
-      {displayRoi}%
+    <RoiLabelContainer alignItems="center" onClick={() => { return null }}>
+      {displayRoi} %
       {variant === 'text-and-button' && (
         <IconButton variant="text" scale="sm" ml="4px">
           <CalculateIcon width="18px" />
         </IconButton>
       )}
-    </RoiLabelContainer>
+    </RoiLabelContainer >
   )
 }
 

@@ -24,19 +24,21 @@ import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
 import useStakeBonds from '../../../hooks/useStakeBonds'
 import useApproveBond from '../../../hooks/useApproveBond'
-import { ActionContainer, ActionTitles, ActionContent } from './styles'
+import { BondActionContainer, ActionTitles, ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
   display: flex;
 `
 
 interface StackedActionProps extends BondWithStakedValue {
+  isMobile: boolean
   userDataReady: boolean
   lpLabel?: string
   displayApr?: string
 }
 
 const Bonded: React.FunctionComponent<StackedActionProps> = ({
+  isMobile,
   bondId,
   apr,
   name,
@@ -123,7 +125,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   if (!account) {
     return (
-      <ActionContainer>
+      <BondActionContainer isMobile={isMobile}>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
             {t('Start Bonding')}
@@ -132,14 +134,14 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
         <ActionContent>
           <ConnectWalletButton width="100%" />
         </ActionContent>
-      </ActionContainer>
+      </BondActionContainer>
     )
   }
 
   if (isApproved) {
     if (stakedBalance.gt(0)) {
       return (
-        <ActionContainer>
+        <BondActionContainer isMobile={isMobile}>
           <ActionTitles>
             <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
               {name}
@@ -165,12 +167,12 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
               </IconButton>
             </IconButtonWrapper>
           </ActionContent>
-        </ActionContainer>
+        </BondActionContainer>
       )
     }
 
     return (
-      <ActionContainer>
+      <BondActionContainer isMobile={isMobile}>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px">
             {t('Bond').toUpperCase()}
@@ -181,21 +183,22 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
         </ActionTitles>
         <ActionContent>
           <Button
+            // marginBottom="-30px"
             width="100%"
             onClick={onPresentBonding}
-            variant="secondary"
+            variant="primary"
             disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
           >
             {t('Bond LP')}
           </Button>
         </ActionContent>
-      </ActionContainer>
+      </BondActionContainer>
     )
   }
 
   if (!userDataReady) {
     return (
-      <ActionContainer>
+      <BondActionContainer isMobile={isMobile}>
         <ActionTitles>
           <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
             {t('Start Bonding')}
@@ -204,12 +207,12 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
         <ActionContent>
           <Skeleton width={180} marginBottom={28} marginTop={14} />
         </ActionContent>
-      </ActionContainer>
+      </BondActionContainer>
     )
   }
 
   return (
-    <ActionContainer>
+    <BondActionContainer isMobile={isMobile}>
       <ActionTitles>
         <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
           {t('Enable Bond')}
@@ -220,7 +223,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
           {t('Enable')}
         </Button>
       </ActionContent>
-    </ActionContainer>
+    </BondActionContainer>
   )
 }
 
