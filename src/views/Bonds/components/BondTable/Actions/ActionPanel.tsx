@@ -206,7 +206,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const explorer = getNetworkExplorerLink(lpAddress, 'address')
   const info = `https://requiem.info/pool/${lpAddress}`
 
-  console.log("NOTE", details?.userData?.notes, !details?.userData?.notes || details?.userData?.notes.length)
   return (
     <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>
@@ -221,7 +220,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         <TagsContainer>
           <CoreTag />
         </TagsContainer>
-        {!isMobile && (details?.userData?.notes && details?.userData?.notes.length > 0) && (
+        {!isMobile && details?.userData?.notes && details?.userData?.notes.length > 0 && (
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
             <ClaimAction
@@ -262,7 +261,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         }
         )}
 
-        {(!isMobile && details?.userData?.notes && details?.userData?.notes.length === 0 && (
+        {(!isMobile && (!details?.userData?.notes || details?.userData?.notes.length === 0) && (
           <ActionContainerNoBond>
             <Text width="30%" bold textAlign='center' marginLeft='50px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
             <ActionContainerNoBondButton>
