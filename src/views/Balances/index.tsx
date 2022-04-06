@@ -10,8 +10,9 @@ import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
-import { Token } from '@requiemswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@requiemswap/sdk'
 import { serializeToken } from 'state/user/hooks/helpers'
+import CurrencyPositionCard from 'components/PositionCard/NetworkCcyPosition'
 
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import useRefresh from 'hooks/useRefresh'
@@ -53,7 +54,7 @@ export default function Balances() {
         dispatch(fetchUserTokenData({
           chainId,
           account,
-          additionalTokens : userAddedTokens.map(token => serializeToken(token))
+          additionalTokens: userAddedTokens.map(token => serializeToken(token))
         }))
 
         dispatch(fetchUserNetworkCcyBalance({
@@ -87,9 +88,8 @@ export default function Balances() {
     [chainId, allBalances]
   )
 
-  const mainAmounts = useMemo(() =>
-    getMainAmounts(chainId, allBalances),
-    [chainId, allBalances]
+  const mainAmounts = useMemo(() => { return [CurrencyAmount.networkCCYAmount(chainId, networkCcyBalance), ...getMainAmounts(chainId, allBalances)] },
+    [chainId, allBalances, networkCcyBalance]
   )
 
   const renderBody = () => {
@@ -112,13 +112,23 @@ export default function Balances() {
         <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='10px' marginLeft='10px'>
           <Column>
             {!isLoadingTokens && mainAmounts && mainAmounts.map((tokenAmount, index) => (
-              <TokenPositionCard
-                tokenAmount={tokenAmount}
-                mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
-                gap='1px'
-                padding='0px'
-                showSymbol
-              />))}
+              tokenAmount instanceof TokenAmount ?
+                (<TokenPositionCard
+                  tokenAmount={tokenAmount}
+                  mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
+                  gap='1px'
+                  padding='0px'
+                  showSymbol
+                />) : (
+                  <CurrencyPositionCard
+                    chainId={chainId}
+                    currencyAmount={tokenAmount as CurrencyAmount}
+                    mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
+                    gap='1px'
+                    padding='0px'
+                    showSymbol
+                  />
+                )))}
           </Column>
           <Column>
             {!isLoadingTokens && stableAmounts && stableAmounts.map((tokenAmount, index) => (
@@ -130,40 +140,15 @@ export default function Balances() {
                 showSymbol
               />))}
           </Column>
-          {/* <Column>
-            {!isLoadingTokens && stableAmounts.slice(2, 4).map((tokenAmount, index) => (
-              <TokenPositionCard
-                tokenAmount={tokenAmount}
-                mb={index < Object.values(allBalances).length - 1 ? '5px' : 0}
-                gap='1px'
-                padding='0px'
-                showSymbol
-              />))}
-          </Column> */}
         </Flex >
       </div>
     )
   }
 
 
-
-
-
   return (
     <>
-      {/* <BodyWrapper> */}
-      {/* <AppHeader title='Your Liquidity' subtitle='Remove liquidity to receive tokens back' /> */}
-      {/* <Body> */}
       {renderBody()}
-      {/* {account && (
-            <Flex flexDirection="column" alignItems="center" mt="24px">
-              <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to="/find">
-                Find other tokens
-              </Button>
-            </Flex>
-          )} */}
-      {/* </Body> */}
-      {/* </BodyWrapper> */}
     </>
   )
 }

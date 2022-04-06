@@ -10,6 +10,7 @@ import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import Select, { OptionProps } from 'components/Select/Select'
 import Row from 'components/Row'
 import { DateEntry, eomsUnix, fridaysUnix, timeConverter } from 'utils/time'
+import { sliceIntoChunks } from 'utils/arraySlicer'
 
 
 
@@ -36,14 +37,7 @@ const DropdownContainer = styled.div`
   -moz-transform: scale(0.66);
 `
 
-function sliceIntoChunks(arr, chunkSize) {
-    const res = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-        const chunk = arr.slice(i, i + chunkSize);
-        res.push(chunk);
-    }
-    return res;
-}
+
 
 export enum Action {
     selectLock,

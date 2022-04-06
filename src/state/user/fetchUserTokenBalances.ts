@@ -3,14 +3,15 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import erc20Abi from 'config/abi/erc20.json'
 import multicall from 'utils/multicall';
 import { Fraction, JSBI, STABLECOINS, TokenAmount, WeightedPair, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
-import { WETH, REQT, WBTC } from 'config/constants/tokens';
+import { WETH, REQT, WBTC, GREQ, ABREQ, SREQ } from 'config/constants/tokens';
 import { SerializedToken } from 'config/constants/types';
 import { REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from 'config/constants';
 import { UserProps } from './types';
 
 
 export function getMainTokens(chainId: number): Token[] {
-    return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
+    return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], SREQ[chainId], GREQ[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]] :
+        [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
 }
 
 export function getStables(chainId: number): Token[] {

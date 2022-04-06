@@ -61,7 +61,9 @@ export const ActivatorButton = styled.button`
 `
 
 const AppFooterContainer = styled.div`
-  z-index: 15;
+  z-index: 1;
+  pointer-events: none;
+  box-sizing: border-box;
   bottom: 0;
   position: fixed;
   align: center;
@@ -72,25 +74,30 @@ const AppFooterContainer = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
 `
 const BalanceContainer = styled.div<{ balanceShown: boolean }>`
-  z-index: 14;
-  bottom: ${({ balanceShown }) => (balanceShown ? '0' : '-100')};
-  position: fixed;
+  transition:all 1s ease;
+  pointer-events: none;
+  z-index: 1;
+  bottom: ${({ balanceShown }) => (balanceShown ? '0' : '-1000px')};
+  position: relative;
   align: center;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 70;
+  height: ${({ balanceShown }) => (!balanceShown ? '0%' : '10%')};
   border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
 `
 
-const StyledButton = styled(Button) <{ mB: string, width: string }>`
+const StyledButton = styled(Button) <{ balanceShown: boolean, mB: string, width: string }>`
+  transition:all 1s ease;
+  pointer-events: all;
+  position: ${({ balanceShown }) => balanceShown ? 'relative' : 'absolute'};
   background-color:none;
   color: none;
   box-shadow: none;
   border-radius: 20px;
   width: ${({ width }) => width};
-  align: right;
-  marginBottom: ${({ mB }) => mB};
+  align-self: left;
+  ${({ balanceShown }) => balanceShown ? 'margin-bottom: 1px;' : 'left:5px; bottom: 20px;'}
 `
 
 const Balances = () => {
@@ -99,22 +106,18 @@ const Balances = () => {
   const handleClick = () => showBalance(!balanceShown)
   return (
     <AppFooterContainer>
-      <div style={{ zIndex: 15 }}>
-        <StyledButton
-          marginBottom={balanceShown && account ? '160px' : '0px'}
-          width='0px'
-          height='0px'
-          endIcon={<CurrencyIcon width='30px' />}
-          onClick={
-            handleClick
-          }
-        />
-      </div>
-      <RowBetween align='left'>
-        <BalanceContainer balanceShown={balanceShown}>
-          {UserBalances()}
-        </BalanceContainer>
-      </RowBetween>
+      <StyledButton
+        balanceShown={balanceShown}
+        width='0px'
+        height='0px'
+        endIcon={<CurrencyIcon width='30px' />}
+        onClick={
+          handleClick
+        }
+      />
+      <BalanceContainer balanceShown={balanceShown}>
+        {UserBalances()}
+      </BalanceContainer>
     </AppFooterContainer>
   );
 };

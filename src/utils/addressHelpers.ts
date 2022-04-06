@@ -107,6 +107,14 @@ export const getBondingDepositoryAddress = (chainId: number) => {
   return getAddress(chainId, addresses.bondDepository)
 }
 
-export const getBondStakingAddress = (chainId: number) => {
+export const getAssetBackedStakingAddress = (chainId: number) => {
   return getAddress(chainId, addresses.staking)
+}
+
+export const getStakedRequiemAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.sREQ)
+}
+
+export const getGovernanceRequiemAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.gREQ)
 }

@@ -4,36 +4,45 @@ import UserMenu from 'components/Menu/UserMenu'
 import GlobalSettings from 'components/Menu/GlobalSettings'
 import ChainIdSelector from 'ChainIdSelector'
 import CustomNav from 'CustomNav'
+import styled from "styled-components";
 import { useMatchBreakpoints } from '@requiemswap/uikit'
 import GeneralNav from 'GeneralNav'
+
+const AppHeaderContainer = styled.div`
+  pointer-events: none;
+  position: fixed;
+  top: 30px;
+  height: 70;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+  z-index: 9;
+  paddingRight: 15;
+`
+
+const MenuComponentContainer = styled.div<{ zIndex: number }>`
+  pointer-events: all;
+  z-index: ${({ zIndex }) => zIndex};
+  position: fixed;
+`
 
 const CustomMenu: React.FC = () => {
   const { t } = useTranslation()
   const { isMobile, isTablet, isDesktop } = useMatchBreakpoints()
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        height: 70,
-        width: '100%',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        display: 'flex',
-        zIndex: 9,
-        paddingRight: 15,
-      }}
+    <AppHeaderContainer
     >
-      <div style={{ zIndex: 9, position: 'fixed' }}>
+      <MenuComponentContainer zIndex={9}>
         <GeneralNav />
-      </div>
-      <div style={{ zIndex: 10, position: 'fixed' }}>
+      </MenuComponentContainer>
+      <MenuComponentContainer zIndex={10}>
         <ChainIdSelector />
-      </div>
-      <div style={{ zIndex: 11, position: 'fixed' }}>
+      </MenuComponentContainer>
+      <MenuComponentContainer zIndex={11}>
         <UserMenu />
-      </div>
-    </div>
+      </MenuComponentContainer>
+    </AppHeaderContainer>
   )
 }
 

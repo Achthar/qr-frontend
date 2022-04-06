@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
-import { ABREQ, REQT, WBTC, WETH } from 'config/constants/tokens'
+import { ABREQ, GREQ, REQT, SREQ, WBTC, WETH } from 'config/constants/tokens'
 import { SerializedToken, TokenPair } from 'config/constants/types'
 import { SerializedWeightedPair, State, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
@@ -470,6 +470,16 @@ export function getMainAmounts(chainId: number, balances: {
 }) {
   if (!balances)
     return []
+  if (chainId === 43113)
+    return [
+      WRAPPED_NETWORK_TOKENS[chainId],
+      ABREQ[chainId],
+      SREQ[chainId],
+      GREQ[chainId],
+      REQT[chainId],
+      WBTC[chainId],
+      WETH[chainId]
+    ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
 
   return [
     WRAPPED_NETWORK_TOKENS[chainId],

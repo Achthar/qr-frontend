@@ -4,7 +4,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { ChainId, JSBI, Price, Token, TokenAmount, WeightedPair } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens';
 import { getWeightedPairContract } from 'utils/contractHelpers';
-import { IBaseAsyncThunk } from './bondTypes';
 
 const TEN_E_NINE = JSBI.BigInt('1000000000')
 const TEN_E_EIGHTEEN = JSBI.BigInt('1000000000000000000')
@@ -19,7 +18,10 @@ export const TEN_ES: { [num: number]: JSBI } = {
     13: JSBI.BigInt('10000000000000'),
     18: JSBI.BigInt('1000000000000000000')
 }
-
+interface IBaseAsyncThunk {
+    chainId: number
+    provider: any
+}
 /**
  * - fetches the REQT price from CoinGecko (via getTokenPrice)
  * - falls back to fetch marketPrice from ohm-dai contract
@@ -81,7 +83,7 @@ export const priceFromData = (token: Token, quoteToken: Token, weightToken: any,
         marketPrice = JSBI.divide(JSBI.multiply(price.numerator, TEN_ES[quoteToken.decimals ?? 18]), price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
 
     } catch (e) {
-        marketPrice = null 
+        marketPrice = null
     }
     return marketPrice.toString()
 }

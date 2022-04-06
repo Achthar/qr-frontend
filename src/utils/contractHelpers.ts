@@ -28,7 +28,7 @@ import {
   getBondingDepositoryAddress,
   getRedRequiemStakingAddress,
   getRedRequiemAddress,
-  getBondStakingAddress
+  getAssetBackedStakingAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -233,6 +233,14 @@ export const getRedRequiemStakingContract = (chainId: number, signer?: ethers.Si
   return getContract(chainId, chainId === 43113 ? new Interface(redRequiemStaking) : redRequiemStaking, getRedRequiemStakingAddress(chainId), signer)
 }
 
-export const getABStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, chainId === 43113 ? new Interface(bondStaking) : bondStaking, getBondStakingAddress(chainId), signer)
+export const getAssetBackedStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(bondStaking) : bondStaking, getAssetBackedStakingAddress(chainId), signer)
+}
+
+export const getStakedRequiemContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(bondStaking) : bondStaking, getStakedRequiemContract(chainId), signer)
+}
+
+export const getGovernanceRequiemContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(bondStaking) : bondStaking, getGovernanceRequiemContract(chainId), signer)
 }

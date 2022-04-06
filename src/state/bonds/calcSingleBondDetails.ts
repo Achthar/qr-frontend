@@ -11,7 +11,7 @@ import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { BondType } from 'config/constants/types';
 import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
-import { ICalcBondDetailsAsyncThunk, ICalcUserBondDetailsAsyncThunk } from './bondTypes';
+import { ICalcBondDetailsAsyncThunk } from './types';
 import { loadMarketPrice, priceFromData } from './loadMarketPrice';
 import { BondsState, Bond } from '../types'
 

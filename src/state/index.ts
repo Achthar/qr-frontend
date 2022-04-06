@@ -4,6 +4,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import application from './application/reducer'
 import blockReducer from './block'
 import farmsReducer from './farms'
+import assetBackedStakingReducer from './assetBackedStaking/reducer'
 import votingReducer from './voting'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
@@ -35,6 +36,7 @@ const store = configureStore({
     stablePools: stablePoolsReducer,
     weightedPairs: weightedPairReducer,
     governance,
+    assetBackedStaking: assetBackedStakingReducer,
     // Exchange
     user,
     transactions,

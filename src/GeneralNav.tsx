@@ -398,7 +398,6 @@ export const ActivatorButton = styled.button<{ isMobile: boolean }>`
   background-color: ${({ theme }) => theme.colors.tertiary};
   border-left: solid 5px transparent;
   border: none;
-  width:1000px;
   border-radius: 30px;
   font-size: 0.875rem;
   font-weight: 400;
@@ -410,7 +409,7 @@ export const ActivatorButton = styled.button<{ isMobile: boolean }>`
   justify-content: space-between;
   align-items: center;
   float: right;
-  width: ${({ isMobile }) => isMobile ? '360px' : '530px'};
+  ${({ isMobile }) => isMobile ? 'width: 400px; margin-right: -40px;' : 'width: 570px; margin-right: -40px;'};
 
   &:hover {
     font-weight: 500;
