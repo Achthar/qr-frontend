@@ -106,3 +106,7 @@ export const getAddressForWeightedPairFactory = (chainId: number) => {
 export const getBondingDepositoryAddress = (chainId: number) => {
   return getAddress(chainId, addresses.bondDepository)
 }
+
+export const getBondStakingAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.staking)
+}

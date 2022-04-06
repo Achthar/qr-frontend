@@ -95,6 +95,37 @@ export const REQT: { [chainId: number]: Token } = {
   ),
 }
 
+export const ABREQ: { [chainId: number]: Token } = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x5d8894Ff5e16f5Fd749369A370A87B3Fd6d29204',
+    18,
+    'abREQ',
+    'Asset-Backed Requiem Token',
+  ),
+}
+
+export const SREQ: { [chainId: number]: Token } = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x754A5Efde9E5Aec67A8983989E85bd3B0dBB112e',
+    18,
+    'sREQ',
+    'Staked Requiem',
+  ),
+}
+
+export const GREQ: { [chainId: number]: Token } = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x147F7feF8C1c46B7Fc9eE790eE95A041F255F022',
+    18,
+    'gREQ',
+    'Governance Requiem',
+  ),
+}
+
+
 export const RREQT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
     ChainId.BSC_MAINNET,

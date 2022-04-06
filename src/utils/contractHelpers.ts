@@ -27,7 +27,8 @@ import {
   getAddressForLpReserve,
   getBondingDepositoryAddress,
   getRedRequiemStakingAddress,
-  getRedRequiemAddress
+  getRedRequiemAddress,
+  getBondStakingAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -53,6 +54,8 @@ import farmAuctionAbi from 'config/abi/farmAuction.json'
 
 import weightedFactoryAVAX from 'config/abi/avax/RequiemWeightedPairFactory.json'
 import weightedPairAVAX from 'config/abi/avax/RequiemWeightedPair.json'
+import bondStaking from 'config/abi/avax/Staking.json'
+
 
 import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.json'
 
@@ -228,4 +231,8 @@ export const getRedRequiemContract = (chainId: number, signer?: ethers.Signer | 
 
 export const getRedRequiemStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, chainId === 43113 ? new Interface(redRequiemStaking) : redRequiemStaking, getRedRequiemStakingAddress(chainId), signer)
+}
+
+export const getABStakingContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, chainId === 43113 ? new Interface(bondStaking) : bondStaking, getBondStakingAddress(chainId), signer)
 }

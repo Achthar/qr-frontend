@@ -23,7 +23,7 @@ import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
-import { priceRequiem } from 'utils/poolPricer'
+import { priceAssetBackedRequiem, priceRequiem } from 'utils/poolPricer'
 // import { BigNumber } from 'ethers'
 import { useAppDispatch } from 'state'
 import BondCard, { BondWithStakedValue } from './components/BondCard/BondCard'
@@ -299,7 +299,7 @@ function Bonds({
 
   const reqPrice = useMemo(
     () => {
-      return priceRequiem(chainId, pairs)
+      return priceAssetBackedRequiem(chainId, pairs)
     },
     [pairs, chainId]
   )

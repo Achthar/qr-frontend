@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
-import { REQT, WBTC, WETH } from 'config/constants/tokens'
+import { ABREQ, REQT, WBTC, WETH } from 'config/constants/tokens'
 import { SerializedToken, TokenPair } from 'config/constants/types'
 import { SerializedWeightedPair, State, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
@@ -486,6 +486,17 @@ export function useGetRequiemAmount(chainId: number) {
 
   return {
     balance: new TokenAmount(REQT[chainId], balState?.balances[REQT[chainId].address].balance ?? '0'),
+    isLoading: balState.isLoadingTokens
+  }
+
+}
+
+
+export function useGetAssetBackedRequiemAmount(chainId: number) {
+  const balState = useUserBalances(chainId)
+
+  return {
+    balance: new TokenAmount(ABREQ[chainId], balState?.balances[ABREQ[chainId].address].balance ?? '0'),
     isLoading: balState.isLoadingTokens
   }
 

@@ -107,6 +107,7 @@ const TagsContainer = styled.div`
 const NoteContainer = styled.div<{ isMobile: boolean }>`
   margin-top:0px;
   width:100%;
+  align-self: center;
   display: flex;
   flex-direction: column;
   padding: 2px;

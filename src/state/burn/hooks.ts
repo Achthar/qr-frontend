@@ -43,7 +43,7 @@ export function useDerivedBurnInfo(
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
-
+  console.log("BAL", userLiquidity?.toSignificant(18))
   const [tokenA, tokenB] = [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
   const tokens = {
     [Field.CURRENCY_A]: tokenA,

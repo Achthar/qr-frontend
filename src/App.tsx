@@ -36,6 +36,7 @@ const Farms = lazy(() => import('./views/Farms'))
 const NotFound = lazy(() => import('./views/NotFound'))
 const AddLiquidity = lazy(() => import('./views/AddLiquidity'))
 const Governance = lazy(() => import('./views/Governance'))
+const GovernanceAb = lazy(() => import('./views/Governance-AB'))
 const AddStableLiquidity = lazy(() => import('./views/AddStableLiquidity'))
 const Liquidity = lazy(() => import('./views/Pool/poolList'))
 const WeightedPairFinder = lazy(() => import('./views/PoolFinder/weightedPairFinder'))
@@ -78,6 +79,7 @@ const App: React.FC = () => {
           <Route exact strict path="/create" component={RedirectToAddLiquidity} />
           <Route exact path="/:chain/add" component={AddLiquidity} />
           <Route exact path="/:chain/governance" component={Governance} />
+          <Route exact path="/:chain/governance-ab" component={GovernanceAb} />
           <Route exact path="/:chain/add/stables" component={AddStableLiquidity} />
           <Route exact path="/:chain/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
           <Route exact path="/:chain/create" component={AddLiquidity} />

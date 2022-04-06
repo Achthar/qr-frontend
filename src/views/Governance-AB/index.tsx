@@ -6,8 +6,8 @@ import { Percent, TokenAmount } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, useMatchBreakpoints } from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
-import { REQT, RREQT } from 'config/constants/tokens'
-import { tryParseTokenAmount } from 'state/swapV3/hooks'
+import { ABREQ, GREQ, REQT, RREQT, SREQ } from 'config/constants/tokens'
+import { tryParseTokenAmount, tryParseAmount } from 'state/swapV3/hooks'
 import { useTranslation } from 'contexts/Localization'
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { useGovernanceInfo } from 'state/governance/hooks'
@@ -15,11 +15,11 @@ import { useWeb3React } from '@web3-react/core'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 
-import { getRedRequiemAddress } from 'utils/addressHelpers'
+import { getBondStakingAddress, getRedRequiemAddress } from 'utils/addressHelpers'
 import Row from 'components/Row'
 import getChain from 'utils/getChain'
 import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
-import { priceRequiem } from 'utils/poolPricer'
+import { priceAssetBackedRequiem, priceRequiem } from 'utils/poolPricer'
 import useRefresh from 'hooks/useRefresh'
 import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler'
 import { fetchGovernanceData } from 'state/governance/fetchGovernanceData'
@@ -28,9 +28,8 @@ import useToast from 'hooks/useToast'
 import { getStartDate, timeConverter } from 'utils/time'
 import { bn_maxer, get_amount_and_multiplier } from './helper/calculator'
 import LockCard from './components/lock'
-import { useCreateLock, useIncreaseMaturity, useIncreasePosition } from './hooks/transactWithLock'
+import { useWrap, useUnwrap, useStake, useUnstake } from './hooks/transactWithStaking'
 
-import { Action, LockConfigurator } from './components/lockConfigurator'
 import { ColumnCenter } from '../../components/Layout/Column'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { AppHeader, AppBody } from '../../components/App'
@@ -43,7 +42,7 @@ import { getRedRequiemContract } from '../../utils'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
 import { Field } from '../../state/burn/actions'
-import { useGasPrice, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useGasPrice, useGetAssetBackedRequiemAmount, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
 import Page from '../Page'
 
 
@@ -62,7 +61,7 @@ const BorderCardLockList = styled.div`
   background-color: #121212;
 `
 
-export default function Governance({
+export default function GovernanceAssetBackedRequiem({
   history,
   match: {
     params: { chain },
@@ -77,8 +76,8 @@ export default function Governance({
   const dispatch = useAppDispatch()
 
   // const [tokenA, tokenB] = [useCurrency(chainId, currencyIdA) ?? undefined, useCurrency(chainId, currencyIdB) ?? undefined]
-  const [tokenA, tokenB] = useMemo(
-    () => [REQT[chainId], RREQT[chainId]],
+  const [tokenA, tokenB, tokenC] = useMemo(
+    () => [ABREQ[chainId], SREQ[chainId], GREQ[chainId]],
     [chainId],
   )
 
@@ -108,6 +107,13 @@ export default function Governance({
     [])
 
 
+  enum Action {
+    stake,
+    unstake,
+    wrap,
+    unwrap
+  }
+
   // select maturity with slider component
   const [selectedMaturity, onSelectMaturity] = useState(Math.round(startTime))
 
@@ -118,19 +124,12 @@ export default function Governance({
   const [toggledLockEnd, toggleLockEnd] = useState(0)
 
   // define which action to take
-  const [action, setAction] = useState(Action.createLock)
+  const [action, setAction] = useState(Action.stake)
 
   // value for currency input panel
   const [inputValue, onCurrencyInput] = useState('0')
 
   const { slowRefresh } = useRefresh()
-
-  // debouncer for slider
-  const [maturity, selectMaturity] = useDebouncedChangeHandler(
-    selectedMaturity,
-    onSelectMaturity,
-    200
-  )
 
   // the user-selected lock
   const lock = useMemo(() => {
@@ -150,35 +149,19 @@ export default function Governance({
 
   const reqPrice = useMemo(
     () => {
-      return priceRequiem(chainId, pairs)
+      return priceAssetBackedRequiem(chainId, pairs)
     },
     [pairs, chainId]
   )
 
-  const lockedAmount = useMemo(() => { return new TokenAmount(tokenA, lock?.amount ?? '0') }, [lock, tokenA])
 
-  const [parsedAmounts, parsedMultiplier] = useMemo(() => {
-    const input = BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0)
-    console.log("VOTE inpt", action, now, input, lock, selectedMaturity)
-    const { voting, multiplier } = get_amount_and_multiplier(action, now, input, selectedMaturity, lock, locks)
-    console.log("VOTE output", voting?.toString(), multiplier?.toString())
-    return [
-      {
-        [Field.CURRENCY_A]: tryParseTokenAmount(inputValue, tokenA),
-        [Field.CURRENCY_B]: new TokenAmount(tokenB, voting.gte(0) ? voting.toString() : '0')
-      },
-      multiplier
-    ]
+  const parsedAmounts = useMemo(() => {
+    return {
+      [Field.CURRENCY_A]: tryParseAmount(chainId, inputValue, tokenA),
+      [Field.CURRENCY_B]: tryParseTokenAmount(String(inputValue), tokenB)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, tokenB, inputValue, selectedMaturity, action])
-
-
-
-  // modal and loading
-  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
-
-  // txn values
-  const [txHash, setTxHash] = useState<string>('')
 
   const formattedAmounts = useMemo(() => {
     return {
@@ -193,70 +176,61 @@ export default function Governance({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.CURRENCY_A], getRedRequiemAddress(chainId))
+  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.CURRENCY_A], getBondStakingAddress(chainId))
 
-  const [approvalRreq, approveCallbackRreq] = useApproveCallback(
+  const [approvalSReq, approvalCallbackSReq] = useApproveCallback(
     chainId, account,
-    new TokenAmount(RREQT[chainId], bn_maxer(Object.values(locks).map(l => l.minted)).toString()),
+    new TokenAmount(SREQ[chainId], bn_maxer(Object.values(locks).map(l => l.minted)).toString()),
     getRedRequiemAddress(chainId)
   )
 
 
-  // wrapped onUserInput to clear signatures
-  const onUserInput = useCallback(
-    (value: string) => {
-      return onCurrencyInput(value)
-    },
-    [onCurrencyInput],
-  )
-
-  const { balance, isLoading } = useGetRequiemAmount(chainId)
+  const { balance, isLoading } = useGetAssetBackedRequiemAmount(chainId)
 
   // tx sending
   const addTransaction = useTransactionAdder()
 
 
 
-  const buttonText = action === Action.createLock ? 'Create Lock' : action === Action.increaseTime ? 'Increase Time' : 'Increase Amount'
+  const buttonText = action === Action.stake ? 'Stake' : action === Action.unstake ? 'Unstake' : action === Action.wrap ? 'Wrap' : 'Unwrap'
 
 
-  const titleText = action === Action.createLock ? 'Created Lock!' :
-    action === Action.increaseAmount ? 'Added to Lock!' : 'Increased Maturity!'
+  const titleText = action === Action.stake ? 'Staked!' :
+    action === Action.wrap ? 'Wrapped!' : 'Unwrapped'
 
-  const summaryText = action === Action.createLock ? `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name
+  const summaryText = action === Action.stake ? `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${GREQ[chainId]?.name
     } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}` :
-    action === Action.increaseAmount ? `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name}` :
+    action === Action.wrap ? `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name}` :
       `Add ${lock && (lock?.end - selectedMaturity) / 3600 / 24
       } days for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
 
 
   // transactions with lock
-  const { onIncreaseMaturity } = useIncreaseMaturity()
-  const { onIncreasePosition } = useIncreasePosition()
-  const { onCreateLock } = useCreateLock()
+  const { onStake } = useStake()
+  const { onUnstake } = useUnstake()
+  const { onWrap } = useWrap()
+  const { onUnwrap } = useUnwrap()
 
   // function to create a lock or deposit on existing lock
-  const transactWithLock = async () => {
+  const transactWithGovernance = async () => {
     if (!chainId || !library || !account) return
 
-    const redRequiemContract = getRedRequiemContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
-    if (action === Action.createLock) {
-      await onCreateLock(parsedAmountA.toBigNumber().toHexString(), selectedMaturity)
+    if (action === Action.stake) {
+      await onStake(parsedAmountA.toBigNumber().toHexString())
 
-    } else if (action === Action.increaseAmount) {
-      if (!lock)
-        return;
-      await onIncreasePosition(parsedAmountA.toBigNumber().toHexString(), lock)
+    } else if (action === Action.unstake) {
+      await onUnstake(parsedAmountA.toBigNumber().toHexString())
+    } else if (action === Action.wrap) {
+      await onWrap(parsedAmountA.toBigNumber().toHexString())
     }
-    else { // increase time
-      if (!lock)
-        return;
-      await onIncreaseMaturity(parsedAmountA.toBigNumber().toHexString(), selectedMaturity, lock)
+    else {
+      await onUnwrap(parsedAmountA.toBigNumber().toHexString())
     }
+
 
     dispatch(fetchGovernanceData({ chainId, account }))
   }
@@ -268,7 +242,7 @@ export default function Governance({
   const transactionFunc = async () => {
     setPendingTx(true)
     try {
-      await transactWithLock()
+      await transactWithGovernance()
       toastSuccess(titleText, summaryText)
       // onDismiss()
     } catch (e) {
@@ -282,10 +256,26 @@ export default function Governance({
     }
   }
 
-  const pendingText = action === Action.createLock ? 'Creating Lock' : action === Action.increaseTime ? 'Increasing time' : 'Adding to Lock'
+  const pendingText = action === Action.stake ? 'Creating Lock' : action === Action.wrap ? 'Increasing time' : 'Adding to Lock'
 
-  // used for layout of lock cards
-  const indexMax = Object.values(locks).length - 1
+
+  const onArrowClick = useCallback(() => {
+    if (action === Action.stake) {
+      return setAction(Action.unstake)
+    }
+    if (action === Action.wrap) {
+      return setAction(Action.unwrap)
+    }
+    if (action === Action.unstake) {
+      return setAction(Action.stake)
+    }
+    if (action === Action.unwrap) {
+      return setAction(Action.wrap)
+    }
+    return 0;
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [action, setAction])
 
   return (
     <Page>
@@ -302,96 +292,51 @@ export default function Governance({
             onClick={() => {
               toggleLock(false)
               toggleLockEnd(0)
-              setAction(Action.createLock)
+              setAction(Action.stake)
             }}
             variant={lock && lock.end > 0 ? "secondary" : "primary"}
             width="100%"
             mb="8px"
-            // disabled={action === Action.createLock || (lock && lock.end > 0)}
+            // disabled={action === Action.stake || (lock && lock.end > 0)}
             marginLeft='5px'
           >
-            Create Lock
+            Stake / Unstake
           </Button>
           <Button
             onClick={() => {
-              setAction(Action.increaseTime)
+              setAction(Action.wrap)
             }}
             variant={!lockSelected ? "secondary" : "primary"}
             width="100%"
             mb="8px"
-            disabled={action === Action.increaseTime || !lockSelected || !account}
+            disabled={action === Action.wrap || !lockSelected || !account}
           >
-            {!account ? 'Connect' : !lockSelected ? 'Select Lock' : (lock?.end < now) ? 'Lock expired' : 'Increase Time'}
-          </Button>
-          <Button
-            onClick={() => {
-              setAction(Action.increaseAmount)
-              onCurrencyInput('0')
-            }}
-            variant={!lockSelected ? "secondary" : "primary"}
-            width="100%"
-            mb="8px"
-            disabled={action === Action.increaseAmount || !lockSelected || !account}
-            marginRight='5px'
-          >
-            {!account ? 'Connect' : !lockSelected ? 'Select Lock' : (lock?.end < now) ? 'Lock expired' : 'Increase Amount'}
+            Wrap / Unwrap
           </Button>
         </Row>
-        {account && lockSelected ? (
-
-          <>
-            <BorderCard>
-              <Text bold textAlign='center'>{`Manage the ${timeConverter(lock?.end) ?? ''} lock`}</Text>
-              <LockCard
-                chainId={chainId}
-                account={account}
-                lock={lock}
-                onSelect={() => { return null }}
-                reqPrice={reqPrice}
-                refTime={now}
-                isFirst
-                isLast
-                selected
-                hideSelect
-                approval={null}
-                approveCallback={() => { return null }}
-                hideActionButton
-              />
-            </BorderCard>
-          </>
-        ) : (<Text textAlign='center' marginTop='5px'>{account ? 'No lock selected' : 'Connect to manage your lock(s)'}</Text>)
-        }
         <CardBody>
-          <LockConfigurator
-            lock={lock}
-            selectMaturity={onSelectMaturity}
-            startTime={startTime}
-            selectedMaturity={maturity}
-            isMobile={isMobile}
-            action={action}
-            now={now}
-          />
+
           <Box my="16px">
             <CurrencyInputPanelExpanded
-              balanceText={action === Action.increaseTime ? 'Locked' : 'Balance'}
-              balances={{ [REQT[chainId].address]: action === Action.increaseTime ? lockedAmount : balance }}
+              balanceText={action === Action.wrap ? 'Locked' : 'Balance'}
+              balances={{ [ABREQ[chainId].address]: balance }}
               isLoading={isLoading}
               chainId={chainId}
               account={account}
               value={inputValue}
               onUserInput={onCurrencyInput}
-              onMax={() => onCurrencyInput((action === Action.increaseTime ? lockedAmount : balance)?.toSignificant(18))}
+              onMax={() => onCurrencyInput((balance)?.toSignificant(18))}
               showMaxButton={!atMaxAmount}
               currency={tokenA}
-              label={action === Action.increaseTime ? `Select amount ${tokenA.symbol} locked` : 'Input'}
-              // hideInput={action === Action.increaseTime}
-              // reducedLine={action === Action.increaseTime}
+              label={action === Action.wrap ? `Select amount ${tokenA.symbol} locked` : 'Input'}
+              // hideInput={action === Action.wrap}
+              // reducedLine={action === Action.wrap}
               onCurrencySelect={() => { return null }}
               disableCurrencySelect
               id="input to lock"
             />
             <ColumnCenter>
-              <ArrowDownIcon width="24px" my="16px" />
+              <ArrowDownIcon width="24px" my="16px" onClick={() => { onArrowClick() }} />
             </ColumnCenter>
             <CurrencyInputPanel
               chainId={chainId}
@@ -403,7 +348,7 @@ export default function Governance({
               onMax={() => { return null }}
               showMaxButton={false}
               currency={tokenB}
-              label='Received Red Requiem'
+              label={ action === Action.stake? 'Received Staked Requiem' : 'Staked Requiem to unstake'}
               disableCurrencySelect
               onCurrencySelect={() => { return null }}
               id="token for accounting"
@@ -431,7 +376,7 @@ export default function Governance({
                 </Button>
                 <Button
                   variant={
-                    (!!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]) || (action === Action.increaseTime)
+                    (!!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]) || (action === Action.wrap)
                       ? 'primary'
                       : 'danger'
                   }
@@ -450,38 +395,6 @@ export default function Governance({
               </RowBetween>
             )}
           </Box>
-          <BorderCardLockList>
-            <Text textAlign='center' bold>{!account ? 'Connect Wallet to see your locks' : Object.values(locks).length > 0 ? 'Your lock(s)' : 'No locks found'}</Text>
-          </BorderCardLockList>
-          {
-            account && (
-              Object.values(locks).map((lockData, index) => {
-
-                return (
-                  <LockCard
-                    chainId={chainId}
-                    account={account}
-                    lock={lockData}
-                    onSelect={() => {
-                      setAction(Action.increaseTime)
-                      toggleLock(true)
-                      selectMaturity(lockData.end)
-                      toggleLockEnd(lockData.end)
-                    }}
-                    reqPrice={reqPrice}
-                    refTime={now}
-                    isFirst={index === 0}
-                    isLast={indexMax === index}
-                    selected={lockData.end === toggledLockEnd}
-                    hideSelect={lockData.end === toggledLockEnd}
-                    approval={approvalRreq}
-                    approveCallback={approveCallbackRreq}
-                    hideActionButton={false}
-                    toggleLock={toggleLock}
-                  />)
-              }))
-          }
-
         </CardBody>
       </AppBody>
     </Page>
