@@ -20,6 +20,7 @@ import {
   getBondingDepositoryContract,
   getRedRequiemContract,
   getRedRequiemStakingContract,
+  getAssetBackedStakingContract,
 } from 'utils/contractHelpers'
 
 
@@ -259,7 +260,7 @@ export const useRedRequiemStakingContract = () => {
   return useMemo(() => getRedRequiemStakingContract(chainId, library.getSigner()), [chainId, library])
 }
 
-export const useABStakingContract = () => {
+export const useAssetBackedStakingContract = () => {
   const { library, chainId } = useActiveWeb3React("useRREQS")
-  return useMemo(() => getRedRequiemStakingContract(chainId, library.getSigner()), [chainId, library])
+  return useMemo(() => getAssetBackedStakingContract(chainId, library.getSigner()), [chainId, library])
 }

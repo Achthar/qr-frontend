@@ -74,11 +74,6 @@ export function useURLWarningVisible(): boolean {
   return useSelector((state: AppState) => state.user.URLWarningVisible)
 }
 
-// export function useCustomTokens(chainId: number): SerializedToken[] {
-//   return Object.values(useSelector((state: AppState) => state.user.tokens)[chainId])
-// }
-
-
 export function useThemeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
   // const isDark = useSelector<AppState, AppState['user']['isDark']>((state) => state.user.isDark)
@@ -142,24 +137,6 @@ export function useUserFarmStakedOnly(isActive: boolean): [boolean, (stakedOnly:
     setUserFarmStakedOnly,
   ]
 }
-
-
-// export function useUserFarmsViewMode(): [ViewMode, (viewMode: ViewMode) => void] {
-//   const dispatch = useDispatch<AppDispatch>()
-//   const userFarmsViewMode = useSelector<AppState, AppState['user']['userFarmsViewMode']>((state) => {
-//     return state.user.userFarmsViewMode
-//   })
-
-//   const setUserFarmsViewMode = useCallback(
-//     (viewMode: ViewMode) => {
-//       dispatch(updateUserFarmsViewMode({ userFarmsViewMode: viewMode }))
-//     },
-//     [dispatch],
-//   )
-
-//   return [userFarmsViewMode, setUserFarmsViewMode]
-// }
-
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -507,6 +484,17 @@ export function useGetAssetBackedRequiemAmount(chainId: number) {
 
   return {
     balance: new TokenAmount(ABREQ[chainId], balState?.balances[ABREQ[chainId].address].balance ?? '0'),
+    isLoading: balState.isLoadingTokens
+  }
+
+}
+
+
+export function useGetRequiemAmounts(chainId: number) {
+  const balState = useUserBalances(chainId)
+  const requiems = chainId === 43113 ? [REQT[chainId], ABREQ[chainId], SREQ[chainId], GREQ[chainId]] : [REQT[chainId]]
+  return {
+    balances: Object.assign({}, ...requiems.map(req => { return { [req.address]: new TokenAmount(req, balState?.balances[req.address].balance ?? '0') } })),
     isLoading: balState.isLoadingTokens
   }
 

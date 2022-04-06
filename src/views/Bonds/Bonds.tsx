@@ -156,6 +156,7 @@ function Bonds({
   } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
   const stablePool = stablePools[0]
 
+  
   usePollBondsWithUserData(chainId, isArchived)
 
   // Users with no wallet connected should see 0 as Earned amount

@@ -8,7 +8,7 @@ import { useHistory, useLocation } from 'react-router'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import logo from './assets/logoTransparent.svg'
@@ -67,17 +67,29 @@ const StyledLogo = styled(NavLink)`
   }
 `;
 
+const ImageGov = styled.img<{ open: boolean }>`
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    ${({ open }) => open ? 'margin-left: -20px;' : ''}
+    `;
+
+
 interface NavContainerProps {
+  isMobile: boolean
   chainId?: number
   onClickItem?: () => void;
 }
 
-const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => {
+const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickItem }) => {
   const handleClick = useCallback(() => {
     if (!onClickItem) return;
     onClickItem();
   }, [onClickItem]);
+  const [open, setOpen] = useState(false)
   const chain = getChain(chainId)
+
+  console.log("NAV Open", open)
   return (
     <StyledNavContainer>
       <StyledNavItem onClick={handleClick}>
@@ -110,12 +122,26 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
           Bonds
         </StyledNavLink>
       </StyledNavItem>
-      <StyledNavItem onClick={handleClick}>
-        <StyledNavLink to={`/${chain}/governance`}>
-          <img src={iconGovernment} alt='' />
+      <StyledNavItemDynamic open={open}>
+        {/* <StyledNavLink to={`/${chain}/governance`}> */}
+
+        <StyledNavText onClick={() => { setOpen(!open) }}>
+          <div onClick={() => { setOpen(!open) }} role="button" onKeyPress={() => { return null }}
+            tabIndex={0}>
+            <ImageGov src={iconGovernment} alt='' open={open} />
+          </div>
           Governance
-        </StyledNavLink>
-      </StyledNavItem>
+        </StyledNavText>
+        <Collapsible open={open} isMobile={isMobile}>
+          <StyledNavLink to={`/${chain}/governance`}>
+            Requiem Reward
+          </StyledNavLink>
+          <StyledNavLink to={`/${chain}/governance-ab`}>
+            Asset-Backed Requiem
+          </StyledNavLink>
+        </Collapsible>
+        {/* </StyledNavLink> */}
+      </StyledNavItemDynamic>
 
       <StyledNavItem onClick={handleClick}>
         <StyledLinkHref
@@ -133,11 +159,12 @@ const NavContainer: React.FC<NavContainerProps> = ({ chainId, onClickItem }) => 
 };
 
 interface MenuBarProps {
+  isMobile: boolean
   chainId?: number
   onClick?: () => void;
 }
 
-const MenuBar: React.FC<MenuBarProps> = ({ chainId, onClick }) => {
+const MenuBar: React.FC<MenuBarProps> = ({ isMobile, chainId, onClick }) => {
   return (
     <div style={{
       marginBottom: '64px',
@@ -146,7 +173,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ chainId, onClick }) => {
         {/* <StyledLogoContainer>
           <Logo />
         </StyledLogoContainer> */}
-        <NavContainer chainId={chainId} onClickItem={onClick} />
+        <NavContainer chainId={chainId} onClickItem={onClick} isMobile={isMobile} />
         {/* <StyledAudit
           href="https://docs.iron.finance/audits"
           target="_blank"
@@ -213,6 +240,20 @@ const StyledAudit = styled.a`
     margin-bottom: 23px;
   }
 `;
+
+const Collapsible = styled.div<{ open: boolean, isMobile: boolean }>`
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  justify-content: center;
+  text-align: left;
+  width: 100%;
+  height:  ${({ open }) => !open ? '0%' : '100%'};
+  transform: ${({ open, isMobile }) => (isMobile ? !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-95%)  scaleY(1.0)' :
+    !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-90%)  scaleY(1.0)')};
+  transition: transform 300ms ease-in-out;
+  position:relative;
+`
 
 const StyledExternalLink = styled.div`
   display: grid;
@@ -300,9 +341,57 @@ const StyledNavContainer = styled.ul`
 const StyledNavItem = styled.li`
   display: flex;
   align-items: center;
+  height:52px;
 `;
 
+const StyledNavItemDynamic = styled.div<{ open: boolean }>`
+  display: flex;
+  align-items: center;
+  height: ${({ open }) => open ? '104px' : '52px'};
+`;
+
+
 const StyledNavLink = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 52px;
+  padding: 0px 28px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #8f929a;
+  border-left: solid 5px transparent;
+  img {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+  }
+  &.active,
+  &.matched {
+    font-weight: 500;
+    background: #1a1d2f;
+    color: ${({ theme }) => theme.colors.primaryBright};
+    border-left: solid 5px #54051d;
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
+  &:not(.active):hover {
+    font-weight: 500;
+    background: #1a1d2f;
+    color: ${({ theme }) => theme.colors.primaryBright};
+    border-left: solid 5px #54051d22;
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
+  @media screen and (min-width: 720px) {
+    top: 50px;
+  }
+`;
+
+const StyledNavText = styled(Text)`
   display: flex;
   align-items: center;
   width: 100%;
@@ -569,7 +658,7 @@ const GeneralNav: React.FC = () => {
             alignItems: 'center'
           }}
         >
-          <MenuBar chainId={chainId} onClick={handleClick} />
+          <MenuBar chainId={chainId} onClick={handleClick} isMobile={isMobile} />
         </div>
       )}
 

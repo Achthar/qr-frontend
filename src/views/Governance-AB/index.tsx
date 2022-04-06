@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Percent, TokenAmount } from '@requiemswap/sdk'
-import { Button, Text, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, useMatchBreakpoints } from '@requiemswap/uikit'
+import { Button, Text, ArrowDownIcon, CardBody, Slider, Box, Flex, useModal, useMatchBreakpoints, Image } from '@requiemswap/uikit'
 import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { ABREQ, GREQ, REQT, RREQT, SREQ } from 'config/constants/tokens'
@@ -21,12 +21,16 @@ import getChain from 'utils/getChain'
 import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { priceAssetBackedRequiem, priceRequiem } from 'utils/poolPricer'
 import useRefresh from 'hooks/useRefresh'
+import wrapImage from 'assets/wrap.png'
+import stakeImage from 'assets/stake.svg'
 import useDebouncedChangeHandler from 'hooks/useDebouncedChangeHandler'
 import { fetchGovernanceData } from 'state/governance/fetchGovernanceData'
 import { useAssetBackedStakingInfo } from 'state/assetBackedStaking/hooks'
 import { useAppDispatch } from 'state'
 import useToast from 'hooks/useToast'
+import Column from 'components/Column'
 import { getStartDate, timeConverter } from 'utils/time'
+import { formatSerializedBigNumber } from 'utils/formatBalance'
 import { bn_maxer, get_amount_and_multiplier } from './helper/calculator'
 import LockCard from './components/lock'
 import { useWrap, useUnwrap, useStake, useUnstake } from './hooks/transactWithStaking'
@@ -43,10 +47,50 @@ import { getRedRequiemContract } from '../../utils'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
 import { Field } from '../../state/burn/actions'
-import { useGasPrice, useGetAssetBackedRequiemAmount, useGetRequiemAmount, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useGasPrice, useGetAssetBackedRequiemAmount, useGetRequiemAmount, useGetRequiemAmounts, useUserSlippageTolerance } from '../../state/user/hooks'
 
 
 
+
+export const ColumnMiddleCenter = styled(Column)`
+  width: 100%;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`
+
+export const ImageButton = styled(Image)`
+  color: black;
+  border-radius: 30px;
+  width: 40px;
+  height: 100%;
+`
+
+const Wrapping = styled.img`
+    margin-left:20px;
+    border-radius: 30px;
+    width: 40px;
+    height: 100%;
+    transform:rotate(45deg);
+    filter: invert(100%); 
+`;
+
+const Staking = styled.img`
+    margin-left:20px;
+    border-radius: 30px;
+    width: 30px;
+    height: 100%;
+    transform:rotate(45deg);
+`;
+
+
+
+export const ArrowButton = styled(Button)`
+  width: 60%;
+  align-items: center;
+  background-color:  ${({ theme }) => theme.colors.cardBorder};
+  border-radius: 5px;
+`
 
 const BorderCard = styled.div`
   border: solid 1px ${({ theme }) => theme.colors.cardBorder};
@@ -130,7 +174,7 @@ export default function GovernanceAssetBackedRequiem({
   const [tokenA, tokenB] = useMemo(
     () => {
       return action === Action.stake ? [ABREQ[chainId], SREQ[chainId]] :
-        action === Action.unstake ? [ABREQ[chainId], SREQ[chainId]] :
+        action === Action.unstake ? [SREQ[chainId], ABREQ[chainId]] :
           action === Action.wrap ? [SREQ[chainId], GREQ[chainId]] :
             [GREQ[chainId], SREQ[chainId]]
     },
@@ -138,9 +182,9 @@ export default function GovernanceAssetBackedRequiem({
     [chainId, action]
   )
 
+  const { balances, isLoading } = useGetRequiemAmounts(chainId)
 
-
-
+  console.log("STAKING BALS", balances, tokenA.address, tokenB.address)
   // value for currency input panel
   const [inputValue, onCurrencyInput] = useState('0')
 
@@ -174,12 +218,32 @@ export default function GovernanceAssetBackedRequiem({
 
   console.log("staking", epoch, stakeData)
   const parsedAmounts = useMemo(() => {
+    if (isStake) {
+      return {
+        [Field.CURRENCY_A]: tryParseAmount(chainId, inputValue, tokenA),
+        [Field.CURRENCY_B]: tryParseTokenAmount(String(inputValue), tokenB)
+      }
+    }
+
+    const index = Number(formatSerializedBigNumber(stakeData.index, 18, 18))
+    console.log("staking calc", index, Number(inputValue) / index)
+    if (action === Action.wrap) {
+      return {
+        // staked REQ
+        [Field.CURRENCY_A]: tryParseAmount(chainId, inputValue, tokenA),
+        // governance REQ
+        [Field.CURRENCY_B]: tryParseTokenAmount(String(Number(inputValue) * index), tokenB)
+      }
+    }
     return {
+      // staked REQ
       [Field.CURRENCY_A]: tryParseAmount(chainId, inputValue, tokenA),
-      [Field.CURRENCY_B]: tryParseTokenAmount(String(inputValue), tokenB)
+      // governance REQ
+      [Field.CURRENCY_B]: tryParseTokenAmount(String(Number(inputValue) / index), tokenB)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenA, tokenB, inputValue, selectedMaturity, action])
+  }, [tokenA, tokenB, inputValue, selectedMaturity, action]
+  )
 
   const formattedAmounts = useMemo(() => {
     return {
@@ -203,18 +267,14 @@ export default function GovernanceAssetBackedRequiem({
   )
 
 
-  const { balance, isLoading } = useGetAssetBackedRequiemAmount(chainId)
+  // const { balance, isLoading } = useGetAssetBackedRequiemAmount(chainId)
 
   // tx sending
   const addTransaction = useTransactionAdder()
 
 
 
-  const buttonText = action === Action.stake ? 'Stake' : action === Action.unstake ? 'Unstake' : action === Action.wrap ? 'Wrap' : 'Unwrap'
 
-
-  const titleText = action === Action.stake ? 'Staked!' :
-    action === Action.wrap ? 'Wrapped!' : 'Unwrapped'
 
   const summaryText = action === Action.stake ? `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${GREQ[chainId]?.name
     } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}` :
@@ -238,8 +298,8 @@ export default function GovernanceAssetBackedRequiem({
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
     if (action === Action.stake) {
+      console.log("staking HERE")
       await onStake(parsedAmountA.toBigNumber().toHexString())
-
     } else if (action === Action.unstake) {
       await onUnstake(parsedAmountA.toBigNumber().toHexString())
     } else if (action === Action.wrap) {
@@ -274,19 +334,23 @@ export default function GovernanceAssetBackedRequiem({
     }
   }
 
+  // const buttonText = action === Action.stake ? 'Stake' : action === Action.unstake ? 'Unstake' : action === Action.wrap ? 'Wrap' : 'Unwrap'
 
-  const [labelTopPanel, labelBottomPanel, arrowButtonText] = useMemo(() => {
-    return action === Action.stake ? ['Stake', 'To Receive', 'Stake instead'] :
-      action === Action.unstake ? ['Unstake', 'To Receive', 'Unstake instead'] :
-        action === Action.wrap ? ['Wrap', 'To Receive', 'Unwrap instead'] :
-          ['Unwrap', 'To Receive', 'Wrap instead']
+
+  // const titleText = action === Action.stake ? 'Staked!' :
+  //   action === Action.wrap ? 'Wrapped!' : 'Unwrapped'
+  const [labelTopPanel, labelBottomPanel, arrowButtonText, buttonText, titleText] = useMemo(() => {
+    return action === Action.stake ? ['Stake', 'To Receive', 'Stake instead', 'Stake', 'Stake Asset-Backed Requiem'] :
+      action === Action.unstake ? ['Unstake', 'To Receive', 'Unstake instead', 'Unstake', 'Stake Staked Requiem'] :
+        action === Action.wrap ? ['Wrap', 'To Receive', 'Unwrap instead', 'Wrap', 'Wrap Staked Requiem'] :
+          ['Unwrap', 'To Receive', 'Wrap instead', 'Unwrap', 'Unwrap Governance Requiem']
   },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [action])
 
   const pendingText = useMemo(() => {
-    return action === Action.stake ? 'Creating Lock' : action === Action.wrap ? 'Increasing time' : 'Adding to Lock'
+    return action === Action.stake ? 'Staking' : action === Action.unstake ? 'Unstaking' : action === Action.wrap ? 'Wrapping' : 'Unwrapping'
   },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -328,40 +392,40 @@ export default function GovernanceAssetBackedRequiem({
               toggleLockEnd(0)
               setAction(Action.stake)
             }}
-            variant={lock && lock.end > 0 ? "secondary" : "primary"}
+            variant="primary"
             width="100%"
             mb="8px"
             disabled={isStake}
             marginLeft='5px'
           >
-            Stake / Unstake
+            Staking
           </Button>
           <Button
             onClick={() => {
               setAction(Action.wrap)
             }}
-            variant={!lockSelected ? "secondary" : "primary"}
+            variant="primary"
             width="100%"
             mb="8px"
             disabled={!isStake}
           >
-            Wrap / Unwrap
+            Wrapper
           </Button>
         </Row>
         <CardBody>
           <Box my="16px">
-            {isStake ? 'Stake Asset-Backed Requiem' : 'Wrap or unwrap Governance Requiem'}
+            {action === Action.stake ? 'Stake Asset-Backed Requiem' : 'Wrap or unwrap Governance Requiem'}
           </Box>
           <Box my="16px">
             <CurrencyInputPanelExpanded
               balanceText={action === Action.wrap ? 'Locked' : 'Balance'}
-              balances={{ [ABREQ[chainId].address]: balance }}
+              balances={{ [tokenA.address]: balances[tokenA.address] }}
               isLoading={isLoading}
               chainId={chainId}
               account={account}
               value={inputValue}
               onUserInput={onCurrencyInput}
-              onMax={() => onCurrencyInput((balance)?.toSignificant(18))}
+              onMax={() => onCurrencyInput((balances[tokenA.address])?.toSignificant(18))}
               showMaxButton={!atMaxAmount}
               currency={tokenA}
               label={labelTopPanel}
@@ -371,16 +435,22 @@ export default function GovernanceAssetBackedRequiem({
               disableCurrencySelect
               id="input to lock"
             />
-            <ColumnCenter>
-              <ArrowDownIcon width="24px" my="16px" onClick={() => { onArrowClick() }} /> <Button onClick={() => { return onArrowClick() }}> { }</Button>
-            </ColumnCenter>
-            <CurrencyInputPanel
+            <ColumnMiddleCenter>
+              <ArrowButton onClick={() => { return onArrowClick() }}>
+                <ArrowDownIcon width="34px" my="26px" onClick={() => { onArrowClick() }} color='white' />
+                <Text color='white' bold>
+                  {buttonText}
+                </Text>
+                {isStake ? (<Staking src={stakeImage} />) : (<Wrapping src={wrapImage} />)}
+              </ArrowButton>
+            </ColumnMiddleCenter>
+            <CurrencyInputPanelExpanded
+              isLoading={isLoading}
               chainId={chainId}
               account={account}
-              hideBalance
+              balances={{ [tokenB.address]: balances[tokenB.address] }}
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={() => { return null }}
-
               onMax={() => { return null }}
               showMaxButton={false}
               currency={tokenB}
