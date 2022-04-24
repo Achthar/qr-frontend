@@ -12,12 +12,13 @@ import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
 import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
 import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
-import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from '../config/constants'
+import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
 import RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
 import RequiemQPairManagerOasis from '../config/abi/oasis/RequiemQPairManager.json'
 import RequiemQRouter from '../config/abi/avax/RequiemQRouter.json'
+import SwapRouter from '../config/abi/avax/SwapRouter.json'
 import { getRedRequiemAddress } from './addressHelpers'
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -116,6 +117,12 @@ export function getQRouterContract(chainId: number, library: Web3Provider, accou
   const ABI = RequiemQRouter
   return getContract(REQUIEMQROUTER_ADDRESS[chainId], ABI, library, account)
 }
+
+export function getSwapRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
+  const ABI = SwapRouter
+  return getContract(SWAP_ROUTER[chainId], ABI, library, account)
+}
+
 
 export function getAggregatorContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = Aggregator

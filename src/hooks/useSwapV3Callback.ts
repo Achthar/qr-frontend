@@ -1,12 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import {  Percent, SwapRouter, SwapParameters, Swap, SwapType } from '@requiemswap/sdk'
+import { Percent, SwapRouter, SwapParameters, Swap, SwapType } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'
 import { BIPS_BASE, INITIAL_ALLOWED_SLIPPAGE } from '../config/constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
-import { calculateGasMargin, getRouterContract, getQRouterContract, isAddress, shortenAddress } from '../utils'
+import { calculateGasMargin, getRouterContract, getQRouterContract, isAddress, shortenAddress, getSwapRouterContract } from '../utils'
 import isZero from '../utils/isZero'
 import useTransactionDeadline from './useTransactionDeadline'
 import useENS from './ENS/useENS'
@@ -59,7 +59,7 @@ function useSwapV3CallArguments(
 
     const multiSwap = true
 
-    const contract: Contract | null = getQRouterContract(chainId, library, account)
+    const contract: Contract | null = getSwapRouterContract(chainId, library, account)
 
     if (!contract) {
       return []
@@ -107,7 +107,7 @@ export function useSwapV3Callback(
   const gasPrice = useGasPrice(chainId)
 
   const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, allowedSlippage, recipientAddressOrName)
-
+  console.log("CALLS", swapCalls)
   const addTransaction = useTransactionAdder()
 
   // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)
@@ -181,7 +181,7 @@ export function useSwapV3Callback(
           },
           gasEstimate,
         } = successfulEstimation
-        
+
         return contract[methodName](...args, {
           gasLimit: calculateGasMargin(gasEstimate),
           gasPrice,

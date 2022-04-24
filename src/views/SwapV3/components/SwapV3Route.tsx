@@ -6,6 +6,8 @@ import { unwrappedToken } from 'utils/wrappedCurrency'
 import { CurrencyLogo } from 'components/Logo'
 import { AutoColumn } from 'components/Column'
 import Row from 'components/Row'
+import { weightedSwapInitialData } from 'config/constants/weightedPool'
+import { stableSwapInitialData } from 'config/constants/stablePools'
 
 export default memo(function SwapV3Route({ trade }: { trade: Swap }) {
   return (
@@ -31,8 +33,9 @@ export default memo(function SwapV3Route({ trade }: { trade: Swap }) {
                     {!isLastItem && <ArrowForwardIcon height='10px' width="10px" marginBottom='0px' />}
 
                     {!isLastItem && trade.route.swapData[j] && (
-                      <Text fontSize="10px" textAlign='center' marginTop='0px'>
-                        {trade.route.swapData[j].poolRef === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
+                      <Text fontSize="10px" textAlign='center' marginTop='0px' >
+                        {weightedSwapInitialData[trade.route.chainId].map(p => p.address).includes(trade.route.swapData[j].poolRef) ? '3Cls' :
+                          stableSwapInitialData[trade.route.chainId].map(p => p.address).includes(trade.route.swapData[j].poolRef) ? '4USD' : 'Pair'}
                       </Text>)}
                   </Flex>
                 </Row>

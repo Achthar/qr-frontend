@@ -16,7 +16,7 @@ const ONE_HUNDRED_PERCENT = new Percent(BigNumber.from(10000), BigNumber.from(10
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE)
 
 // computes price breakdown for the trade
-export function computeTradeV3PriceBreakdown(trade?: Swap | null): {
+export function computeTradeV3PriceBreakdown(trade?: Swap | null, poolDict?: PoolDictionary): {
   priceImpactWithoutFee: Percent | undefined
   realizedLPFee: CurrencyAmount | undefined | null
 } {
@@ -30,17 +30,35 @@ export function computeTradeV3PriceBreakdown(trade?: Swap | null): {
         ONE_HUNDRED_PERCENT,
       ),
     )
-  const price = calculatePoolPrice(trade)
+  // const price = calculatePoolPrice(trade)
+  let poolPrice
+  if (trade) {
+    if (!trade.route.swapData[0].priceBaseIn)
+      trade.route.swapData[0].fetchPoolPrice(poolDict)
+
+    poolPrice = trade && new Price(trade.route.swapData[0].tokenIn, trade.route.swapData[0].tokenOut, trade.route.swapData[0].priceBaseIn, trade.route.swapData[0].priceBaseOut)
+
+
+    for (let i = 1; i < trade.route.swapData.length; i++) {
+      if (!trade.route.swapData[i].priceBaseIn)
+        trade.route.swapData[i].fetchPoolPrice(poolDict)
+
+      poolPrice = poolPrice.multiply(
+        new Price(trade.route.swapData[i].tokenIn, trade.route.swapData[i].tokenOut, trade.route.swapData[i].priceBaseIn, trade.route.swapData[i].priceBaseOut)
+      )
+
+    }
+  }
 
   // remove lp fees from price impact
-  const priceImpactWithoutFeeFraction = undefined // trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
+  // const priceImpactWithoutFeeFraction = poolPrice // trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
 
-  const res = (Number(price?.toSignificant(18)) - Number(trade?.executionPrice?.toSignificant(18))) / Number(price?.toSignificant(18))
+  const res = (Number(poolPrice?.toSignificant(18)) - Number(trade?.executionPrice?.toSignificant(18))) / Number(poolPrice?.toSignificant(18))
 
   // the x*y=k impact
-  const priceImpactWithoutFeePercent = priceImpactWithoutFeeFraction
-    ? new Percent(priceImpactWithoutFeeFraction?.numerator, priceImpactWithoutFeeFraction?.denominator)
-    : undefined
+  // const priceImpactWithoutFeePercent = priceImpactWithoutFeeFraction
+  //   ? new Percent(priceImpactWithoutFeeFraction?.numerator, priceImpactWithoutFeeFraction?.denominator)
+  //   : undefined
 
   // the amount of the input that accrues to LPs
   const realizedLPFeeAmount =
@@ -89,7 +107,7 @@ function defaultPrice(token0: Token, token1: Token) {
 }
 
 // calculates the pool price using stable pool matrices as ref
-export function calculatePoolPrice(trade?: Swap, poolDict?:PoolDictionary): Price {
+export function calculatePoolPrice(trade?: Swap, poolDict?: PoolDictionary): Price {
   if (!trade || !poolDict)
     return null
   const pools = trade.route.swapData

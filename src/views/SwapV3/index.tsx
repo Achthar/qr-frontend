@@ -130,6 +130,7 @@ export default function SwapV3({
     parsedAmount,
     currencies,
     inputError: swapInputError,
+    poolDict
   } = useDerivedSwapV3Info(chainId, account)
 
   const {
@@ -216,7 +217,7 @@ export default function SwapV3({
   // the callback to execute the swap
   const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(chainId, account, library, trade, allowedSlippage, recipient)
 
-  const { priceImpactWithoutFee } = computeTradeV3PriceBreakdown(trade)
+  const { priceImpactWithoutFee } = computeTradeV3PriceBreakdown(trade, poolDict)
 
   const [singleHopOnly] = useUserSingleHopOnly()
 

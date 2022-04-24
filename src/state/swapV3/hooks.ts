@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, Token, TokenAmount, Swap, NETWORK_CCY, StablePool, AmplifiedWeightedPair } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, Token, TokenAmount, Swap, NETWORK_CCY, StablePool, AmplifiedWeightedPair, PoolDictionary } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -231,6 +231,7 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
   v3Trade: Swap | undefined
+  poolDict: PoolDictionary
   inputError?: string
 } {
   const { t } = useTranslation()
@@ -334,6 +335,7 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
     currencyBalances,
     parsedAmount,
     v3Trade: v3Trade ?? undefined,
+    poolDict,
     inputError,
   }
 }

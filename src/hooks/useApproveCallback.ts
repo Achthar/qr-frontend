@@ -4,7 +4,7 @@ import { TokenAmount, CurrencyAmount, NETWORK_CCY, Swap } from '@requiemswap/sdk
 import { useCallback, useEffect, useMemo } from 'react'
 import { BigNumber } from 'ethers'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { ROUTER_ADDRESS, REQUIEMQROUTER_ADDRESS } from '../config/constants'
+import { ROUTER_ADDRESS, REQUIEMQROUTER_ADDRESS, SWAPROUTER_ADDRESS, SWAP_ROUTER } from '../config/constants'
 import useTokenAllowance from './useTokenAllowance'
 import { Field } from '../state/swapV3/actions'
 import { useTransactionAdder, useHasPendingApproval } from '../state/transactions/hooks'
@@ -130,7 +130,7 @@ export function useApproveCallbackFromTradeV3(chainId: number, account: string, 
     chainId,
     account,
     amountToApprove,
-    REQUIEMQROUTER_ADDRESS[chainId]
+    SWAP_ROUTER[chainId]
   )
 }
 

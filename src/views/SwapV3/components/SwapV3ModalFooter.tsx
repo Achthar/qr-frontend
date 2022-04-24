@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { Swap, SwapType } from '@requiemswap/sdk'
+import { PoolDictionary, Swap, SwapType } from '@requiemswap/sdk'
 import { Button, Text, AutoRenewIcon } from '@requiemswap/uikit'
 import { Field } from 'state/swapV3/actions'
 import {
@@ -25,12 +25,14 @@ const SwapModalFooterContainer = styled(AutoColumn)`
 
 export default function SwapV3ModalFooter({
   trade,
+  poolDict,
   onConfirm,
   allowedSlippage,
   swapErrorMessage,
   disabledConfirm,
 }: {
   trade: Swap
+  poolDict:PoolDictionary
   allowedSlippage: number
   onConfirm: () => void
   swapErrorMessage: string | undefined
@@ -41,7 +43,7 @@ export default function SwapV3ModalFooter({
     () => computeSlippageAdjustedAmountsV3(trade, allowedSlippage),
     [allowedSlippage, trade],
   )
-  const { priceImpactWithoutFee, realizedLPFee } = useMemo(() => computeTradeV3PriceBreakdown(trade), [trade])
+  const { priceImpactWithoutFee, realizedLPFee } = useMemo(() => computeTradeV3PriceBreakdown(trade, poolDict), [trade, poolDict])
   const severity = warningSeverity(priceImpactWithoutFee)
 
   return (

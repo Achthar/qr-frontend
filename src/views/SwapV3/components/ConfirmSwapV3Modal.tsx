@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { currencyEquals, Swap } from '@requiemswap/sdk'
+import { currencyEquals, PoolDictionary, Swap } from '@requiemswap/sdk'
 import { InjectedModalProps } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import TransactionConfirmationModal, {
@@ -26,6 +26,7 @@ function tradeMeaningfullyDiffers(tradeA: Swap, tradeB: Swap): boolean {
 interface ConfirmSwapV3ModalProps {
   trade?: Swap
   originalTrade?: Swap
+  poolDict?: PoolDictionary
   attemptingTxn: boolean
   txHash?: string
   recipient: string | null
@@ -39,6 +40,7 @@ interface ConfirmSwapV3ModalProps {
 const ConfirmSwapModal: React.FC<InjectedModalProps & ConfirmSwapV3ModalProps> = ({
   trade,
   originalTrade,
+  poolDict,
   onAcceptChanges,
   allowedSlippage,
   onConfirm,
@@ -76,9 +78,10 @@ const ConfirmSwapModal: React.FC<InjectedModalProps & ConfirmSwapV3ModalProps> =
         disabledConfirm={showAcceptChanges}
         swapErrorMessage={swapErrorMessage}
         allowedSlippage={allowedSlippage}
+        poolDict={poolDict}
       />
     ) : null
-  }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade])
+  }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade, poolDict])
 
   // text to show while loading
   const pendingText = t('Swapping %amountA% %symbolA% for %amountB% %symbolB%', {
