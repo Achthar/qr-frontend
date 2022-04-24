@@ -8,7 +8,7 @@ import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances
 import { addTokenPair, changeChainIdWeighted } from 'state/weightedPairs/actions'
 import { fetchWeightedPairMetaData, isNewTokenPair } from 'state/weightedPairs/fetchWeightedPairMetaData'
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
-import { Currency, TokenAmount, WeightedPair } from '@requiemswap/sdk'
+import { Currency, TokenAmount, AmplifiedWeightedPair } from '@requiemswap/sdk'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { SerializedWeightedPair } from 'state/types'
@@ -43,7 +43,7 @@ export function useGetWeightedPairsState(
     refreshGeneral: number,
     refreshUser: number
 ): {
-    pairs: WeightedPair[]
+    pairs: AmplifiedWeightedPair[]
     balances: TokenAmount[]
     totalSupply: TokenAmount[]
     metaDataLoaded: boolean,
@@ -149,7 +149,7 @@ export function useGetWeightedPairsTradeState(
     additionalTokenPairs: TokenPair[],
     refreshGeneral: number
 ): {
-    pairs: WeightedPair[]
+    pairs: AmplifiedWeightedPair[]
     metaDataLoaded: boolean,
     reservesAndWeightsLoaded: boolean
 } {
@@ -282,7 +282,7 @@ export function useGetWeightedPairsPricerState(
     chainId: number,
     refreshGeneral: number
 ): {
-    pairs: WeightedPair[]
+    pairs: AmplifiedWeightedPair[]
     metaDataLoaded: boolean,
     reservesAndWeightsLoaded: boolean
 } {

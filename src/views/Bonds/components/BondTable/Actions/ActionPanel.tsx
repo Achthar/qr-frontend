@@ -22,6 +22,7 @@ export interface ActionPanelProps {
   details: BondWithStakedValue
   userDataReady: boolean
   expanded: boolean
+  reqPrice: number
 }
 
 const expandAnimation = keyframes`
@@ -186,6 +187,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   roi,
   userDataReady,
   expanded,
+  reqPrice
 }) => {
   const bond = details
 
@@ -256,7 +258,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
           return (<>
-            <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} />
+            <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} />
             {!isLast && (<Line />)}
           </>)
         }

@@ -1,14 +1,10 @@
-import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount, Pair } from '@requiemswap/sdk'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useRefresh from 'hooks/useRefresh'
 import { fetchGovernanceData } from './fetchGovernanceData'
 import { typeInput, typeInputTime } from './actions'
 import { AppDispatch, AppState, useAppDispatch } from '../index'
-import { tryParseAmount, tryParseTokenAmount } from '../swapV3/hooks'
 
-
-const ZERO = JSBI.BigInt(0)
 
 export function useGovernanceState(chainId: number) {
     const state = useSelector<AppState, AppState['governance']>((_state) => _state.governance)

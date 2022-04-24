@@ -8,7 +8,6 @@ import {
   LotteryStatus,
   LotteryTicket,
   Nft,
-  PoolConfig,
   Team,
   // SerializedBigNumber,
   TranslatableText,
@@ -158,14 +157,16 @@ export interface BondsState {
   }
 }
 
-export interface StablePoolConfig {
+
+// stable pool interfaces
+export interface PoolConfig {
   key: string
   address: string
-  lpAddress
+  lpAddress: string
   tokens: SerializedToken[]
 }
 
-export interface SwapStorage {
+export interface StableSwapStorage {
   tokenMultipliers: SerializedBigNumber[]
   fee: SerializedBigNumber
   adminFee: SerializedBigNumber
@@ -177,10 +178,10 @@ export interface SwapStorage {
   defaultWithdrawFee: SerializedBigNumber
 }
 
-export interface SerializedStablePool extends StablePoolConfig {
+export interface SerializedStablePool extends PoolConfig {
   balances: SerializedBigNumber[]
   A: SerializedBigNumber
-  swapStorage: SwapStorage
+  swapStorage: StableSwapStorage
   lpToken: SerializedToken
   lpTotalSupply: SerializedBigNumber
   userData?: {
@@ -191,7 +192,7 @@ export interface SerializedStablePool extends StablePoolConfig {
   }
 }
 
-export interface PoolData {
+export interface StablePoolData {
   pools: SerializedStablePool[]
   publicDataLoaded: boolean
   userDataLoaded: boolean
@@ -199,12 +200,56 @@ export interface PoolData {
 
 export interface StablePoolsState {
   referenceChain: number
-  poolData: { [chainId: number]: PoolData }
+  poolData: { [chainId: number]: StablePoolData }
 }
+
+
+
+
+export interface WeightedSwapStorage {
+  tokenMultipliers: SerializedBigNumber[]
+  fee: SerializedBigNumber
+  adminFee: SerializedBigNumber
+  initialA: SerializedBigNumber
+  futureA: SerializedBigNumber
+  initialATime: SerializedBigNumber
+  futureATime: SerializedBigNumber
+  lpAddress: string
+  defaultWithdrawFee: SerializedBigNumber
+}
+
+export interface SerializedWeightedPool extends PoolConfig {
+  balances: SerializedBigNumber[]
+  A: SerializedBigNumber
+  swapStorage: StableSwapStorage
+  lpToken: SerializedToken
+  lpTotalSupply: SerializedBigNumber
+  userData?: {
+    allowances: SerializedBigNumber[]
+    lpAllowance: SerializedBigNumber
+    lpBalance: SerializedBigNumber
+    userWithdarawFee: SerializedBigNumber
+  }
+}
+
+export interface WeightedPoolData {
+  pools: SerializedWeightedPool[]
+  publicDataLoaded: boolean
+  userDataLoaded: boolean
+}
+
+export interface WeightedPoolsState {
+  referenceChain: number
+  poolData: { [chainId: number]: WeightedPoolData }
+}
+
+
+// weighted pair interfaes
 
 export interface WeightedPairMetaData extends TokenPair {
   weight0: number
   fee: number
+  amp: number
   address?: string
 }
 
@@ -212,6 +257,10 @@ export interface SerializedWeightedPair extends WeightedPairMetaData {
   // data from chain
   reserve0?: SerializedBigNumber
   reserve1?: SerializedBigNumber
+  vReserve0?: SerializedBigNumber
+  vReserve1?: SerializedBigNumber
+  balances?: SerializedBigNumber[]
+  virtualBalances?: SerializedBigNumber[]
   totalSupply?: SerializedBigNumber
   // price as a ratio of reserve0 / reserve1
   price0?: number
@@ -726,6 +775,7 @@ export interface State {
   // pools: PoolsState
   weightedPairs: WeightedPairState
   stablePools: StablePoolsState
+  weightedPools: WeightedPoolsState
   predictions: PredictionsState
   profile: ProfileState
   teams: TeamsState

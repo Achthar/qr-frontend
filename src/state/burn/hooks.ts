@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, JSBI, WeightedPair, Pair, Percent, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, AmplifiedWeightedPair, Percent, TokenAmount } from '@requiemswap/sdk'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -16,14 +16,14 @@ export function useBurnState(): AppState['burn'] {
 }
 
 export function useDerivedBurnInfo(
-  chainId:number,
-  account:string,
+  chainId: number,
+  account: string,
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
-  weightFieldA:string,
-  fee:string
+  weightFieldA: string,
+  fee: string
 ): {
-  pair?: WeightedPair | Pair | null
+  pair?: AmplifiedWeightedPair | null
   parsedAmounts: {
     [Field.LIQUIDITY_PERCENT]: Percent
     [Field.LIQUIDITY]?: TokenAmount
@@ -59,7 +59,7 @@ export function useDerivedBurnInfo(
       userLiquidity &&
       tokenA &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
+      totalSupply.raw.gte(userLiquidity.raw)
       ? new TokenAmount(tokenA, pair.getLiquidityValue(tokenA, totalSupply, userLiquidity, false).raw)
       : undefined
   const liquidityValueB =
@@ -68,7 +68,7 @@ export function useDerivedBurnInfo(
       userLiquidity &&
       tokenB &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
+      totalSupply.raw.gte(userLiquidity.raw)
       ? new TokenAmount(tokenB, pair.getLiquidityValue(tokenB, totalSupply, userLiquidity, false).raw)
       : undefined
   const liquidityValues: { [Field.CURRENCY_A]?: TokenAmount;[Field.CURRENCY_B]?: TokenAmount } = {

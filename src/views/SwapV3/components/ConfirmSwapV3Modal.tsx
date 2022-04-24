@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { currencyEquals, TradeV4 } from '@requiemswap/sdk'
+import { currencyEquals, Swap } from '@requiemswap/sdk'
 import { InjectedModalProps } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import TransactionConfirmationModal, {
@@ -14,7 +14,7 @@ import SwapV3ModalHeader from './SwapV3ModalHeader'
  * @param tradeA trade A
  * @param tradeB trade B
  */
-function tradeMeaningfullyDiffers(tradeA: TradeV4, tradeB: TradeV4): boolean {
+function tradeMeaningfullyDiffers(tradeA: Swap, tradeB: Swap): boolean {
   return (
     tradeA.tradeType !== tradeB.tradeType ||
     !currencyEquals(tradeA.inputAmount.currency, tradeB.inputAmount.currency) ||
@@ -24,8 +24,8 @@ function tradeMeaningfullyDiffers(tradeA: TradeV4, tradeB: TradeV4): boolean {
   )
 }
 interface ConfirmSwapV3ModalProps {
-  trade?: TradeV4
-  originalTrade?: TradeV4
+  trade?: Swap
+  originalTrade?: Swap
   attemptingTxn: boolean
   txHash?: string
   recipient: string | null

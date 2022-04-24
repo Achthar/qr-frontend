@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, Pair, Percent, STABLE_POOL_ADDRESS, StablePool, TokenAmount, Token } from '@requiemswap/sdk'
+import { Percent, STABLE_POOL_ADDRESS, StablePool, TokenAmount, Token } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -84,7 +84,7 @@ export function MinimalStablesPositionCard({ userLpPoolBalance, stablePool }: Po
 
   return (
     <>
-      {userLpPoolBalance && JSBI.greaterThan(userLpPoolBalance.raw, JSBI.BigInt(0)) ? (
+      {userLpPoolBalance && userLpPoolBalance.raw.gt(0) ? (
         <Card>
           <CardBody>
             <AutoColumn gap="16px">
@@ -320,7 +320,7 @@ export default function FullStablesPositionCard({ userLpPoolBalance, stablePool,
               </Text>
             </FixedHeightRow>
 
-            {userLpPoolBalance && JSBI.greaterThan(userLpPoolBalance.raw, BIG_INT_ZERO) && (
+            {userLpPoolBalance && userLpPoolBalance.raw.gt(0) && (
               <Flex flexDirection="column">
                 <Button
                   as={Link}

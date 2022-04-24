@@ -36,7 +36,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpData: {
         weight: 80, // weightToken
         fee: 25,
-        poolType: PoolType.WeightedPair,
+        poolType: PoolType.AmplifiedWeightedPair,
         pricerKey: ['0x2d90e6d9368b2838a9558B0a609750243C5C4679-0xaEA51E4FEe50a980928B4353E852797b54deacd8']
       }
     },
@@ -53,7 +53,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpData: {
         weight: 30, // weightToken
         fee: 10,
-        poolType: PoolType.WeightedPair,
+        poolType: PoolType.AmplifiedWeightedPair,
         pricerKey: [
           '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289-0xaEA51E4FEe50a980928B4353E852797b54deacd8'
         ]
@@ -72,7 +72,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpData: {
         weight: 50,
         fee: 10,
-        poolType: PoolType.WeightedPair,
+        poolType: PoolType.AmplifiedWeightedPair,
         pricerKey: ['0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA-0xd00ae08403B9bbb9124bB305C09058E32C39A48c']
       }
     },
@@ -105,7 +105,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
       lpData: {
         weight: 50, // weightToken
         fee: 15,
-        poolType: PoolType.WeightedPair,
+        poolType: PoolType.AmplifiedWeightedPair,
         pricerKey: [
           '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289-0x70dC2c5F81BC18e115759398aF197e99f228f713',
           '0x70dC2c5F81BC18e115759398aF197e99f228f713-0xCa9eC7085Ed564154a9233e1e7D8fEF460438EEA'

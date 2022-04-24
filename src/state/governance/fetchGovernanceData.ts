@@ -3,18 +3,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { ethers, BigNumber } from 'ethers'
 import multicall from 'utils/multicall';
 import redRequiemAvax from 'config/abi/avax/BloodRedRequiem.json'
-import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
 import { getRedRequiemAddress, getRedRequiemStakingAddress } from 'utils/addressHelpers';
 import { SerializedBigNumber } from 'state/types';
 
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
-
-
-export function bnParser(bn: BigNumber, decNr: BigNumber) {
-  return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
-}
 
 export interface GovernanceUserRequest {
   chainId: number

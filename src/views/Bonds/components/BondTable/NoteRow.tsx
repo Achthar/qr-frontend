@@ -6,6 +6,7 @@ import { Bond, Note } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
+import BigNumber from 'bignumber.js'
 import RedemptionAction from './Actions/RedemptionAction'
 
 interface NoteProps {
@@ -13,6 +14,7 @@ interface NoteProps {
     userDataReady: boolean
     note: Note
     bond: Bond
+    reqPrice: number
 }
 
 const ContentCol = styled.div`
@@ -72,9 +74,8 @@ const Container = styled.div`
   }
 `
 
-const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile }) => {
+const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile, reqPrice }) => {
     const { t } = useTranslation()
-    const { isDesktop } = useMatchBreakpoints()
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
@@ -106,7 +107,7 @@ const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile }) =
                         <Text>{vestingTime()}</Text>
                     </DescriptionCol>
                 </ContentRow>
-                <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} />
+                <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} reqPrice={new BigNumber(reqPrice)} />
             </Container>
         )
     }
@@ -134,7 +135,7 @@ const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile }) =
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
-            <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} />
+            <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} reqPrice={new BigNumber(reqPrice)} />
         </Container>
     )
 

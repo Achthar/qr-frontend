@@ -8,8 +8,7 @@ import {
   CurrencyAmount,
   NETWORK_CCY,
   TokenAmount,
-  WRAPPED_NETWORK_TOKENS,
-  JSBI
+  WRAPPED_NETWORK_TOKENS
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -27,7 +26,7 @@ import {
 import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
 import styled from 'styled-components'
-import { useIsTransactionUnsupported } from 'hooks/Trades'
+import { useIsTransactionUnsupported } from 'hooks/TradesV3'
 import PercentageInputPanel from 'components/CurrencyInputPanel/PercentageInputPanel'
 import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
@@ -52,7 +51,7 @@ import { ApprovalState, useApproveCallback, useApproveCallbackWithAllowance } fr
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
-import { WeightedPairState, useGetWeightedPairs, useWeightedPairsDataLite } from 'hooks/useWeightedPairs'
+import { WeightedPairState } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getPairManagerContract } from 'utils'
@@ -174,14 +173,14 @@ export default function AddLiquidity({
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address]?.balance ?? '0')) })
+        (x) => ({ [x.address]: new TokenAmount(x, tokenBalancesStrings[x?.address]?.balance ?? '0') })
       )
     ),
     [defaultTokens, tokenBalancesStrings]
   )
 
   const networkCcyBalance = useMemo(
-    () => CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(networkCcyBalanceString ?? '0')),
+    () => CurrencyAmount.networkCCYAmount(chainId, networkCcyBalanceString ?? '0'),
     [chainId, networkCcyBalanceString]
   )
 

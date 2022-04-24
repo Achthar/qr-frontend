@@ -288,6 +288,82 @@
         "internalType": "address",
         "name": "pair",
         "type": "address"
+      }
+    ],
+    "name": "getFactoryPairData",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "token0",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "tokenWeight0",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "tokenWeight1",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "swapFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "amp",
+        "type": "uint32"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "reserve0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserve1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vReserve0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vReserve1",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IWeightedPair.ReserveData",
+        "name": "reserveData",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -295,7 +371,7 @@
         "type": "address"
       }
     ],
-    "name": "getFactoryReserveAndWeights",
+    "name": "getFactoryParameters",
     "outputs": [
       {
         "internalType": "address",
@@ -344,7 +420,7 @@
         "type": "address"
       }
     ],
-    "name": "getFactoryWeightsAndSwapFee",
+    "name": "getFactoryStaticData",
     "outputs": [
       {
         "internalType": "uint32",
@@ -359,6 +435,11 @@
       {
         "internalType": "uint32",
         "name": "swapFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "amp",
         "type": "uint32"
       }
     ],
@@ -460,7 +541,7 @@
         "type": "address"
       }
     ],
-    "name": "getReserveAndWeights",
+    "name": "getPairParameters",
     "outputs": [
       {
         "internalType": "address",
@@ -502,6 +583,40 @@
         "internalType": "address",
         "name": "pair",
         "type": "address"
+      }
+    ],
+    "name": "getPairStaticData",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "tokenWeight0",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "tokenWeight1",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "swapFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "amp",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -525,35 +640,16 @@
         "internalType": "uint256",
         "name": "reserveB",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "pair",
-        "type": "address"
-      }
-    ],
-    "name": "getWeightsAndSwapFee",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "tokenWeight0",
-        "type": "uint32"
       },
       {
-        "internalType": "uint32",
-        "name": "tokenWeight1",
-        "type": "uint32"
+        "internalType": "uint256",
+        "name": "vReserveA",
+        "type": "uint256"
       },
       {
-        "internalType": "uint32",
-        "name": "swapFee",
-        "type": "uint32"
+        "internalType": "uint256",
+        "name": "vReserveB",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -567,14 +663,14 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint112",
+        "internalType": "uint256",
         "name": "reserve0",
-        "type": "uint112"
+        "type": "uint256"
       },
       {
-        "internalType": "uint112",
+        "internalType": "uint256",
         "name": "reserve1",
-        "type": "uint112"
+        "type": "uint256"
       },
       {
         "internalType": "uint32",

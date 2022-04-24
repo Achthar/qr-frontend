@@ -1,11 +1,11 @@
-import { ChainId, Token as SDKToken, Pair } from '@requiemswap/sdk'
+import { ChainId, Token as SDKToken } from '@requiemswap/sdk'
 import tokens from './tokens'
 import { FarmAuctionBidderConfig, SerializedToken } from './types'
 
 const getLpAddress = (token: string, quoteToken: SerializedToken) => {
   const tokenAsToken = new SDKToken(ChainId.BSC_MAINNET, token, 18)
   const quoteTokenAsToken = new SDKToken(ChainId.BSC_MAINNET, quoteToken.address[56], 18)
-  return Pair.getAddress(tokenAsToken, quoteTokenAsToken)
+  return 'Pair.getAddress(tokenAsToken, quoteTokenAsToken)'
 }
 
 export const whitelistedBidders: FarmAuctionBidderConfig[] = [

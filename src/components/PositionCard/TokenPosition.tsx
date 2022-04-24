@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, TokenAmount, Percent } from '@requiemswap/sdk'
+import { TokenAmount, Percent } from '@requiemswap/sdk'
 import {
   Button,
   Text,

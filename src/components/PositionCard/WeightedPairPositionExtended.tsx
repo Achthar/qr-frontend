@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { JSBI, WeightedPair, Percent, TokenAmount } from '@requiemswap/sdk'
+import { AmplifiedWeightedPair, Percent, TokenAmount } from '@requiemswap/sdk'
 import {
   Button,
   Text,
@@ -39,7 +39,7 @@ const FixedHeightRow = styled(RowBetween)`
 interface WeightedPositionCardProps extends CardProps {
   totalSupply: TokenAmount
   userBalance: TokenAmount
-  weightedPair: WeightedPair
+  weightedPair: AmplifiedWeightedPair
   showUnwrapped?: boolean
 }
 
@@ -58,7 +58,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
   const totalPoolTokens = totalSupply
 
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    !!userPoolBalance && !!totalPoolTokens && totalPoolTokens.raw.gte(userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
       : undefined
 
@@ -67,7 +67,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
       !!totalPoolTokens &&
       !!userPoolBalance &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+      totalPoolTokens.raw.gte(userPoolBalance.raw)
       ? [
         weightedPair.getLiquidityValue(weightedPair.token0, totalPoolTokens, userPoolBalance, false),
         weightedPair.getLiquidityValue(weightedPair.token1, totalPoolTokens, userPoolBalance, false),
@@ -76,7 +76,7 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
 
   return (
     <>
-      {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
+      {userPoolBalance && userPoolBalance.raw.gt(0) ? (
         <Card>
           <CardBody>
             <AutoColumn gap="16px">
@@ -163,7 +163,7 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
   const totalPoolTokens = totalSupply
 
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    !!userPoolBalance && !!totalPoolTokens && totalPoolTokens.raw.gte(userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
       : undefined
 
@@ -172,7 +172,7 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
       !!totalPoolTokens &&
       !!userPoolBalance &&
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-      JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+      totalPoolTokens.raw.gte(userPoolBalance.raw)
       ? [
         weightedPair.getLiquidityValue(weightedPair.token0, totalPoolTokens, userPoolBalance, false),
         weightedPair.getLiquidityValue(weightedPair.token1, totalPoolTokens, userPoolBalance, false),
@@ -239,7 +239,7 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
             </Text>
           </FixedHeightRow>
 
-          {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
+          {userPoolBalance && userPoolBalance.raw.gt(0) && (
             <Flex flexDirection="column">
               <Button
                 as={Link}

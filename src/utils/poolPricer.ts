@@ -44,7 +44,7 @@ export const priceStableFarm = (farm: SerializedFarm | FarmWithStakedValue, stab
     for (let i = 1; i < Object.values(stablePool.tokens).length; i++) {
         if (i !== quoteIndex) {
             const inAmount = stablePool.tokenBalances[i].div(TENK)
-            val = val.add(stablePool.calculateSwap(i, quoteIndex, inAmount))
+            val = val.add(stablePool.calculateSwapGivenIn(stablePool.tokenFromIndex(i), stablePool.tokenFromIndex(quoteIndex), inAmount))
         }
     }
     return Number(new TokenAmount(quote, val.mul(TENK).toString()).toSignificant(18))

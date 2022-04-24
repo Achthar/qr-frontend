@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { TradeV4, TradeType } from '@requiemswap/sdk'
+import { Swap, SwapType } from '@requiemswap/sdk'
 import { Button, Text, ErrorIcon, ArrowDownIcon } from '@requiemswap/uikit'
 import { Field } from 'state/swapV3/actions'
 import { isAddress, shortenAddress } from 'utils'
@@ -16,7 +16,7 @@ export default function SwapV3ModalHeader({
   showAcceptChanges,
   onAcceptChanges,
 }: {
-  trade: TradeV4
+  trade: Swap
   allowedSlippage: number
   recipient: string | null
   showAcceptChanges: boolean
@@ -36,7 +36,7 @@ export default function SwapV3ModalHeader({
           <CurrencyLogo chainId={trade.route.chainId} currency={trade.inputAmount.currency} size="24px" style={{ marginRight: '12px' }} />
           <TruncatedText
             fontSize="24px"
-            color={showAcceptChanges && trade.tradeType === TradeType.EXACT_OUTPUT ? 'primary' : 'text'}
+            color={showAcceptChanges && trade.tradeType === SwapType.EXACT_OUTPUT ? 'primary' : 'text'}
           >
             {trade.inputAmount.toSignificant(6)}
           </TruncatedText>
@@ -58,7 +58,7 @@ export default function SwapV3ModalHeader({
             color={
               priceImpactSeverity > 2
                 ? 'failure'
-                : showAcceptChanges && trade.tradeType === TradeType.EXACT_INPUT
+                : showAcceptChanges && trade.tradeType === SwapType.EXACT_INPUT
                   ? 'primary'
                   : 'text'
             }
@@ -84,7 +84,7 @@ export default function SwapV3ModalHeader({
         </SwapShowAcceptChanges>
       ) : null}
       <AutoColumn justify="flex-start" gap="sm" style={{ padding: '24px 0 0 0px' }}>
-        {trade.tradeType === TradeType.EXACT_INPUT ? (
+        {trade.tradeType === SwapType.EXACT_INPUT ? (
           <Text small color="textSubtle" textAlign="left" style={{ width: '100%' }}>
             {`Output is estimated. You will receive at least `}
             <b>

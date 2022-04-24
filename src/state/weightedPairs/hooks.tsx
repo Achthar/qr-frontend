@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { BigNumber } from 'ethers'
-import { JSBI, Price, StablePool, STABLES_LP_TOKEN, SwapStorage, Token, TokenAmount, WeightedPair } from '@requiemswap/sdk'
+import { Token, TokenAmount, AmplifiedWeightedPair } from '@requiemswap/sdk'
 import { BondType, SerializedToken, TokenPair } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { STABLE_POOL_LP } from 'config/constants/tokens'
@@ -19,8 +19,8 @@ export const useWeightedPairsState = (chainId: number) => {
 
 export const deserializeWeightedPair = (tokenPair: TokenPair, pair: SerializedWeightedPair) => {
   if (!pair) return undefined
-  return new WeightedPair(
-    new TokenAmount(
+  return new AmplifiedWeightedPair(
+    [
       new Token(
         tokenPair.token0.chainId,
         tokenPair.token0.address,
@@ -28,27 +28,25 @@ export const deserializeWeightedPair = (tokenPair: TokenPair, pair: SerializedWe
         tokenPair.token0.symbol,
         tokenPair.token0.name
       ),
-      JSBI.BigInt(pair.reserve0)
-    ),
-    new TokenAmount(
       new Token(
         tokenPair.token1.chainId,
         tokenPair.token1.address,
         tokenPair.token1.decimals,
         tokenPair.token1.symbol,
         tokenPair.token1.name
-      ),
-      JSBI.BigInt(pair.reserve1)
-    ),
-    JSBI.BigInt(pair.weight0),
-    JSBI.BigInt(pair.fee)
+      )],
+    [BigNumber.from(pair.reserve0), BigNumber.from(pair.reserve1)], 
+    [BigNumber.from(pair.vReserve0), BigNumber.from(pair.vReserve1)],
+    BigNumber.from(pair.amp),
+    BigNumber.from(pair.weight0),
+    BigNumber.from(pair.fee)
   )
 }
 
 // returns all pairs as SDK Pair object
 // requires everything to be loaded, otherwise the result
 // will be an empty array
-export const useDeserializedWeightedPairs = (chainId: number): WeightedPair[] => {
+export const useDeserializedWeightedPairs = (chainId: number): AmplifiedWeightedPair[] => {
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return []
@@ -66,7 +64,7 @@ export const useDeserializedWeightedPairs = (chainId: number): WeightedPair[] =>
 // returns all pairs as SDK Pair object
 // requires everything to be loaded, otherwise the result
 // will be an empty array
-export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pairs: WeightedPair[], balances: TokenAmount[], totalSupply: TokenAmount[] } => {
+export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pairs: AmplifiedWeightedPair[], balances: TokenAmount[], totalSupply: TokenAmount[] } => {
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded || !pairState.userBalancesLoaded)
     return { pairs: [], balances: [], totalSupply: [] }
@@ -98,7 +96,7 @@ export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pa
 // returns all pairs as SDK Pair object
 // requires everything to be loaded, otherwise the result
 // will be an empty array
-export const useDeserializedWeightedPairsData = (chainId: number): { pairs: WeightedPair[] } => {
+export const useDeserializedWeightedPairsData = (chainId: number): { pairs: AmplifiedWeightedPair[] } => {
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
   if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return { pairs: [] }

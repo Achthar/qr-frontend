@@ -1,13 +1,13 @@
 /* eslint-disable */
 import React, { Fragment, memo } from 'react'
-import { TradeV4, PoolType } from '@requiemswap/sdk'
+import { Swap, PoolType } from '@requiemswap/sdk'
 import { Text, Flex, ChevronRightIcon, ArrowForwardIcon } from '@requiemswap/uikit'
 import { unwrappedToken } from 'utils/wrappedCurrency'
 import { CurrencyLogo } from 'components/Logo'
 import { AutoColumn } from 'components/Column'
 import Row from 'components/Row'
 
-export default memo(function SwapV3Route({ trade }: { trade: TradeV4 }) {
+export default memo(function SwapV3Route({ trade }: { trade: Swap }) {
   return (
     // <AutoColumn style={{ flex: '1' }} gap='2px' >
     <Flex flexWrap="wrap" width="100%" justifyContent="flex-end" alignItems="center">
@@ -30,9 +30,9 @@ export default memo(function SwapV3Route({ trade }: { trade: TradeV4 }) {
                   <Flex flexDirection="column" justifyContent='space-between' alignItems="center" grid-row-gap='0px' marginRight='1px' marginLeft='1px'>
                     {!isLastItem && <ArrowForwardIcon height='10px' width="10px" marginBottom='0px' />}
 
-                    {!isLastItem && trade.route.pools[j] && (
+                    {!isLastItem && trade.route.swapData[j] && (
                       <Text fontSize="10px" textAlign='center' marginTop='0px'>
-                        {trade.route.pools[j].type === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
+                        {trade.route.swapData[j].poolRef === PoolType.StablePairWrapper ? 'Quad' : 'Pairs'}
                       </Text>)}
                   </Flex>
                 </Row>

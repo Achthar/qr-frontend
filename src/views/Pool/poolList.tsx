@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { REQT, DAI } from 'config/constants/tokens'
-import { WeightedPair, TokenAmount } from '@requiemswap/sdk'
+import { AmplifiedWeightedPair, TokenAmount } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
@@ -66,7 +66,7 @@ export default function PoolList({
     userBalancesLoaded
   } = useGetWeightedPairsState(chainId, account, userPairs, slowRefresh, fastRefresh)
 
-  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
+  const dataWithUserBalances: { pair: AmplifiedWeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
     () =>
       pairs.map((pair, index) => { return { pair, balance: balances[index], supply: totalSupply[index] } }).filter((data) =>
         data.balance?.greaterThan('0'),
@@ -84,7 +84,7 @@ export default function PoolList({
 
   const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
 
-  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
+  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is AmplifiedWeightedPair => Boolean(pair))
 
   const allWeightedDataWithLiquidity = dataWithUserBalances.filter((data) => Boolean(data.pair))
 

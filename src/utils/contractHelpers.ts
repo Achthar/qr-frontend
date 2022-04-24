@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
 import { Interface } from '@ethersproject/abi'
 import { simpleRpcProvider } from 'utils/providers'
-import { poolsConfig } from 'config/constants'
 import { BondConfig, PoolCategory } from 'config/constants/types'
 
 // Addresses
@@ -117,7 +116,7 @@ export const getSouschefContract = (
   id: number,
   signer?: ethers.Signer | ethers.providers.Provider,
 ) => {
-  const config = poolsConfig.find((pool) => pool.sousId === id)
+  const config =null
   const abi = config.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
   return getContract(chainId, abi, getAddress(chainId, config.contractAddress), signer)
 }
@@ -126,7 +125,7 @@ export const getSouschefV2Contract = (
   id: number,
   signer?: ethers.Signer | ethers.providers.Provider,
 ) => {
-  const config = poolsConfig.find((pool) => pool.sousId === id)
+  const config =null
   return getContract(chainId, sousChefV2, getAddress(chainId, config.contractAddress), signer)
 }
 export const getPointCenterIfoContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {

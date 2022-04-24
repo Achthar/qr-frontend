@@ -1,5 +1,5 @@
 import React from 'react'
-import { Currency, Pair } from '@requiemswap/sdk'
+import { Currency } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -54,7 +54,6 @@ interface CurrencyInputPanelProps {
   currency?: Currency | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
-  pair?: Pair | null
   hideInput?: boolean
   otherCurrency?: Currency | null
   id: string
@@ -72,7 +71,6 @@ export default function SingleStableInputPanel({
   currency,
   disableCurrencySelect = false,
   hideBalance = false,
-  pair = null, // used for double token logo
   hideInput = false,
   otherCurrency,
   id
@@ -134,25 +132,19 @@ export default function SingleStableInputPanel({
             }}
           >
             <Flex alignItems="center" justifyContent="space-between">
-              {pair ? (
-                <DoubleCurrencyLogo chainId={chainId} currency0={pair.token0} currency1={pair.token1} size={16} margin />
-              ) : currency ? (
+              {currency ? (
                 <CurrencyLogo chainId={chainId} currency={currency} size="24px" style={{ marginRight: '8px' }} />
               ) : null}
-              {pair ? (
-                <Text id="pair">
-                  {pair?.token0.symbol}:{pair?.token1.symbol}
-                </Text>
-              ) : (
-                <Text id="pair">
-                  {(currency && currency.symbol && currency.symbol.length > 20
-                    ? `${currency.symbol.slice(0, 4)}...${currency.symbol.slice(
-                      currency.symbol.length - 5,
-                      currency.symbol.length,
-                    )}`
-                    : currency?.symbol) || t('Select a currency')}
-                </Text>
-              )}
+
+              <Text id="pair">
+                {(currency && currency.symbol && currency.symbol.length > 20
+                  ? `${currency.symbol.slice(0, 4)}...${currency.symbol.slice(
+                    currency.symbol.length - 5,
+                    currency.symbol.length,
+                  )}`
+                  : currency?.symbol) || t('Select a currency')}
+              </Text>
+
               {!disableCurrencySelect && <ChevronDownIcon />}
             </Flex>
           </CurrencySelectButton>

@@ -46,7 +46,7 @@ export default function useWrapCallback(
             ? async () => {
               try {
                 const txReceipt = await callWithGasPrice(wethContract, 'deposit', undefined, {
-                  value: `0x${inputAmount.raw.toString(16)}`,
+                  value: inputAmount.raw.toHexString(),
                 })
                 addTransaction(txReceipt, { summary: `Wrap ${inputAmount.toSignificant(6)} ${NETWORK_CCY[chainId].symbol} to ${WRAPPED_NETWORK_TOKENS[chainId].symbol}` })
               } catch (error: any) {
@@ -65,7 +65,7 @@ export default function useWrapCallback(
             ? async () => {
               try {
                 const txReceipt = await callWithGasPrice(wethContract, 'withdraw', [
-                  `0x${inputAmount.raw.toString(16)}`,
+                  inputAmount.raw.toHexString(),
                 ])
                 addTransaction(txReceipt, { summary: `Unwrap ${inputAmount.toSignificant(6)} ${WRAPPED_NETWORK_TOKENS[chainId].symbol} to ${NETWORK_CCY[chainId].symbol}` })
               } catch (error: any) {

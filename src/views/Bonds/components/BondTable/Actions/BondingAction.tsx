@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
-import { useBondFromBondId, useBondUser, usePriceReqtUsd } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
@@ -17,12 +17,10 @@ import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
-import { useReqtPrice } from 'hooks/usePrice'
 import useDepositBond from 'views/Bonds/hooks/useDepositBond'
 import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
-import useStakeBonds from '../../../hooks/useStakeBonds'
 import useApproveBond from '../../../hooks/useApproveBond'
 import { BondActionContainer, ActionTitles, ActionContent } from './styles'
 
@@ -55,7 +53,6 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
-  const reqtPrice = new BigNumber(useReqtPrice(chainId))
 
   console.log("ALLOWANCE", allowance.toString(), tokenBalance, bondId, bond)
   const isApproved = account && allowance && allowance.isGreaterThan(0)

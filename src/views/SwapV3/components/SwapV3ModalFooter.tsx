@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { TradeV4, TradeType } from '@requiemswap/sdk'
+import { Swap, SwapType } from '@requiemswap/sdk'
 import { Button, Text, AutoRenewIcon } from '@requiemswap/uikit'
 import { Field } from 'state/swapV3/actions'
 import {
@@ -30,7 +30,7 @@ export default function SwapV3ModalFooter({
   swapErrorMessage,
   disabledConfirm,
 }: {
-  trade: TradeV4
+  trade: Swap
   allowedSlippage: number
   onConfirm: () => void
   swapErrorMessage: string | undefined
@@ -69,7 +69,7 @@ export default function SwapV3ModalFooter({
         <RowBetween>
           <RowFixed>
             <Text fontSize="14px">
-              {trade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sold'}
+              {trade.tradeType === SwapType.EXACT_INPUT ? 'Minimum received' : 'Maximum sold'}
             </Text>
             <QuestionHelper
               text="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed."
@@ -78,12 +78,12 @@ export default function SwapV3ModalFooter({
           </RowFixed>
           <RowFixed>
             <Text fontSize="14px">
-              {trade.tradeType === TradeType.EXACT_INPUT
+              {trade.tradeType === SwapType.EXACT_INPUT
                 ? slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4) ?? '-'
                 : slippageAdjustedAmounts[Field.INPUT]?.toSignificant(4) ?? '-'}
             </Text>
             <Text fontSize="14px" marginLeft="4px">
-              {trade.tradeType === TradeType.EXACT_INPUT
+              {trade.tradeType === SwapType.EXACT_INPUT
                 ? trade.outputAmount.currency.symbol
                 : trade.inputAmount.currency.symbol}
             </Text>

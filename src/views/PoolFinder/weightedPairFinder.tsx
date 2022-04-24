@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
-import { Currency, JSBI, TokenAmount, NETWORK_CCY, STABLECOINS, WeightedPair } from '@requiemswap/sdk'
+import { Currency, TokenAmount, NETWORK_CCY, STABLECOINS, AmplifiedWeightedPair, ZERO } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, AddIcon, useModal } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -16,7 +16,7 @@ import { CurrencyLogo } from '../../components/Logo'
 import Row from '../../components/Layout/Row'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
-import { usePairAdder, useSerializedPairAdder, useWeightedPairAdder } from '../../state/user/hooks'
+import { useSerializedPairAdder, useWeightedPairAdder } from '../../state/user/hooks'
 import StyledInternalLink from '../../components/Links'
 import { currencyId } from '../../utils/currencyId'
 import Dots from '../../components/Loader/Dots'
@@ -93,7 +93,7 @@ export default function WeightedPairFinder({
 
 
 
-  const dataWithUserBalances: { pair: WeightedPair, balance: TokenAmount, totalSupply: TokenAmount }[] = useMemo(
+  const dataWithUserBalances: { pair: AmplifiedWeightedPair, balance: TokenAmount, totalSupply: TokenAmount }[] = useMemo(
     () =>
       pairs.map((pair, index) => { return { pair, balance: balances[index], totalSupply: totalSupply[index] } })
         .filter(data => data.pair.token0.address === tokenPair.token0.address && data.pair.token1.address === tokenPair.token1.address).filter((data) =>
@@ -113,7 +113,7 @@ export default function WeightedPairFinder({
 
   const weightedIsLoading = !metaDataLoaded || !reservesAndWeightsLoaded || !userBalancesLoaded
 
-  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is WeightedPair => Boolean(pair))
+  const allWeightedPairsWithLiquidity = lpWithUserBalances.filter((pair): pair is AmplifiedWeightedPair => Boolean(pair))
 
   const allWeightedDataWithLiquidity = dataWithUserBalances.filter((data) => Boolean(data.pair))
 
@@ -122,7 +122,7 @@ export default function WeightedPairFinder({
 
 
   const position = dataWithUserBalances[0]?.balance
-  const hasPosition = Boolean(position && JSBI.greaterThan(position.raw, JSBI.BigInt(0)))
+  const hasPosition = Boolean(position && position.raw.gt(ZERO))
 
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {

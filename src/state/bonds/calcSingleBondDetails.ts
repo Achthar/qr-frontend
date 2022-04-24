@@ -10,18 +10,14 @@ import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { BondType } from 'config/constants/types';
-import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
+import { bnParser } from 'utils/helper';
 import { ICalcBondDetailsAsyncThunk } from './types';
-import { loadMarketPrice, priceFromData } from './loadMarketPrice';
+import { priceFromData } from './loadMarketPrice';
 import { BondsState, Bond } from '../types'
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
-
-export function bnParser(bn: BigNumber, decNr: BigNumber) {
-  return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
-}
 
 export const calcSingleBondDetails = createAsyncThunk(
   "bonds/calcBondDetails",
@@ -91,7 +87,7 @@ export const calcSingleBondDetails = createAsyncThunk(
       BigNumber.from(bond.lpProperties.weightQuoteToken),
       reserves[0],
       reserves[1],
-      JSBI.BigInt(bond.lpProperties.fee)
+      BigNumber.from(bond.lpProperties.fee)
     ) : '0'
 
     const marketPrice = BigNumber.from(price)

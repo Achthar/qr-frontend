@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Trade, TokenAmount, CurrencyAmount, NETWORK_CCY, TradeV4 } from '@requiemswap/sdk'
+import { TokenAmount, CurrencyAmount, NETWORK_CCY, Swap } from '@requiemswap/sdk'
 import { useCallback, useEffect, useMemo } from 'react'
 import { BigNumber } from 'ethers'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -109,18 +109,18 @@ export function useApproveCallback(
 }
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTrade(chainId: number, account: string, trade?: Trade, allowedSlippage = 0) {
-  const amountToApprove = useMemo(
-    () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
-    [trade, allowedSlippage],
-  )
+// export function useApproveCallbackFromTrade(chainId: number, account: string, trade?: Trade, allowedSlippage = 0) {
+//   const amountToApprove = useMemo(
+//     () => (trade ? computeSlippageAdjustedAmounts(trade, allowedSlippage)[Field.INPUT] : undefined),
+//     [trade, allowedSlippage],
+//   )
 
-  return useApproveCallback(chainId, account, amountToApprove, ROUTER_ADDRESS[chainId])
-}
+//   return useApproveCallback(chainId, account, amountToApprove, ROUTER_ADDRESS[chainId])
+// }
 
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTradeV3(chainId: number, account: string, tradeV3?: TradeV4, allowedSlippage = 0) {
+export function useApproveCallbackFromTradeV3(chainId: number, account: string, tradeV3?: Swap, allowedSlippage = 0) {
   const amountToApprove = useMemo(
     () => (tradeV3 ? computeSlippageAdjustedAmountsV3(tradeV3, allowedSlippage)[Field.INPUT] : undefined),
     [tradeV3, allowedSlippage],

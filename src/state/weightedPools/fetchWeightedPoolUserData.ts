@@ -4,7 +4,7 @@ import multicall from 'utils/multicall'
 import { PoolConfig } from 'state/types'
 
 // simple allowance fetch
-export const fetchStablePoolData = async (chainId: number, account: string, pools: PoolConfig[]) => {
+export const fetchWeightePoolData = async (chainId: number, account: string, pools: PoolConfig[]) => {
 
   const calls = pools.map((pool) => {
     const lpContractAddress = pool.lpAddress
@@ -19,13 +19,13 @@ export const fetchStablePoolData = async (chainId: number, account: string, pool
   return parsedLpAllowances
 }
 
-export interface StablePoolUserData {
+export interface WeightePoolUserData {
   allowances: any
   balances: any
 }
 
 // simple allowance fetch together with balances in multicall
-export const fetchPoolUserAllowancesAndBalances = async (chainId: number, account: string, poolsToFetch: PoolConfig[]): Promise<StablePoolUserData> => {
+export const fetchPoolUserAllowancesAndBalances = async (chainId: number, account: string, poolsToFetch: PoolConfig[]): Promise<WeightePoolUserData> => {
 
   const callsAllowance = poolsToFetch.map((pool) => {
     const lpContractAddress = pool.lpAddress

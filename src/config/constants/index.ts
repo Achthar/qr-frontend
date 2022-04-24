@@ -1,4 +1,5 @@
-import { JSBI, Percent, Token, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@requiemswap/sdk'
+import { Percent, Token, ChainId, WRAPPED_NETWORK_TOKENS, NETWORK_CCY, Currency } from '@requiemswap/sdk'
+import { BigNumber } from 'ethers'
 import ms from 'ms.macro'
 
 import { BUSD, DAI, USDT, BTCB, CAKE, UST, ETH, USDC, REQT, WBTC, WETH, TUSD } from './tokens'
@@ -49,6 +50,21 @@ export const REQUIEMQROUTER_ADDRESS = {
   110001: '0xa1587ECB92A500a98E2fA21736A6995a50278E7E'
 }
 
+// new swap router
+export const SWAPROUTER_ADDRESS = {
+  43113: '0x68001A9d048F4D48e48A59a11883E9E980E46583',
+  42261: '0xbaDE7535a5bAd392ABFEbAb564cA843CF2d651f4',
+  110001: '0xa1587ECB92A500a98E2fA21736A6995a50278E7E'
+}
+
+export const STABLE_SWAP_ADDRESS = {
+  43113: '0x6019807De64c72645bF2Af57B5B06e56D9859FB3'
+}
+
+export const WEIGHTED_POOL_ADDRESSES = {
+  43113: '0xCc62754F15f7F35E4c58Ce6aD5608fA575C5583E'
+}
+
 export const REQUIEM_PAIR_MANAGER: { [chainId: number]: string } = {
   43113: '0x4de697f41A2Da1c5a6a6905a95438E0aFbBa2382',
   42261: '0xaE980d013D503C185f3B129B04Db17A47d83603c',
@@ -56,9 +72,21 @@ export const REQUIEM_PAIR_MANAGER: { [chainId: number]: string } = {
 }
 
 export const REQUIEM_WEIGHTED_FORMULA_ADDRESS = {
-  43113: '0x27b18F4aad3223d5A92F1aF0C4798f996aC78968',
+  43113: '0xD9e1003CdDc7AE3EC1799623Ced16276c2D15603',
   42261: '0xCCf7ed44c5A0f3Cb5c9a9B9f765F8D836fb93BA1',
   110001: '0xa2Cd0E6561f3B3ef9152A079D84D4669c673Ed94',
+}
+
+export const PAIR_FORMULA = {
+  43113: '0x9809A0Db2E143E314E2c6a566949810575E9DFCc'
+}
+// store factory address directly in frontend repo
+export const FACTORY_ADDRESS = {
+  43113: '0xFb94c4CeA93f8369Fe18C3078060605eE2B14eC3'
+}
+
+export const SWAP_ROUTER = {
+  43113: '0x492B2Afb25270E6132584B90A870F9da09472B7e'
 }
 
 export const L1_CHAIN_IDS = [
@@ -389,27 +417,27 @@ export const INITIAL_ALLOWED_SLIPPAGE = 50
 // 20 minutes, denominated in seconds
 export const DEFAULT_DEADLINE_FROM_NOW = 60 * 20
 
-export const BIG_INT_ZERO = JSBI.BigInt(0)
+export const BIG_INT_ZERO = BigNumber.from(0)
 
 // one basis point
-export const ONE_BIPS = new Percent(JSBI.BigInt(1), JSBI.BigInt(10000))
-export const BIPS_BASE = JSBI.BigInt(10000)
+export const ONE_BIPS = new Percent(BigNumber.from(1), BigNumber.from(10000))
+export const BIPS_BASE = BigNumber.from(10000)
 
 // transaction popup dismisal amounts
 export const DEFAULT_TXN_DISMISS_MS = 25000
 
 // used for warning states
-export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE) // 1%
-export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE) // 3%
-export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE) // 5%
+export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(BigNumber.from(100), BIPS_BASE) // 1%
+export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(BigNumber.from(300), BIPS_BASE) // 3%
+export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(BigNumber.from(500), BIPS_BASE) // 5%
 // if the price slippage exceeds this number, force the user to type 'confirm' to execute
-export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE) // 10%
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(BigNumber.from(1000), BIPS_BASE) // 10%
 // for non expert mode disable swaps above this
-export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE) // 15%
+export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(BigNumber.from(1500), BIPS_BASE) // 15%
 
 // used to ensure the user doesn't send so much BNB so they end up with <.01
-export const MIN_BNB: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)) // .01 BNB
-export const BETTER_TRADE_LESS_HOPS_THRESHOLD = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000))
+export const MIN_BNB = BigNumber.from(10).pow(16) // .01 BNB
+export const BETTER_TRADE_LESS_HOPS_THRESHOLD = new Percent(BigNumber.from(50), BigNumber.from(10000))
 
 export const ZERO_PERCENT = new Percent('0')
 export const ONE_HUNDRED_PERCENT = new Percent('1')
@@ -424,7 +452,6 @@ export const BLOCKED_ADDRESSES: string[] = [
 ]
 
 export { default as farmsConfig } from './farms'
-export { default as poolsConfig } from './pools'
 export { default as ifosConfig } from './ifo'
 
 // data for weighted pools

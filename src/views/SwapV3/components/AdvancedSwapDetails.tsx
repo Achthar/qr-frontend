@@ -1,5 +1,5 @@
 import React from 'react'
-import { TradeV4, TradeType } from '@requiemswap/sdk'
+import { Swap, SwapType } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { Field } from 'state/swapV3/actions'
 import { useUserSlippageTolerance } from 'state/user/hooks'
@@ -10,9 +10,9 @@ import { RowBetween, RowFixed } from 'components/Layout/Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapV3Route from './SwapV3Route'
 
-function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV4; allowedSlippage: number }) {
+function TradeV3Summary({ trade, allowedSlippage }: { trade: Swap; allowedSlippage: number }) {
   const { priceImpactWithoutFee, realizedLPFee } = computeTradeV3PriceBreakdown(trade)
-  const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
+  const isExactIn = trade.tradeType === SwapType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmountsV3(trade, allowedSlippage)
 
   return (
@@ -72,7 +72,7 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: TradeV4; allowedSli
 }
 
 export interface AdvancedSwapV3DetailsProps {
-  trade?: TradeV4
+  trade?: Swap
 }
 
 export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {

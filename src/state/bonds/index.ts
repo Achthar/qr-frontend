@@ -8,7 +8,7 @@ import {
   fetchBondUserAllowancesAndBalances,
   fetchBondUserPendingPayoutData,
 } from './fetchBondUser'
-import { bnParser, calcSingleBondDetails } from './calcSingleBondDetails';
+import { calcSingleBondDetails } from './calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 

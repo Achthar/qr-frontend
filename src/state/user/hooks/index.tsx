@@ -1,4 +1,4 @@
-import { /* ChainId, */ Pair, WeightedPair, Token, JSBI, WRAPPED_NETWORK_TOKENS, STABLECOINS, TokenAmount } from '@requiemswap/sdk'
+import { /* ChainId, */ AmplifiedWeightedPair, Token, WRAPPED_NETWORK_TOKENS, STABLECOINS, TokenAmount } from '@requiemswap/sdk'
 import flatMap from 'lodash/flatMap'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,6 +9,8 @@ import { ABREQ, GREQ, REQT, SREQ, WBTC, WETH } from 'config/constants/tokens'
 import { SerializedToken, TokenPair } from 'config/constants/types'
 import { SerializedWeightedPair, State, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
+import { BigNumber } from 'ethers'
+
 import { AppDispatch, AppState } from '../../index'
 import {
   addSerializedPair,
@@ -28,6 +30,7 @@ import {
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 import { ChainId } from '../../../config/index'
 import { FarmStakedOnly, SerializedPair, UserBalanceState } from '../types'
+
 
 export function useAudioModeManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -194,24 +197,6 @@ export function useGasPriceManager(chainId: number): [string, (userGasPrice: str
   return [userGasPrice, setGasPrice]
 }
 
-function serializePair(pair: Pair): SerializedPair {
-  return {
-    token0: serializeToken(pair.token0),
-    token1: serializeToken(pair.token1),
-  }
-}
-
-export function usePairAdder(): (pair: Pair) => void {
-  const dispatch = useDispatch<AppDispatch>()
-
-  return useCallback(
-    (pair: Pair) => {
-      dispatch(addSerializedPair({ serializedPair: serializePair(pair) }))
-    },
-    [dispatch],
-  )
-}
-
 export function useSerializedPairAdder(): (pair: TokenPair) => void {
   const dispatch = useDispatch<AppDispatch>()
 
@@ -230,7 +215,7 @@ export function useSerializedPairAdder(): (pair: TokenPair) => void {
  * @param tokenB the other token
  */
 export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
-  return new Token(tokenA.chainId, Pair.getAddress(tokenA, tokenB), 18, 'Cake-LP', 'Pancake LPs')
+  return new Token(tokenA.chainId, AmplifiedWeightedPair.getAddress(tokenA, tokenB,BigNumber.from('0')), 18, 'Cake-LP', 'Pancake LPs')
 }
 
 /**
@@ -238,8 +223,8 @@ export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
  * @param tokenA one of the two tokens
  * @param tokenB the other token
  */
-export function toWeightedLiquidityToken([tokenA, tokenB, weightA, fee]: [Token, Token, number, number]): Token {
-  return new Token(tokenA.chainId, WeightedPair.getAddress(tokenA, tokenB, JSBI.BigInt(weightA), JSBI.BigInt(fee)), 18, 'Requiem-LP', 'Requiem LPs')
+export function toWeightedLiquidityToken([tokenA, tokenB, weightA]: [Token, Token, number]): Token {
+  return new Token(tokenA.chainId, AmplifiedWeightedPair.getAddress(tokenA, tokenB, BigNumber.from(weightA)), 18, 'Requiem-LP', 'Requiem LPs')
 }
 
 /**
@@ -308,20 +293,21 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 }
 
 
-function serializeWeightedPair(weightedPair: WeightedPair): WeightedPairMetaData {
+function serializeWeightedPair(weightedPair: AmplifiedWeightedPair): WeightedPairMetaData {
   return {
     token0: serializeToken(weightedPair.token0),
     token1: serializeToken(weightedPair.token1),
     weight0: Number(weightedPair.weight0.toString()),
-    fee: Number(weightedPair.fee0.toString())
+    fee: Number(weightedPair.fee0.toString()),
+    amp:Number(weightedPair.amp)
   }
 }
 
-export function useWeightedPairAdder(): (weightedPair: WeightedPair) => void {
+export function useWeightedPairAdder(): (weightedPair: AmplifiedWeightedPair) => void {
   const dispatch = useDispatch<AppDispatch>()
 
   return useCallback(
-    (pair: WeightedPair) => {
+    (pair: AmplifiedWeightedPair) => {
       dispatch(addSerializedWeightedPair({ serializedWeightedPair: serializeWeightedPair(pair) }))
     },
     [dispatch],

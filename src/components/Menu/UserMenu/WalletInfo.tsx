@@ -8,7 +8,7 @@ import useAuth from 'hooks/useAuth'
 import { useTranslation } from 'contexts/Localization'
 import { getNetworkExplorerLink } from 'utils'
 import { getFullDisplayBalance } from 'utils/formatBalance'
-import { useReqtPrice } from 'hooks/usePrice'
+// import { useReqtPrice } from 'hooks/usePrice'
 import CopyAddress from './CopyAddress'
 
 interface WalletInfoProps {
@@ -20,7 +20,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNetworkCcyBalance, onDism
   const { t } = useTranslation()
   const { account, chainId } = useWeb3React()
   const { balance } = useGetNetworkCcyBalance()
-  const reqtPrice = useReqtPrice(chainId)
+  // const reqtPrice = useReqtPrice(chainId)
   const { balance: requiemBalance } = useTokenBalance(getRequiemAddress(chainId))
   const { logout } = useAuth()
 
@@ -53,7 +53,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNetworkCcyBalance, onDism
       </Flex>
       <Flex alignItems="center" justifyContent="space-between" mb="24px">
         <Text color="textSubtle">{t('REQT Price')}</Text>
-        <Text>{reqtPrice}</Text>
+        {/* <Text>{reqtPrice}</Text> */}
       </Flex>
       <Flex alignItems="center" justifyContent="end" mb="24px">
         <LinkExternal href={getNetworkExplorerLink(account, 'address', chainId)}>View on Network Explorer</LinkExternal>

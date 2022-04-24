@@ -13,7 +13,7 @@ import { useBondFromBondId } from 'state/bonds/hooks'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { TokenAmount } from '@requiemswap/sdk'
 import { blocksToDays, prettifySeconds, prettyVestingPeriod, secondsUntilBlock } from 'config'
-import { bnParser } from 'state/bonds/calcSingleBondDetails'
+import { bnParser } from 'utils/helper'
 import { useBlockNumber } from 'state/application/hooks'
 import { useBlock } from 'state/block/hooks'
 

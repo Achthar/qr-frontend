@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { bonds as bondList } from 'config/constants/bonds'
-import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
+// import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
 import { Price, TokenAmount } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens'
 import useRefresh from 'hooks/useRefresh'
@@ -105,22 +105,22 @@ export const usePriceNetworkCCYUsd = (): BigNumber => {
   return new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
 }
 
-export const usePriceReqtUsd = (chainId: number): BigNumber => {
-  // const reqtnetworkCCYBond = useBondFromBondId(0)
-  const [pairState, pair] = useWeightedPairs(chainId, [[REQT[chainId], DAI[chainId]]], [80], [25])[0]
+// export const usePriceReqtUsd = (chainId: number): BigNumber => {
+//   // const reqtnetworkCCYBond = useBondFromBondId(0)
+//   const [pairState, pair] = useWeightedPairs(chainId, [[REQT[chainId], DAI[chainId]]], [80], [25])[0]
 
-  return useMemo(
-    () => {
-      const inAmount = new TokenAmount(REQT[chainId], '1000000000000000000')
+//   return useMemo(
+//     () => {
+//       const inAmount = new TokenAmount(REQT[chainId], '1000000000000000000')
 
-      const [outAmount,] = pairState === WeightedPairState.EXISTS
-        ? pair.clone().getOutputAmount(inAmount)
-        : [new TokenAmount(DAI[chainId], '1'),]
-      return new BigNumber(outAmount.raw.toString()) // reqtnetworkCCYBond.token.busdPrice
-    },
-    [chainId, pair, pairState]
-  )
-}
+//       const [outAmount,] = pairState === WeightedPairState.EXISTS
+//         ? pair.clone().getOutputAmount(inAmount)
+//         : [new TokenAmount(DAI[chainId], '1'),]
+//       return new BigNumber(outAmount.raw.toString()) // reqtnetworkCCYBond.token.busdPrice
+//     },
+//     [chainId, pair, pairState]
+//   )
+// }
 
 
 export const usePriceNetworkDollar = (): BigNumber => {

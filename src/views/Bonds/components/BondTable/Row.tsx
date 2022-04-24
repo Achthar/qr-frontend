@@ -282,7 +282,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
       {shouldRenderChild && (
         <tr>
           <td colSpan={6}>
-            <ActionPanel {...props} expanded={actionPanelExpanded} />
+            <ActionPanel {...props} expanded={actionPanelExpanded} reqPrice={props.price}/>
           </td>
         </tr>
       )}

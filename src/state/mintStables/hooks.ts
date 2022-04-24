@@ -1,6 +1,6 @@
 /* eslint object-shorthand: 0 */
 import { parseUnits } from '@ethersproject/units'
-import { Currency, TokenAmount, JSBI, StablePool, Percent, STABLES_INDEX_MAP, Token } from '@requiemswap/sdk'
+import { Currency, TokenAmount, ZERO, StablePool, Percent, STABLES_INDEX_MAP, Token } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
@@ -13,7 +13,7 @@ import { useTokenBalances } from '../wallet/hooks'
 import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputs } from './actions'
 
 
-const ZERO = JSBI.BigInt(0)
+
 
 
 // try to parse a user entered amount for a given token

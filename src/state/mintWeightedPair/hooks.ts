@@ -1,8 +1,8 @@
-import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, WeightedPair, Percent, Price, TokenAmount, Pair } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, ZERO, NETWORK_CCY, AmplifiedWeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { WeightedPairState, useWeightedPair } from 'hooks/useWeightedPairs'
+import { WeightedPairState } from 'hooks/useWeightedPairs'
 import useTotalSupply from 'hooks/useTotalSupply'
 
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
@@ -15,7 +15,6 @@ import { tryParseAmount } from '../swapV3/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { WeightedField, typeInput, typeInputWeight, typeInputFee } from './actions'
 
-const ZERO = JSBI.BigInt(0)
 
 export function useMintWeightedPairState(): AppState['mintWeightedPair'] {
     return useSelector<AppState, AppState['mintWeightedPair']>((state) => state.mintWeightedPair)
@@ -81,7 +80,7 @@ export function useDerivedMintWeightedPairInfo(
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
     // this is input from the weightedPairState
-    loadedPairs?: WeightedPair[],
+    loadedPairs?: AmplifiedWeightedPair[],
     loadedBalances?: TokenAmount[],
     loadedSupply?: TokenAmount[],
     // this is input from the balances state
@@ -89,7 +88,7 @@ export function useDerivedMintWeightedPairInfo(
     dependentField: WeightedField,
     dependentWeightField: WeightedField,
     currencies: { [field in WeightedField]?: Currency }
-    weightedPair?: WeightedPair | null
+    weightedPair?: AmplifiedWeightedPair | null
     weightedPairState: WeightedPairState
     currencyBalances: { [field in WeightedField]?: CurrencyAmount }
     parsedAmounts: { [field in WeightedField]?: CurrencyAmount }
@@ -189,7 +188,7 @@ export function useDerivedMintWeightedPairInfo(
     const weightedPair = pairData?.pair
 
     const noLiquidity: boolean = useMemo(() => {
-        return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && JSBI.equal(totalSupply.raw, ZERO))
+        return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && totalSupply.raw.eq(ZERO))
     },
         [weightedPairState, totalSupply])
     // balances
@@ -226,8 +225,8 @@ export function useDerivedMintWeightedPairInfo(
                 const dependentCurrency = dependentField === WeightedField.CURRENCY_B ? currencyB : currencyA
                 const dependentTokenAmount =
                     dependentField === WeightedField.CURRENCY_B
-                        ? weightedPair.priceRatioOf(tokenA).quote(wrappedIndependentAmount)
-                        : weightedPair.priceRatioOf(tokenB).quote(wrappedIndependentAmount)
+                        ? weightedPair.priceRatioOf(tokenA).quote(chainId, wrappedIndependentAmount)
+                        : weightedPair.priceRatioOf(tokenB).quote(chainId, wrappedIndependentAmount)
                 return dependentCurrency === NETWORK_CCY[chainId] ? CurrencyAmount.networkCCYAmount(chainId, dependentTokenAmount.raw) : dependentTokenAmount
             }
             return undefined
@@ -262,8 +261,8 @@ export function useDerivedMintWeightedPairInfo(
                 return new Price(
                     currencyAAmount.currency,
                     currencyBAmount.currency,
-                    JSBI.multiply(currencyAAmount.raw, JSBI.BigInt(weightB)),
-                    JSBI.multiply(currencyBAmount.raw, JSBI.BigInt(weightA)))
+                    currencyAAmount.raw.mul(weightB),
+                    currencyBAmount.raw.mul(weightA))
             }
             return undefined
         }

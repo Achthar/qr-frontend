@@ -12,6 +12,7 @@ import transactions from './transactions/reducer'
 import swapV3 from './swapV3/reducer'
 import bondReducer from './bonds'
 import stablePoolsReducer from './stablePools'
+import weightedPoolsReducer from './weightedPools'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
@@ -34,6 +35,7 @@ const store = configureStore({
     farms: farmsReducer,
     voting: votingReducer,
     stablePools: stablePoolsReducer,
+    weightedPools: weightedPoolsReducer,
     weightedPairs: weightedPairReducer,
     governance,
     assetBackedStaking: assetBackedStakingReducer,

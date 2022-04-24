@@ -1,5 +1,5 @@
 /** eslint @typescript-eslint/no-shadow:0 */
-import { TokenAmount, Pair, Currency, StablePool, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, SwapStorage } from '@requiemswap/sdk'
+import {  StablePool, STABLES_INDEX_MAP, STABLE_POOL_ADDRESS, StableSwapStorage } from '@requiemswap/sdk'
 import  { useMemo} from 'react'
 import { BigNumber } from 'ethers'
 import { getStableLpContract, getStableSwapContract } from 'utils/contractHelpers'
@@ -54,7 +54,7 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
       ]
     }
 
-    const swapStorage = new SwapStorage(
+    const swapStorage = new StableSwapStorage(
       Object.values(STABLES_INDEX_MAP[chainId]).map((token) => (BigNumber.from(10)).pow(18 - token.decimals)),
       swapStorageData[chainId].fee,
       swapStorageData[chainId].adminFee,
@@ -65,13 +65,14 @@ export function useStablePool(chainId: number): [StablePoolState, StablePool | n
       swapStorageData[chainId].lpToken)
 
     const stablePool = new StablePool(
-      STABLES_INDEX_MAP[chainId],
+      Object.values(STABLES_INDEX_MAP[chainId]),
       tokenReservesResult.result?.[0], // ?? Object.values(STABLES_INDEX_MAP[chainId]).map(x => new TokenAmount(x, '0')),
       aResult.result?.[0], // we add the value of A later
       swapStorage,
       currentBlock, // block timestamp to be set later
       supplyResult.result?.[0],
-      BigNumber.from(0) // the individual fee is calculated later since its individual
+      BigNumber.from(0), // the individual fee is calculated later since its individual
+      ''
     )
 
     return [

@@ -270,20 +270,6 @@ export interface CustomBondOpts extends BondOpts {
 }
 
 
-
-export interface PoolConfig {
-  sousId: number
-  earningToken: Token
-  stakingToken: Token
-  contractAddress: Address
-  poolCategory: PoolCategory
-  tokenPerBlock: string
-  sortOrder?: number
-  harvest?: boolean
-  isFinished?: boolean
-  enableEmergencyWithdraw?: boolean
-}
-
 export type Images = {
   lg: string
   md: string

@@ -3,15 +3,15 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
 import { bonds as bondList } from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
-import { stableSwapInitialData } from 'config/constants/stablePools';
-import { fetchStablePoolData } from './fetchStablePoolData';
+import { weightedSwapInitialData } from 'config/constants/weightedPool';
+import { fetchWeightedPoolData } from './fetchWeightedPoolData';
 import { PoolConfig } from '../types'
-import { fetchPoolUserAllowancesAndBalances } from './fetchStablePoolUserData';
-import { changeChainIdStables } from './actions';
+import { fetchPoolUserAllowancesAndBalances } from './fetchWeightedPoolUserData';
+import { changeChainIdWeighted } from './actions';
 
 
 function baseStablePool(chainId: number) {
-  return stableSwapInitialData[chainId]
+  return weightedSwapInitialData[chainId]
 }
 
 function initialState(chainId: number) {
@@ -35,14 +35,17 @@ interface PoolUserDataResponse {
 
 
 
-export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: PoolConfig[] }>(
-  'stablePools/fetchStablePoolsUserDataAsync',
+export const fetchWeightedPoolUserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: PoolConfig[] }>(
+  'weightedPools/fetchWeightedPoolsUserDataAsync',
   async ({ chainId, account, pools }) => {
 
     const {
       allowances,
       balances
     } = await fetchPoolUserAllowancesAndBalances(chainId, account, pools)
+
+
+
 
     return allowances.map((_, index) => {
       return {
@@ -57,8 +60,8 @@ export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataRespons
 )
 
 
-export const stablePoolSlice = createSlice({
-  name: 'stablePools',
+export const weightedPoolSlice = createSlice({
+  name: 'weghtedPools',
   initialState: {
     referenceChain: 43113,
     poolData: {
@@ -72,21 +75,21 @@ export const stablePoolSlice = createSlice({
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
-      .addCase(fetchStablePoolData.pending, state => {
+      .addCase(fetchWeightedPoolData.pending, state => {
         state.poolData[state.referenceChain].publicDataLoaded = false;
       })
-      .addCase(fetchStablePoolData.fulfilled, (state, action) => {
+      .addCase(fetchWeightedPoolData.fulfilled, (state, action) => {
         const pool = action.payload
         state.poolData[state.referenceChain].pools[pool.key] = { ...state.poolData[state.referenceChain].pools[pool.key], ...action.payload };
         state.poolData[state.referenceChain].publicDataLoaded = true;
       })
-      .addCase(fetchStablePoolData.rejected, (state, { error }) => {
+      .addCase(fetchWeightedPoolData.rejected, (state, { error }) => {
         state.poolData[state.referenceChain].publicDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })
       // Update pools with user data
-      .addCase(fetchStablePoolUserDataAsync.fulfilled, (state, action) => {
+      .addCase(fetchWeightedPoolUserDataAsync.fulfilled, (state, action) => {
         action.payload.forEach((userDataEl) => {
           state.poolData[state.referenceChain].pools[userDataEl.index] = {
             ...state.poolData[state.referenceChain].pools[userDataEl.index],
@@ -94,11 +97,11 @@ export const stablePoolSlice = createSlice({
           }
         })
         state.poolData[state.referenceChain].userDataLoaded = true
-      }).addCase(changeChainIdStables, (state, action) => {
+      }).addCase(changeChainIdWeighted, (state, action) => {
         state.referenceChain = action.payload.newChainId
 
       })
   },
 })
 
-export default stablePoolSlice.reducer
+export default weightedPoolSlice.reducer

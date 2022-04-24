@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import { useWeb3React } from '@web3-react/core'
-import { useBondFromBondId, useBondUser, usePriceReqtUsd } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import { useTranslation } from 'contexts/Localization'
@@ -32,6 +32,7 @@ interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
   lpLabel?: string
   displayApr?: string
+  reqPrice: BigNumber
 }
 
 const Staked: React.FunctionComponent<StackedActionProps> = ({
@@ -42,6 +43,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   reserveAddress,
   userDataReady,
   displayApr,
+  reqPrice
 }) => {
   const { t } = useTranslation()
   const { account, chainId } = useWeb3React()
@@ -51,7 +53,6 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const { onStake } = useStakeBonds(chainId, bond)
   const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
-  const reqtPrice = usePriceReqtUsd(chainId ?? 43113)
 
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
@@ -99,7 +100,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
       onConfirm={handleStake}
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
-      reqtPrice={reqtPrice}
+      reqtPrice={reqPrice}
     />,
   )
   const [onPresentWithdraw] = useModal(

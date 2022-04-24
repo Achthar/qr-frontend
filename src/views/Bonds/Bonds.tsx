@@ -6,7 +6,7 @@ import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex }
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import Page from 'components/Layout/Page'
-import { useBonds, usePollBondsWithUserData, usePriceReqtUsd, usePollBondsPublicData } from 'state/bonds/hooks'
+import { useBonds, usePollBondsWithUserData, usePollBondsPublicData } from 'state/bonds/hooks'
 import { Bond } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router'
@@ -132,7 +132,6 @@ function Bonds({
   const { account, chainId: chainIdWeb3, library } = useWeb3React()
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()
-  const reqtPrice = usePriceReqtUsd(chainId)
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
 
@@ -157,6 +156,13 @@ function Bonds({
   const stablePool = stablePools[0]
 
   
+  const reqPrice = useMemo(
+    () => {
+      return priceAssetBackedRequiem(chainId, pairs)
+    },
+    [pairs, chainId]
+  )
+
   usePollBondsWithUserData(chainId, isArchived)
 
   // Users with no wallet connected should see 0 as Earned amount
@@ -189,7 +195,7 @@ function Bonds({
         }
         const totalLiquidity = new BigNumber(123123) // new BigNumber(bond.lpTotalInQuoteToken).times(bond.quoteToken.busdPrice)
         const { reqtRewardsApr, lpRewardsApr } = isActive
-          ? getBondApr(new BigNumber(bond.poolWeight), reqtPrice, totalLiquidity, bond.reserveAddress[chainId])
+          ? getBondApr(new BigNumber(bond.poolWeight), new BigNumber(reqPrice), totalLiquidity, bond.reserveAddress[chainId])
           : { reqtRewardsApr: 0, lpRewardsApr: 0 }
 
         return { ...bond, apr: reqtRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
@@ -203,7 +209,7 @@ function Bonds({
       }
       return bondsToDisplayWithAPR
     },
-    [reqtPrice, query, isActive, chainId],
+    [reqPrice, query, isActive, chainId],
   )
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -298,12 +304,7 @@ function Bonds({
     }
   }, [chosenBondsMemoized, observerIsSet])
 
-  const reqPrice = useMemo(
-    () => {
-      return priceAssetBackedRequiem(chainId, pairs)
-    },
-    [pairs, chainId]
-  )
+
   const rowData = Object.values(bondData).map((bond) => {
 
     const purchased = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000

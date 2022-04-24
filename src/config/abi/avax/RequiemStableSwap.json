@@ -42,25 +42,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "CollectProtocolFee",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "newController",
         "type": "address"
       }
@@ -79,6 +60,31 @@
       }
     ],
     "name": "FeeDistributorChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "feeAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "FlashLoan",
     "type": "event"
   },
   {
@@ -344,97 +350,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "MAX_A",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_ADMIN_FEE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_A_CHANGE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_FLASH_FEE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_SWAP_FEE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_WITHDRAW_FEE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MIN_RAMP_TIME",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256[]",
@@ -525,35 +440,6 @@
       }
     ],
     "name": "calculateRemoveLiquidityOneToken",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "inIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "outIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "inAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "calculateSwap",
     "outputs": [
       {
         "internalType": "uint256",
@@ -680,11 +566,6 @@
         "type": "address"
       },
       {
-        "internalType": "contract IERC20[]",
-        "name": "tokens",
-        "type": "address[]"
-      },
-      {
         "internalType": "uint256[]",
         "name": "amounts",
         "type": "uint256[]"
@@ -715,43 +596,11 @@
   },
   {
     "inputs": [],
-    "name": "getAPrecise",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "index",
-        "type": "uint8"
-      }
-    ],
-    "name": "getAdminBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAdminBalances",
+    "name": "getCollectedFees",
     "outputs": [
       {
         "internalType": "uint256[]",
-        "name": "adminBalances",
+        "name": "",
         "type": "uint256[]"
       }
     ],
@@ -760,63 +609,12 @@
   },
   {
     "inputs": [],
-    "name": "getLpToken",
+    "name": "getPooledTokens",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "contract IERC20[]",
         "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getNumberOfTokens",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "index",
-        "type": "uint8"
-      }
-    ],
-    "name": "getToken",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "index",
-        "type": "uint8"
-      }
-    ],
-    "name": "getTokenBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -836,45 +634,13 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      }
-    ],
-    "name": "getTokenIndex",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "index",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "getTokenPrecisionMultipliers",
+    "name": "getTokenMultipliers",
     "outputs": [
       {
         "internalType": "uint256[]",
         "name": "",
         "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTokens",
-    "outputs": [
-      {
-        "internalType": "contract IERC20[]",
-        "name": "",
-        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -969,44 +735,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "onSwap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenOut",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountOutMin",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -1041,24 +769,13 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "amountInMax",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "to",
         "type": "address"
       }
     ],
     "name": "onSwapGivenOut",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1274,50 +991,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "fromIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "toIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "inAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minOutAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "swap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "swapStorage",
     "outputs": [
@@ -1325,6 +998,11 @@
         "internalType": "contract LPToken",
         "name": "lpToken",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nTokens",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",

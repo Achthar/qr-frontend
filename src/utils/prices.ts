@@ -1,4 +1,5 @@
-import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, Trade } from '@requiemswap/sdk'
+import { CurrencyAmount, Fraction, Percent, TokenAmount, Swap } from '@requiemswap/sdk'
+import { BigNumber } from 'ethers'
 import {
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
   ALLOWED_PRICE_IMPACT_HIGH,
@@ -9,12 +10,12 @@ import {
 import { Field } from '../state/swapV3/actions'
 import { basisPointsToPercent } from './index'
 
-const BASE_FEE = new Percent(JSBI.BigInt(25), JSBI.BigInt(10000))
-const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000))
+const BASE_FEE = new Percent(BigNumber.from(25), BigNumber.from(10000))
+const ONE_HUNDRED_PERCENT = new Percent(BigNumber.from(10000), BigNumber.from(10000))
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE)
 
 // computes price breakdown for the trade
-export function computeTradePriceBreakdown(trade?: Trade | null): {
+export function computeTradePriceBreakdown(trade?: Swap | null): {
   priceImpactWithoutFee: Percent | undefined
   realizedLPFee: CurrencyAmount | undefined | null
 } {
@@ -23,14 +24,14 @@ export function computeTradePriceBreakdown(trade?: Trade | null): {
   const realizedLPFee = !trade
     ? undefined
     : ONE_HUNDRED_PERCENT.subtract(
-      trade.route.pairs.reduce<Fraction>(
+      trade.route.swapData.reduce<Fraction>(
         (currentFee: Fraction): Fraction => currentFee.multiply(INPUT_FRACTION_AFTER_FEE),
         ONE_HUNDRED_PERCENT,
       ),
     )
 
   // remove lp fees from price impact
-  const priceImpactWithoutFeeFraction = trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
+  const priceImpactWithoutFeeFraction = undefined // trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
 
   // the x*y=k impact
   const priceImpactWithoutFeePercent = priceImpactWithoutFeeFraction
@@ -50,7 +51,7 @@ export function computeTradePriceBreakdown(trade?: Trade | null): {
 
 // computes the minimum amount out and maximum amount in for a trade given a user specified allowed slippage in bips
 export function computeSlippageAdjustedAmounts(
-  trade: Trade | undefined,
+  trade: Swap | undefined,
   allowedSlippage: number,
 ): { [field in Field]?: CurrencyAmount } {
   const pct = basisPointsToPercent(allowedSlippage)
@@ -68,7 +69,7 @@ export function warningSeverity(priceImpact: Percent | undefined): 0 | 1 | 2 | 3
   return 0
 }
 
-export function formatExecutionPrice(trade?: Trade, inverted?: boolean): string {
+export function formatExecutionPrice(trade?: Swap, inverted?: boolean): string {
   if (!trade) {
     return ''
   }

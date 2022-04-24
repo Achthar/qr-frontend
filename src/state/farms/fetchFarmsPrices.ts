@@ -67,7 +67,7 @@ const getFarmQuoteTokenPrice = (
     return BIG_ONE
   }
 
-  if (farm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId]) {
+  if (farm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId].symbol) {
     return networkCcyPriceUSD
   }
 
@@ -75,7 +75,7 @@ const getFarmQuoteTokenPrice = (
     return BIG_ZERO
   }
 
-  if (quoteTokenFarm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId]) {
+  if (quoteTokenFarm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId].symbol) {
     return quoteTokenFarm.tokenPriceVsQuote ? networkCcyPriceUSD.times(quoteTokenFarm.tokenPriceVsQuote) : BIG_ZERO
   }
 

@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, JSBI, Token, TokenAmount, TradeV4, NETWORK_CCY, StablePool, WeightedPair } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, Token, TokenAmount, Swap, NETWORK_CCY, StablePool, AmplifiedWeightedPair } from '@requiemswap/sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,6 +7,7 @@ import useENS from 'hooks/ENS/useENS'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useCurrency } from 'hooks/Tokens'
 import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
+import { BigNumber } from 'ethers'
 
 import { BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED } from 'config/constants'
 import { TokenPair } from 'config/constants/types'
@@ -14,7 +15,7 @@ import { serializeToken } from 'state/user/hooks/helpers'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useGetWeightedPairsTradeState } from 'hooks/useGetWeightedPairsState'
 
-import { useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
+import { useGeneratePairData, useGeneratePoolDict, useGetRoutes, useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import useParsedQueryString from 'hooks/useParsedQueryString'
@@ -84,7 +85,7 @@ export function tryParseTokenAmount(value: string, token: Token): TokenAmount | 
   try {
     const typedValueParsed = parseUnits(value, token.decimals).toString()
     if (typedValueParsed !== '0') {
-      return new TokenAmount(token, JSBI.BigInt(typedValueParsed))
+      return new TokenAmount(token, BigNumber.from(typedValueParsed))
     }
   } catch (error: any) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -103,8 +104,8 @@ export function tryParseAmount(chainId: number, value?: string, currency?: Curre
     const typedValueParsed = parseUnits(value, currency.decimals).toString()
     if (typedValueParsed !== '0') {
       return currency instanceof Token
-        ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
-        : CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(typedValueParsed))
+        ? new TokenAmount(currency, BigNumber.from(typedValueParsed))
+        : CurrencyAmount.networkCCYAmount(chainId, BigNumber.from(typedValueParsed))
     }
   } catch (error: any) {
     // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
@@ -125,10 +126,10 @@ const BAD_RECIPIENT_ADDRESSES: string[] = [
  * @param trade to check for the given address
  * @param checksummedAddress address to check in the pairs and tokens
  */
-function involvesAddress(trade: TradeV4, checksummedAddress: string): boolean {
+function involvesAddress(trade: Swap, checksummedAddress: string): boolean {
   return (
     trade.route.path.some((token) => token.address === checksummedAddress) ||
-    trade.route.pools.some((source) => source.liquidityToken.address === checksummedAddress)
+    trade.route.swapData.some((source) => source.poolRef === checksummedAddress)
   )
 }
 
@@ -202,7 +203,7 @@ export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: num
 // requires two calls if ccys are not in base
 // 1) check whether pair exists
 // 2) fetch reserves
-function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Currency): WeightedPair[] {
+function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Currency): AmplifiedWeightedPair[] {
   const { chainId } = useNetworkState()
   const [tokenA, tokenB] = chainId
     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
@@ -228,7 +229,7 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
-  v3Trade: TradeV4 | undefined
+  v3Trade: Swap | undefined
   inputError?: string
 } {
   const { t } = useTranslation()
@@ -268,9 +269,11 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   console.log("RPAIRS: ", inputCurrency, outputCurrency)
   const relevatPairs = useAllCommonWeightedPairsFromState(inputCurrency, outputCurrency)
 
-
-  const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, stablePool, relevatPairs, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, stablePool, relevatPairs, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  const pairData = useGeneratePairData([], stablePools, [])
+  const poolDict = useGeneratePoolDict([], stablePools, [])
+  const routes = useGetRoutes(pairData, wrappedCurrency(inputCurrency, chainId), wrappedCurrency(outputCurrency, chainId))
+  const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, routes, poolDict, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
+  const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, routes, poolDict, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
 
   const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut

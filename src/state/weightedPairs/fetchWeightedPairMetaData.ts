@@ -6,7 +6,7 @@ import multicall from 'utils/multicall';
 import pairFactoryABI from 'config/abi/avax/RequiemWeightedPairFactory.json'
 import { TokenPair } from 'config/constants/types';
 import { getAllTokenPairs } from 'config/constants/tokenPairs';
-import { Fraction, JSBI, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
+import { FACTORY_ADDRESS } from 'config/constants';
 import { WeightedPairMetaData } from '../types'
 
 
@@ -45,7 +45,7 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
     // // cals for existing pool addresses
     const calls = tokenPairs.map(pair => {
       return {
-        address: getAddress(WEIGHTED_FACTORY_ADDRESS[chainId]),
+        address: getAddress(FACTORY_ADDRESS[chainId]),
         name: 'getPairs',
         params: [getAddress(pair.token0.address), getAddress(pair.token1.address)]
       }

@@ -1,11 +1,13 @@
-import { Currency, CurrencyAmount, JSBI, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import ERC20_INTERFACE from 'config/abi/erc20'
+import { BigNumber } from 'ethers'
 import { useAllTokens } from 'hooks/Tokens'
 import { useMulticallContract } from 'hooks/useContract'
 import { isAddress } from 'utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
+
 
 
 /**
@@ -40,7 +42,7 @@ export function useNetworkCCYBalances(
     () =>
       addresses.reduce<{ [address: string]: CurrencyAmount }>((memo, address, i) => {
         const value = results?.[i]?.result?.[0]
-        if (value) memo[address] = CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(value.toString()))
+        if (value) memo[address] = CurrencyAmount.networkCCYAmount(chainId, BigNumber.from(value.toString()))
         return memo
       }, {}),
     [chainId, addresses, results],
@@ -73,7 +75,7 @@ export function useTokenBalancesWithLoadingIndicator(
         address && validatedTokens.length > 0
           ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
             const value = balances?.[i]?.result?.[0]
-            const amount = value ? JSBI.BigInt(value.toString()) : undefined
+            const amount = value ? BigNumber.from(value.toString()) : undefined
             if (amount) {
               memo[token.address] = new TokenAmount(token, amount)
             }

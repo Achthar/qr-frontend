@@ -10,7 +10,7 @@ import useToast from 'hooks/useToast'
 import { useBondFromBondId } from 'state/bonds/hooks'
 import { TokenAmount } from '@requiemswap/sdk'
 import { prettifySeconds} from 'config'
-import { bnParser } from 'state/bonds/calcSingleBondDetails'
+import { bnParser } from 'utils/helper'
 import { useBlock } from 'state/block/hooks'
 
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Currency, Pair, WeightedPair, TokenAmount, CurrencyAmount, Token } from '@requiemswap/sdk'
+import { Currency, AmplifiedWeightedPair, TokenAmount, CurrencyAmount, Token } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex, UserMenuDivider } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -69,7 +69,7 @@ interface CurrencyInputPanelExpandedProps {
   currency?: Currency | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
-  pair?: Pair | WeightedPair | null
+  pair?: AmplifiedWeightedPair | null
   hideInput?: boolean
   otherCurrency?: Currency | null
   id: string

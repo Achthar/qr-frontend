@@ -1,27 +1,16 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useMemo } from 'react';
-import { deserializeToken } from 'state/user/hooks/helpers';
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { getContractForBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
-import { ethers, BigNumber, BigNumberish } from 'ethers'
-import { getAddress } from 'ethers/lib/utils';
-import { addresses } from 'config/constants/contracts';
+import { BigNumber } from 'ethers'
+import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
-import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
-import { BondType } from 'config/constants/types';
-import { Fraction, JSBI, TokenAmount, WeightedPair } from '@requiemswap/sdk';
 import { ICalcBondDetailsAsyncThunk } from './types';
-import { loadMarketPrice, priceFromData } from './loadMarketPrice';
-import { BondsState, Bond } from '../types'
+import { Bond } from '../types'
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
-
-export function bnParser(bn: BigNumber, decNr: BigNumber) {
-  return Number((new Fraction(JSBI.BigInt(bn.toString()), JSBI.BigInt(decNr.toString()))).toSignificant(18))
-}
 
 export const calcSingleBondStableLpDetails = createAsyncThunk(
   "bonds/calcBondStableLpDetails",
@@ -81,7 +70,7 @@ export const calcSingleBondStableLpDetails = createAsyncThunk(
     // ]
 
     const [reserves, supply] = [['0', '0'], '0']
-      // await multicall(chainId, weightedPairABI, callsPair)
+    // await multicall(chainId, weightedPairABI, callsPair)
 
     // calculate price
     const price = '0'

@@ -240,7 +240,7 @@ export default function RemoveStableLiquidity({
             new Price(
               stablePool?.tokens[i],
               stablePool?.tokens[j],
-              stablePool.calculateSwap(j, i, amountstoRemove[j].toBigNumber()).toBigInt(),
+              stablePool.calculateSwapGivenIn(stablePool.tokenFromIndex(j), stablePool.tokenFromIndex(i), amountstoRemove[j].toBigNumber()).toBigInt(),
               amountstoRemove[j].raw,
             ),
           )

@@ -6,17 +6,17 @@ import multicall from 'utils/multicall';
 import formulaABI from 'config/abi/avax/RequiemFormula.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { BigNumber } from 'ethers';
-import { REQUIEM_PAIR_MANAGER, REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants';
-import { Fraction, JSBI, TokenAmount, WeightedPair, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk';
+import { REQUIEM_PAIR_MANAGER, REQUIEM_WEIGHTED_FORMULA_ADDRESS, FACTORY_ADDRESS, PAIR_FORMULA } from 'config/constants';
+import { Fraction } from '@requiemswap/sdk';
 import { SerializedWeightedPair, WeightedPairMetaData } from '../types'
 
-const TEN = JSBI.BigInt(10)
+const TEN = BigNumber.from(10)
 
 const pricePair = (reserve0: string, reserve1: string, dec0: number, dec1: number, weight0: number): { price0: number, price1: number, value0: number, value1: number } => {
 
   // multipliers to convert BigNumbers
-  const multiplier0 = JSBI.exponentiate(TEN, JSBI.BigInt(dec0))
-  const multiplier1 = JSBI.exponentiate(TEN, JSBI.BigInt(dec1))
+  const multiplier0 = TEN.pow(dec0)
+  const multiplier1 = TEN.pow(dec1)
 
   const scalar = new Fraction(multiplier1, multiplier0)
   // fraction of reserves
@@ -24,11 +24,11 @@ const pricePair = (reserve0: string, reserve1: string, dec0: number, dec1: numbe
 
   const fraction1 = new Fraction(
     reserve1,
-    JSBI.exponentiate(TEN, JSBI.BigInt(dec1)))
+    TEN.pow(dec1))
 
   const fraction0 = new Fraction(
     reserve0,
-    JSBI.exponentiate(TEN, JSBI.BigInt(dec0)))
+    TEN.pow(dec0))
 
   // price rate token0/token1
   const price0 = Number(fraction.multiply(scalar).toSignificant(18)) * (100 - weight0) / weight0
@@ -82,18 +82,25 @@ export const fetchWeightedPairData = createAsyncThunk(
     }
     const calls = pairAddresses.map((address, index) => {
       return {
-        address: getAddress(REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId]),
-        name: 'getFactoryReserveAndWeights',
+        address: getAddress(PAIR_FORMULA[chainId]),
+        name: 'getFactoryPairData',
         params: [
-          WEIGHTED_FACTORY_ADDRESS[chainId],
-          address,
-          tokenAAddresses[index]
+          FACTORY_ADDRESS[chainId],
+          address
         ]
       }
     })
+    // returns {
+    // address token0,
+    // address token1,
+    // uint32 tokenWeight0,
+    // uint32 tokenWeight1,
+    // uint32 swapFee,
+    // uint32 amp,
+    // IWeightedPair.ReserveData memory reserveData }
     console.log("WP D CALLS", calls, dataPoints)
     const rawData = await multicall(chainId, formulaABI, calls)
-    console.log("WP: RAWREG DATA", rawData)
+    console.log("WP RAWREG DATA", rawData)
     return Object.assign(
       {}, ...sortedKeys.map(
         (key, index) => {
@@ -103,19 +110,22 @@ export const fetchWeightedPairData = createAsyncThunk(
               [key]: Object.assign(
                 {}, ...pairMetaData[key].map((data, subIndex) => {
                   const prices = pricePair(
-                    rawData[dataIndex + subIndex].reserveA.toString(),
-                    rawData[dataIndex + subIndex].reserveB.toString(),
+                    rawData[dataIndex + subIndex].reserveData.vReserve0.toString(),
+                    rawData[dataIndex + subIndex].reserveData.vReserve1.toString(),
                     pairMetaData[key][0].token0.decimals,
                     pairMetaData[key][0].token1.decimals,
-                    rawData[dataIndex + subIndex].tokenWeightA
+                    rawData[dataIndex + subIndex].tokenWeight0
                   )
                   return {
-                    [`${rawData[dataIndex + subIndex].tokenWeightA}-${rawData[dataIndex + subIndex].swapFee}`]: {
+                    [`${rawData[dataIndex + subIndex].tokenWeight0}`]: {
                       ...data,
-                      reserve0: rawData[dataIndex + subIndex].reserveA.toString(),
-                      reserve1: rawData[dataIndex + subIndex].reserveB.toString(),
-                      weight0: rawData[dataIndex + subIndex].tokenWeightA,
+                      reserve0: rawData[dataIndex + subIndex].reserveData.reserve0.toString(),
+                      reserve1: rawData[dataIndex + subIndex].reserveData.reserve1.toString(),
+                      vReserve0: rawData[dataIndex + subIndex].reserveData.vReserve0.toString(),
+                      vReserve1: rawData[dataIndex + subIndex].reserveData.vReserve1.toString(),
+                      weight0: rawData[dataIndex + subIndex].tokenWeight0,
                       fee: rawData[dataIndex + subIndex].swapFee,
+                      amp: rawData[dataIndex + subIndex].amp,
                       ...prices
                     }
                   }

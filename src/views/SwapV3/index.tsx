@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CurrencyAmount, JSBI, Token, TokenAmount, TradeV4 } from '@requiemswap/sdk'
+import { CurrencyAmount, Swap, Token, TokenAmount, ZERO } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
 import { useWeb3React } from '@web3-react/core'
-import { useIsTransactionUnsupported } from 'hooks/Trades'
+import { useIsTransactionUnsupported } from 'hooks/TradesV3'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
@@ -103,14 +103,14 @@ export default function SwapV3({
   const tokenBalances = useMemo(
     () => Object.assign({},
       ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, JSBI.BigInt(tokenBalancesStrings[x?.address]?.balance ?? '0')) })
+        (x) => ({ [x.address]: new TokenAmount(x, tokenBalancesStrings[x?.address]?.balance ?? '0') })
       )
     ),
     [defaultTokens, tokenBalancesStrings]
   )
 
   const networkCcyBalance = useMemo(
-    () => CurrencyAmount.networkCCYAmount(chainId, JSBI.BigInt(networkCcyBalanceString ?? '0')),
+    () => CurrencyAmount.networkCCYAmount(chainId, networkCcyBalanceString ?? '0'),
     [chainId, networkCcyBalanceString]
   )
 
@@ -172,7 +172,7 @@ export default function SwapV3({
 
   // modal and loading
   const [{ tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapV3State] = useState<{
-    tradeToConfirm: TradeV4 | undefined
+    tradeToConfirm: Swap | undefined
     attemptingTxn: boolean
     swapErrorMessage: string | undefined
     txHash: string | undefined
@@ -193,7 +193,7 @@ export default function SwapV3({
   const route = trade?.route
 
   const userHasSpecifiedInputOutput = Boolean(
-    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0)),
+    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(ZERO),
   )
   const noRoute = !route
 

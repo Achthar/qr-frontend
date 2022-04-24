@@ -1,10 +1,10 @@
-import { TradeV4, Percent, currencyEquals } from '@requiemswap/sdk'
+import { Swap, Percent, currencyEquals } from '@requiemswap/sdk'
 import { ZERO_PERCENT, ONE_HUNDRED_PERCENT } from '../config/constants/index'
 
 // returns whether tradeB is better than tradeA by at least a threshold percentage amount
 export function isTradeV3Better(
-  tradeA: TradeV4 | undefined | null,
-  tradeB: TradeV4 | undefined | null,
+  tradeA: Swap | undefined | null,
+  tradeB: Swap | undefined | null,
   minimumDelta: Percent = ZERO_PERCENT,
 ): boolean | undefined {
   if (tradeA && !tradeB) return false

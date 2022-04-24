@@ -1,4 +1,5 @@
-import { CurrencyAmount, Fraction, JSBI, Percent, Pool, Price, TokenAmount, TradeV4, WeightedPair, Token, PoolType } from '@requiemswap/sdk'
+import { CurrencyAmount, Fraction, Percent, Pool, Price, TokenAmount, Swap, AmplifiedWeightedPair, Token, PoolType, PoolDictionary } from '@requiemswap/sdk'
+import { BigNumber } from 'ethers'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import {
   BLOCKED_PRICE_IMPACT_NON_EXPERT,
@@ -10,12 +11,12 @@ import {
 import { Field } from '../state/swapV3/actions'
 import { basisPointsToPercent } from './index'
 
-const BASE_FEE = new Percent(JSBI.BigInt(25), JSBI.BigInt(10000))
-const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000))
+const BASE_FEE = new Percent(BigNumber.from(25), BigNumber.from(10000))
+const ONE_HUNDRED_PERCENT = new Percent(BigNumber.from(10000), BigNumber.from(10000))
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE)
 
 // computes price breakdown for the trade
-export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
+export function computeTradeV3PriceBreakdown(trade?: Swap | null): {
   priceImpactWithoutFee: Percent | undefined
   realizedLPFee: CurrencyAmount | undefined | null
 } {
@@ -24,7 +25,7 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
   const realizedLPFee = !trade
     ? undefined
     : ONE_HUNDRED_PERCENT.subtract(
-      trade.route.pools.reduce<Fraction>(
+      trade.route.swapData.reduce<Fraction>(
         (currentFee: Fraction): Fraction => currentFee.multiply(INPUT_FRACTION_AFTER_FEE),
         ONE_HUNDRED_PERCENT,
       ),
@@ -32,7 +33,7 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
   const price = calculatePoolPrice(trade)
 
   // remove lp fees from price impact
-  const priceImpactWithoutFeeFraction = trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
+  const priceImpactWithoutFeeFraction = undefined // trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined
 
   const res = (Number(price?.toSignificant(18)) - Number(trade?.executionPrice?.toSignificant(18))) / Number(price?.toSignificant(18))
 
@@ -54,7 +55,7 @@ export function computeTradeV3PriceBreakdown(trade?: TradeV4 | null): {
 
 // computes the minimum amount out and maximum amount in for a trade given a user specified allowed slippage in bips
 export function computeSlippageAdjustedAmountsV3(
-  trade: TradeV4 | undefined,
+  trade: Swap | undefined,
   allowedSlippage: number,
 ): { [field in Field]?: CurrencyAmount } {
   const pct = basisPointsToPercent(allowedSlippage)
@@ -72,7 +73,7 @@ export function warningSeverity(priceImpact: Percent | undefined): 0 | 1 | 2 | 3
   return 0
 }
 
-export function formatExecutionPriceV3(trade?: TradeV4, inverted?: boolean): string {
+export function formatExecutionPriceV3(trade?: Swap, inverted?: boolean): string {
   if (!trade) {
     return ''
   }
@@ -88,19 +89,16 @@ function defaultPrice(token0: Token, token1: Token) {
 }
 
 // calculates the pool price using stable pool matrices as ref
-export function calculatePoolPrice(trade?: TradeV4): Price {
-  if (!trade)
+export function calculatePoolPrice(trade?: Swap, poolDict?:PoolDictionary): Price {
+  if (!trade || !poolDict)
     return null
-  const pools = trade.route.pools
+  const pools = trade.route.swapData
   const path = trade.route.path
-  let price = pools[0] instanceof WeightedPair ? pools[0].priceOf(path[0]) : defaultPrice(path[0], path[1])
+  let price = pools[0].poolPrice(pools[0].tokenIn, pools[0].tokenOut, poolDict)
   console.log("PRICE1", path, pools)
   for (let i = 1; i < pools.length; i++) {
     console.log("PRICE2", i)
-    if (pools[i].type === PoolType.WeightedPair)
-      price = price.multiply((pools[i] as WeightedPair).priceOf(path[i]))
-    else
-      price = price.multiply(defaultPrice(path[i], path[i + 1]))
+    price = pools[i].poolPrice(pools[i].tokenIn, pools[i].tokenOut, poolDict)
   }
   return price
 }

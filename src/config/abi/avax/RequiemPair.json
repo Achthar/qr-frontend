@@ -89,25 +89,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint112",
-        "name": "collectedFee0",
-        "type": "uint112"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint112",
-        "name": "collectedFee1",
-        "type": "uint112"
-      }
-    ],
-    "name": "PaidProtocolFee",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "sender",
@@ -145,25 +126,6 @@
       }
     ],
     "name": "Swap",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint112",
-        "name": "reserve0",
-        "type": "uint112"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint112",
-        "name": "reserve1",
-        "type": "uint112"
-      }
-    ],
-    "name": "Sync",
     "type": "event"
   },
   {
@@ -438,43 +400,7 @@
   },
   {
     "inputs": [],
-    "name": "getReserves",
-    "outputs": [
-      {
-        "internalType": "uint112",
-        "name": "_reserve0",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint112",
-        "name": "_reserve1",
-        "type": "uint112"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_blockTimestampLast",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getSwapFee",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "_swapFee",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTokenWeights",
+    "name": "getParameters",
     "outputs": [
       {
         "internalType": "uint32",
@@ -485,6 +411,51 @@
         "internalType": "uint32",
         "name": "_tokenWeight1",
         "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_swapFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_amp",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "reserve0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserve1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vReserve0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vReserve1",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IWeightedPair.ReserveData",
+        "name": "reserveData",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -505,11 +476,6 @@
       {
         "internalType": "uint32",
         "name": "_tokenWeight0",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_swapFee",
         "type": "uint32"
       }
     ],
@@ -547,7 +513,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -587,44 +553,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "onSwap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenIn",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -634,7 +562,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "amountOut",
         "type": "uint256"
       }
     ],
@@ -659,24 +587,13 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "to",
         "type": "address"
       }
     ],
     "name": "onSwapGivenOut",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -724,40 +641,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "price0CumulativeLast",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "price1CumulativeLast",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
+        "internalType": "uint32",
+        "name": "_newSwapFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_newAmp",
+        "type": "uint32"
       }
     ],
-    "name": "skim",
+    "name": "setSwapParams",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -786,7 +682,13 @@
       }
     ],
     "name": "swap",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -800,7 +702,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

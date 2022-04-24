@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { JSBI, Percent, RouterV4, SwapParameters, TradeV4, TradeType } from '@requiemswap/sdk'
+import {  Percent, SwapRouter, SwapParameters, Swap, SwapType } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'
@@ -45,7 +45,7 @@ function useSwapV3CallArguments(
   chainId: number,
   account: string,
   library: any,
-  trade: TradeV4 | undefined, // trade to execute, required
+  trade: Swap | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapV3Call[] {
@@ -68,20 +68,20 @@ function useSwapV3CallArguments(
     const swapMethods = []
 
     swapMethods.push(
-      RouterV4.swapCallParameters(trade, {
+      SwapRouter.swapCallParameters(trade, {
         feeOnTransfer: false,
-        allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
+        allowedSlippage: new Percent(BigNumber.from(allowedSlippage), BIPS_BASE),
         recipient,
         deadline: deadline.toNumber(),
         multiSwap,
       }),
     )
 
-    if (trade.tradeType === TradeType.EXACT_INPUT) {
+    if (trade.tradeType === SwapType.EXACT_INPUT) {
       swapMethods.push(
-        RouterV4.swapCallParameters(trade, {
+        SwapRouter.swapCallParameters(trade, {
           feeOnTransfer: true,
-          allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
+          allowedSlippage: new Percent(BigNumber.from(allowedSlippage), BIPS_BASE),
           recipient,
           deadline: deadline.toNumber(),
           multiSwap,
@@ -99,7 +99,7 @@ export function useSwapV3Callback(
   chainId: number,
   account: string,
   library: any,
-  trade: TradeV4 | undefined, // trade to execute, required
+  trade: Swap | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapV3CallbackState; callback: null | (() => Promise<string>); error: string | null } {

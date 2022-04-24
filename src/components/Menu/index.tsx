@@ -6,12 +6,12 @@ import useTheme from 'hooks/useTheme'
 import config from './config'
 import UserMenu from './UserMenu'
 import GlobalSettings from './GlobalSettings'
-import { useCakeBusdPriceNumber } from '../../hooks/useUSDPrice'
+// import { useCakeBusdPriceNumber } from '../../hooks/useUSDPrice'
 
 
 const Menu = (props) => {
   const { isDark, toggleTheme } = useTheme()
-  const reqtPriceUsd = useCakeBusdPriceNumber(5)
+  const reqtPriceUsd = null
   const  profile  = null
   const { currentLanguage, setLanguage, t } = useTranslation()
 

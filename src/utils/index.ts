@@ -11,7 +11,7 @@ import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
 import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
-import { JSBI, Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
+import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -69,16 +69,16 @@ export function calculateGasMargin(value: BigNumber): BigNumber {
 
 // converts a basis points value to a sdk percent
 export function basisPointsToPercent(num: number): Percent {
-  return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000))
+  return new Percent(BigNumber.from(num), '10000')
 }
 
-export function calculateSlippageAmount(value: CurrencyAmount, slippage: number): [JSBI, JSBI] {
+export function calculateSlippageAmount(value: CurrencyAmount, slippage: number): [BigNumber, BigNumber] {
   if (slippage < 0 || slippage > 10000) {
     throw Error(`Unexpected slippage value: ${slippage}`)
   }
   return [
-    JSBI.divide(JSBI.multiply(value.raw, JSBI.BigInt(10000 - slippage)), JSBI.BigInt(10000)),
-    JSBI.divide(JSBI.multiply(value.raw, JSBI.BigInt(10000 + slippage)), JSBI.BigInt(10000)),
+    value.raw.mul(10000 - slippage).div(10000),
+    value.raw.mul(10000 + slippage).div(10000),
   ]
 }
 

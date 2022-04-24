@@ -15,7 +15,7 @@ interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc
 }
 
 const getImageUrlFromToken = (chainId: number, token: Token) => {
-  const address = getAddress(chainId ?? 56, token.symbol === NETWORK_CCY[chainId ?? 56].symbol ? WRAPPED_NETWORK_TOKENS[chainId].address : token.address)
+  // const address = getAddress(chainId ?? 56, token.symbol === NETWORK_CCY[chainId ?? 56].symbol ? WRAPPED_NETWORK_TOKENS[chainId].address : token.address)
   return `https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/${token.symbol}.png`
 }
 
