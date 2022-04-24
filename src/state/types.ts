@@ -210,18 +210,13 @@ export interface WeightedSwapStorage {
   tokenMultipliers: SerializedBigNumber[]
   fee: SerializedBigNumber
   adminFee: SerializedBigNumber
-  initialA: SerializedBigNumber
-  futureA: SerializedBigNumber
-  initialATime: SerializedBigNumber
-  futureATime: SerializedBigNumber
+  normalizedTokenWeights: SerializedBigNumber[]
   lpAddress: string
-  defaultWithdrawFee: SerializedBigNumber
 }
 
 export interface SerializedWeightedPool extends PoolConfig {
   balances: SerializedBigNumber[]
-  A: SerializedBigNumber
-  swapStorage: StableSwapStorage
+  swapStorage: WeightedSwapStorage
   lpToken: SerializedToken
   lpTotalSupply: SerializedBigNumber
   userData?: {

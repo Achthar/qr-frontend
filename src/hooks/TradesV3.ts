@@ -13,7 +13,7 @@ import {
 
 } from '../config/constants'
 // import { WeightedPairState, useGetWeightedPairs, useWeightedPairsDataLite } from './useWeightedPairs'
-import { wrappedCurrency } from '../utils/wrappedCurrency'
+import { wrappedCurrency, wrappedCurrencyAmount } from '../utils/wrappedCurrency'
 
 import { useUnsupportedTokens } from './Tokens'
 
@@ -236,7 +236,7 @@ export function useGetRoutes(
 ): SwapRoute[] {
 
   const allRoutes = useMemo(() => {
-    return pairData.length > 0 ? RouteProvider.getRoutes(
+    return pairData.length > 0 && currencyIn && currencyOut ? RouteProvider.getRoutes(
       pairData,
       currencyIn,
       currencyOut,
@@ -262,8 +262,6 @@ export function useTradeV3ExactIn(
 
   const [singleHopOnly] = useUserSingleHopOnly()
 
-  console.log("RPAIRS", swapRoutes)
-
   return useMemo(() => {
     if (!publicDataLoaded)
       return null
@@ -280,9 +278,10 @@ export function useTradeV3ExactIn(
         }
       }
       try {
-        return Swap.PriceRoutes(swapRoutes, currencyAmountIn, SwapType.EXACT_INPUT, poolDict)[0] ??
+        return Swap.PriceRoutes(swapRoutes, wrappedCurrencyAmount(currencyAmountIn, swapRoutes[0].chainId), SwapType.EXACT_INPUT, poolDict)[0] ??
           null
-      } catch {
+      } catch(error) {
+        console.log(error)
         return null
       }
     }

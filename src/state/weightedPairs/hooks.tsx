@@ -37,9 +37,9 @@ export const deserializeWeightedPair = (tokenPair: TokenPair, pair: SerializedWe
       )],
     [BigNumber.from(pair.reserve0), BigNumber.from(pair.reserve1)], 
     [BigNumber.from(pair.vReserve0), BigNumber.from(pair.vReserve1)],
-    BigNumber.from(pair.amp),
     BigNumber.from(pair.weight0),
-    BigNumber.from(pair.fee)
+    BigNumber.from(pair.fee),
+    BigNumber.from(pair.amp)
   )
 }
 

@@ -14,6 +14,7 @@ import { TokenPair } from 'config/constants/types'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { useGetWeightedPairsTradeState } from 'hooks/useGetWeightedPairsState'
+import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 
 import { useGeneratePairData, useGeneratePoolDict, useGetRoutes, useTradeV3ExactIn, useTradeV3ExactOut } from 'hooks/TradesV3'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
@@ -249,8 +250,9 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
 
   const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
 
-  const stablePool = stablePools[0]
-  console.log("INPS", inputCurrencyId, outputCurrencyId)
+  const { weightedPools, userDataLoaded: weightedUserLoaded, publicDataLoaded: weightedPublicLoaded } = useGetWeightedPoolState(chainId, account, slowRefresh, slowRefresh)
+
+  console.log("WEIGHTED POOL", weightedPools[0])
   const inputCurrency = useCurrency(chainId, inputCurrencyId)
   const outputCurrency = useCurrency(chainId, outputCurrencyId)
 
@@ -266,12 +268,13 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(chainId, typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
-  console.log("RPAIRS: ", inputCurrency, outputCurrency)
-  const relevatPairs = useAllCommonWeightedPairsFromState(inputCurrency, outputCurrency)
 
-  const pairData = useGeneratePairData([], stablePools, [])
-  const poolDict = useGeneratePoolDict([], stablePools, [])
+  const relevatPairs = useAllCommonWeightedPairsFromState(inputCurrency, outputCurrency)
+  console.log("SWAPPAIRS: ", inputCurrency, outputCurrency, relevatPairs)
+  const pairData = useGeneratePairData(relevatPairs, stablePools, weightedPools)
+  const poolDict = useGeneratePoolDict(relevatPairs, stablePools, weightedPools)
   const routes = useGetRoutes(pairData, wrappedCurrency(inputCurrency, chainId), wrappedCurrency(outputCurrency, chainId))
+  console.log("SWAPROUTES: ", routes)
   const bestTradeExactIn = useTradeV3ExactIn(publicDataLoaded, routes, poolDict, isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
   const bestTradeExactOut = useTradeV3ExactOut(publicDataLoaded, routes, poolDict, inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 

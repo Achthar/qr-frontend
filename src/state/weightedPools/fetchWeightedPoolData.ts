@@ -5,12 +5,12 @@ import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
-import stableSwapAVAX from 'config/abi/avax/RequiemStableSwap.json'
+import weightedPoolAVAX from 'config/abi/avax/WeightedPool.json'
 import erc20 from 'config/abi/erc20.json'
 import { weightedSwapInitialData } from 'config/constants/weightedPool';
 import { BondType } from 'config/constants/types';
 import { Fraction, TokenAmount } from '@requiemswap/sdk';
-import { BondsState, Bond, PoolConfig, SerializedStablePool } from '../types'
+import { BondsState, Bond, PoolConfig, SerializedWeightedPool } from '../types'
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
@@ -24,7 +24,7 @@ interface PoolRequestData {
 
 export const fetchWeightedPoolData = createAsyncThunk(
   "stablePools/fetchWeightedPoolData",
-  async ({ pool, chainId }: PoolRequestData): Promise<SerializedStablePool> => {
+  async ({ pool, chainId }: PoolRequestData): Promise<SerializedWeightedPool> => {
 
     // fallback if chainId is changed
     if (chainId !== pool.tokens[0].chainId) {
@@ -37,7 +37,7 @@ export const fetchWeightedPoolData = createAsyncThunk(
       // token multipliers
       {
         address: poolAddress,
-        name: 'getTokenPrecisionMultipliers',
+        name: 'getTokenMultipliers',
         params: []
       },
       // mswap storage
@@ -55,13 +55,13 @@ export const fetchWeightedPoolData = createAsyncThunk(
       // amplification parameter
       {
         address: poolAddress,
-        name: 'getA',
+        name: 'getTokenWeights',
         params: []
       },
     ]
 
-    const [multipliers, swapStorage, tokenBalances, A] =
-      await multicall(chainId, stableSwapAVAX, calls)
+    const [multipliers, swapStorage, tokenBalances, tokenWeights] =
+      await multicall(chainId, weightedPoolAVAX, calls)
 
 
     // calls from pair used for pricing
@@ -86,17 +86,13 @@ export const fetchWeightedPoolData = createAsyncThunk(
       },
       swapStorage: {
         tokenMultipliers: multipliers[0].map(multiplier => multiplier.toString()),
+        normalizedTokenWeights: tokenWeights[0].map(w=>w.toString()),
         lpAddress: swapStorage.lpToken,
         fee: swapStorage.fee.toString(),
         adminFee: swapStorage.adminFee.toString(),
-        initialA: swapStorage.initialA.toString(),
-        futureA: swapStorage.futureA.toString(),
-        initialATime: swapStorage.initialATime.toString(),
-        futureATime: swapStorage.futureATime.toString(),
-        defaultWithdrawFee: swapStorage.defaultWithdrawFee.toString(),
+
       },
       lpTotalSupply: supply[0].toString(),
-      A: A.toString()
     }
   }
 );

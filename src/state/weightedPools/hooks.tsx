@@ -46,7 +46,6 @@ export const useWeightedPoolLpBalance = (chainId: number, id: number) => {
 export const useDeserializedWeightedPools = (chainId: number): WeightedPool[] => {
   const poolState = useSelector((state: State) => state.weightedPools)
   const { pools, publicDataLoaded: dataLoaded } = poolState.poolData[chainId]
-  const currentBlock = useSelector((state: State) => state.block.currentBlock)
 
   if (!dataLoaded)
     return []
@@ -57,7 +56,7 @@ export const useDeserializedWeightedPools = (chainId: number): WeightedPool[] =>
     pool.balances.map(balance => BigNumber.from(balance ?? '0')),
     new WeightedSwapStorage(
       pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
-      pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
+      pool.swapStorage.normalizedTokenWeights.map(m => BigNumber.from(m)),
       BigNumber.from(pool.swapStorage.fee),
       BigNumber.from(pool.swapStorage.adminFee),
     ),
