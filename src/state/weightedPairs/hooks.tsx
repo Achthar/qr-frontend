@@ -1,11 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { BigNumber } from 'ethers'
 import { Token, TokenAmount, AmplifiedWeightedPair } from '@requiemswap/sdk'
-import { BondType, SerializedToken, TokenPair } from 'config/constants/types'
-import { deserializeToken } from 'state/user/hooks/helpers'
-import { STABLE_POOL_LP } from 'config/constants/tokens'
-import { State, Bond, BondsState, StablePoolsState, WeightedPairState, SerializedWeightedPair } from '../types'
+import { SerializedToken, TokenPair } from 'config/constants/types'
+import { State, SerializedWeightedPair } from '../types'
 
 /**
  * Fetches the whole state
@@ -35,11 +33,12 @@ export const deserializeWeightedPair = (tokenPair: TokenPair, pair: SerializedWe
         tokenPair.token1.symbol,
         tokenPair.token1.name
       )],
-    [BigNumber.from(pair.reserve0), BigNumber.from(pair.reserve1)], 
+    [BigNumber.from(pair.reserve0), BigNumber.from(pair.reserve1)],
     [BigNumber.from(pair.vReserve0), BigNumber.from(pair.vReserve1)],
     BigNumber.from(pair.weight0),
     BigNumber.from(pair.fee),
-    BigNumber.from(pair.amp)
+    BigNumber.from(pair.amp),
+    pair.address
   )
 }
 

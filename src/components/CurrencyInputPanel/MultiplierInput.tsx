@@ -61,26 +61,26 @@ export const Input = React.memo(function InnerInput({
   const { t } = useTranslation()
 
   return (
-    <StyledInput
-      {...rest}
-      value={value}
-      onChange={(event) => {
-        // replace commas with periods, because we exclusively uses period as the decimal separator
-        enforcer(event.target.value.replace(/,/g, '.'))
-      }}
-      // universal input options
-      inputMode="numeric"
-      title={t('Bps')}
-      autoComplete="off"
-      autoCorrect="off"
-      // text-specific options
-      type="text"
-      pattern="^[0-9]*[.,]?[0-9]*$"
-      placeholder={placeholder || '0.0'}
-      minLength={1}
-      maxLength={4}
-      spellCheck="false"
-    />
+      <StyledInput
+        {...rest}
+        value={value}
+        onChange={(event) => {
+          // replace commas with periods, because we exclusively uses period as the decimal separator
+          enforcer(event.target.value.replace(/,/g, '.'))
+        }}
+        // universal input options
+        inputMode="decimal"
+        title={t('Bps')}
+        autoComplete="off"
+        autoCorrect="off"
+        // text-specific options
+        type="integer"
+        pattern="[0-9]"
+        placeholder='10000'
+        minLength={1}
+        maxLength={6}
+        spellCheck="false"
+      />
   )
 })
 

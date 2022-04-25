@@ -109,8 +109,8 @@ export function getRouterContract(chainId: number, library: Web3Provider, accoun
 
 // account is optional
 export function getPairManagerContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = chainId === 43221 ? RequiemQPairManager : RequiemQPairManagerOasis
-  return getContract(REQUIEM_PAIR_MANAGER[chainId], ABI, library, account)
+  const ABI = SwapRouter
+  return getContract(SWAP_ROUTER[chainId], ABI, library, account)
 }
 
 export function getQRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {

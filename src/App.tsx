@@ -79,7 +79,7 @@ const App: React.FC = () => {
           <Route exact path="/:chain/governance" component={Governance} />
           <Route exact path="/:chain/governance-ab" component={GovernanceAb} />
           <Route exact path="/:chain/add/stables" component={AddStableLiquidity} />
-          <Route exact path="/:chain/add/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RedirectDuplicateTokenIds} />
+          <Route exact path="/:chain/add/:weightA-:currencyIdA/:weightB-:currencyIdB" component={RedirectDuplicateTokenIds} />
           <Route exact path="/:chain/create" component={AddLiquidity} />
           <Route exact path="/:chain/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
           <Route exact strict path="/:chain/remove/:weightA-:currencyIdA/:weightB-:currencyIdB/:fee" component={RemoveLiquidity} />

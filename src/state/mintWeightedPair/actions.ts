@@ -12,3 +12,4 @@ export const typeInput = createAction<{ field: WeightedField; typedValue: string
 export const typeInputFee = createAction<{ typedValue: string }>('mintWeightedPair/typeInputFee')
 export const typeInputWeight = createAction<{ field: WeightedField; typedValue: string; noLiquidity: boolean }>('mintWeightedPair/typeInputWeight')
 export const resetMintState = createAction<void>('mintWeightedPair/resetMintState')
+export const typeInputAmp = createAction<{ typedValue: string }>('mintWeightedPair/typeInputAmp')

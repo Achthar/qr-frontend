@@ -148,11 +148,10 @@ export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply,
 }
 
 export default function FullWeightedPositionCard({ weightedPair, totalSupply, userBalance, ...props }: WeightedPositionCardProps) {
-  const { account, chainId } = useActiveWeb3React()
+  const chainId = weightedPair.chainId
 
   const currency0 = unwrappedToken(weightedPair.token0)
   const currency1 = unwrappedToken(weightedPair.token1)
-  const { onSetFee, onSetWeightA } = useBurnActionHandlers()
 
 
   const chain = getChain(chainId)
@@ -178,7 +177,7 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
         weightedPair.getLiquidityValue(weightedPair.token1, totalPoolTokens, userPoolBalance, false),
       ]
       : [undefined, undefined]
-  console.log("WP CXD", token0Deposited, token1Deposited)
+
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
       <Flex justifyContent="space-between" role="button" onClick={() => setShowMore(!showMore)} p="16px">
@@ -186,8 +185,12 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
           <Flex alignItems="center" mb="4px">
             <DoubleCurrencyLogo chainId={chainId} currency0={currency0} currency1={currency1} size={20} />
             <Text bold ml="16px">
-              {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${weightedPair.weight0}% ${currency0.symbol} + ${weightedPair?.weight1}% ${currency1.symbol} @ ${weightedPair.fee0.toString()}bps Fee`}
+              {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${weightedPair.weight0}% ${currency0.symbol} + ${weightedPair?.weight1}% ${currency1.symbol}`}
+              <Text fontSize='12px'>
+                {!currency0 || !currency1 ? <Dots>Loading</Dots> : `Amplified by ${Number(weightedPair.amp.toString()) / 10000}x with swap fee of ${Number(weightedPair.fee0.toString())}BPs`}
+              </Text>
             </Text>
+
           </Flex>
           <Text fontSize="14px" color="textSubtle">
             {userPoolBalance?.toSignificant(4)}

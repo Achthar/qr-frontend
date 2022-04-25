@@ -6,7 +6,7 @@ import multicall from 'utils/multicall';
 import formulaABI from 'config/abi/avax/RequiemFormula.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { BigNumber } from 'ethers';
-import { REQUIEM_PAIR_MANAGER, REQUIEM_WEIGHTED_FORMULA_ADDRESS, FACTORY_ADDRESS, PAIR_FORMULA } from 'config/constants';
+import { REQUIEM_WEIGHTED_FORMULA_ADDRESS, FACTORY_ADDRESS, PAIR_FORMULA, SWAP_ROUTER } from 'config/constants';
 import { Fraction } from '@requiemswap/sdk';
 import { SerializedWeightedPair, WeightedPairMetaData } from '../types'
 
@@ -233,7 +233,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
       return {
         address: addr,
         name: 'allowance',
-        params: [account, REQUIEM_PAIR_MANAGER[chainId]]
+        params: [account, SWAP_ROUTER[chainId]]
       }
     })
     console.log("WPRS CALLS", [...callsSupply, ...callsBalance, ...callsAllowancePm])

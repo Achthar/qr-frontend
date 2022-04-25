@@ -32,10 +32,11 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { REQUIEM_PAIR_MANAGER } from 'config/constants'
+import { REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from 'config/constants'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
+import AmpInputPanel from 'components/CurrencyInputPanel/AmpInput'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -76,10 +77,10 @@ const StyledButton = styled(Button)`
 
 export default function AddLiquidity({
   match: {
-    params: { chain, weightA, weightB, fee, currencyIdA, currencyIdB },
+    params: { chain, weightA, weightB, currencyIdA, currencyIdB },
   },
   history,
-}: RouteComponentProps<{ chain: string, weightA: string, weightB, fee: string, currencyIdA?: string; currencyIdB?: string }>) {
+}: RouteComponentProps<{ chain: string, weightA: string, weightB, currencyIdA?: string; currencyIdB?: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
@@ -143,13 +144,13 @@ export default function AddLiquidity({
     poolTokenPercentage,
     error,
     fee: _fee,
+    amp,
     priceActual
   } = useDerivedMintWeightedPairInfo(
     chainId,
     account,
     weightA,
     weightB,
-    fee,
     currencyA ?? undefined,
     currencyB ?? undefined,
     pairs,
@@ -158,7 +159,7 @@ export default function AddLiquidity({
   )
 
 
-  console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
+  // console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
   // use balances from the balance state instead of manually loading them
   const {
     networkCcyBalance: networkCcyBalanceString,
@@ -190,7 +191,8 @@ export default function AddLiquidity({
     onFieldBInput,
     onWeightAInput,
     onWeightBInput,
-    onFeeInput
+    onFeeInput,
+    onAmpInput
   } = useMintWeightedPairActionHandlers(noLiquidity)
 
   const isValid = !error
@@ -241,14 +243,14 @@ export default function AddLiquidity({
     account,
     tokenBalancesStrings[addressA]?.allowancePairManager ?? '0',
     parsedAmounts[WeightedField.CURRENCY_A],
-    REQUIEM_PAIR_MANAGER[chainId],
+    SWAP_ROUTER[chainId],
   )
   const [approvalB, approveBCallback] = useApproveCallbackWithAllowance(
     chainId,
     account,
     tokenBalancesStrings[addressB]?.allowancePairManager ?? '0',
     parsedAmounts[WeightedField.CURRENCY_B],
-    REQUIEM_PAIR_MANAGER[chainId],
+    SWAP_ROUTER[chainId],
   )
 
   const addTransaction = useTransactionAdder()
@@ -275,7 +277,6 @@ export default function AddLiquidity({
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
     if (!noLiquidity) {
 
-      console.log("ADDL NL", noLiquidity)
       // case of network CCY
       if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
         const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
@@ -309,7 +310,6 @@ export default function AddLiquidity({
       }
     } // no liquidity available - create pair
     else {
-      console.log("ADDL LIQ")
       // eslint-disable-next-line no-lonely-if
       if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
         const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
@@ -333,6 +333,7 @@ export default function AddLiquidity({
           parsedAmountB.raw.toString(),
           weights[WeightedField.WEIGHT_A], // weight Token A
           _fee, // _fee
+          amp ?? '10000', // amplification
           account
         ]
         value = null
@@ -367,7 +368,7 @@ export default function AddLiquidity({
   }
 
   const pairsAvailable = pairs.filter(pair => pair.token0.address === tokens.token0.address && pair.token1.address === tokens.token1.address)
-  console.log("WP PA", pairsAvailable, tokens, pairs)
+
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -434,12 +435,12 @@ export default function AddLiquidity({
       const newCurrencyIdA = currencyId(chainId, currencyA_)
       const _chain = chain ?? getChain(chainId)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/${_chain}/add/${weightB}-${currencyId(chainId, currencyA_)}/${weightA}-${currencyIdA}/${_fee}`)
+        history.push(`/${_chain}/add/${weightB}-${currencyId(chainId, currencyA_)}/${weightA}-${currencyIdA}`)
       } else {
-        history.push(`/${_chain}/add/${weightA}-${newCurrencyIdA}/${weightB}-${currencyIdB}/${_fee}`)
+        history.push(`/${_chain}/add/${weightA}-${newCurrencyIdA}/${weightB}-${currencyIdB}`)
       }
     },
-    [chainId, currencyIdB, history, currencyIdA, weightA, weightB, _fee, chain],
+    [chainId, currencyIdB, history, currencyIdA, weightA, weightB, chain],
   )
   const handleCurrencyBSelect = useCallback(
     (currencyB_: Currency) => {
@@ -447,41 +448,32 @@ export default function AddLiquidity({
       const _chain = chain ?? getChain(chainId)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/${_chain}/add/${weightB}-${currencyIdB}/${weightA}-${newCurrencyIdB}/${_fee}`)
+          history.push(`/${_chain}/add/${weightB}-${currencyIdB}/${weightA}-${newCurrencyIdB}`)
         } else {
-          history.push(`/${_chain}/add/${weightB}-${newCurrencyIdB}/${_fee}`)
+          history.push(`/${_chain}/add/${weightB}-${newCurrencyIdB}`)
         }
       } else {
-        history.push(`/${_chain}/add/${weightA}-${currencyIdA || NETWORK_CCY[chainId].symbol}/${weightB}-${newCurrencyIdB}/${_fee}`)
+        history.push(`/${_chain}/add/${weightA}-${currencyIdA || NETWORK_CCY[chainId].symbol}/${weightB}-${newCurrencyIdB}`)
       }
     },
-    [chainId, currencyIdA, history, currencyIdB, weightA, weightB, _fee, chain],
+    [chainId, currencyIdA, history, currencyIdB, weightA, weightB, chain],
   )
 
   const handleWeightASelect = useCallback(
     (weight: string) => {
       const _chain = chain ?? getChain(chainId)
-      history.push(`/${_chain}/add/${weight}-${currencyIdA}/${String(100 - Number(weight))}-${currencyIdB}/${_fee}`)
+      history.push(`/${_chain}/add/${weight}-${currencyIdA}/${String(100 - Number(weight))}-${currencyIdB}`)
     },
-    [currencyIdA, currencyIdB, history, _fee, chainId, chain],
+    [currencyIdA, currencyIdB, history, chainId, chain],
   )
 
   const handleWeightBSelect = useCallback(
     (weight: string) => {
       const _chain = chain ?? getChain(chainId)
-      history.push(`/${_chain}/add/${String(100 - Number(weight))}-${currencyIdA}/${weight}-${currencyIdB}/${_fee}`)
+      history.push(`/${_chain}/add/${String(100 - Number(weight))}-${currencyIdA}/${weight}-${currencyIdB}`)
     },
-    [currencyIdA, currencyIdB, history, _fee, chainId, chain],
+    [currencyIdA, currencyIdB, history, chainId, chain],
   )
-
-  const handleFeeSelect = useCallback(
-    (fee_: string) => {
-      const _chain = chain ?? getChain(chainId)
-      history.push(`/${_chain}/add/${weightA}-${currencyIdA}/${weightB}-${currencyIdB}/${fee_ === '' ? '-' : fee_}`)
-    },
-    [currencyIdA, currencyIdB, history, weightA, weightB, chainId, chain],
-  )
-
 
   const weightAInput
     = (typedValue_: string) => {
@@ -496,8 +488,11 @@ export default function AddLiquidity({
     }
 
   const feeInput = (typedValue_: string) => {
-    handleFeeSelect(typedValue_)
     onFeeInput(typedValue_)
+  }
+
+  const ampInput = (typedValue_: string) => {
+    onAmpInput(typedValue_)
   }
 
   const handleDismissConfirmation = useCallback(() => {
@@ -525,14 +520,12 @@ export default function AddLiquidity({
     'addLiquidityModal',
   )
 
-  // const balances = getTokenAmounts()
-
   return (
     <Page>
       <Row width='200px' height='50px'>
         <Button
           as={Link}
-          to={`/${getChain(chainId)}/add/${weightA}-${currencyIdB}/${weightB}-${currencyIdB}/${fee}`}
+          to={`/${getChain(chainId)}/add/${weightA}-${currencyIdB}/${weightB}-${currencyIdB}`}
           variant="primary"
           width="100%"
           mb="8px"
@@ -616,26 +609,34 @@ export default function AddLiquidity({
                 </span>
               </Row>
             </Box>
-            <ColumnCenter>
-              <Box>
-                <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-                  <span>
-                    <AddIcon width="16px" />
-                  </span>
-                  <span>
-                    <BpsInputPanel
-                      borderRadius='5px'
-                      width='30pxs'
-                      value={fee === '-' ? '' : fee}
-                      onUserInput={feeInput}
-                      label='Fee'
-                      id='weight0'
-                      onHover
-                    />
-                  </span>
-                </Flex>
-              </Box>
-            </ColumnCenter>
+            {/* <ColumnCenter> */}
+            <Box>
+              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px' width='80%'>
+
+                <BpsInputPanel
+                  borderRadius='5px'
+                  width='100px'
+                  value={noLiquidity ? _fee === '-' ? '' : _fee : weightedPair.fee0.toString()}
+                  onUserInput={noLiquidity ? feeInput : (x) => null}
+                  label='Swap Fee'
+                  id='fee'
+                  onHover
+                />
+                <AddIcon width="24px" marginLeft='5px' marginRight='5px' />
+
+                <AmpInputPanel
+                  borderRadius='5px'
+                  width='180px'
+                  value={noLiquidity ? amp : weightedPair.amp.toString()}
+                  onUserInput={noLiquidity ? ampInput : (x) => null}
+                  label='Amplification'
+                  id='Amplification'
+                  onHover
+                />
+
+              </Flex>
+            </Box>
+            {/* </ColumnCenter> */}
             <Row grid-row-gap='5px'>
               <span>
                 <CurrencyInputPanelExpanded
@@ -684,8 +685,8 @@ export default function AddLiquidity({
                       currencies={currencies}
                       poolTokenPercentage={poolTokenPercentage}
                       noLiquidity={noLiquidity}
-                      price={priceActual}
-                      priceRatio={price}
+                      price={price}
+                      priceRatio={priceActual}
                     />
                   </LightCard>
                 </LightCard>
@@ -770,14 +771,20 @@ export default function AddLiquidity({
                         {`${currencyB.symbol} ${aIs0 ? pairData.weight1.toString() : pairData.weight0.toString()}%`}
                       </Text>
                     </AutoColumn>
-                    <Text fontSize='13px' width='30px' marginLeft='20px' marginRight='20px'>
-                      {`Fee ${pairData.fee0.toString()}Bps`}
-                    </Text>
+                    <AutoColumn>
+                      <Text fontSize='13px' width='100px' marginLeft='10px' marginRight='10px'>
+                        {`Fee ${pairData.fee0.toString()}Bps`}
+                      </Text>
+                      <Text fontSize='13px' width='100px' marginLeft='10px' marginRight='10px'>
+                        {`Amp ${Number(pairData.amp.toString()) / 10000}x`}
+                      </Text>
+                    </AutoColumn>
                     <StyledButton
                       height='20px'
                       endIcon={<ArrowUpIcon />}
                       onClick={() => {
                         feeInput(pairData.fee0.toString())
+                        ampInput(pairData.amp.toString())
                         weightAInput(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString())
                       }}
                     >

@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { WeightedField, resetMintState, typeInput, typeInputWeight, typeInputFee } from './actions'
+import { WeightedField, resetMintState, typeInput, typeInputWeight, typeInputFee, typeInputAmp } from './actions'
 
 export interface MintWeightedPairState {
   readonly independentField: WeightedField
@@ -7,7 +7,8 @@ export interface MintWeightedPairState {
   readonly otherTypedValue: string // for the case when there's no liquidity
   readonly independentWeightField: WeightedField
   readonly typedWeight: string
-  readonly typedFee:string
+  readonly typedFee: string
+  readonly typedAmp: string
 }
 
 const initialState: MintWeightedPairState = {
@@ -16,7 +17,8 @@ const initialState: MintWeightedPairState = {
   otherTypedValue: '',
   independentWeightField: WeightedField.WEIGHT_A,
   typedWeight: '',
-  typedFee: ''
+  typedFee: '',
+  typedAmp: ''
 }
 
 export default createReducer<MintWeightedPairState>(initialState, (builder) =>
@@ -73,10 +75,16 @@ export default createReducer<MintWeightedPairState>(initialState, (builder) =>
         otherTypedValue: '',
       }
     }).addCase(typeInputFee, (state, { payload: { typedValue } }) => {
-        // just the Fee input
-        return {
-          ...state,
-          typedFee: typedValue,
-        }
+      // just the Fee input
+      return {
+        ...state,
+        typedFee: typedValue,
+      }
+    }).addCase(typeInputAmp, (state, { payload: { typedValue } }) => {
+      // just the Amp input
+      return {
+        ...state,
+        typedAmp: typedValue,
+      }
     }),
 )

@@ -5,7 +5,7 @@ import multicall from 'utils/multicall';
 import { STABLECOINS, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
 import { WETH, REQT, WBTC, GREQ, ABREQ, SREQ } from 'config/constants/tokens';
 import { SerializedToken } from 'config/constants/types';
-import { REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER } from 'config/constants';
+import { REQUIEMQROUTER_ADDRESS, SWAP_ROUTER } from 'config/constants';
 import { UserProps } from './types';
 
 
@@ -58,7 +58,7 @@ export const fetchUserTokenData = createAsyncThunk(
                 const objR = {
                     address: tokenAddress,
                     name: 'allowance',
-                    params: [account, REQUIEMQROUTER_ADDRESS[chainId]]
+                    params: [account, SWAP_ROUTER[chainId]]
                 }
                 // do something with person
                 return objR
@@ -72,7 +72,7 @@ export const fetchUserTokenData = createAsyncThunk(
                 const objP = {
                     address: tokenAddress,
                     name: 'allowance',
-                    params: [account, REQUIEM_PAIR_MANAGER[chainId]]
+                    params: [account, SWAP_ROUTER[chainId]]
                 }
                 // do something with person
                 return objP

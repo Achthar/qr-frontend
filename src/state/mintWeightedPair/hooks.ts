@@ -13,7 +13,7 @@ import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swapV3/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
-import { WeightedField, typeInput, typeInputWeight, typeInputFee } from './actions'
+import { WeightedField, typeInput, typeInputWeight, typeInputFee, typeInputAmp } from './actions'
 
 
 export function useMintWeightedPairState(): AppState['mintWeightedPair'] {
@@ -26,6 +26,7 @@ export function useMintWeightedPairActionHandlers(noLiquidity: boolean | undefin
     onWeightAInput: (typedValue: string) => void
     onWeightBInput: (typedValue: string) => void
     onFeeInput: (typedValue: string) => void
+    onAmpInput: (typedValue: string) => void
 } {
     const dispatch = useDispatch<AppDispatch>()
 
@@ -62,12 +63,21 @@ export function useMintWeightedPairActionHandlers(noLiquidity: boolean | undefin
         [dispatch],
     )
 
+    const onAmpInput = useCallback(
+        (typedValue: string) => {
+            dispatch(typeInputAmp({ typedValue }))
+        },
+        [dispatch],
+    )
+
+
     return {
         onFieldAInput,
         onFieldBInput,
         onWeightAInput,
         onWeightBInput,
-        onFeeInput
+        onFeeInput,
+        onAmpInput
     }
 }
 
@@ -76,7 +86,6 @@ export function useDerivedMintWeightedPairInfo(
     account: string,
     weightA: string | undefined,
     weightB: string | undefined,
-    fee: string | undefined,
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
     // this is input from the weightedPairState
@@ -99,6 +108,7 @@ export function useDerivedMintWeightedPairInfo(
     poolTokenPercentage?: Percent
     error?: string
     fee: string
+    amp: string
     priceActual?: Price
 } {
 
@@ -108,7 +118,8 @@ export function useDerivedMintWeightedPairInfo(
         otherTypedValue,
         independentWeightField,
         typedWeight,
-        typedFee
+        typedFee,
+        typedAmp
     } = useMintWeightedPairState()
 
     const [tokens, aIsToken0] = useMemo(
@@ -166,14 +177,13 @@ export function useDerivedMintWeightedPairInfo(
         [independentWeightField, typedWeight, dependentWeight, weightA]
     )
 
-    const usedFee = typedFee === '' ? fee : typedFee
+    const usedFee = typedFee === '' ? '10' : typedFee
 
 
     // pair
     const pairData = relevantPairData.filter(
         data => (aIsToken0 ? data.pair.weight0.toString() === weights[WeightedField.WEIGHT_A] :
             data.pair.weight1.toString() === weights[WeightedField.WEIGHT_A])
-            && data.pair.fee0.toString() === usedFee
     )?.[0]
 
     const [weightedPairState, weightedPairData] = pairData ? [WeightedPairState.EXISTS, pairData] :
@@ -188,9 +198,10 @@ export function useDerivedMintWeightedPairInfo(
     const weightedPair = pairData?.pair
 
     const noLiquidity: boolean = useMemo(() => {
-        return weightedPairState === WeightedPairState.NOT_EXISTS || Boolean(totalSupply && totalSupply.raw.eq(ZERO))
+        return pairData === undefined
     },
-        [weightedPairState, totalSupply])
+        [pairData])
+
     // balances
     const balances = useCurrencyBalances(chainId, account ?? undefined, [
         currencies[WeightedField.CURRENCY_A],
@@ -251,7 +262,7 @@ export function useDerivedMintWeightedPairInfo(
             return undefined
         }
         const wrappedCurrencyA = wrappedCurrency(currencyA, chainId)
-        return weightedPair && wrappedCurrencyA ? weightedPair.clone().priceOf(wrappedCurrencyA) : undefined
+        return weightedPair && wrappedCurrencyA ? weightedPair.priceOf(wrappedCurrencyA) : undefined
     }, [chainId, currencyA, noLiquidity, weightedPair, parsedAmounts])
 
     const priceActual = useMemo(() => {
@@ -330,6 +341,7 @@ export function useDerivedMintWeightedPairInfo(
         poolTokenPercentage,
         error,
         fee: usedFee,
+        amp: typedAmp,
         priceActual
     }
 }
