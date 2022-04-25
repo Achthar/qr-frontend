@@ -286,13 +286,6 @@ export type NftVideo = {
   mp4: string
 }
 
-export type NftSource = {
-  [key in NftType]: {
-    address: Address
-    identifierKey: string
-  }
-}
-
 export enum NftType {
   PANCAKE = 'pancake',
   MIXIE = 'mixie',

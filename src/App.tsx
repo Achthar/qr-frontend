@@ -4,7 +4,6 @@ import { ResetCSS } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
 import useEagerConnect from 'hooks/useEagerConnect'
 import { usePollBlockNumber } from 'state/block/hooks'
-import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
 import Popups from 'components/Popups'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
@@ -52,7 +51,6 @@ BigNumber.config({
 const App: React.FC = () => {
   usePollBlockNumber()
   useEagerConnect()
-  useFetchProfile()
 
   return (
     <Router history={history}>

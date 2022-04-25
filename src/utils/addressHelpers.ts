@@ -31,18 +31,6 @@ export const getMulticallAddress = (chainId: number) => {
 export const getWNetworkCcyAddress = (chainId: number) => {
   return ethers.utils.getAddress(WRAPPED_NETWORK_TOKENS[chainId].address)
 }
-export const getLotteryV2Address = (chainId: number) => {
-  return getAddress(chainId, addresses.lotteryV2)
-}
-export const getPancakeProfileAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.pancakeProfile)
-}
-export const getPancakeRabbitsAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.pancakeRabbits)
-}
-export const getBunnyFactoryAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.bunnyFactory)
-}
 export const getClaimRefundAddress = (chainId: number) => {
   return getAddress(chainId, addresses.claimRefund)
 }

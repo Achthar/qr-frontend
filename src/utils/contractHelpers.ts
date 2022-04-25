@@ -6,9 +6,7 @@ import { BondConfig, PoolCategory } from 'config/constants/types'
 // Addresses
 import {
   getAddress,
-  getPancakeRabbitsAddress,
   getCakeAddress,
-  getLotteryV2Address,
   getMasterChefAddress,
   getPointCenterIfoAddress,
   getClaimRefundAddress,
@@ -40,9 +38,6 @@ import pointCenterIfo from 'config/abi/pointCenterIfo.json'
 import lotteryV2Abi from 'config/abi/lotteryV2.json'
 import masterChef from 'config/abi/masterchef.json'
 import requiemChef from 'config/abi/avax/RequiemChef.json'
-import sousChef from 'config/abi/sousChef.json'
-import sousChefV2 from 'config/abi/sousChefV2.json'
-import sousChefBnb from 'config/abi/sousChefBnb.json'
 import claimRefundAbi from 'config/abi/claimRefund.json'
 import cakeVaultAbi from 'config/abi/cakeVault.json'
 import predictionsAbi from 'config/abi/predictions.json'
@@ -111,23 +106,7 @@ export const getIfoV2Contract = (
 ) => {
   return getContract(chainId, ifoV2Abi, address, signer)
 }
-export const getSouschefContract = (
-  chainId: number,
-  id: number,
-  signer?: ethers.Signer | ethers.providers.Provider,
-) => {
-  const config =null
-  const abi = config.poolCategory === PoolCategory.BINANCE ? sousChefBnb : sousChef
-  return getContract(chainId, abi, getAddress(chainId, config.contractAddress), signer)
-}
-export const getSouschefV2Contract = (
-  chainId: number,
-  id: number,
-  signer?: ethers.Signer | ethers.providers.Provider,
-) => {
-  const config =null
-  return getContract(chainId, sousChefV2, getAddress(chainId, config.contractAddress), signer)
-}
+
 export const getPointCenterIfoContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, pointCenterIfo, getPointCenterIfoAddress(chainId), signer)
 }
@@ -139,9 +118,6 @@ export const getRequiemContract = (chainId: number, signer?: ethers.Signer | eth
   return getContract(chainId, cakeAbi, getRequiemAddress(chainId), signer)
 }
 
-export const getLotteryV2Contract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, lotteryV2Abi, getLotteryV2Address(chainId), signer)
-}
 export const getMasterchefContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, chainId === 43113 ? new Interface(requiemChef) : masterChef, getMasterChefAddress(chainId), signer)
 }

@@ -9,7 +9,6 @@ import {
   UserMenuItem,
 } from '@requiemswap/uikit'
 import useAuth from 'hooks/useAuth'
-import { useProfile } from 'state/profile/hooks'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { FetchStatus, useGetNetworkCcyBalance } from 'hooks/useTokenBalance'
 import { useTranslation } from 'contexts/Localization'

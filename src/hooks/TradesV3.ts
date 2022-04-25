@@ -280,7 +280,7 @@ export function useTradeV3ExactIn(
       try {
         return Swap.PriceRoutes(swapRoutes, wrappedCurrencyAmount(currencyAmountIn, swapRoutes[0].chainId), SwapType.EXACT_INPUT, poolDict)[0] ??
           null
-      } catch(error) {
+      } catch (error) {
         console.log(error)
         return null
       }
@@ -306,16 +306,25 @@ export function useTradeV3ExactOut(
     if (!publicDataLoaded)
       return null
 
-
     if (currencyIn && currencyAmountOut && swapRoutes.length > 0) {
       if (singleHopOnly) {
-        return (
-          Swap.PriceRoutes(swapRoutes.filter(r => r.swapData.length === 1), currencyAmountOut, SwapType.EXACT_OUTPUT, poolDict)[0] ??
-          null
-        )
+        try {
+          return (
+            Swap.PriceRoutes(swapRoutes.filter(r => r.swapData.length === 1), currencyAmountOut, SwapType.EXACT_OUTPUT, poolDict)[0] ??
+            null
+          )
+        }
+        catch {
+          return null
+        }
       }
-      return Swap.PriceRoutes(swapRoutes, currencyAmountOut, SwapType.EXACT_OUTPUT, poolDict)[0] ??
-        null
+      try {
+        return Swap.PriceRoutes(swapRoutes, currencyAmountOut, SwapType.EXACT_OUTPUT, poolDict)[0] ??
+          null
+      } catch (error) {
+        console.log(error)
+        return null
+      }
 
     }
     return null

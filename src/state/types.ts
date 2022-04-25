@@ -772,9 +772,6 @@ export interface State {
   stablePools: StablePoolsState
   weightedPools: WeightedPoolsState
   predictions: PredictionsState
-  profile: ProfileState
-  teams: TeamsState
-  collectibles: CollectiblesState
   voting: VotingState
   lottery: LotteryState
 }

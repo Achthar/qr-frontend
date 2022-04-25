@@ -8,14 +8,11 @@ import {
   getIfoV2Contract,
   getMasterchefContract,
   getPointCenterIfoContract,
-  getSouschefContract,
   getClaimRefundContract,
   getErc721Contract,
   getCakeVaultContract,
   getPredictionsContract,
   getChainlinkOracleContract,
-  getSouschefV2Contract,
-  getLotteryV2Contract,
   getFarmAuctionContract,
   getBondingDepositoryContract,
   getRedRequiemContract,
@@ -83,24 +80,9 @@ export const useCake = () => {
   return useMemo(() => getCakeContract(chainId, library.getSigner()), [chainId, library])
 }
 
-export const useLotteryV2Contract = () => {
-  const { library, chainId } = useActiveWeb3React("useLotteryV2Contract")
-  return useMemo(() => getLotteryV2Contract(chainId, library.getSigner()), [chainId, library])
-}
-
 export const useMasterchef = () => {
   const { library, chainId } = useActiveWeb3React("useMasterchef")
   return useMemo(() => getMasterchefContract(chainId, library.getSigner()), [chainId, library])
-}
-
-export const useSousChef = (id) => {
-  const { library, chainId } = useActiveWeb3React("useSousChef")
-  return useMemo(() => getSouschefContract(chainId, id, library.getSigner()), [chainId, id, library])
-}
-
-export const useSousChefV2 = (id) => {
-  const { library, chainId } = useActiveWeb3React("useSousChefV2")
-  return useMemo(() => getSouschefV2Contract(chainId, id, library.getSigner()), [chainId, id, library])
 }
 
 export const usePointCenterIfoContract = () => {
