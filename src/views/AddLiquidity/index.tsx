@@ -260,7 +260,9 @@ export default function AddLiquidity({
     const pairManager = getPairManagerContract(chainId, library, account)
 
     const { [WeightedField.CURRENCY_A]: parsedAmountA, [WeightedField.CURRENCY_B]: parsedAmountB } = parsedAmounts
-    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
+
+
+    if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB) {
       return
     }
 
@@ -276,7 +278,6 @@ export default function AddLiquidity({
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
     if (!noLiquidity) {
-
       // case of network CCY
       if (currencyA === NETWORK_CCY[chainId] || currencyB === NETWORK_CCY[chainId]) {
         const tokenBIsETH = currencyB === NETWORK_CCY[chainId]
@@ -288,8 +289,9 @@ export default function AddLiquidity({
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           amountsMin[tokenBIsETH ? WeightedField.CURRENCY_A : WeightedField.CURRENCY_B].toString(), // token min
           amountsMin[tokenBIsETH ? WeightedField.CURRENCY_B : WeightedField.CURRENCY_A].toString(), // eth min
+          ['0', ethers.constants.MaxUint256.toHexString()],// uint256[2] memory vReserveRatioBounds,
           account,
-          deadline.toHexString(),
+          deadline?.toHexString() ?? '999999999999999'
         ]
         value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
       } else {
@@ -303,8 +305,9 @@ export default function AddLiquidity({
           parsedAmountB.raw.toString(),
           amountsMin[WeightedField.CURRENCY_A].toString(),
           amountsMin[WeightedField.CURRENCY_B].toString(),
+          ['0', ethers.constants.MaxUint256.toHexString()],
           account,
-          deadline.toHexString(),
+          deadline?.toHexString() ?? '999999999999999'
         ]
         value = null
       }
@@ -339,7 +342,6 @@ export default function AddLiquidity({
         value = null
       }
     }
-
     setAttemptingTxn(true)
     await estimate(...args, value ? { value } : {})
       .then((estimatedGasLimit) =>

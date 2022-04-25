@@ -259,7 +259,7 @@ export default function FullWeightedPositionCard({ weightedPair, totalSupply, us
                 //   onSetFee(weightedPair?.fee0.toString())
                 //   onSetWeightA(weightedPair?.weight0.toString())
                 // }}
-                to={`/${chain}/add/${weightedPair.weight0.toString()}-${currencyId(chainId, currency0)}/${weightedPair.weight1.toString()}-${currencyId(chainId, currency1)}/${weightedPair.fee0.toString()}`}
+                to={`/${chain}/add/${weightedPair.weight0.toString()}-${currencyId(chainId, currency0)}/${weightedPair.weight1.toString()}-${currencyId(chainId, currency1)}`}
                 variant="text"
                 startIcon={<AddIcon color="primary" />}
                 width="100%"
