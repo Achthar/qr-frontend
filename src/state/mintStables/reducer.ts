@@ -6,6 +6,12 @@ export interface MintStablesState {
   readonly typedValue2: string
   readonly typedValue3: string
   readonly typedValue4: string
+  // values for typed balances
+  readonly values: string[]
+  // current typed value
+  readonly typedValue: string
+  // current selected index
+  readonly selectedIndex: number
 }
 
 const initialState: MintStablesState = {
@@ -13,6 +19,9 @@ const initialState: MintStablesState = {
   typedValue2: '',
   typedValue3: '',
   typedValue4: '',
+  values: ['0', '0', '0', '0', '0', '0'],
+  typedValue: '',
+  selectedIndex: 0
 }
 
 export default createReducer<MintStablesState>(initialState, (builder) =>
@@ -38,5 +47,8 @@ export default createReducer<MintStablesState>(initialState, (builder) =>
         ...state,
         typedValue4,
       }
+    }).addCase(typeInput, (state, { payload: { typedValue, fieldIndex } }) => {
+      state.selectedIndex = fieldIndex
+      state.values[fieldIndex] = typedValue
     }),
 )

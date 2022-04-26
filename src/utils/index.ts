@@ -8,10 +8,10 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import IRequiemRouter02 from 'config/abi/polygon/IRequiemRouter02.json'
 import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
-import StablesRouter from 'config/abi/avax/RequiemStableSwap.json'
+import StablesRouter from 'config/abi/avax/StableSwap.json'
 import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
-import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS } from '@requiemswap/sdk'
+import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS, StablePool } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -133,6 +133,12 @@ export function getStableRouterContract(chainId: number, library: Web3Provider, 
   const ABI = StablesRouter
   console.log("getStableRouterContract")
   return getContract(STABLE_POOL_ADDRESS[chainId], ABI, library, account)
+}
+
+export function getStableSwapContract(pool: StablePool, library: Web3Provider, account?: string): Contract {
+  const ABI = StablesRouter
+  console.log("getStableRouterContract")
+  return getContract(pool.address, ABI, library, account)
 }
 
 export function getRedRequiemContract(chainId: number, library: Web3Provider, account?: string): Contract {

@@ -19,18 +19,21 @@ function StablePoolPriceBar({
 }: {
   stablePool: StablePool
   poolTokenPercentage?: Percent
-  formattedStablesAmounts?: { [field in StablesField]: CurrencyAmount }
+  formattedStablesAmounts?: CurrencyAmount[]
 }) {
   const { t } = useTranslation()
   const amounts = useMemo(() =>
-    stablePool?.getBalances().map((amnt, index) => new TokenAmount(STABLES_INDEX_MAP[stablePool.chainId][index], amnt.toBigInt()))
+    stablePool?.getTokenAmounts()
     , [stablePool])
 
   const percentages = useMemo(() => {
-    return Object.values(formattedStablesAmounts).map((amnt, index) => new Percent(amnt.toBigNumber().toBigInt(),
-      amounts?.[index].toBigNumber().toBigInt()))
+    return formattedStablesAmounts?.map((amnt, index) => amnt && new
+      Percent(
+        amnt?.raw ?? '0',
+        amounts?.[index]?.raw ?? '1'))
   }, [amounts, formattedStablesAmounts])
-
+  console.log("STABLE!", formattedStablesAmounts, formattedStablesAmounts?.map(x => x?.toSignificant(18)),
+    amounts, amounts?.map(x => x?.toSignificant(18)), percentages?.map(x => x.toSignificant(5)))
   return (
     <AutoColumn gap="md">
       <AutoRow justify="space-around" gap="4px">
@@ -45,21 +48,24 @@ function StablePoolPriceBar({
                   Share Added
                 </Text>
               </Row>
-              <Row justify="start" gap="7px">
-                <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[0].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px" >
-                  {
-                    amounts?.[0].toSignificant(6)
-                  }
-                </Text>
-                <Text fontSize="10px" marginLeft="15px">
-                  {
-                    percentages?.[0]?.equalTo(ZERO_PERCENT) ? '0' :
-                      (percentages?.[0]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[0]?.toFixed(2)) ?? '0'}
-                  %
-                </Text>
-              </Row>
 
+              {stablePool && stablePool?.getTokenAmounts().map((amount, index) => {
+                return (<Row justify="start" gap="7px">
+                  <CurrencyLogo chainId={stablePool?.chainId} currency={amount.token} size='15px' style={{ marginRight: '4px' }} />
+                  <Text fontSize="14px" >
+                    {
+                      amount.toSignificant(6)
+                    }
+                  </Text>
+                  <Text fontSize="10px" marginLeft="15px">
+                    {
+                      percentages?.[index]?.equalTo(ZERO_PERCENT) ? '0' :
+                        (percentages?.[index]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[index]?.toFixed(2)) ?? '0'}
+                    %
+                  </Text>
+                </Row>)
+              })}
+              {/* 
               <Row justify="start" gap="4px">
                 <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[1].token} size='15px' style={{ marginRight: '4px' }} />
                 <Text fontSize="14px">
@@ -101,7 +107,7 @@ function StablePoolPriceBar({
                       (percentages?.[3]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[3]?.toFixed(2)) ?? '0'}
                   %
                 </Text>
-              </Row>
+              </Row> */}
             </Column>
           )}
         </AutoColumn>
@@ -113,8 +119,8 @@ function StablePoolPriceBar({
             %
           </Text>
           <Text fontSize="12px" pt={1}>
-            Total Share of
-            Quad Pool
+            {`Total Share of
+            ${stablePool?.liquidityToken.name} Pool`}
           </Text>
         </AutoColumn>
       </AutoRow>

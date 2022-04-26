@@ -8,9 +8,9 @@ import { BigNumber } from 'ethers'
 import useTotalSupply from 'hooks/useTotalSupply'
 import { wrappedCurrency, wrappedCurrencyAmount } from 'utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
-import { tryParseAmount } from '../swapV3/hooks'
+import { tryParseAmount, tryParseTokenAmount } from '../swapV3/hooks'
 import { useTokenBalances } from '../wallet/hooks'
-import { StablesField, typeInput1, typeInput2, typeInput3, typeInput4, typeInputs } from './actions'
+import { StablesField, typeInput, typeInput1, typeInput2, typeInput3, typeInput4, typeInputs } from './actions'
 
 
 
@@ -81,85 +81,61 @@ export function useMintStablesActionHandlers(): {
   return { onField1Input, onField2Input, onField3Input, onField4Input }
 }
 
+
+export function useMintStablePoolActionHandlers(): {
+  onFieldInput: (typedValue: string, fieldIndex: number) => void
+} {
+  const dispatch = useDispatch<AppDispatch>()
+
+  const onFieldInput = useCallback(
+    (typedValue: string, fieldIndex: number) => {
+      dispatch(typeInput({
+        typedValue, fieldIndex
+      }))
+    },
+    [dispatch],
+  )
+  return { onFieldInput }
+}
+
+
 export function useDerivedMintStablesInfo(
   stablePool: StablePool,
-  publicDataLoaded:boolean,
-  stableCcyAmounts: TokenAmount[],
+  publicDataLoaded: boolean,
+  stableCcyUserBalances: TokenAmount[],
   account?: string
 ): {
-  stableCurrencies: { [field in StablesField]?: Currency }
-  stablesCurrencyBalances: { [field in StablesField]?: TokenAmount }
-  parsedStablesAmounts: { [field in StablesField]?: TokenAmount }
+  orderedStableCcyUserBalances: TokenAmount[],
+  parsedStablesAmounts: TokenAmount[]
   stablesLiquidityMinted?: TokenAmount
   stablesPoolTokenPercentage?: Percent
   stablesError?: string
 } {
-  // const { account, chainId } = useActiveWeb3React()
 
-  const { typedValue1, typedValue2, typedValue3, typedValue4 } = useMintStablesState()
+  const { values } = useMintStablesState()
 
   const chainId = stablePool?.chainId ?? 43113
-  // const typedValues = [typedValue1, typedValue2, typedValue3, typedValue4]
-  // tokens
-  const stableCurrencies: { [field in StablesField]?: Token } = {
-    [StablesField.CURRENCY_1]: STABLES_INDEX_MAP[chainId][0],
-    [StablesField.CURRENCY_2]: STABLES_INDEX_MAP[chainId][1],
-    [StablesField.CURRENCY_3]: STABLES_INDEX_MAP[chainId][2],
-    [StablesField.CURRENCY_4]: STABLES_INDEX_MAP[chainId][3],
-  }
-
-  // // stablesPair
-  // const [stablePoolState, stablePool] = useStablePool()
-
-  // stablePool?.setBlockTimestamp(BigNumber.from(simpleRpcProvider(chainId ?? 43113).blockNumber))
 
   const totalSupply = !publicDataLoaded ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
 
-  const stablesCurrencyBalances: { [field in StablesField]?: TokenAmount } = {
-    [StablesField.CURRENCY_1]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_1].address)[0],
-    [StablesField.CURRENCY_2]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_2].address)[0],
-    [StablesField.CURRENCY_3]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_3].address)[0],
-    [StablesField.CURRENCY_4]: stableCcyAmounts?.filter(amount=>amount.token.address === stableCurrencies[StablesField.CURRENCY_4].address)[0],
-  }
+  const stablesCurrencyBalances: TokenAmount[] = stablePool?.getTokenAmounts()
 
+  const parsedInputAmounts = useMemo(() => {
+    return stablePool?.tokens?.map((ta, i) => new TokenAmount(ta, tryParseAmount(chainId, values[i] ?? '0', ta)?.raw ?? '0'))
+  }, [stablePool, values, chainId])
 
-
-  const parsedStablesAmount1: TokenAmount | undefined = wrappedCurrencyAmount(
-    tryParseAmount(chainId, typedValue1 === '' ? '0' : typedValue1, STABLES_INDEX_MAP[chainId][0]),
-    chainId)
-
-  const parsedStablesAmount2: TokenAmount | undefined = wrappedCurrencyAmount(
-    tryParseAmount(chainId, typedValue2 === '' ? '0' : typedValue2, STABLES_INDEX_MAP[chainId][1]),
-    chainId)
-
-  const parsedStablesAmount3: TokenAmount | undefined = wrappedCurrencyAmount(
-    tryParseAmount(chainId, typedValue3 === '' ? '0' : typedValue3, STABLES_INDEX_MAP[chainId][2]),
-    chainId)
-
-  const parsedStablesAmount4: TokenAmount | undefined = wrappedCurrencyAmount(
-    tryParseAmount(chainId, typedValue4 === '' ? '0' : typedValue4, STABLES_INDEX_MAP[chainId][3]),
-    chainId)
-
-  /* Object.assign({},
-    ...fieldList.map((_, index) => ({ [fieldList[index]]: tryParseAmount(chainId, typedValues[index], stableCurrencies[index]) }))); */
 
   // liquidity minted
   const stablesLiquidityMinted = useMemo(() => {
 
     if (stablePool && totalSupply) {
       return stablePool.getLiquidityAmount( // BigNumber.from(0)
-        [
-          parsedStablesAmount1 === undefined ? BigNumber.from(0) : parsedStablesAmount1.toBigNumber(),
-          parsedStablesAmount2 === undefined ? BigNumber.from(0) : parsedStablesAmount2.toBigNumber(),
-          parsedStablesAmount3 === undefined ? BigNumber.from(0) : parsedStablesAmount3.toBigNumber(),
-          parsedStablesAmount4 === undefined ? BigNumber.from(0) : parsedStablesAmount4.toBigNumber()
-
-        ],
+        parsedInputAmounts.map(pa => pa?.raw ?? ZERO),
         true)
     }
     return undefined
-  }, [parsedStablesAmount1, parsedStablesAmount2, parsedStablesAmount3, parsedStablesAmount4, stablePool, totalSupply])
+  }, [parsedInputAmounts, stablePool, totalSupply])
 
   const stablesPoolTokenPercentage = useMemo(() => {
     if (stablesLiquidityMinted && totalSupply) {
@@ -177,42 +153,23 @@ export function useDerivedMintStablesInfo(
     stablesError = 'Connect Wallet'
   }
 
-  if (!parsedStablesAmount1 && !parsedStablesAmount2
-    && !parsedStablesAmount3 && !parsedStablesAmount4) {
+  const orderedStableCcyUserBalances: TokenAmount[] = stablesCurrencyBalances?.map(x => stableCcyUserBalances.find(y => y.token.equals(x.token)))
+
+  let input = false
+  for (let i = 0; i < parsedInputAmounts?.length; i++) {
+    if (parsedInputAmounts && orderedStableCcyUserBalances?.[i]?.lessThan(parsedInputAmounts[i])) {
+      stablesError = `Insufficient ${orderedStableCcyUserBalances?.[i].token.symbol} balance`
+    }
+    if (!parsedInputAmounts[i] && parsedInputAmounts[i]?.raw.gt(ZERO))
+      input = input || true
+  }
+
+  if (!input)
     stablesError = stablesError ?? 'Enter an amount'
-  }
-
-
-
-  // const { [StablesField.CURRENCY_1]: currency1Amount, [StablesField.CURRENCY_2]: currency2Amount,
-  //   [StablesField.CURRENCY_3]: currency3Amount, [StablesField.CURRENCY_4]: currency4Amount } = parsedStablesAmounts
-
-  if (parsedStablesAmount1 && stablesCurrencyBalances?.[StablesField.CURRENCY_1]?.lessThan(parsedStablesAmount1)) {
-    stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_1]?.symbol} balance`
-  }
-
-  if (parsedStablesAmount2 && stablesCurrencyBalances?.[StablesField.CURRENCY_2]?.lessThan(parsedStablesAmount2)) {
-    stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_2]?.symbol} balance`
-  }
-  if (parsedStablesAmount3 && stablesCurrencyBalances?.[StablesField.CURRENCY_3]?.lessThan(parsedStablesAmount3)) {
-    stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_3]?.symbol} balance`
-  }
-  if (parsedStablesAmount4 && stablesCurrencyBalances?.[StablesField.CURRENCY_4]?.lessThan(parsedStablesAmount4)) {
-    stablesError = `Insufficient ${stableCurrencies[StablesField.CURRENCY_4]?.symbol} balance`
-  }
-
-  const parsedStablesAmounts =
-  {
-    [StablesField.CURRENCY_1]: parsedStablesAmount1 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][0], '0') : parsedStablesAmount1,
-    [StablesField.CURRENCY_2]: parsedStablesAmount2 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][1], '0') : parsedStablesAmount2,
-    [StablesField.CURRENCY_3]: parsedStablesAmount3 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][2], '0') : parsedStablesAmount3,
-    [StablesField.CURRENCY_4]: parsedStablesAmount4 === undefined ? new TokenAmount(STABLES_INDEX_MAP[chainId][3], '0') : parsedStablesAmount4
-  }
 
   return {
-    stableCurrencies,
-    stablesCurrencyBalances,
-    parsedStablesAmounts,
+    orderedStableCcyUserBalances,
+    parsedStablesAmounts: parsedInputAmounts,
     stablesLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
     stablesPoolTokenPercentage,
     stablesError,

@@ -130,7 +130,7 @@ export default function CurrencyInputPanelExpanded({
                 {account && (
                   <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                     {!hideBalance && !!currency && selectedCurrencyBalance
-                      ? isLoading ? <CircleLoader /> : t(`${balanceText}: %amount%`, { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                      ? isLoading ? <CircleLoader /> : `${balanceText}: ${Number(selectedCurrencyBalance?.toSignificant(8)).toLocaleString() ?? '' }`
                       : ' -'}
                   </Text>
                 )}

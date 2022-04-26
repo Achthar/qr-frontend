@@ -8,7 +8,7 @@ export enum StablesField {
 }
 
 export const typeInputs = createAction<{ typedValues: string[] }>('mintStables/typeInputStablesMint')
-export const typeInput = createAction<{ typedValue: string }>('mintStables/typeInputStablesMint')
+export const typeInput = createAction<{ typedValue: string, fieldIndex: number }>('mintStables/typeInputStablesMint')
 export const typeInput1 = createAction<{ typedValue1: string }>('mintStables/typeInput1StablesMint')
 export const typeInput2 = createAction<{ typedValue2: string }>('mintStables/typeInput2StablesMint')
 

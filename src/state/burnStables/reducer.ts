@@ -36,7 +36,7 @@ const initialState: BurnStablesState = {
   typedValue2: '0',
   typedValue3: '0',
   typedValue4: '0',
-  calculatedSingleValues: ['0', '0', '0', '0'],
+  calculatedSingleValues: ['0', '0', '0', '0', '0'],
   selectedStableSingle: 0,
   typedValueSingle: '0',
 }

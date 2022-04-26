@@ -39,8 +39,11 @@ const InputPanel = styled.div<{ width: string }>`
   z-index: 1;
   width: ${(props) => props.width}
 `
-const Container = styled.div<{ hideInput: boolean, onHover: boolean }>`
-  border-radius: 13px;
+const Container = styled.div<{ hideInput: boolean, onHover: boolean, isTop: boolean, isBottom: boolean }>`
+  border-top-left-radius: ${({ isTop }) => isTop ? '16px' : '0px'};
+  border-top-right-radius: ${({ isTop }) => isTop ? '16px' : '0px'};
+  border-bottom-left-radius: ${({ isBottom }) => isBottom ? '16px' : '0px'};
+  border-bottom-right-radius: ${({ isBottom }) => isBottom ? '16px' : '0px'};
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
   &:hover 
@@ -63,6 +66,8 @@ interface CurrencyInputPanelStable {
   id: string
   showCommonBases?: boolean
   onHover?: boolean
+  isTop?: boolean
+  isBottom?: boolean
 
 }
 
@@ -81,21 +86,23 @@ export default function CurrencyInputPanelStable({
   stablePool = null, // used for double token logo
   hideInput = true,
   id,
-  onHover = false
+  onHover = false,
+  isTop = true,
+  isBottom = true
 }: CurrencyInputPanelStable) {
-  
+
   const selectedCurrencyBalance = balances[stableCurrency?.address] ?? undefined // useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
   const { t } = useTranslation()
   return (
     <InputPanel id={id} width={width}>
-      <Container hideInput={false} onHover={onHover}>
+      <Container hideInput={false} onHover={onHover} isTop={isTop} isBottom={isBottom}>
 
         <RowBetween>
           <LabelRow >
             {!hideBalance && account && (
               <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
                 {!hideBalance && !!stableCurrency && selectedCurrencyBalance
-                  ? t('Balance: %amount%', { amount: selectedCurrencyBalance?.toSignificant(6) ?? '' })
+                  ? `Balance: ${Number(selectedCurrencyBalance?.toSignificant(8)).toLocaleString() ?? ''}`
                   : ' -'}
               </Text>)
               // ): account && (<Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }} ml='50px'/>)
