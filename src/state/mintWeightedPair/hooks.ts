@@ -189,11 +189,6 @@ export function useDerivedMintWeightedPairInfo(
     const [weightedPairState, weightedPairData] = pairData ? [WeightedPairState.EXISTS, pairData] :
         [WeightedPairState.NOT_EXISTS, undefined]
 
-    console.log("WPA INP", pairData, relevantPairData, weights, "FEE", typedFee, relevantPairData.filter(
-        data => [data.pair.weight0.toString(),
-        data.pair.weight1.toString(), data.pair.fee0.toString()]
-    )?.[0], aIsToken0)
-
     const totalSupply = weightedPairData?.supply
     const weightedPair = pairData?.pair
 

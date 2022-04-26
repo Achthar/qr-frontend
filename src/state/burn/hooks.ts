@@ -21,7 +21,10 @@ export function useDerivedBurnInfo(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
   weightFieldA: string,
-  fee: string
+  pairData: AmplifiedWeightedPair[],
+  loadedBalances?: TokenAmount[],
+  loadedSupply?: TokenAmount[],
+  dataLoaded?: boolean
 ): {
   pair?: AmplifiedWeightedPair | null
   parsedAmounts: {
@@ -31,28 +34,55 @@ export function useDerivedBurnInfo(
     [Field.CURRENCY_B]?: CurrencyAmount
   }
   weightFieldA: string
-  fee: string
   error?: string
 } {
+  let pair: AmplifiedWeightedPair
+  let totalSupply: TokenAmount
+  let userLiquidity: TokenAmount
+
+  const [tokenA, tokenB] = [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+
+  const aIs0 = tokenA.sortsBefore(tokenB)
+  const relevantPairData = pairData.map((_, index) => {
+    return {
+      pair: pairData[index],
+      supply: loadedSupply[index],
+      balance: loadedBalances[index]
+    }
+  }).filter(data => data.pair.token0.address === (aIs0 ? tokenA.address : tokenB.address) && data.pair.token1.address === (aIs0 ? tokenB.address : tokenA.address))
+
+  const pairInState = relevantPairData.length > 0
 
   const { independentField, typedValue } = useBurnState()
 
-  // pair + totalsupply
-  const [, pair] = useWeightedPair(chainId, currencyA, currencyB, Number(weightFieldA), Number(fee))
+  const loadManual = dataLoaded && !pairInState
 
+  // these only should be done if apirs are unavailable in state - that is faster due to navigatioon from pool
+
+  // pair + totalsupply
+  const [, _pair] = useWeightedPair(chainId, loadManual && currencyA, loadManual && currencyB, loadManual && Number(weightFieldA))
+  // liquidity values
+  const _totalSupply = useTotalSupply(loadManual && _pair?.liquidityToken)
   // balances
-  const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
-  const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
-  console.log("BAL", userLiquidity?.toSignificant(18))
-  const [tokenA, tokenB] = [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
+  const relevantTokenBalances = useTokenBalances(loadManual && (account ?? undefined), loadManual ? [pair?.liquidityToken] : [])
+  const _userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
+
+  if (loadManual) {
+    pair = _pair
+    totalSupply = _totalSupply
+    userLiquidity = _userLiquidity
+  } else {
+    pair = relevantPairData[0]?.pair
+    totalSupply = relevantPairData[0]?.supply
+    userLiquidity = relevantPairData[0]?.balance
+  }
+
   const tokens = {
     [Field.CURRENCY_A]: tokenA,
     [Field.CURRENCY_B]: tokenB,
     [Field.LIQUIDITY]: pair?.liquidityToken,
   }
 
-  // liquidity values
-  const totalSupply = useTotalSupply(pair?.liquidityToken)
   const liquidityValueA =
     pair &&
       totalSupply &&
@@ -129,7 +159,7 @@ export function useDerivedBurnInfo(
     error = error ?? 'Enter an amount'
   }
 
-  return { pair, parsedAmounts, error, weightFieldA, fee }
+  return { pair, parsedAmounts, error, weightFieldA }
 }
 
 export function useBurnActionHandlers(): {

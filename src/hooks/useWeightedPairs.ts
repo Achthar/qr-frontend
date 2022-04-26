@@ -1,7 +1,10 @@
 import { TokenAmount, AmplifiedWeightedPair, Currency, WEIGHTED_FACTORY_ADDRESS, Token } from '@requiemswap/sdk'
 import { useMemo } from 'react'
-import RequiemPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import RequiemPairABI from 'config/abi/avax/RequiemPair.json'
 import { BigNumber } from 'ethers'
+import { getCreate2Address } from 'ethers/lib/utils'
+import { pack, keccak256 } from '@ethersproject/solidity'
+import { FACTORY_ADDRESS } from 'config/constants'
 import { Interface } from '@ethersproject/abi'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
 import { DAI, REQT } from 'config/constants/tokens'
@@ -11,6 +14,35 @@ import { wrappedCurrency } from '../utils/wrappedCurrency'
 // import { getWeightedPairFactory } from '../utils/contractHelpers'
 
 
+
+const PAIR_HASH = {
+
+  43113: '0x0f48b34fd4902a2e947743a3f61c48cf2b15d2af70a43c235dade37d0d707f02'
+}
+
+const _100 = BigNumber.from(100)
+
+function getAddress(tokenA: Token, tokenB: Token, weightA: BigNumber): string {
+  const tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
+  const weights = tokenA.sortsBefore(tokenB) ? [weightA.toString(), _100.sub(weightA).toString()] : [_100.sub(weightA).toString(), weightA.toString()] // does safety checks
+  try {
+    return getCreate2Address(
+      FACTORY_ADDRESS[tokens[0].chainId],
+      keccak256(
+        ['bytes'],
+        [pack(
+          ['address', 'address', 'uint32'],
+          [tokens[0].address, tokens[1].address, weights[0]]
+        )]
+      ),
+      PAIR_HASH[tokens[0].chainId]
+    )
+  }
+  catch (error) {
+    console.log("WP", error)
+    return ''
+  }
+}
 
 const PAIR_INTERFACE = new Interface(RequiemPairABI)
 
@@ -24,8 +56,7 @@ export enum WeightedPairState {
 export function useWeightedPairs(
   chainId: number,
   currencies: [Currency | undefined, Currency | undefined][],
-  weightA?: number[],
-  fee?: number[]
+  weightA?: number[]
 ): [WeightedPairState, AmplifiedWeightedPair | null][] {
 
 
@@ -41,37 +72,36 @@ export function useWeightedPairs(
   const pairAddresses = useMemo(
     () =>
       tokens.map(([tokenA, tokenB], i) => {
-        return tokenA && tokenB && !tokenA.equals(tokenB) ? AmplifiedWeightedPair.getAddress(tokenA, tokenB, BigNumber.from(weightA[i])) : undefined
+        return tokenA && tokenB && !tokenA.equals(tokenB) && weightA[i] ? getAddress(tokenA, tokenB, BigNumber.from(weightA[i])) : undefined
       }),
     [tokens, weightA],
   )
-  console.log("WPA PA", pairAddresses)
+
   const results = useMultipleContractSingleData(chainId, pairAddresses, PAIR_INTERFACE, 'getReserves')
-  console.log("WPA results", results)
+
   return useMemo(() => {
     return results.map((result, i) => {
-
-      const { result: reserves, loading } = result
+      const { result: res, loading } = result
       const tokenA = tokens[i][0]
       const tokenB = tokens[i][1]
 
       if (loading) return [WeightedPairState.LOADING, null]
       if (!tokenA || !tokenB || tokenA.equals(tokenB)) return [WeightedPairState.INVALID, null]
-      if (!reserves) return [WeightedPairState.NOT_EXISTS, null]
-      const { _reserve0: reserve0, _reserve1: reserve1 } = reserves
+      if (!res) return [WeightedPairState.NOT_EXISTS, null]
+      const {  reserve0, reserve1, vReserve0, vReserve1 } = res.reserveData
       const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
       const weight0 = tokenA.sortsBefore(tokenB) ? BigNumber.from(weightA[i]) : BigNumber.from(100 - weightA[i])
       return [
         WeightedPairState.EXISTS,
-        new AmplifiedWeightedPair([token0, token1],[reserve0, reserve1], [reserve0, reserve1], weight0, BigNumber.from(fee[i]), BigNumber.from(2)),
+        new AmplifiedWeightedPair([token0, token1], [reserve0, reserve1], [vReserve0, vReserve1], weight0, BigNumber.from(5), BigNumber.from(2), pairAddresses[i]),
       ]
     })
-  }, [results, tokens, weightA, fee])
+  }, [results, tokens, weightA, pairAddresses])
 }
 
-export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Currency, weightA?: number, fee?: number): [WeightedPairState, AmplifiedWeightedPair | null] {
+export function useWeightedPair(chainId: number, tokenA?: Currency, tokenB?: Currency, weightA?: number): [WeightedPairState, AmplifiedWeightedPair | null] {
 
-  return useWeightedPairs(chainId, [[tokenA, tokenB]], [weightA], [fee])[0]
+  return useWeightedPairs(chainId, [[tokenA, tokenB]], [weightA])[0]
 }
 
 // a function that checks whether the address exists on the specified chain using the factory contract

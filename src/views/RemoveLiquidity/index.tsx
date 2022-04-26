@@ -7,6 +7,9 @@ import { RouteComponentProps } from 'react-router'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import getChain from 'utils/getChain'
+import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
+import useRefresh from 'hooks/useRefresh'
+import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -17,7 +20,7 @@ import ConnectWalletButton from '../../components/ConnectWalletButton'
 import { LightGreyCard } from '../../components/Card'
 
 import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
-import {  REQUIEM_PAIR_MANAGER } from '../../config/constants'
+import { REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from '../../config/constants'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
@@ -45,9 +48,9 @@ const BorderCard = styled.div`
 export default function RemoveLiquidity({
   history,
   match: {
-    params: {chain, weightA, weightB, fee, currencyIdA, currencyIdB },
+    params: { chain, weightA, weightB, currencyIdA, currencyIdB },
   },
-}: RouteComponentProps<{chain:string, weightA: string, weightB: string, fee: string, currencyIdA: string; currencyIdB: string }>) {
+}: RouteComponentProps<{ chain: string, weightA: string, weightB: string, currencyIdA: string; currencyIdB: string }>) {
 
   const { account, chainId, library } = useActiveWeb3React()
 
@@ -63,11 +66,25 @@ export default function RemoveLiquidity({
   // burn state
   const { independentField, typedValue } = useBurnState()
 
+
+  const { slowRefresh, fastRefresh } = useRefresh()
+
+  // first, we fetch all weighted pairs from the state
+  // and add some, if not yet included
+  const {
+    pairs,
+    balances: userBalances,
+    userBalancesLoaded,
+    totalSupply: supplyLp
+  } = useGetWeightedPairsState(chainId, account, tokenA && tokenB ? [{ token0: serializeToken(tokenA), token1: deserializeToken(tokenA) }] : [], slowRefresh, fastRefresh)
+
+
+
   const {
     pair,
     parsedAmounts,
     error
-  } = useDerivedBurnInfo(chainId, account, currencyA ?? undefined, currencyB ?? undefined, weightA, fee)
+  } = useDerivedBurnInfo(chainId, account, currencyA ?? undefined, currencyB ?? undefined, weightA, pairs, userBalances, supplyLp, userBalancesLoaded)
 
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
@@ -101,7 +118,7 @@ export default function RemoveLiquidity({
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.LIQUIDITY], REQUIEM_PAIR_MANAGER[chainId])
+  const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.LIQUIDITY], SWAP_ROUTER[chainId])
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -353,23 +370,23 @@ export default function RemoveLiquidity({
     (currency: Currency) => {
       const _chain = chain ?? getChain(chainId)
       if (currencyIdB && currencyId(chainId, currency) === currencyIdB) {
-        history.push(`/${_chain}/remove/${weightB}-${currencyId(chainId, currency)}/${weightA}-${currencyIdA}/${fee}`)
+        history.push(`/${_chain}/remove/${weightB}-${currencyId(chainId, currency)}/${weightA}-${currencyIdA}`)
       } else {
-        history.push(`/${_chain}/remove/${weightA}-${currencyId(chainId, currency)}/${weightB}-${currencyIdB}/${fee}`)
+        history.push(`/${_chain}/remove/${weightA}-${currencyId(chainId, currency)}/${weightB}-${currencyIdB}`)
       }
     },
-    [chain, currencyIdA, currencyIdB, history, fee, weightA, weightB, chainId],
+    [chain, currencyIdA, currencyIdB, history, weightA, weightB, chainId],
   )
   const handleSelectCurrencyB = useCallback(
     (currency: Currency) => {
       const _chain = chain ?? getChain(chainId)
       if (currencyIdA && currencyId(chainId, currency) === currencyIdA) {
-        history.push(`/${_chain}/remove/${weightB}-${currencyIdB}/${weightA}-${currencyId(chainId, currency)}/${fee}`)
+        history.push(`/${_chain}/remove/${weightB}-${currencyIdB}/${weightA}-${currencyId(chainId, currency)}`)
       } else {
-        history.push(`/${_chain}/remove/${weightA}-${currencyIdA}/${weightB}-${currencyId(chainId, currency)}/${fee}`)
+        history.push(`/${_chain}/remove/${weightA}-${currencyIdA}/${weightB}-${currencyId(chainId, currency)}`)
       }
     },
-    [chain, currencyIdA, currencyIdB, history, fee, weightA, weightB, chainId],
+    [chain, currencyIdA, currencyIdB, history, weightA, weightB, chainId],
   )
 
   const handleDismissConfirmation = useCallback(() => {
@@ -407,7 +424,7 @@ export default function RemoveLiquidity({
           chainId={chainId}
           account={account}
           backTo={`/${chain}/liquidity`}
-          title={`Remove\n ${weightA}-${currencyA?.symbol ?? ''}/${weightB}-${currencyB?.symbol ?? ''}@${fee}bps\nliquidity`}
+          title={`Remove\n ${weightA}-${currencyA?.symbol ?? ''}/${weightB}-${currencyB?.symbol ?? ''} liquidity`}
           subtitle={`To receive ${currencyA?.symbol} and ${currencyB?.symbol}`}
           noConfig
         />
