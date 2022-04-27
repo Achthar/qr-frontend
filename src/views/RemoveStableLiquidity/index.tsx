@@ -28,8 +28,8 @@ import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router-dom'
 import { useStablePoolLpBalance } from 'state/stablePools/hooks'
 import useRefresh from 'hooks/useRefresh'
+import PoolLogo from 'components/Logo/PoolLogo'
 import getChain from 'utils/getChain'
-import { STABLE_POOL_LP } from 'config/constants/tokens'
 import { sliceIntoChunks } from 'utils/arraySlicer'
 import Row from 'components/Row'
 import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
@@ -137,7 +137,7 @@ export default function RemoveStableLiquidity({
   } = useBurnStablesActionHandlers()
 
   const isValid = !error
-  
+
   // modal and loading
   const enum StableRemovalState {
     BY_LP,
@@ -453,53 +453,30 @@ export default function RemoveStableLiquidity({
   }
 
   function modalHeader() {
+    const last = stablePool?.tokens.length - 1
     return (
       <AutoColumn gap="md">
-        <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6)}</Text>
-          <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[0]} size="24px" />
-            <Text fontSize="24px" ml="10px" mr="5px">
-              {stablePool?.tokens[0].symbol}
-            </Text>
-          </RowFixed>
-        </RowBetween>
-        <RowFixed>
-          <AddIcon width="15px" />
-        </RowFixed>
-        <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_2]?.toSignificant(6)}</Text>
-          <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[1]} size="24px" />
-            <Text fontSize="24px" ml="10px" mr="5px">
-              {stablePool?.tokens[1].symbol}
-            </Text>
-          </RowFixed>
-        </RowBetween>
-        <RowFixed>
-          <AddIcon width="15px" />
-        </RowFixed>
-        <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_3]?.toSignificant(6)}</Text>
-          <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[2]} size="24px" />
-            <Text fontSize="24px" ml="10px" mr="5px">
-              {stablePool?.tokens[2].symbol}
-            </Text>
-          </RowFixed>
-        </RowBetween>
-        <RowFixed>
-          <AddIcon width="15px" />
-        </RowFixed>
-        <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_4]?.toSignificant(6)}</Text>
-          <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={stablePool?.tokens[3]} size="24px" />
-            <Text fontSize="24px" ml="10px" mr="5px">
-              {stablePool?.tokens[3].symbol}
-            </Text>
-          </RowFixed>
-        </RowBetween>
+        {stablePool && stablePool.tokens.map((tk, i) => {
+          return (
+
+            <>
+              <RowBetween align="flex-end">
+                <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6)}</Text>
+                <RowFixed gap="4px">
+                  <CurrencyLogo chainId={chainId} currency={tk} size="24px" />
+                  <Text fontSize="24px" ml="10px" mr="5px">
+                    {tk.symbol}
+                  </Text>
+                </RowFixed>
+              </RowBetween>
+              {i !== last && (
+                <RowFixed>
+                  <AddIcon width="15px" />
+                </RowFixed>)
+              }
+            </>
+          )
+        })}
 
         <Text small textAlign="left" pt="12px">
           {t('Output is estimated. If the price changes by more than %slippage%% your transaction will revert.', {
@@ -636,22 +613,11 @@ export default function RemoveStableLiquidity({
       <>
         <RowBetween>
           <Text>
-            {`${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol}-${stablePool?.tokens[2].symbol}-${stablePool?.tokens[3].symbol} Stable Swap LP burned`}
+            {`${symbolText} Stable Swap LP burned`}
           </Text>
           <RowFixed>
             <AutoColumn>
-              <DoubleCurrencyLogo
-                chainId={chainId}
-                currency0={stablePool?.tokens[0]}
-                currency1={stablePool?.tokens[1]}
-                margin
-              />
-              <DoubleCurrencyLogo
-                chainId={chainId}
-                currency0={stablePool?.tokens[2]}
-                currency1={stablePool?.tokens[3]}
-                margin
-              />
+              <PoolLogo tokens={stablePool?.tokens} margin />
             </AutoColumn>
             <Text>{parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
@@ -686,18 +652,7 @@ export default function RemoveStableLiquidity({
           </Text>
           <RowFixed>
             <AutoColumn>
-              <DoubleCurrencyLogo
-                chainId={chainId}
-                currency0={stablePool?.tokens[0]}
-                currency1={stablePool?.tokens[1]}
-                margin
-              />
-              <DoubleCurrencyLogo
-                chainId={chainId}
-                currency0={stablePool?.tokens[2]}
-                currency1={stablePool?.tokens[3]}
-                margin
-              />
+              <PoolLogo tokens={stablePool?.tokens} margin />
             </AutoColumn>
             <Text>{parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6)}</Text>
           </RowFixed>

@@ -15,8 +15,11 @@ import { useUserPairs } from 'state/user/hooks'
 import Column from 'components/Column'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
+import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
+import FullPoolPositionCard from 'components/PositionCard/PoolPosition'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { useStablePoolLpBalance } from 'state/stablePools/hooks'
+import { useWeightedPoolLpBalance } from 'state/weightedPools/hooks'
 import FullWeightedPositionCardExtended from '../../components/PositionCard/WeightedPairPositionExtended'
 import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import Dots from '../../components/Loader/Dots'
@@ -53,7 +56,12 @@ export default function PoolList({
   const { slowRefresh, fastRefresh } = useRefresh()
 
   const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+
+  const { weightedPools, userDataLoaded: wPoolLoaded, publicDataLoaded: wPoolPublicLoaded } = useGetWeightedPoolState(chainId, account, slowRefresh, slowRefresh)
+
   const stablePoolReceived = stablePools[0]
+
+  const weightedPoolReceived = weightedPools[0]
 
   const userPairs = useUserPairs(chainId)
 
@@ -90,6 +98,8 @@ export default function PoolList({
 
   const stablePoolBalance = useStablePoolLpBalance(chainId, 0)
 
+  const weightedPoolBalance = useWeightedPoolLpBalance(chainId, 0)
+
   const renderBody = () => {
     if (!account) {
       return (
@@ -122,9 +132,16 @@ export default function PoolList({
     return (
       <Column>
         {stablePoolBalance?.toBigNumber().gt(0) && stablePoolReceived != null && (
-          <FullStablesPositionCard
+          <FullPoolPositionCard
             userLpPoolBalance={stablePoolBalance}
-            stablePool={stablePoolReceived}
+            pool={stablePoolReceived}
+            mb='20px'
+          />)}
+
+        {wPoolLoaded && weightedPoolBalance?.toBigNumber().gt(0) && weightedPoolReceived != null && (
+          <FullPoolPositionCard
+            userLpPoolBalance={weightedPoolBalance}
+            pool={weightedPoolReceived}
             mb='20px'
           />)}
         {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedDataWithLiquidity.map((data, index) => (

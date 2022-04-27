@@ -30,10 +30,6 @@ export const weightedSwapInitialData: { [chainId: number]: any[] } = {
                 lpToken: '0xa9767ba217ac2543799409e5b4970b7cb3df3ed5',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
-                initialA: BigNumber.from('0xea60').toString(),
-                futureA: BigNumber.from('0xea60').toString(),
-                initialATime: BigNumber.from('0x00').toString(),
-                futureATime: BigNumber.from('0x00').toString(),
                 defaultWithdrawFee: BigNumber.from('0x02faf080').toString(),
             }
         },

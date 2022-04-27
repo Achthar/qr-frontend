@@ -15,6 +15,7 @@ import stablePoolsReducer from './stablePools'
 import weightedPoolsReducer from './weightedPools'
 import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
+import mintPoolLp from './mintPoolLp/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
 import governance from './governance/reducer'
 import weightedPairReducer from './weightedPairs'
@@ -44,6 +45,7 @@ const store = configureStore({
     transactions,
     swapV3,
     mintStables,
+    mintPoolLp,
     mintWeightedPair,
     burn,
     burnStables,

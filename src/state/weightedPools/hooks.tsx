@@ -28,14 +28,6 @@ export const useBondFromBondId = (bondId): Bond => {
   return bond
 }
 
-function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]: Token } {
-  return Object.assign({},
-    ...Object.values(serializedTokens).map(
-      (x, index) => ({ [index]: new Token(x.chainId, x.address, x.decimals, x.symbol, x.name) })
-    )
-  )
-}
-
 export const useWeightedPoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.weightedPools)
   const pools = poolState.poolData[chainId].pools
