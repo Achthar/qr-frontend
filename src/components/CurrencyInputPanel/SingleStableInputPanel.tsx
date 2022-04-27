@@ -1,5 +1,5 @@
 import React from 'react'
-import { Currency } from '@requiemswap/sdk'
+import { Currency, Token } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
@@ -50,12 +50,12 @@ interface CurrencyInputPanelProps {
   onMax?: () => void
   showMaxButton: boolean
   label?: string
-  onCurrencySelect: (currency: Currency) => void
-  currency?: Currency | null
+  onCurrencySelect: (currency: Token) => void
+  currency?: Token | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
   hideInput?: boolean
-  otherCurrency?: Currency | null
+  otherCurrency?: Token | null
   id: string
   showCommonBases?: boolean
 }

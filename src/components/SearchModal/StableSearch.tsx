@@ -6,6 +6,8 @@ import { FixedSizeList } from 'react-window'
 import { useAudioModeManager } from 'state/user/hooks'
 import useDebounce from 'hooks/useDebounce'
 import { useNetworkState } from 'state/globalNetwork/hooks'
+import ImportRow from './ImportRow'
+import TokenList from './TokenList'
 import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } from '../../hooks/Tokens'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
@@ -15,12 +17,11 @@ import CurrencyList from './CurrencyList'
 import { filterTokens, useSortedTokensByQuery } from './filtering'
 import useTokenComparator from './sorting'
 
-import ImportRow from './ImportRow'
 
 interface StableSearchProps {
-  selectedCurrency?: Currency | null
-  onCurrencySelect: (currency: Currency) => void
-  otherSelectedCurrency?: Currency | null
+  selectedCurrency?: Token | null
+  onCurrencySelect: (currency: Token) => void
+  otherSelectedCurrency?: Token | null
   showCommonBases?: boolean
   showImportView: () => void
   setImportToken: (token: Token) => void
@@ -69,7 +70,7 @@ function StableSearch({
   const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery)
 
   const handleCurrencySelect = useCallback(
-    (currency: Currency) => {
+    (currency: Token) => {
       onCurrencySelect(currency)
       if (audioPlay) {
         swapSound.play()
@@ -91,7 +92,7 @@ function StableSearch({
           </Column>
         ) : filteredSortedTokens?.length > 0 || filteredInactiveTokens?.length > 0 ? (
           <Box margin="24px -24px">
-            <CurrencyList
+            <TokenList
               height={390}
               showETH={false}
               currencies={

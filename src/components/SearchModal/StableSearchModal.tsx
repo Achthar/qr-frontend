@@ -37,9 +37,9 @@ const StyledModalBody = styled(ModalBody)`
 `
 
 interface CurrencySearchModalProps extends InjectedModalProps {
-  selectedCurrency?: Currency | null
-  onCurrencySelect: (currency: Currency) => void
-  otherSelectedCurrency?: Currency | null
+  selectedCurrency?: Token | null
+  onCurrencySelect: (currency: Token) => void
+  otherSelectedCurrency?: Token | null
   showCommonBases?: boolean
 }
 
@@ -53,7 +53,7 @@ export default function CurrencySearchModal({
   const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.search)
 
   const handleCurrencySelect = useCallback(
-    (currency: Currency) => {
+    (currency: Token) => {
       onDismiss()
       onCurrencySelect(currency)
     },
@@ -102,10 +102,6 @@ export default function CurrencySearchModal({
             showImportView={() => setModalView(CurrencyModalView.importToken)}
             setImportToken={setImportToken}
           />
-        ) : modalView === CurrencyModalView.importToken && importToken ? (
-          <ImportToken tokens={[importToken]} handleCurrencySelect={handleCurrencySelect} />
-        ) : modalView === CurrencyModalView.importList && importList && listURL ? (
-          <ImportList list={importList} listURL={listURL} onImport={() => setModalView(CurrencyModalView.manage)} />
         ) : modalView === CurrencyModalView.manage ? (
           <Manage
             setModalView={setModalView}

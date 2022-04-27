@@ -24,6 +24,7 @@ export interface BurnStablesState {
   readonly typedValue3: string
   readonly typedValue4: string
   readonly calculatedSingleValues: string[]
+  readonly typedValues: string[]
   readonly selectedStableSingle: number
   readonly typedValueSingle: string
 
@@ -37,6 +38,7 @@ const initialState: BurnStablesState = {
   typedValue3: '0',
   typedValue4: '0',
   calculatedSingleValues: ['0', '0', '0', '0', '0'],
+  typedValues: ['0', '0', '0', '0', '0'],
   selectedStableSingle: 0,
   typedValueSingle: '0',
 }
@@ -127,7 +129,7 @@ export default createReducer<BurnStablesState>(initialState, (builder) =>
         typedValue3: calculatedValues[2],
         typedValue4,
       }
-    }).addCase(selectStableSingle, (state, { payload: {selectedStableSingle } }) => {
+    }).addCase(selectStableSingle, (state, { payload: { selectedStableSingle } }) => {
       return {
         ...state,
         selectedStableSingle,
