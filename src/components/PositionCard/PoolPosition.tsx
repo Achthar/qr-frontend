@@ -254,7 +254,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
               <Flex flexDirection="column">
                 <Button
                   as={Link}
-                  to={`/${chain}/remove/stables`}
+                  to={`/${chain}/remove/${pool instanceof StablePool ? 'stables' : 'weighted'}`}
                   variant="primary"
                   width="100%"
                   mb="8px"
