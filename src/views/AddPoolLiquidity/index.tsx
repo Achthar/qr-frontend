@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   TokenAmount,
-  STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP,
   ZERO,
 } from '@requiemswap/sdk'
 import {
@@ -11,6 +9,9 @@ import {
   useMatchBreakpoints,
   Text
 } from '@requiemswap/uikit'
+
+import { useDerivedMintPoolInfo, useMintPoolLpActionHandlers, useMintPoolState } from 'state/mintPoolLp/hooks'
+import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
@@ -30,12 +31,12 @@ import { useDerivedMintStablesInfo, useMintStablePoolActionHandlers, useMintStab
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
-import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract } from 'utils'
+import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract, getWeightedPoolContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import StablePoolPriceBar from './PoolPriceBar'
+import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
 
 export default function AddLiquidityToPool({
@@ -50,7 +51,7 @@ export default function AddLiquidityToPool({
 
   useEffect(() => {
     const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/add/stables`)
+    history.push(`/${_chain}/add/weighted`)
 
   },
     [chainId, chain, history],
@@ -68,33 +69,33 @@ export default function AddLiquidityToPool({
   const addTransaction = useTransactionAdder()
 
   // mint state
-  const { values } = useMintStablesState()
+  const { values } = useMintPoolState()
 
   // we separate loading the stablepool to avoid rerendering on every input
   const { slowRefresh } = useRefresh()
 
 
   const {
-    stablePools,
-    stableAmounts,
-    // userDataLoaded,
+    weightedPools,
+    userBalances,
+    userDataLoaded,
     publicDataLoaded
-  } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
-  const stablePool = stablePools[0]
+  } = useGetWeightedPoolState(chainId, account, slowRefresh, slowRefresh)
+  const pool = weightedPools[0]
 
 
 
   const {
-    orderedStableCcyUserBalances,
-    parsedStablesAmounts,
-    stablesLiquidityMinted,
-    stablesPoolTokenPercentage,
-    // stablesError,
-  } = useDerivedMintStablesInfo(stablePool, publicDataLoaded, stableAmounts, account)
+    orderedUserBalances: orderedStableCcyUserBalances,
+    parsedInputAmounts: parsedStablesAmounts,
+    poolLiquidityMinted: stablesLiquidityMinted,
+    poolTokenPercentage: stablesPoolTokenPercentage,
+    poolError,
+  } = useDerivedMintPoolInfo(pool, publicDataLoaded, userBalances, account)
 
-  const { onFieldInput } = useMintStablePoolActionHandlers()
+  const { onFieldInput } = useMintPoolLpActionHandlers()
 
-  const tokens = stablePool?.tokens
+  const tokens = pool?.tokens
 
   const { approvalStates, approveCallback, isLoading } = useApproveCallbacks(
     chainId,
@@ -102,7 +103,7 @@ export default function AddLiquidityToPool({
     account,
     tokens,
     parsedStablesAmounts,
-    stablePool?.address,
+    pool?.address,
 
   )
 
@@ -137,7 +138,7 @@ export default function AddLiquidityToPool({
 
   async function onStablesAdd() {
     if (!chainId || !library || !account) return
-    const stableRouter = getStableSwapContract(stablePool, library, account)
+    const stableRouter = getWeightedPoolContract(pool, library, account)
 
     if (invalidAdd && !deadline) {
       return
@@ -180,13 +181,12 @@ export default function AddLiquidityToPool({
       })
   }
 
-  console.log("STABLE APPROVAL", approvalStates)
 
-  const bttm = useMemo(() => { return stablePool?.tokens.length - 1 }, [stablePool])
+  const bttm = useMemo(() => { return pool?.tokens.length - 1 }, [pool])
 
   return (
     <Page>
-      <Row width='200px' height='50px'>
+      <Row width='300px' height='50px'>
         <Button
           as={Link}
           to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
@@ -199,22 +199,31 @@ export default function AddLiquidityToPool({
         <Button
           as={Link}
           to={`/${getChain(chainId)}/add/stables`}
-          variant="primary"
+          variant="secondary"
           width="100%"
           mb="8px"
         >
           Stables
+        </Button>
+        <Button
+          as={Link}
+          to={`/${getChain(chainId)}/add/weighted`}
+          variant="primary"
+          width="100%"
+          mb="8px"
+        >
+          Weighted
         </Button>
       </Row>
       <AppBody>
         <AppHeader
           chainId={chainId}
           account={account}
-          title='Add Stablecoin Liquidity'
-          subtitle='Receive collateralizable StableSwap LP Tokens'
+          title={`Add ${pool?.name ?? ''} Pool Liquidity`}
+          subtitle={`Receive ${pool?.name ?? 'Weighted Pool'} LP Tokens`}
 
           helper={t(
-            `Liquidity providers earn a ${Number(stablePool?.swapStorage.fee.toString()) / 1e8}% trading fee on all trades made through the pool, proportional to their share of the liquidity pool.`,
+            `Liquidity providers earn a ${Number(pool?.swapStorage.fee.toString()) / 1e8}% trading fee on all trades made through the pool, proportional to their share of the liquidity pool.`,
           )}
           backTo={`/${getChain(chainId)}/liquidity`}
         />
@@ -222,7 +231,7 @@ export default function AddLiquidityToPool({
 
           <AutoColumn gap="5px">
             {
-              stablePool && parsedStablesAmounts?.map(((amount, i) => {
+              pool && parsedStablesAmounts?.map(((amount, i) => {
                 return (
                   <Row align='center'>
                     <CurrencyInputPanelStable
@@ -235,7 +244,7 @@ export default function AddLiquidityToPool({
                         onFieldInput(maxAmountsStables[i]?.toExact() ?? '', i)
                       }}
                       showMaxButton={!atMaxAmountsStables[i]}
-                      stableCurrency={stablePool.tokens[i]}
+                      stableCurrency={pool.tokens[i]}
                       balances={balances}
                       id="add-liquidity-input-token1"
                       isTop={i === 0}
@@ -271,7 +280,7 @@ export default function AddLiquidityToPool({
             <>
               <LightCard padding="0px" borderRadius="20px">
                 <LightCard padding="1rem" borderRadius="20px">
-                  <StablePoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} stablePool={stablePool} formattedStablesAmounts={parsedStablesAmounts} />
+                  <PoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} pool={pool} formattedStablesAmounts={parsedStablesAmounts} />
                 </LightCard>
               </LightCard>
             </>
@@ -290,7 +299,7 @@ export default function AddLiquidityToPool({
                       !stableAddValid
                     }
                   >
-                    Supply Stable Liquidity
+                    Supply Liquidity
                   </Button>))}
             </AutoColumn>
 

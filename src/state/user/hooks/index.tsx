@@ -215,7 +215,7 @@ export function useSerializedPairAdder(): (pair: TokenPair) => void {
  * @param tokenB the other token
  */
 export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
-  return new Token(tokenA.chainId, AmplifiedWeightedPair.getAddress(tokenA, tokenB,BigNumber.from('0')), 18, 'Cake-LP', 'Pancake LPs')
+  return new Token(tokenA.chainId, AmplifiedWeightedPair.getAddress(tokenA, tokenB, BigNumber.from('0')), 18, 'Cake-LP', 'Pancake LPs')
 }
 
 /**
@@ -299,7 +299,7 @@ function serializeWeightedPair(weightedPair: AmplifiedWeightedPair): WeightedPai
     token1: serializeToken(weightedPair.token1),
     weight0: Number(weightedPair.weight0.toString()),
     fee: Number(weightedPair.fee0.toString()),
-    amp:Number(weightedPair.amp)
+    amp: Number(weightedPair.amp)
   }
 }
 
@@ -421,6 +421,35 @@ export function getStableAmounts(chainId: number, balances: {
     return []
 
   return STABLECOINS[chainId ?? 43113].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+
+}
+
+
+export function getAmounts(tokens: Token[], balances: {
+  [address: string]: {
+    balance: string,
+    allowanceRouter: string,
+    allowancePairManager: string
+  }
+}) {
+  if (!balances || !tokens)
+    return []
+
+  return tokens.map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+
+}
+
+export function getAmountsForSerializedTokens(tokens: SerializedToken[], balances: {
+  [address: string]: {
+    balance: string,
+    allowanceRouter: string,
+    allowancePairManager: string
+  }
+}) {
+  if (!balances || !tokens)
+    return []
+
+  return tokens.map(token => new TokenAmount(deserializeToken(token), balances[getAddress(token.address)]?.balance ?? '0'))
 
 }
 

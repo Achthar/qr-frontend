@@ -1,6 +1,6 @@
 /* eslint object-shorthand: 0 */
 import { parseUnits } from '@ethersproject/units'
-import { Currency, TokenAmount, ZERO, StablePool, Percent, STABLES_INDEX_MAP, Token } from '@requiemswap/sdk'
+import { Currency, TokenAmount, ZERO, StablePool, Percent, STABLES_INDEX_MAP, Token, WeightedPool } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { StablePoolState, useStablePool } from 'hooks/useStablePool'
@@ -39,7 +39,7 @@ export function useMintPoolState(): AppState['mintPoolLp'] {
 }
 
 
-export function useMintStablePoolActionHandlers(): {
+export function useMintPoolLpActionHandlers(): {
   onFieldInput: (typedValue: string, fieldIndex: number) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
@@ -57,16 +57,16 @@ export function useMintStablePoolActionHandlers(): {
 
 
 export function useDerivedMintPoolInfo(
-  stablePool: StablePool,
+  stablePool: WeightedPool,
   publicDataLoaded: boolean,
-  stableCcyUserBalances: TokenAmount[],
+  userBalances: TokenAmount[],
   account?: string
 ): {
-  orderedStableCcyUserBalances: TokenAmount[],
-  parsedStablesAmounts: TokenAmount[]
-  stablesLiquidityMinted?: TokenAmount
-  stablesPoolTokenPercentage?: Percent
-  stablesError?: string
+  orderedUserBalances: TokenAmount[],
+  parsedInputAmounts: TokenAmount[]
+  poolLiquidityMinted?: TokenAmount
+  poolTokenPercentage?: Percent
+  poolError?: string
 } {
 
   const { values } = useMintPoolState()
@@ -110,7 +110,7 @@ export function useDerivedMintPoolInfo(
     stablesError = 'Connect Wallet'
   }
 
-  const orderedStableCcyUserBalances: TokenAmount[] = stablesCurrencyBalances?.map(x => stableCcyUserBalances.find(y => y.token.equals(x.token)))
+  const orderedStableCcyUserBalances: TokenAmount[] = stablesCurrencyBalances?.map(x => userBalances.find(y => y.token.equals(x.token)))
 
   let input = false
   for (let i = 0; i < parsedInputAmounts?.length; i++) {
@@ -125,10 +125,10 @@ export function useDerivedMintPoolInfo(
     stablesError = stablesError ?? 'Enter an amount'
 
   return {
-    orderedStableCcyUserBalances,
-    parsedStablesAmounts: parsedInputAmounts,
-    stablesLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
-    stablesPoolTokenPercentage,
-    stablesError,
+    orderedUserBalances: orderedStableCcyUserBalances,
+    parsedInputAmounts: parsedInputAmounts,
+    poolLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
+    poolTokenPercentage: stablesPoolTokenPercentage,
+    poolError: stablesError,
   }
 }

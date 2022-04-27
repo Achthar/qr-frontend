@@ -10,6 +10,7 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
         {
             key: 0,
             address: '0xCB44176D91067c6819C35094159c825BEFf7Dc92',
+            name: 'req4USD',
             tokens: [
                 serializeToken(STABLES[43113][0]),
                 serializeToken(STABLES[43113][1]),

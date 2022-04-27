@@ -524,7 +524,7 @@ export default function AddLiquidity({
 
   return (
     <Page>
-      <Row width='200px' height='50px'>
+      <Row width='300px' height='50px'>
         <Button
           as={Link}
           to={`/${getChain(chainId)}/add/${weightA}-${currencyIdB}/${weightB}-${currencyIdB}`}
@@ -542,6 +542,15 @@ export default function AddLiquidity({
           mb="8px"
         >
           Stables
+        </Button>
+        <Button
+          as={Link}
+          to={`/${chain}/add/weighted`}
+          variant="secondary"
+          width="100%"
+          mb="8px"
+        >
+          Weighted
         </Button>
       </Row>
       <AppBody>

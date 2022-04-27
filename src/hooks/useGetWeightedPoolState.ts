@@ -4,6 +4,7 @@ import { useDeserializedWeightedPools, useWeightedPools, useWeightedPoolReferenc
 import { fetchWeightedPoolUserDataAsync } from 'state/weightedPools'
 import { changeChainIdWeighted } from 'state/weightedPools/actions'
 import { fetchWeightedPoolData } from 'state/weightedPools/fetchWeightedPoolData'
+import { getAmounts, getAmountsForSerializedTokens, useUserBalances } from 'state/user/hooks'
 import { AppDispatch, useAppDispatch } from '../state'
 
 
@@ -14,7 +15,7 @@ export function useGetWeightedPoolState(
     refreshUser: number
 ): {
     weightedPools: WeightedPool[]
-    // tokenAmounts: TokenAmount[]
+    userBalances: TokenAmount[]
     publicDataLoaded: boolean,
     userDataLoaded: boolean
 } {
@@ -71,21 +72,22 @@ export function useGetWeightedPoolState(
     const deserializedPools = useDeserializedWeightedPools(chainId)
     //   const stablePool = deserializedPools[0]
 
-    // const {
-    //     balances: allBalances,
-    //     isLoadingTokens,
-    // } = useUserBalances(chainId)
+    const {
+        balances: allBalances,
+        isLoadingTokens,
+    } = useUserBalances(chainId)
 
 
-    // const stableAmounts = useMemo(() =>
-    //     getStableAmounts(chainId, allBalances),
-    //     [chainId, allBalances]
-    // )
+    const userBalances = useMemo(() =>
+        getAmountsForSerializedTokens(pools?.[0].tokens, allBalances),
+        [pools, allBalances]
+    )
 
 
 
     return {
         weightedPools: deserializedPools,
+        userBalances,
         publicDataLoaded,
         userDataLoaded
     }

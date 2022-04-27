@@ -3,7 +3,7 @@ import { StablePool, TokenAmount } from '@requiemswap/sdk'
 import { useDeserializedStablePools, useStablePoolReferenceChain, useStablePools } from 'state/stablePools/hooks'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { fetchStablePoolUserDataAsync } from 'state/stablePools'
-import { getStableAmounts, useUserBalances } from 'state/user/hooks'
+import { getAmountsForSerializedTokens, useUserBalances } from 'state/user/hooks'
 import { changeChainIdStables } from 'state/stablePools/actions'
 import { AppDispatch, useAppDispatch } from '../state'
 
@@ -78,8 +78,8 @@ export function useGetStablePoolState(
 
 
     const stableAmounts = useMemo(() =>
-        getStableAmounts(chainId, allBalances),
-        [chainId, allBalances]
+        getAmountsForSerializedTokens(pools[0]?.tokens, allBalances),
+        [pools, allBalances]
     )
 
 

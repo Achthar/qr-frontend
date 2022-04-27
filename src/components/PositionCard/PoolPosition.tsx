@@ -198,7 +198,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
             </AutoColumn>
             <Column>
               <Text bold ml="8px">
-                {!tokens ? <Dots>Loading</Dots> : `${countName[pool.tokens.length]} ${pool instanceof StablePool ? 'Stable' : 'Weighted'} Pool`}
+                {!tokens ? <Dots>Loading</Dots> : `${pool.name} ${countName[pool.tokens.length]} ${pool instanceof StablePool ? 'Stable' : 'Weighted'} Pool`}
               </Text>
               <Text ml="8px" fontSize='10px'>
                 {!tokens ? <Dots>Loading</Dots> : `${tokenText}`}
@@ -263,7 +263,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
                 </Button>
                 <Button
                   as={Link}
-                  to={`/${chain}/add/stables`}
+                  to={`/${chain}/add/${pool instanceof StablePool ? 'stables' : 'weighted'}`}
                   variant="text"
                   startIcon={<AddIcon color="primary" />}
                   width="100%"

@@ -1,5 +1,5 @@
-import { CurrencyAmount, Percent, StablePool, STABLES_INDEX_MAP, TokenAmount } from '@requiemswap/sdk'
 import React, { useMemo } from 'react'
+import { CurrencyAmount, Percent, Pool} from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { StablesField } from 'state/mintStables/actions'
 import { useTranslation } from 'contexts/Localization'
@@ -13,18 +13,18 @@ import { ONE_BIPS, ZERO_PERCENT } from '../../config/constants'
 
 
 function PoolPriceBar({
-  stablePool,
+  pool,
   poolTokenPercentage,
   formattedStablesAmounts
 }: {
-  stablePool: StablePool
+  pool: Pool
   poolTokenPercentage?: Percent
   formattedStablesAmounts?: CurrencyAmount[]
 }) {
   const { t } = useTranslation()
   const amounts = useMemo(() =>
-    stablePool?.getTokenAmounts()
-    , [stablePool])
+    pool?.getTokenAmounts()
+    , [pool])
 
   const percentages = useMemo(() => {
     return formattedStablesAmounts?.map((amnt, index) => amnt && new
@@ -49,9 +49,9 @@ function PoolPriceBar({
                 </Text>
               </Row>
 
-              {stablePool && stablePool?.getTokenAmounts().map((amount, index) => {
+              {pool && pool?.getTokenAmounts().map((amount, index) => {
                 return (<Row justify="start" gap="7px">
-                  <CurrencyLogo chainId={stablePool?.chainId} currency={amount.token} size='15px' style={{ marginRight: '4px' }} />
+                  <CurrencyLogo chainId={pool?.chainId} currency={amount.token} size='15px' style={{ marginRight: '4px' }} />
                   <Text fontSize="14px" >
                     {
                       amount.toSignificant(6)
@@ -120,7 +120,7 @@ function PoolPriceBar({
           </Text>
           <Text fontSize="12px" pt={1}>
             {`Total Share of
-            ${stablePool?.liquidityToken.name} Pool`}
+            ${pool?.liquidityToken.name} Pool`}
           </Text>
         </AutoColumn>
       </AutoRow>

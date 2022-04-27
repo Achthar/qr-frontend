@@ -51,24 +51,28 @@ export const useDeserializedStablePools = (chainId: number): StablePool[] => {
   if (!dataLoaded)
     return []
 
-  return pools.map(pool => new StablePool(
-    pool.tokens.map(t=>deserializeToken(t)),
-    pool.balances.map(balance => BigNumber.from(balance ?? '0')),
-    BigNumber.from(pool.A),
-    new StableSwapStorage(
-      pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
-      BigNumber.from(pool.swapStorage.fee),
-      BigNumber.from(pool.swapStorage.adminFee),
-      BigNumber.from(pool.swapStorage.initialA),
-      BigNumber.from(pool.swapStorage.futureA),
-      BigNumber.from(pool.swapStorage.initialATime),
-      BigNumber.from(pool.swapStorage.futureATime),
-      pool.swapStorage.lpAddress
-    ),
-    currentBlock,
-    BigNumber.from(pool.lpTotalSupply),
-    BigNumber.from(0),
-    pool.address
-  )
+  return pools.map(pool => {
+    const poolS = new StablePool(
+      pool.tokens.map(t => deserializeToken(t)),
+      pool.balances.map(balance => BigNumber.from(balance ?? '0')),
+      BigNumber.from(pool.A),
+      new StableSwapStorage(
+        pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
+        BigNumber.from(pool.swapStorage.fee),
+        BigNumber.from(pool.swapStorage.adminFee),
+        BigNumber.from(pool.swapStorage.initialA),
+        BigNumber.from(pool.swapStorage.futureA),
+        BigNumber.from(pool.swapStorage.initialATime),
+        BigNumber.from(pool.swapStorage.futureATime),
+        pool.swapStorage.lpAddress
+      ),
+      currentBlock,
+      BigNumber.from(pool.lpTotalSupply),
+      BigNumber.from(0),
+      pool.address
+    )
+    poolS.name = pool.name
+    return poolS
+  }
   )
 }

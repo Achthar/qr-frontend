@@ -160,6 +160,7 @@ export interface BondsState {
 
 // stable pool interfaces
 export interface PoolConfig {
+  name?: string
   key: string
   address: string
   lpAddress: string

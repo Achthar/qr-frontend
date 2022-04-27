@@ -11,7 +11,7 @@ import IRequiemRouter02AVAX from 'config/abi/avax/IRequiemRouter02.json'
 import StablesRouter from 'config/abi/avax/StableSwap.json'
 import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
-import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS, StablePool } from '@requiemswap/sdk'
+import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS, StablePool, WeightedPool } from '@requiemswap/sdk'
 import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
@@ -19,6 +19,7 @@ import RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
 import RequiemQPairManagerOasis from '../config/abi/oasis/RequiemQPairManager.json'
 import RequiemQRouter from '../config/abi/avax/RequiemQRouter.json'
 import SwapRouter from '../config/abi/avax/SwapRouter.json'
+import WeightedPoolABI from '../config/abi/avax/WeightedPool.json'
 import { getRedRequiemAddress } from './addressHelpers'
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -137,7 +138,13 @@ export function getStableRouterContract(chainId: number, library: Web3Provider, 
 
 export function getStableSwapContract(pool: StablePool, library: Web3Provider, account?: string): Contract {
   const ABI = StablesRouter
-  console.log("getStableRouterContract")
+  console.log("getStableSwapContract")
+  return getContract(pool.address, ABI, library, account)
+}
+
+export function getWeightedPoolContract(pool: WeightedPool, library: Web3Provider, account?: string): Contract {
+  const ABI = WeightedPoolABI
+  console.log("getWeightedPoolContract")
   return getContract(pool.address, ABI, library, account)
 }
 

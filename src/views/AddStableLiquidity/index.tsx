@@ -180,13 +180,11 @@ export default function AddStableLiquidity({
       })
   }
 
-  console.log("STABLE APPROVAL", approvalStates)
-
   const bttm = useMemo(() => { return stablePool?.tokens.length - 1 }, [stablePool])
 
   return (
     <Page>
-      <Row width='200px' height='50px'>
+      <Row width='300px' height='50px'>
         <Button
           as={Link}
           to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
@@ -205,13 +203,22 @@ export default function AddStableLiquidity({
         >
           Stables
         </Button>
+        <Button
+          as={Link}
+          to={`/${getChain(chainId)}/add/weighted`}
+          variant="secondary"
+          width="100%"
+          mb="8px"
+        >
+          Weighted
+        </Button>
       </Row>
       <AppBody>
         <AppHeader
           chainId={chainId}
           account={account}
-          title='Add Stablecoin Liquidity'
-          subtitle='Receive collateralizable StableSwap LP Tokens'
+          title={`Add ${stablePool?.name ?? ''} Stableswap Liquidity`}
+          subtitle={`Receive ${stablePool?.name ?? 'StableSwap'} LP Tokens`}
 
           helper={t(
             `Liquidity providers earn a ${Number(stablePool?.swapStorage.fee.toString()) / 1e8}% trading fee on all trades made through the pool, proportional to their share of the liquidity pool.`,
@@ -290,7 +297,7 @@ export default function AddStableLiquidity({
                       !stableAddValid
                     }
                   >
-                    Supply Stable Liquidity
+                    Supply Liquidity
                   </Button>))}
             </AutoColumn>
 

@@ -9,7 +9,7 @@ export const weightedSwapInitialData: { [chainId: number]: any[] } = {
     43113: [
         {
             key: 0,
-            name: 'REQ3',
+            name: 'req3Classic',
             address: '0x2d5D1137D5e57975A3D7e265C6d8ebBaDcd506EC',
             tokens: [
                 serializeToken(WBTC[43113]),
