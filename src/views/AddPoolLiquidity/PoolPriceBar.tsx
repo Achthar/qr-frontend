@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { CurrencyAmount, Percent, Pool} from '@requiemswap/sdk'
+import { CurrencyAmount, Percent, Pool } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { StablesField } from 'state/mintStables/actions'
 import { useTranslation } from 'contexts/Localization'
@@ -65,49 +65,6 @@ function PoolPriceBar({
                   </Text>
                 </Row>)
               })}
-              {/* 
-              <Row justify="start" gap="4px">
-                <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[1].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px">
-                  {
-                    amounts?.[1].toSignificant(6)
-                  }
-                </Text>
-                <Text fontSize="10px" marginLeft="15px">
-                  {
-                    percentages?.[1]?.equalTo(ZERO_PERCENT) ? '0' :
-                      (percentages?.[1]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[1]?.toFixed(2)) ?? '0'}
-                  %
-                </Text>
-              </Row>
-              <Row justify="start" gap="4px">
-                <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[2].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px">
-                  {
-                    amounts?.[2].toSignificant(6)
-                  }
-                </Text>
-                <Text fontSize="10px" marginLeft="15px">
-                  {
-                    percentages?.[2]?.equalTo(ZERO_PERCENT) ? '0' :
-                      (percentages?.[2]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[2]?.toFixed(2)) ?? '0'}
-                  %
-                </Text>
-              </Row>
-              <Row justify="start" gap="4px">
-                <CurrencyLogo chainId={stablePool?.chainId} currency={amounts[3].token} size='15px' style={{ marginRight: '4px' }} />
-                <Text fontSize="14px">
-                  {
-                    amounts?.[3].toSignificant(6)
-                  }
-                </Text>
-                <Text fontSize="10px" marginLeft="15px">
-                  {
-                    percentages?.[3]?.equalTo(ZERO_PERCENT) ? '0' :
-                      (percentages?.[3]?.lessThan(ONE_BIPS) ? '<0.01' : percentages?.[3]?.toFixed(2)) ?? '0'}
-                  %
-                </Text>
-              </Row> */}
             </Column>
           )}
         </AutoColumn>
@@ -119,8 +76,7 @@ function PoolPriceBar({
             %
           </Text>
           <Text fontSize="12px" pt={1}>
-            {`Total Share of
-            ${pool?.liquidityToken.name} Pool`}
+            {`Total Share of ${pool?.liquidityToken.name} minted`}
           </Text>
         </AutoColumn>
       </AutoRow>

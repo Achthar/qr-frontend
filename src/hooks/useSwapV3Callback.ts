@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { Percent, SwapRouter, SwapParameters, Swap, SwapType } from '@requiemswap/sdk'
+import { Percent, SwapRouter, SwapParameters, Swap, SwapType, Currency, NETWORK_CCY } from '@requiemswap/sdk'
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useGasPrice } from 'state/user/hooks'
@@ -46,6 +46,8 @@ function useSwapV3CallArguments(
   account: string,
   library: any,
   trade: Swap | undefined, // trade to execute, required
+  input: Currency,
+  output: Currency,
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapV3Call[] {
@@ -55,7 +57,7 @@ function useSwapV3CallArguments(
   const deadline = useTransactionDeadline(chainId)
 
   return useMemo(() => {
-    if (!trade || !recipient || !library || !account || !chainId || !deadline) return []
+    if (!input || !output || !trade || !recipient || !library || !account || !chainId || !deadline) return []
 
     const multiSwap = true
 
@@ -74,6 +76,8 @@ function useSwapV3CallArguments(
         recipient,
         deadline: deadline.toNumber(),
         multiSwap,
+        etherIn: input === NETWORK_CCY[chainId],
+        etherOut: output === NETWORK_CCY[chainId]
       }),
     )
 
@@ -85,12 +89,14 @@ function useSwapV3CallArguments(
           recipient,
           deadline: deadline.toNumber(),
           multiSwap,
+          etherIn: input === NETWORK_CCY[chainId],
+          etherOut: output === NETWORK_CCY[chainId]
         }),
       )
     }
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
-  }, [account, allowedSlippage, chainId, deadline, library, recipient, trade])
+  }, [account, allowedSlippage, chainId, deadline, library, recipient, trade, input, output])
 }
 
 // returns a function that will execute a swap, if the parameters are all valid
@@ -100,13 +106,15 @@ export function useSwapV3Callback(
   account: string,
   library: any,
   trade: Swap | undefined, // trade to execute, required
+  input: Currency,
+  output: Currency,
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): { state: SwapV3CallbackState; callback: null | (() => Promise<string>); error: string | null } {
 
   const gasPrice = useGasPrice(chainId)
 
-  const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, allowedSlippage, recipientAddressOrName)
+  const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, input, output, allowedSlippage, recipientAddressOrName)
   console.log("CALLS", swapCalls)
   const addTransaction = useTransactionAdder()
 
@@ -183,8 +191,8 @@ export function useSwapV3Callback(
         } = successfulEstimation
 
         return contract[methodName](...args, {
-          gasLimit: calculateGasMargin(gasEstimate),
-          gasPrice,
+          // gasLimit: calculateGasMargin(gasEstimate),
+          // gasPrice,
           ...(value && !isZero(value) ? { value, from: account } : { from: account }),
         })
           .then((response: any) => {
@@ -221,5 +229,7 @@ export function useSwapV3Callback(
       },
       error: null,
     }
-  }, [trade, library, account, chainId, recipient, recipientAddressOrName, swapCalls, addTransaction, gasPrice])
+  }, [trade, library, account, chainId, recipient, recipientAddressOrName, swapCalls, addTransaction
+    // , gasPrice
+  ])
 }

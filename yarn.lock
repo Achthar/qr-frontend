@@ -2174,7 +2174,7 @@
 
 "@requiemswap/sdk@https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master":
   version "2.4.0"
-  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#67513ca7e155afce0dc7686ab662c1306ff479b1"
+  resolved "https://gitpkg.now.sh/Achthar/requiem-swap-sdk?master#94497f6f9e50f5d4c771902559c9734d84058d10"
   dependencies:
     big.js "^5.2.2"
     decimal.js-light "^2.5.0"

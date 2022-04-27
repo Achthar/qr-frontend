@@ -27,7 +27,7 @@ export enum GAS_PRICE {
   fast = '6',
   instant = '7',
   testnet = '10',
-  avaxTest = '40',
+  avaxTest = '30',
   avaxDefault = '70',
   avaxFast = '80',
   avaxInstant = '90',

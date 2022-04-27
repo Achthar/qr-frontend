@@ -215,7 +215,7 @@ export default function SwapV3({
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(chainId, account, library, trade, allowedSlippage, recipient)
+  const { callback: swapCallback, error: swapCallbackError } = useSwapV3Callback(chainId, account, library, trade, currencies[Field.INPUT], currencies[Field.OUTPUT], allowedSlippage, recipient)
 
   const { priceImpactWithoutFee } = computeTradeV3PriceBreakdown(trade, poolDict)
 
