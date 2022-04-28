@@ -105,9 +105,9 @@ export function useDerivedMintPoolInfo(
     return undefined
   }, [stablesLiquidityMinted, totalSupply])
 
-  let stablesError: string | undefined
+  let poolError: string | undefined
   if (!account) {
-    stablesError = 'Connect Wallet'
+    poolError = 'Connect Wallet'
   }
 
   const orderedStableCcyUserBalances: TokenAmount[] = stablesCurrencyBalances?.map(x => userBalances.find(y => y.token.equals(x.token)))
@@ -115,20 +115,19 @@ export function useDerivedMintPoolInfo(
   let input = false
   for (let i = 0; i < parsedInputAmounts?.length; i++) {
     if (parsedInputAmounts && orderedStableCcyUserBalances?.[i]?.lessThan(parsedInputAmounts[i])) {
-      stablesError = `Insufficient ${orderedStableCcyUserBalances?.[i].token.symbol} balance`
+      poolError = `Insufficient ${orderedStableCcyUserBalances?.[i].token.symbol} balance`
     }
-    if (!parsedInputAmounts[i] && parsedInputAmounts[i]?.raw.gt(ZERO))
-      input = input || true
+    if (parsedInputAmounts[i]?.raw.gt(ZERO)) { input = true }
   }
 
   if (!input)
-    stablesError = stablesError ?? 'Enter an amount'
+    poolError = 'Enter an amount'
 
   return {
     orderedUserBalances: orderedStableCcyUserBalances,
     parsedInputAmounts: parsedInputAmounts,
     poolLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
     poolTokenPercentage: stablesPoolTokenPercentage,
-    poolError: stablesError,
+    poolError,
   }
 }

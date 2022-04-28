@@ -30,104 +30,6 @@ function containsToken(token: Token, list: Token[]) {
   return false;
 }
 
-// funtion to get all relevant weighted pairs
-// requires two calls if ccys are not in base
-// 1) check whether pair exists
-// 2) fetch reserves
-// function useAllCommonWeightedPairs(currencyA?: Currency, currencyB?: Currency): AmplifiedWeightedPair[] {
-//   const { chainId } = useNetworkState()
-
-//   const [tokenA, tokenB] = chainId
-//     ? [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
-//     : [undefined, undefined]
-
-//   const [aInBase, bInBase] = useMemo(() =>
-//     [
-//       tokenA ? containsToken(tokenA, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false,
-//       tokenB ? containsToken(tokenB, BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]) : false
-//     ],
-//     [chainId, tokenA, tokenB])
-
-//   const expandedTokenList = useMemo(() => {
-//     if (aInBase && !bInBase) {
-//       return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
-//     }
-//     if (!aInBase && !bInBase) {
-//       return [...[tokenA], ...[tokenB], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
-//     }
-//     if (!aInBase && bInBase) {
-//       return [...[tokenA], ...BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]]
-//     }
-//     if (aInBase && bInBase) {
-//       return BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED[chainId]
-//     }
-//     return []
-//   },
-//     [chainId, tokenA, tokenB, aInBase, bInBase])
-
-//   const basePairs = useMemo(() => {
-//     const basePairList: [Token, Token][] = []
-//     for (let i = 0; i < expandedTokenList.length; i++) {
-//       for (let k = i; k < expandedTokenList.length; k++) {
-//         basePairList.push(
-//           [
-//             expandedTokenList[i],
-//             expandedTokenList[k]
-//           ]
-//         )
-//       }
-//     }
-//     return basePairList
-//   }, [expandedTokenList])
-
-//   const allPairCombinations: [Token, Token][] = useMemo(
-//     () =>
-//       basePairs
-//         .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
-//         .filter(([t0, t1]) => t0.address !== t1.address),
-//     [basePairs],
-//   )
-
-//   const addressesRaw = useGetWeightedPairs(allPairCombinations, chainId)
-
-//   const pairData = useMemo(
-//     () =>
-//       addressesRaw
-//         ? addressesRaw
-//           .map((addressData, index) => [addressData[0], allPairCombinations[index], addressData[1]])
-//           .filter(x => x[0] === WeightedPairState.EXISTS)
-//         : [],
-//     [addressesRaw, allPairCombinations]
-//   )
-
-//   const [relevantPairs, addressList] = useMemo(() => {
-//     const data: [Token, Token][] = []
-//     const dataAddress: string[] = []
-//     for (let j = 0; j < pairData.length; j++) {
-//       for (let k = 0; k < (pairData[j][2] as string[]).length; k++) {
-//         data.push(pairData[j][1] as [Token, Token])
-//         dataAddress.push(pairData[j][2][k])
-//       }
-//     }
-//     return [data, dataAddress]
-//   }, [pairData])
-
-//   const weightedPairsData = useWeightedPairsDataLite(
-//     relevantPairs,
-//     addressList,
-//     chainId
-//   )
-
-
-//   return useMemo(
-//     () => {
-//       return weightedPairsData.filter(x => x[0] === WeightedPairState.EXISTS).map(entry => entry[1])
-//     },
-//     [weightedPairsData]
-//   )
-
-// }
-
 export function useAllTradeTokenPairs(tokenA: Token, tokenB: Token, chainId: number): TokenPair[] {
 
   const [aInBase, bInBase] = useMemo(() =>
@@ -256,8 +158,8 @@ export function useTradeV3ExactIn(
   swapRoutes: SwapRoute[],
   poolDict: PoolDictionary,
   // these should always be defined through the route
-  currencyAmountIn?: CurrencyAmount,
-  currencyOut?: Currency
+  currencyAmountIn?: TokenAmount,
+  currencyOut?: Token
 ): Swap | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()
@@ -278,7 +180,7 @@ export function useTradeV3ExactIn(
         }
       }
       try {
-        return Swap.PriceRoutes(swapRoutes, wrappedCurrencyAmount(currencyAmountIn, swapRoutes[0].chainId), SwapType.EXACT_INPUT, poolDict)[0] ??
+        return Swap.PriceRoutes(swapRoutes, currencyAmountIn, SwapType.EXACT_INPUT, poolDict)[0] ??
           null
       } catch (error) {
         console.log(error)
@@ -297,8 +199,8 @@ export function useTradeV3ExactOut(
   publicDataLoaded: boolean,
   swapRoutes: SwapRoute[],
   poolDict: PoolDictionary,
-  currencyIn?: Currency,
-  currencyAmountOut?: CurrencyAmount
+  currencyIn?: Token,
+  currencyAmountOut?: TokenAmount
 ): Swap | null {
 
   const [singleHopOnly] = useUserSingleHopOnly()

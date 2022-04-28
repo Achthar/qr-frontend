@@ -241,7 +241,7 @@ export function useApproveCallbacks(
   const { callWithGasPrice } = useCallWithGasPrice()
 
   const { amounts: currentAllowances, isLoading } = useTokenAllowances(chainId, tokens, account ?? undefined, spender)
-  console.log("STABLE ALLS", currentAllowances?.map(x => x.toSignificant(18)))
+
   const pendingApproval = useHasPendingApprovals(chainId, tokens?.map(a => a?.address), spender)
   // check the current approval status
   const approvalStates: ApprovalState[] = useMemo(() => {

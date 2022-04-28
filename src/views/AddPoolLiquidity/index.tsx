@@ -86,10 +86,10 @@ export default function AddLiquidityToPool({
 
 
   const {
-    orderedUserBalances: orderedStableCcyUserBalances,
-    parsedInputAmounts: parsedStablesAmounts,
-    poolLiquidityMinted: stablesLiquidityMinted,
-    poolTokenPercentage: stablesPoolTokenPercentage,
+    orderedUserBalances,
+    parsedInputAmounts,
+    poolLiquidityMinted,
+    poolTokenPercentage,
     poolError,
   } = useDerivedMintPoolInfo(pool, publicDataLoaded, userBalances, account)
 
@@ -97,12 +97,12 @@ export default function AddLiquidityToPool({
 
   const tokens = pool?.tokens
 
-  const { approvalStates, approveCallback, isLoading } = useApproveCallbacks(
+  const { approvalStates, approveCallback, isLoading: approvalLoading } = useApproveCallbacks(
     chainId,
     library,
     account,
     tokens,
-    parsedStablesAmounts,
+    parsedInputAmounts,
     pool?.address,
 
   )
@@ -112,44 +112,44 @@ export default function AddLiquidityToPool({
 
 
   // get the max amounts user can add
-  const maxAmountsStables = orderedStableCcyUserBalances?.map(balance => { return maxAmountSpend(chainId, balance) })
+  const maxAmountsStables = orderedUserBalances?.map(balance => { return maxAmountSpend(chainId, balance) })
 
-  const atMaxAmountsStables = maxAmountsStables?.map((mas, index) => { return mas?.equalTo(parsedStablesAmounts[index] ?? '0') })
+  const atMaxAmountsStables = maxAmountsStables?.map((mas, index) => { return mas?.equalTo(parsedInputAmounts[index] ?? '0') })
 
 
   const { isMobile } = useMatchBreakpoints()
 
-  const balances: { [address: string]: TokenAmount } = orderedStableCcyUserBalances ? Object.assign({}, ...orderedStableCcyUserBalances?.map(b => { return { [b?.token.address]: b } })) : {}
+  const balances: { [address: string]: TokenAmount } = orderedUserBalances ? Object.assign({}, ...orderedUserBalances?.map(b => { return { [b?.token.address]: b } })) : {}
 
 
 
   let stableAddValid = false
   let invalidAdd = false
   let apporvalsPending = true
-  for (let i = 0; i < parsedStablesAmounts?.length; i++) {
-    stableAddValid = stableAddValid || !parsedStablesAmounts[i]?.raw.eq(0)
-    invalidAdd = invalidAdd || parsedStablesAmounts[i]?.raw.gt(ZERO)
+  for (let i = 0; i < parsedInputAmounts?.length; i++) {
+    stableAddValid = stableAddValid || !parsedInputAmounts[i]?.raw.eq(0)
+    invalidAdd = invalidAdd || parsedInputAmounts[i]?.raw.gt(ZERO)
     apporvalsPending = apporvals[i] === ApprovalState.NOT_APPROVED || apporvals[i] === ApprovalState.PENDING
   }
 
-  const summaryText = useMemo(() => `Add [${parsedStablesAmounts?.map(x => x.toSignificant(8)).join(',')}] of ${parsedStablesAmounts?.map(x => x.token.symbol).join('-')}`,
-    [parsedStablesAmounts]
+  const summaryText = useMemo(() => `Add [${parsedInputAmounts?.map(x => x.toSignificant(8)).join(',')}] of ${parsedInputAmounts?.map(x => x.token.symbol).join('-')}`,
+    [parsedInputAmounts]
   )
 
-  async function onStablesAdd() {
+  async function onTokenAdd() {
     if (!chainId || !library || !account) return
-    const stableRouter = getWeightedPoolContract(pool, library, account)
+    const poolContrat = getWeightedPoolContract(pool, library, account)
 
     if (invalidAdd && !deadline) {
       return
     }
 
-    const amountMin = calculateSlippageAmount(stablesLiquidityMinted, allowedSlippage)[0]
+    const amountMin = calculateSlippageAmount(poolLiquidityMinted, allowedSlippage)[0]
 
-    const estimate = stableRouter.estimateGas.addLiquidity
-    const method = stableRouter.addLiquidity
+    const estimate = poolContrat.estimateGas.addLiquidityExactIn
+    const method = poolContrat.addLiquidityExactIn
     const args = [
-      parsedStablesAmounts.map(bn => bn.raw.toHexString()),
+      parsedInputAmounts.map(bn => bn.raw.toHexString()),
       amountMin.toString(),
       deadline.toHexString(),
     ]
@@ -186,36 +186,37 @@ export default function AddLiquidityToPool({
 
   return (
     <Page>
-      <Row width='300px' height='50px'>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Pairs
-        </Button>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/stables`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Stables
-        </Button>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/weighted`}
-          variant="primary"
-          width="100%"
-          mb="8px"
-        >
-          Weighted
-        </Button>
-      </Row>
       <AppBody>
+        <Row width='100%' height='50px' marginTop='3px'>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Pairs
+          </Button>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/stables`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Stables
+          </Button>
+          <Button
+            variant="primary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Weighted
+          </Button>
+        </Row>
         <AppHeader
           chainId={chainId}
           account={account}
@@ -231,7 +232,7 @@ export default function AddLiquidityToPool({
 
           <AutoColumn gap="5px">
             {
-              pool && parsedStablesAmounts?.map(((amount, i) => {
+              pool && parsedInputAmounts?.map(((amount, i) => {
                 return (
                   <Row align='center'>
                     <CurrencyInputPanelStable
@@ -264,7 +265,7 @@ export default function AddLiquidityToPool({
                               {approvalStates[i] === ApprovalState.PENDING ? (
                                 <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
                               ) : (
-                                !isLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
+                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
                               )
                               }
                             </Text>
@@ -280,7 +281,7 @@ export default function AddLiquidityToPool({
             <>
               <LightCard padding="0px" borderRadius="20px">
                 <LightCard padding="1rem" borderRadius="20px">
-                  <PoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} pool={pool} formattedStablesAmounts={parsedStablesAmounts} />
+                  <PoolPriceBar poolTokenPercentage={poolTokenPercentage} pool={pool} formattedStablesAmounts={parsedInputAmounts} />
                 </LightCard>
               </LightCard>
             </>
@@ -288,19 +289,20 @@ export default function AddLiquidityToPool({
             <AutoColumn gap="md">
 
               {!account ? (<ConnectWalletButton align='center' maxWidth='100%' />)
-                : (apporvalsPending ? (<RowBetween>Approvals still pending...</RowBetween>) :
-                  (<Button
-                    variant='primary'
+                :
+                (<Button
+                  variant='primary'
 
-                    onClick={() => {
-                      onStablesAdd()
-                    }}
-                    disabled={
-                      !stableAddValid
-                    }
-                  >
-                    Supply Liquidity
-                  </Button>))}
+                  onClick={() => {
+                    onTokenAdd()
+                  }}
+                  disabled={
+                    !stableAddValid || Boolean(poolError) || approvalLoading || apporvalsPending
+                  }
+                >
+
+                  {approvalLoading ? <Dots>Fetching allowances</Dots> : apporvalsPending ? (<Dots >Approvals still pending</Dots>) : !poolError ? 'Supply Liquidity' : poolError}
+                </Button>)}
             </AutoColumn>
 
           </AutoColumn>

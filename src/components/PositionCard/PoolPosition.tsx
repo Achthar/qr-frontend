@@ -206,7 +206,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
             </Column>
           </Flex>
           <Text fontSize="14px" color="textSubtle">
-            {Number(userLpPoolBalance?.toSignificant(8)).toLocaleString()}
+            {userLpPoolBalance?.toSignificant(10)}
           </Text>
         </Flex>
         {showMore ? <ChevronUpIcon /> : <ChevronDownIcon />}

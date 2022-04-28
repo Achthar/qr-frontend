@@ -31,7 +31,7 @@ export function useTokenAllowances(chainId: number, tokens?: Token[], owner?: st
 
   return useMemo(
     () => {
-      const isLoading = Boolean(addresses && allowances && allowances[0].loading)
+      const isLoading = Boolean(addresses && allowances && allowances[0]?.loading)
       return { amounts: tokens && allowances && allowances?.map((a, i) => new TokenAmount(tokens[i], a?.result?.toString() ?? '0')), isLoading }
     },
     [tokens, allowances, addresses])

@@ -160,8 +160,7 @@ export function useDerivedMintStablesInfo(
     if (parsedInputAmounts && orderedStableCcyUserBalances?.[i]?.lessThan(parsedInputAmounts[i])) {
       stablesError = `Insufficient ${orderedStableCcyUserBalances?.[i].token.symbol} balance`
     }
-    if (!parsedInputAmounts[i] && parsedInputAmounts[i]?.raw.gt(ZERO))
-      input = input || true
+    if (parsedInputAmounts[i]?.raw.gt(ZERO)) { input = true }
   }
 
   if (!input)

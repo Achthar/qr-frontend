@@ -524,36 +524,37 @@ export default function AddLiquidity({
 
   return (
     <Page>
-      <Row width='300px' height='50px'>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/${weightA}-${currencyIdB}/${weightB}-${currencyIdB}`}
-          variant="primary"
-          width="100%"
-          mb="8px"
-        >
-          Pairs
-        </Button>
-        <Button
-          as={Link}
-          to={`/${chain}/add/stables`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Stables
-        </Button>
-        <Button
-          as={Link}
-          to={`/${chain}/add/weighted`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Weighted
-        </Button>
-      </Row>
       <AppBody>
+      <Row width='100%' height='50px' marginTop='3px'>
+          <Button
+            variant="primary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Pairs
+          </Button>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/stables`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Stables
+          </Button>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/weighted`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Weighted
+          </Button>
+        </Row>
         <AppHeader
           chainId={chainId}
           account={account}

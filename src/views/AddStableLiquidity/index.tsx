@@ -89,14 +89,14 @@ export default function AddStableLiquidity({
     parsedStablesAmounts,
     stablesLiquidityMinted,
     stablesPoolTokenPercentage,
-    // stablesError,
+    stablesError,
   } = useDerivedMintStablesInfo(stablePool, publicDataLoaded, stableAmounts, account)
 
   const { onFieldInput } = useMintStablePoolActionHandlers()
 
   const tokens = stablePool?.tokens
 
-  const { approvalStates, approveCallback, isLoading } = useApproveCallbacks(
+  const { approvalStates, approveCallback, isLoading: approvalLoading } = useApproveCallbacks(
     chainId,
     library,
     account,
@@ -184,36 +184,39 @@ export default function AddStableLiquidity({
 
   return (
     <Page>
-      <Row width='300px' height='50px'>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Pairs
-        </Button>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/stables`}
-          variant="primary"
-          width="100%"
-          mb="8px"
-        >
-          Stables
-        </Button>
-        <Button
-          as={Link}
-          to={`/${getChain(chainId)}/add/weighted`}
-          variant="secondary"
-          width="100%"
-          mb="8px"
-        >
-          Weighted
-        </Button>
-      </Row>
       <AppBody>
+        <Row width='100%' height='50px' marginTop='3px'>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Pairs
+          </Button>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/stables`}
+            variant="primary"
+            width="100%"
+            mb="8px"
+            style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Stables
+          </Button>
+          <Button
+            as={Link}
+            to={`/${getChain(chainId)}/add/weighted`}
+            variant="secondary"
+            width="100%"
+            mb="8px"
+            style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+          >
+            Weighted
+          </Button>
+        </Row>
         <AppHeader
           chainId={chainId}
           account={account}
@@ -262,7 +265,7 @@ export default function AddStableLiquidity({
                               {approvalStates[i] === ApprovalState.PENDING ? (
                                 <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
                               ) : (
-                                !isLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
+                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
                               )
                               }
                             </Text>
@@ -286,19 +289,20 @@ export default function AddStableLiquidity({
             <AutoColumn gap="md">
 
               {!account ? (<ConnectWalletButton align='center' maxWidth='100%' />)
-                : (apporvalsPending ? (<RowBetween>Approvals still pending...</RowBetween>) :
-                  (<Button
-                    variant='primary'
+                :
+                (<Button
+                  variant='primary'
 
-                    onClick={() => {
-                      onStablesAdd()
-                    }}
-                    disabled={
-                      !stableAddValid
-                    }
-                  >
-                    Supply Liquidity
-                  </Button>))}
+                  onClick={() => {
+                    onStablesAdd()
+                  }}
+                  disabled={
+                    !stableAddValid
+                  }
+                >
+                  {approvalLoading ? <Dots>Fetching allowances</Dots> : apporvalsPending ? (<Dots >Approvals still pending</Dots>) : !stablesError ? 'Supply Liquidity' : stablesError}
+                </Button>)
+              }
             </AutoColumn>
 
           </AutoColumn>

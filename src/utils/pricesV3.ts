@@ -63,10 +63,8 @@ export function computeTradeV3PriceBreakdown(trade?: Swap | null, poolDict?: Poo
   // the amount of the input that accrues to LPs
   const realizedLPFeeAmount =
     realizedLPFee &&
-    trade &&
-    (trade.inputAmount instanceof TokenAmount
-      ? new TokenAmount(trade.inputAmount.token, realizedLPFee.multiply(trade.inputAmount.raw).quotient)
-      : CurrencyAmount.networkCCYAmount(trade.route.chainId, realizedLPFee.multiply(trade.inputAmount.raw).quotient))
+    trade && new TokenAmount(trade.inputAmount.token, realizedLPFee.multiply(trade.inputAmount.raw).quotient)
+
 
   return { priceImpactWithoutFee: res ? new Percent(String(Math.round(res * 100000000)), String(100000000)) : undefined, realizedLPFee: realizedLPFeeAmount }
 }

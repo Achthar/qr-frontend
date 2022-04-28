@@ -8,6 +8,7 @@ import { darken, lighten } from 'polished'
 import { RowBetween } from 'components/Row'
 import { ChevronDown } from 'react-feather'
 import { Button as RebassButton, ButtonProps } from 'rebass/styled-components'
+import { Button } from '@requiemswap/uikit'
 
 const Base = styled(RebassButton) <{
   padding?: string
@@ -281,6 +282,10 @@ const ButtonErrorStyle = styled(Base)`
     background-color: ${({ theme }) => theme.red1};
     border: 1px solid ${({ theme }) => theme.red1};
   }
+`
+
+export const LPNavButton = styled(Button)`
+  border-radius:3px;
 `
 
 export function ButtonConfirmed({
