@@ -32,12 +32,12 @@ import PoolLogo from 'components/Logo/PoolLogo'
 import getChain from 'utils/getChain'
 import { sliceIntoChunks } from 'utils/arraySlicer'
 import Row from 'components/Row'
-import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
+import SingleTokenInputPanel from 'components/CurrencyInputPanel/SingleTokenInputPanel'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-import CurrencyInputPanelStable from '../../components/CurrencyInputPanel/CurrencyInputPanelStable'
+import CurrencyInputPanelPool from '../../components/CurrencyInputPanel/CurrencyInputPanelPool'
 import { MinimalStablesPositionCard } from '../../components/PositionCard/StablesPosition'
 import { AppHeader, AppBody } from '../../components/App'
 import { RowBetween, RowFixed } from '../../components/Layout/Row'
@@ -93,10 +93,6 @@ export default function RemoveStableLiquidity({
   // burn state
   const {
     independentStablesField,
-    typedValue1,
-    typedValue2,
-    typedValue3,
-    typedValue4,
     typedValueLiquidity,
     // calculatedSingleValues,
     // typedValueSingle,
@@ -216,6 +212,8 @@ export default function RemoveStableLiquidity({
     parsedAmounts[StablesField.LIQUIDITY],
     stablePool?.address,
   )
+
+  console.log("STABLELP", parsedAmounts[StablesField.LIQUIDITY])
 
   const symbolText = useMemo(() => parsedOutputTokenAmounts && parsedOutputTokenAmounts?.map(x => x.token.symbol).join('-'), [parsedOutputTokenAmounts])
   const summaryText = useMemo(() => parsedOutputTokenAmounts?.length > 0 ? `Remove [${parsedOutputTokenAmounts?.map(x => x.toSignificant(8)).join(',')}] ${symbolText} for ${parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)} LP Tokens` : '',
@@ -461,7 +459,7 @@ export default function RemoveStableLiquidity({
 
             <>
               <RowBetween align="flex-end">
-                <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6)}</Text>
+                <Text fontSize="24px">{parsedOutputTokenAmounts[i]?.toSignificant(6)}</Text>
                 <RowFixed gap="4px">
                   <CurrencyLogo chainId={chainId} currency={tk} size="24px" />
                   <Text fontSize="24px" ml="10px" mr="5px">
@@ -866,7 +864,7 @@ export default function RemoveStableLiquidity({
           )}
           {stableRemovalState === StableRemovalState.BY_TOKENS && (
             <Box my="16px">
-              <CurrencyInputPanelStable
+              <CurrencyInputPanelPool
                 chainId={chainId}
                 account={account}
                 width="100%"
@@ -880,7 +878,7 @@ export default function RemoveStableLiquidity({
                 showMaxButton={!atMaxAmount}
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
-                stablePool={stablePool}
+                pool={stablePool}
                 hideBalance={false}
                 balances={relevantTokenBalances}
               />
@@ -893,7 +891,7 @@ export default function RemoveStableLiquidity({
                   {
                     parsedOutputTokenAmounts && parsedOutputTokenAmounts.map((amnt, index) => {
                       return (
-                        <CurrencyInputPanelStable
+                        <CurrencyInputPanelPool
                           chainId={chainId}
                           account={account}
                           width="100%"
@@ -925,7 +923,7 @@ export default function RemoveStableLiquidity({
           )}
           {stableRemovalState === StableRemovalState.BY_SINGLE_TOKEN && (
             <Box my="16px">
-              <CurrencyInputPanelStable
+              <CurrencyInputPanelPool
                 chainId={chainId}
                 account={account}
                 width="100%"
@@ -939,7 +937,7 @@ export default function RemoveStableLiquidity({
                 showMaxButton
                 stableCurrency={stablePool?.liquidityToken}
                 id="liquidity-amount"
-                stablePool={stablePool}
+                pool={stablePool}
                 hideBalance={false}
                 label='Select LP Amount to Burn'
                 balances={relevantTokenBalances}
@@ -947,8 +945,8 @@ export default function RemoveStableLiquidity({
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
-              <SingleStableInputPanel
-                chainId={chainId}
+              <SingleTokenInputPanel
+                pool={stablePool}
                 account={account}
                 value={formattedAmounts[StablesField.CURRENCY_SINGLE]}
                 onUserInput={(_: string) => null}

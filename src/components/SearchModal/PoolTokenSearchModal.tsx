@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { Currency, Token } from '@requiemswap/sdk'
+import { Currency, Pool, Token } from '@requiemswap/sdk'
 import {
   ModalContainer,
   ModalHeader,
@@ -16,6 +16,7 @@ import usePrevious from 'hooks/usePreviousValue'
 import { TokenList } from '@uniswap/token-lists'
 import { useTranslation } from 'contexts/Localization'
 import StableSearch from './StableSearch'
+import TokenSearch from './TokenSearch'
 import ImportToken from './ImportToken'
 import Manage from './Manage'
 import ImportList from './ImportList'
@@ -30,25 +31,28 @@ const Footer = styled.div`
 const StyledModalContainer = styled(ModalContainer)`
   max-width: 420px;
   width: 100%;
+  z-index:999;
+
 `
 
-const StyledModalBody = styled(ModalBody)`
+const StyledModalBody = styled.div`
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: 24px;
 `
 
 interface CurrencySearchModalProps extends InjectedModalProps {
+  pool: Pool
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
   otherSelectedCurrency?: Token | null
-  showCommonBases?: boolean
 }
 
-export default function CurrencySearchModal({
+export default function PoolTokenSearchModal({
+  pool,
   onDismiss = () => null,
   onCurrencySelect,
   selectedCurrency,
   otherSelectedCurrency,
-  showCommonBases = false,
 }: CurrencySearchModalProps) {
   const [modalView, setModalView] = useState<CurrencyModalView>(CurrencyModalView.search)
 
@@ -60,27 +64,22 @@ export default function CurrencySearchModal({
     [onDismiss, onCurrencySelect],
   )
 
-  // for token import view
-  const prevView = usePrevious(modalView)
-
   // used for import token flow
   const [importToken, setImportToken] = useState<Token | undefined>()
 
-  // used for import list
-  const [importList, setImportList] = useState<TokenList | undefined>()
-  const [listURL, setListUrl] = useState<string | undefined>()
+  // for token import view
+  const prevView = usePrevious(modalView)
 
   const { t } = useTranslation()
 
   const config = {
-    [CurrencyModalView.search]: { title: 'Select a Single Stable Coin to Receive', onBack: undefined },
+    [CurrencyModalView.search]: { title: `Select a Single ${pool.name} Token to Receive`, onBack: undefined },
     [CurrencyModalView.manage]: { title: t('Manage'), onBack: () => setModalView(CurrencyModalView.search) },
     [CurrencyModalView.importToken]: {
       title: t('Import Tokens'),
       onBack: () =>
         setModalView(prevView && prevView !== CurrencyModalView.importToken ? prevView : CurrencyModalView.search),
-    },
-    [CurrencyModalView.importList]: { title: t('Import List'), onBack: () => setModalView(CurrencyModalView.search) },
+    }
   }
 
   return (
@@ -93,25 +92,28 @@ export default function CurrencySearchModal({
         <ModalCloseButton onDismiss={onDismiss} />
       </ModalHeader>
       <StyledModalBody>
-        {modalView === CurrencyModalView.search ? (
-          <StableSearch
-            onCurrencySelect={handleCurrencySelect}
-            selectedCurrency={selectedCurrency}
-            otherSelectedCurrency={otherSelectedCurrency}
-            showCommonBases={showCommonBases}
-            showImportView={() => setModalView(CurrencyModalView.importToken)}
-            setImportToken={setImportToken}
-          />
-        ) : modalView === CurrencyModalView.manage ? (
-          <Manage
-            setModalView={setModalView}
-            setImportToken={setImportToken}
-            setImportList={setImportList}
-            setListUrl={setListUrl}
-          />
-        ) : (
-          ''
-        )}
+        <TokenSearch
+          tokens={pool.tokens}
+          onCurrencySelect={handleCurrencySelect}
+          selectedCurrency={selectedCurrency}
+          otherSelectedCurrency={otherSelectedCurrency}
+          showImportView={() => setModalView(CurrencyModalView.importToken)}
+          setImportToken={setImportToken}
+        />
+
+
+        {/* {modalView === CurrencyModalView.search && (
+          <Footer>
+            <Button
+              scale="sm"
+              variant="text"
+              onClick={() => setModalView(CurrencyModalView.manage)}
+              className="list-token-manage-button"
+            >
+              {t('Manage Tokens')}
+            </Button>
+          </Footer>
+        )} */}
       </StyledModalBody>
     </StyledModalContainer>
   )

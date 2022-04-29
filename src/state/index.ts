@@ -22,6 +22,7 @@ import weightedPairReducer from './weightedPairs'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
 import burnStables from './burnStables/reducer'
+import burnPoolLp from './burnPoolLp/reducer'
 import multicall from './multicall/reducer'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
@@ -49,6 +50,7 @@ const store = configureStore({
     mintWeightedPair,
     burn,
     burnStables,
+    burnPoolLp,
     multicall,
     lists,
   },

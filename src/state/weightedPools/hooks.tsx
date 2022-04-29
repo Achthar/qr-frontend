@@ -54,7 +54,7 @@ export const useDeserializedWeightedPools = (chainId: number): WeightedPool[] =>
         BigNumber.from(pool.swapStorage.adminFee),
       ),
       BigNumber.from(pool.lpTotalSupply),
-
+      pool.lpAddress
     )
     poolW.name = pool.name
     return poolW

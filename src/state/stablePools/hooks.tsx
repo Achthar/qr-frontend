@@ -4,7 +4,6 @@ import { BigNumber } from 'ethers'
 import { Price, StablePool, STABLES_LP_TOKEN, StableSwapStorage, Token, TokenAmount } from '@requiemswap/sdk'
 import { BondType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { STABLE_POOL_LP } from 'config/constants/tokens'
 import { State, Bond, BondsState, StablePoolsState, StablePoolData } from '../types'
 
 
@@ -39,7 +38,7 @@ function generateTokenDict(serializedTokens: SerializedToken[]): { [id: number]:
 export const useStablePoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.stablePools)
   const pools = poolState.poolData[chainId].pools
-  const lpToken = pools[id]?.lpToken ? deserializeToken(pools[id]?.lpToken) : STABLE_POOL_LP[chainId] // fallback
+  const lpToken = deserializeToken(pools[id]?.lpToken)// fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
 
@@ -68,10 +67,12 @@ export const useDeserializedStablePools = (chainId: number): StablePool[] => {
       ),
       currentBlock,
       BigNumber.from(pool.lpTotalSupply),
-      BigNumber.from(0),
-      pool.address
+      BigNumber.from(pool?.userData?.userWithdarawFee ?? 0),
+      pool.address,
+      pool.lpAddress
     )
     poolS.name = pool.name
+
     return poolS
   }
   )

@@ -20,8 +20,8 @@ import CircleLoader from '../Loader/CircleLoader'
 import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 
-function currencyKey(chainId: number, currency: Currency): string {
-  return currency instanceof Token ? currency.address : currency === NETWORK_CCY[chainId ?? 43113] ? NETWORK_CCY[chainId ?? 43113].symbol : ''
+function currencyKey(currency: Token): string {
+  return currency.address
 }
 
 const StyledBalanceText = styled(Text)`
@@ -40,7 +40,7 @@ const FixedContentRow = styled.div`
 `
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
-  return <StyledBalanceText title={balance.toExact()}>{balance.toSignificant(4)}</StyledBalanceText>
+  return <StyledBalanceText title={balance.toExact()}>{Number(balance.toSignificant(4)).toLocaleString()}</StyledBalanceText>
 }
 
 const MenuItem = styled(RowBetween) <{ disabled: boolean; selected: boolean }>`
@@ -49,6 +49,7 @@ const MenuItem = styled(RowBetween) <{ disabled: boolean; selected: boolean }>`
   display: grid;
   grid-template-columns: auto minmax(auto, 1fr) minmax(0, 72px);
   grid-gap: 8px;
+  z-index:100;
   cursor: ${({ disabled }) => !disabled && 'pointer'};
   pointer-events: ${({ disabled }) => disabled && 'none'};
   :hover {
@@ -58,7 +59,6 @@ const MenuItem = styled(RowBetween) <{ disabled: boolean; selected: boolean }>`
 `
 
 function TokenRow({
-  chainId,
   account,
   currency,
   onSelect,
@@ -66,7 +66,6 @@ function TokenRow({
   otherSelected,
   style,
 }: {
-  chainId: number
   account: string
   currency: Token
   onSelect: () => void
@@ -74,7 +73,8 @@ function TokenRow({
   otherSelected: boolean
   style: CSSProperties
 }) {
-  const key = currencyKey(chainId, currency)
+  const chainId = currency?.chainId
+  const key = currencyKey(currency)
   const selectedTokenList = useCombinedActiveList(chainId)
   const isOnSelectedList = isTokenOnList(chainId, selectedTokenList, currency)
   const customAdded = useIsUserAddedToken(currency)
@@ -104,45 +104,23 @@ function TokenRow({
 }
 
 export default function TokenList({
-  height,
   currencies,
   selectedCurrency,
   onCurrencySelect,
   otherCurrency,
   fixedListRef,
-  showETH,
-  showImportView,
-  setImportToken,
   breakIndex,
 }: {
-  height: number
   currencies: Token[]
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
   otherCurrency?: Token | null
   fixedListRef?: MutableRefObject<FixedSizeList | undefined>
-  showETH: boolean
-  showImportView: () => void
-  setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
   const { account } = useWeb3React()
-  const { chainId } = useNetworkState()
 
-  const itemData: (Token | undefined)[] = useMemo(() => {
-    let formatted: (Token | undefined)[] = currencies
-    if (breakIndex !== undefined) {
-      formatted = [...formatted.slice(0, breakIndex), undefined, ...formatted.slice(breakIndex, formatted.length)]
-    }
-    return formatted
-  }, [breakIndex, currencies])
-
-
-  const { t } = useTranslation()
-
-  const inactiveTokens: {
-    [address: string]: Token
-  } = useAllInactiveTokens(chainId)
+  const itemData: (Token | undefined)[] = currencies
 
   const Row = useCallback(
     ({ data, index, style }) => {
@@ -151,36 +129,8 @@ export default function TokenList({
       const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
       const handleSelect = () => onCurrencySelect(currency)
 
-      const token = wrappedCurrency(currency, chainId)
-
-      const showImport = inactiveTokens && token && Object.keys(inactiveTokens).includes(token.address)
-
-      if (index === breakIndex || !data) {
-        return (
-          <FixedContentRow style={style}>
-            <LightGreyCard padding="8px 12px" borderRadius="8px">
-              <RowBetween>
-                <Text small>{t('Expanded results from inactive Token Lists')}</Text>
-                <QuestionHelper
-                  text={t(
-                    "Tokens from inactive lists. Import specific tokens below or click 'Manage' to activate more lists.",
-                  )}
-                  ml="4px"
-                />
-              </RowBetween>
-            </LightGreyCard>
-          </FixedContentRow>
-        )
-      }
-
-      if (showImport && token) {
-        return (
-          <ImportRow style={style} token={token} showImportView={showImportView} setImportToken={setImportToken} dim />
-        )
-      }
       return (
         <TokenRow
-          chainId={chainId}
           account={account}
           style={style}
           currency={currency}
@@ -191,24 +141,18 @@ export default function TokenList({
       )
     },
     [
-      chainId,
-      inactiveTokens,
       onCurrencySelect,
       otherCurrency,
       selectedCurrency,
-      setImportToken,
-      showImportView,
-      breakIndex,
-      t,
       account
     ],
   )
 
-  const itemKey = useCallback((index: number, data: any) => currencyKey(chainId, data[index]), [chainId])
+  const itemKey = useCallback((index: number, data: any) => currencyKey(data[index]), [])
 
   return (
     <FixedSizeList
-      height={height}
+      height={56 * itemData.length}
       ref={fixedListRef as any}
       width="100%"
       itemData={itemData}

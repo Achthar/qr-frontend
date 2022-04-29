@@ -1,18 +1,17 @@
 /* eslint react/jsx-boolean-value: 0 */
 import React from 'react'
-import { Token, StablePool, TokenAmount } from '@requiemswap/sdk'
+import { Token, StablePool, TokenAmount, WeightedPool } from '@requiemswap/sdk'
 import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import Column, { ColumnCenter, AutoColumn } from 'components/Column'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import Row from 'components/Row'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
-import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
-import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
+import PoolLogo from 'components/Logo/PoolLogo'
+import { CurrencyLogo } from '../Logo'
 
 import { RowBetween } from '../Layout/Row'
 import { Input as NumericalInput } from './NumericalInput'
+
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -49,7 +48,7 @@ const Container = styled.div<{ hideInput: boolean, onHover: boolean, isTop: bool
   &:hover 
   ${({ onHover }) => (onHover ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
 `
-interface CurrencyInputPanelStable {
+interface CurrencyInputPanelPool {
   width: string
   value: string
   onUserInput: (value: string) => void
@@ -58,7 +57,7 @@ interface CurrencyInputPanelStable {
   label?: string
   stableCurrency: Token
   hideBalance?: boolean
-  stablePool?: StablePool | null
+  pool?: StablePool | WeightedPool | null
   hideInput?: boolean
   chainId: number
   account: string
@@ -71,27 +70,27 @@ interface CurrencyInputPanelStable {
 
 }
 
-export default function CurrencyInputPanelStable({
+export default function CurrencyInputPanelPool({
   width,
   value,
   onUserInput,
   onMax,
   showMaxButton,
   label,
-  stableCurrency,
+  stableCurrency: token,
   balances,
   chainId,
   account,
   hideBalance = false,
-  stablePool = null, // used for double token logo
+  pool = null, // used for double token logo
   hideInput = true,
   id,
   onHover = false,
   isTop = true,
   isBottom = true
-}: CurrencyInputPanelStable) {
+}: CurrencyInputPanelPool) {
 
-  const selectedCurrencyBalance = balances[stableCurrency?.address] ?? undefined // useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
+  const selectedCurrencyBalance = balances[token?.address] ?? undefined // useCurrencyBalance(chainId, account ?? undefined, stableCurrency ?? undefined)
 
   return (
     <InputPanel id={id} width={width}>
@@ -101,7 +100,7 @@ export default function CurrencyInputPanelStable({
           <LabelRow >
             {!hideBalance && account && (
               <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
-                {!hideBalance && !!stableCurrency && selectedCurrencyBalance
+                {!hideBalance && !!token && selectedCurrencyBalance
                   ? `Balance: ${Number(selectedCurrencyBalance?.toSignificant(8)).toLocaleString() ?? ''}`
                   : ' -'}
               </Text>)
@@ -121,26 +120,28 @@ export default function CurrencyInputPanelStable({
               }}
               align="left"
             />
-            {account && stableCurrency && showMaxButton && label !== 'To' && (
+            {account && token && showMaxButton && label !== 'To' && (
               <Button onClick={onMax} scale="sm" variant="text">
                 MAX
               </Button>
             )}
             <Flex alignItems="center" justifyContent="space-between" paddingRight={30}>
-              {stablePool ? (
+              {pool ? (
                 <Row>
                   <AutoColumn gap="4px">
-                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[0]} currency1={stablePool.tokens[1]} size={20} margin />
-                    <DoubleCurrencyLogo chainId={chainId} currency0={stablePool.tokens[2]} currency1={stablePool.tokens[3]} size={20} margin />
+                    <PoolLogo tokens={pool?.tokens} />
                   </AutoColumn>
-                  <Text mr='5px' width='30px' >Stable LP</Text>
+                  <Text mr='5px' width='30px' >
+                    {/* {`${pool?._name} LP`} */}
+                    Pool LP
+                    </Text>
                 </Row>
-              ) : stableCurrency ? (
+              ) : token ? (
                 <Row>
                   <ColumnCenter >
-                    <CurrencyLogo chainId={chainId} currency={stableCurrency} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
+                    <CurrencyLogo chainId={chainId} currency={token} size="30px" style={{ marginRight: '8px', marginBottom: '8px' }} />
                   </ColumnCenter>
-                  <Text mr='5px' width='30px'>{stableCurrency.symbol}</Text>
+                  <Text mr='5px' width='30px'>{token.symbol}</Text>
                 </Row>
               ) : null}
             </Flex>

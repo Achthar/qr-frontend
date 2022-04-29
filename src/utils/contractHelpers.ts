@@ -17,7 +17,6 @@ import {
   getFarmAuctionAddress,
   getRequiemAddress,
   getStableSwapAddress,
-  getStableLpAddress,
   getAddressForReserve,
   getAddressForBondingCalculator,
   getAddressForWeightedPairFactory,
@@ -49,7 +48,7 @@ import farmAuctionAbi from 'config/abi/farmAuction.json'
 import weightedFactoryAVAX from 'config/abi/avax/RequiemWeightedPairFactory.json'
 import weightedPairAVAX from 'config/abi/avax/RequiemWeightedPair.json'
 import bondStaking from 'config/abi/avax/Staking.json'
-
+import { Pool, StablePool } from '@requiemswap/sdk'
 
 import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.json'
 
@@ -66,6 +65,7 @@ import stableSwapAVAX from 'config/abi/avax/RequiemStableSwap.json'
 import IERC20 from 'config/abi/avax/IERC20.json'
 
 import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract, StableSwapContract, StableLpContract } from './types'
+
 
 
 
@@ -145,8 +145,13 @@ export const getStableSwapContract = (chainId: number, signer?: ethers.Signer | 
   return getContract(chainId, new Interface(stableSwapAVAX), getStableSwapAddress(chainId), signer) as StableSwapContract
   // return getContract(chainId, stableSwapAVAX, getStableSwapAddress(chainId), signer) as StableSwapContract
 }
-export const getStableLpContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(chainId, new Interface(IERC20), getStableLpAddress(chainId), signer) as StableLpContract
+export const getStableLpContract = (stablePool: StablePool, chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, new Interface(IERC20), stablePool.liquidityToken.address, signer) as StableLpContract
+  // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
+}
+
+export const getPoolLpContract = (pool: Pool, chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(chainId, new Interface(IERC20), pool.liquidityToken.address, signer)
   // return getContract(chainId, IERC20, getStableLpAddress(chainId), signer) as StableLpContract
 }
 

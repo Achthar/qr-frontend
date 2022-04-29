@@ -1,7 +1,6 @@
 import { Percent, TokenAmount, StablePool, Token } from '@requiemswap/sdk'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { StablePoolState } from 'hooks/useStablePool'
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils'
 import { wrappedCurrencyAmount } from 'utils/wrappedCurrency'

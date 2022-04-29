@@ -93,8 +93,6 @@ function StableSearch({
         ) : filteredSortedTokens?.length > 0 || filteredInactiveTokens?.length > 0 ? (
           <Box margin="24px -24px">
             <TokenList
-              height={390}
-              showETH={false}
               currencies={
                 filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
               }
@@ -103,8 +101,6 @@ function StableSearch({
               otherCurrency={otherSelectedCurrency}
               selectedCurrency={selectedCurrency}
               fixedListRef={fixedList}
-              showImportView={showImportView}
-              setImportToken={setImportToken}
             />
           </Box>
         ) : (

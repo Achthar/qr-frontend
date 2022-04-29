@@ -71,10 +71,6 @@ export const getStableSwapAddress = (chainId: number) => {
   return getAddress(chainId, addresses.stableSwap)
 }
 
-export const getStableLpAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.stableLp)
-}
-
 export const getAddressForReserve = (chainId: number, bondConfig: BondConfig) => {
   return getAddress(chainId, bondConfig.reserveAddress)
 }

@@ -26,18 +26,23 @@ import {
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router-dom'
-import { useStablePoolLpBalance } from 'state/stablePools/hooks'
+import { useWeightedPoolLpBalance } from 'state/weightedPools/hooks'
 import useRefresh from 'hooks/useRefresh'
 import PoolLogo from 'components/Logo/PoolLogo'
 import getChain from 'utils/getChain'
 import { sliceIntoChunks } from 'utils/arraySlicer'
 import Row from 'components/Row'
-import SingleStableInputPanel from 'components/CurrencyInputPanel/SingleStableInputPanel'
-import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
+import SingleTokenInputPanel from 'components/CurrencyInputPanel/SingleTokenInputPanel'
+
+import { useBurnPoolLpActionHandlers, useBurnPoolLpState, useDerivedBurnPoolLpInfo } from 'state/burnPoolLp/hooks'
+import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
+import { PoolField } from 'state/burnPoolLp/actions'
+import { MinimalPoolPositionCard } from 'components/PositionCard/PoolPosition'
+
 import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-import CurrencyInputPanelStable from '../../components/CurrencyInputPanel/CurrencyInputPanelStable'
+import CurrencyInputPanelPool from '../../components/CurrencyInputPanel/CurrencyInputPanelPool'
 import { MinimalStablesPositionCard } from '../../components/PositionCard/StablesPosition'
 import { AppHeader, AppBody } from '../../components/App'
 import { RowBetween, RowFixed } from '../../components/Layout/Row'
@@ -48,18 +53,12 @@ import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import { calculateGasMargin, calculateSlippageAmount, getStableSwapContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getStableSwapContract, getWeightedPoolContract } from '../../utils'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
-import {
-  useBurnStablesActionHandlers,
-  useDerivedBurnStablesInfo,
-  useBurnStableState,
-} from '../../state/burnStables/hooks'
-
-import { StablesField } from '../../state/burnStables/actions'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
+
 
 
 // const function getStableIndex(token)
@@ -92,31 +91,31 @@ export default function RemovePoolLiquidity({
 
   // burn state
   const {
-    independentStablesField,
+    independentPoolField,
     typedValueLiquidity,
     // calculatedSingleValues,
     // typedValueSingle,
-  } = useBurnStableState()
+  } = useBurnPoolLpState()
 
   // call pool from state
   const { slowRefresh } = useRefresh()
-  const { stablePools, stableAmounts, userDataLoaded, publicDataLoaded } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
+  const { weightedPools, userBalances, userDataLoaded, publicDataLoaded } = useGetWeightedPoolState(chainId, account, slowRefresh, slowRefresh)
 
-  const stablePool = stablePools[0]
+  const weightedPool = weightedPools[0]
 
 
-  const stableLpBalance = useStablePoolLpBalance(chainId, 0)
+  const stableLpBalance = useWeightedPoolLpBalance(chainId, 0)
   // all balances are loaded from state
   const relevantTokenBalances = useMemo(() => {
     return {
-      ...{ [stablePool?.liquidityToken.address]: stableLpBalance },
-      ...Object.assign({}, ...stableAmounts?.map(amnt => { return { [amnt.token.address]: amnt } }))
+      ...{ [weightedPool?.liquidityToken.address]: stableLpBalance },
+      ...Object.assign({}, ...userBalances?.map(amnt => { return { [amnt.token.address]: amnt } }))
     }
   },
     [
-      stableAmounts,
+      userBalances,
       stableLpBalance,
-      stablePool
+      weightedPool
     ]
   )
 
@@ -125,17 +124,17 @@ export default function RemovePoolLiquidity({
     error,
     liquidityTradeValues,
     parsedOutputTokenAmounts
-  } = useDerivedBurnStablesInfo(chainId, relevantTokenBalances, stablePool, publicDataLoaded, account)
+  } = useDerivedBurnPoolLpInfo(chainId, relevantTokenBalances, weightedPool, publicDataLoaded, account)
 
   const {
     onLpInput,
     onSelectStableSingle
-  } = useBurnStablesActionHandlers()
+  } = useBurnPoolLpActionHandlers()
 
   const isValid = !error
 
   // modal and loading
-  const enum StableRemovalState {
+  const enum PoolRemovalState {
     BY_LP,
     BY_TOKENS,
     BY_SINGLE_TOKEN,
@@ -145,9 +144,9 @@ export default function RemovePoolLiquidity({
     margin-bottom: 5px;
   `
 
-  const [stableRemovalState, setStableRemovalState] = useState<StableRemovalState>(StableRemovalState.BY_LP)
+  const [poolRemovalState, setPoolRemovalState] = useState<PoolRemovalState>(PoolRemovalState.BY_LP)
 
-  const handleClick = (newIndex: StableRemovalState) => setStableRemovalState(newIndex)
+  const handleClick = (newIndex: PoolRemovalState) => setPoolRemovalState(newIndex)
 
 
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -158,25 +157,25 @@ export default function RemovePoolLiquidity({
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const formattedAmounts = {
-    [StablesField.LIQUIDITY_PERCENT]: parsedAmounts[StablesField.LIQUIDITY_PERCENT].equalTo('0')
+    [PoolField.LIQUIDITY_PERCENT]: parsedAmounts[PoolField.LIQUIDITY_PERCENT].equalTo('0')
       ? '0'
-      : parsedAmounts[StablesField.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
+      : parsedAmounts[PoolField.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
         ? '<1'
-        : parsedAmounts[StablesField.LIQUIDITY_PERCENT].toFixed(0),
-    [StablesField.LIQUIDITY]:
-      independentStablesField === StablesField.LIQUIDITY
+        : parsedAmounts[PoolField.LIQUIDITY_PERCENT].toFixed(0),
+    [PoolField.LIQUIDITY]:
+      independentPoolField === PoolField.LIQUIDITY
         ? typedValueLiquidity
-        : parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6) ?? '',
-    [StablesField.LIQUIDITY_SINGLE]:
-      parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6) ?? '',
-    [StablesField.CURRENCY_SINGLE]:
-      parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(6) ?? '',
+        : parsedAmounts[PoolField.LIQUIDITY]?.toSignificant(6) ?? '',
+    [PoolField.LIQUIDITY_SINGLE]:
+      parsedAmounts[PoolField.LIQUIDITY_SINGLE]?.toSignificant(6) ?? '',
+    [PoolField.CURRENCY_SINGLE]:
+      parsedAmounts[PoolField.CURRENCY_SINGLE]?.toSignificant(6) ?? '',
   }
 
-  const atMaxAmount = parsedAmounts[StablesField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
+  const atMaxAmount = parsedAmounts[PoolField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
-  const userPoolBalance = stablePool?.swapStorage && new TokenAmount(
-    new Token(chainId, stablePool?.swapStorage.lpAddress, 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
+  const userPoolBalance = weightedPool?.swapStorage && new TokenAmount(
+    weightedPool?.liquidityToken,
     BigNumber.from(0).toBigInt(),
   )
 
@@ -185,15 +184,15 @@ export default function RemovePoolLiquidity({
 
   const priceMatrix = []
   if (publicDataLoaded)
-    for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
+    for (let i = 0; i < Object.values(weightedPool?.tokens).length; i++) {
       priceMatrix.push([])
-      for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
+      for (let j = 0; j < Object.values(weightedPool?.tokens).length; j++) {
         if (i !== j && parsedOutputTokenAmounts[j] !== undefined) {
           priceMatrix?.[i].push(
             new Price(
-              stablePool?.tokens[i],
-              stablePool?.tokens[j],
-              stablePool.calculateSwapGivenIn(stablePool.tokenFromIndex(j), stablePool.tokenFromIndex(i), parsedOutputTokenAmounts[j].toBigNumber()).toBigInt(),
+              weightedPool?.tokens[i],
+              weightedPool?.tokens[j],
+              weightedPool.calculateSwapGivenIn(weightedPool.tokenFromIndex(j), weightedPool.tokenFromIndex(i), parsedOutputTokenAmounts[j].toBigNumber()).toBigInt(),
               parsedOutputTokenAmounts[j].raw,
             ),
           )
@@ -209,12 +208,12 @@ export default function RemovePoolLiquidity({
   const [approval, approveCallback] = useApproveCallback(
     chainId,
     account,
-    parsedAmounts[StablesField.LIQUIDITY],
-    stablePool?.address,
+    parsedAmounts[PoolField.LIQUIDITY],
+    weightedPool?.address,
   )
 
   const symbolText = useMemo(() => parsedOutputTokenAmounts && parsedOutputTokenAmounts?.map(x => x.token.symbol).join('-'), [parsedOutputTokenAmounts])
-  const summaryText = useMemo(() => parsedOutputTokenAmounts?.length > 0 ? `Remove [${parsedOutputTokenAmounts?.map(x => x.toSignificant(8)).join(',')}] ${symbolText} for ${parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)} LP Tokens` : '',
+  const summaryText = useMemo(() => parsedOutputTokenAmounts?.length > 0 ? `Remove [${parsedOutputTokenAmounts?.map(x => x.toSignificant(8)).join(',')}] ${symbolText} for ${parsedAmounts[PoolField.LIQUIDITY]?.toSignificant(6)} LP Tokens` : '',
     [parsedOutputTokenAmounts, symbolText, parsedAmounts]
   )
 
@@ -226,12 +225,12 @@ export default function RemovePoolLiquidity({
     if (!parsedOutputTokenAmounts) {
       throw new Error('missing currency amounts')
     }
-    const router = getStableSwapContract(stablePool, library, account)
+    const router = getWeightedPoolContract(weightedPool, library, account)
 
     // we take the first results (lower ones) since we want to receive a minimum amount of tokens
     const amountsMin = parsedOutputTokenAmounts.map(am => calculateSlippageAmount(am, allowedSlippage)[0])
 
-    const liquidityAmount = parsedAmounts[StablesField.LIQUIDITY]
+    const liquidityAmount = parsedAmounts[PoolField.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
     let methodNames: string[]
@@ -297,14 +296,14 @@ export default function RemovePoolLiquidity({
   async function onStablesLpRemoveSingle() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const {
-      [StablesField.LIQUIDITY]: liquidityAmount,
-      [StablesField.CURRENCY_SINGLE]: singleStableAmount,
-      [StablesField.SELECTED_SINGLE]: selectedSingle
+      [PoolField.LIQUIDITY]: liquidityAmount,
+      [PoolField.CURRENCY_SINGLE]: singleStableAmount,
+      [PoolField.SELECTED_SINGLE]: selectedSingle
     } = parsedAmounts
     if (!liquidityAmount || !singleStableAmount) {
       throw new Error('missing currency amounts')
     }
-    const router = getStableSwapContract(stablePool, library, account)
+    const router = getWeightedPoolContract(weightedPool, library, account)
 
     // we take the first results (lower ones) since we want to receive a minimum amount of tokens
     const amountMin = calculateSlippageAmount(singleStableAmount, allowedSlippage)[0]
@@ -358,7 +357,7 @@ export default function RemovePoolLiquidity({
           setAttemptingTxn(false)
 
           addTransaction(response, {
-            summary: `Remove ${parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(3)} ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol
+            summary: `Remove ${parsedAmounts[PoolField.CURRENCY_SINGLE]?.toSignificant(3)} ${parsedAmounts[PoolField.CURRENCY_SINGLE].token.symbol
               } from Requiem Stable Swap`,
           })
 
@@ -380,9 +379,9 @@ export default function RemovePoolLiquidity({
     if (!parsedOutputTokenAmounts) {
       throw new Error('missing currency amounts')
     }
-    const router = getStableSwapContract(stablePool, library, account)
+    const router = getWeightedPoolContract(weightedPool, library, account)
 
-    const liquidityAmount = parsedAmounts[StablesField.LIQUIDITY]
+    const liquidityAmount = parsedAmounts[PoolField.LIQUIDITY]
 
     // slippage for LP burn, takes second result from slippage calculation
     const lpAmountMax = calculateSlippageAmount(liquidityAmount, allowedSlippage)[1]
@@ -449,15 +448,15 @@ export default function RemovePoolLiquidity({
   }
 
   function modalHeader() {
-    const last = stablePool?.tokens.length - 1
+    const last = weightedPool?.tokens.length - 1
     return (
       <AutoColumn gap="md">
-        {stablePool && stablePool.tokens.map((tk, i) => {
+        {weightedPool && weightedPool.tokens.map((tk, i) => {
           return (
 
             <>
               <RowBetween align="flex-end">
-                <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_1]?.toSignificant(6)}</Text>
+                <Text fontSize="24px">{parsedOutputTokenAmounts[i]?.toSignificant(6)}</Text>
                 <RowFixed gap="4px">
                   <CurrencyLogo chainId={chainId} currency={tk} size="24px" />
                   <Text fontSize="24px" ml="10px" mr="5px">
@@ -485,17 +484,17 @@ export default function RemovePoolLiquidity({
 
   function tradeValues() {
 
-    const val = parsedAmounts[StablesField.CURRENCY_SINGLE] && liquidityTradeValues
-      && liquidityTradeValues[parsedAmounts[StablesField.SELECTED_SINGLE]] ?
-      (parsedAmounts[StablesField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
-        liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].toBigNumber().toBigInt())
+    const val = parsedAmounts[PoolField.CURRENCY_SINGLE] && liquidityTradeValues
+      && liquidityTradeValues[parsedAmounts[PoolField.SELECTED_SINGLE]] ?
+      (parsedAmounts[PoolField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
+        liquidityTradeValues?.[parsedAmounts[PoolField.SELECTED_SINGLE]].toBigNumber().toBigInt())
       : undefined
 
-    const valNet = parsedAmounts[StablesField.CURRENCY_SINGLE] && liquidityTradeValues && parsedAmounts[StablesField.CURRENCY_SINGLE_FEE]
-      && liquidityTradeValues[parsedAmounts[StablesField.SELECTED_SINGLE]] ?
-      (parsedAmounts[StablesField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
-        liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].toBigNumber().toBigInt()
-        - parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].toBigNumber().toBigInt())
+    const valNet = parsedAmounts[PoolField.CURRENCY_SINGLE] && liquidityTradeValues && parsedAmounts[PoolField.CURRENCY_SINGLE_FEE]
+      && liquidityTradeValues[parsedAmounts[PoolField.SELECTED_SINGLE]] ?
+      (parsedAmounts[PoolField.CURRENCY_SINGLE].toBigNumber().toBigInt() -
+        liquidityTradeValues?.[parsedAmounts[PoolField.SELECTED_SINGLE]].toBigNumber().toBigInt()
+        - parsedAmounts[PoolField.CURRENCY_SINGLE_FEE].toBigNumber().toBigInt())
       : undefined
 
     return (
@@ -510,7 +509,7 @@ export default function RemovePoolLiquidity({
               liquidityTradeValues && liquidityTradeValues.map(lpVal => {
                 return (
                   <Row justify="start" gap="7px">
-                    <CurrencyLogo chainId={stablePool?.chainId} currency={lpVal.token} size='15px' style={{ marginRight: '4px' }} />
+                    <CurrencyLogo chainId={weightedPool?.chainId} currency={lpVal.token} size='15px' style={{ marginRight: '4px' }} />
                     <Text fontSize="14px" >
                       {
                         lpVal?.toSignificant(6)
@@ -525,8 +524,8 @@ export default function RemovePoolLiquidity({
             val && (
               <Row justify="start" gap="4px">
                 <Text fontSize="12px" color={val >= 0 ? 'green' : 'red'} textAlign='left'>
-                  {`${val >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].token, val >= 0 ? val : -val).toSignificant(4)
-                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol}`}
+                  {`${val >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[PoolField.SELECTED_SINGLE]].token, val >= 0 ? val : -val).toSignificant(4)
+                    } ${parsedAmounts[PoolField.CURRENCY_SINGLE].token.symbol}`}
                 </Text>
                 <Text fontSize="12px" color={val >= 0 ? 'green' : 'red'} textAlign='right' ml='5px'>
                   {val >= 0 ? ' advantage vs manual withdrawl' : ' disadvantage vs manual withdrawl'}
@@ -536,11 +535,11 @@ export default function RemovePoolLiquidity({
             )
           }
           {
-            parsedAmounts[StablesField.CURRENCY_SINGLE_FEE] && (
+            parsedAmounts[PoolField.CURRENCY_SINGLE_FEE] && (
               <Row justify="start" gap="4px">
                 <Text fontSize="12px" textAlign='left'>
-                  {`${parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].toSignificant(4)
-                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE_FEE].token.symbol} `}
+                  {`${parsedAmounts[PoolField.CURRENCY_SINGLE_FEE].toSignificant(4)
+                    } ${parsedAmounts[PoolField.CURRENCY_SINGLE_FEE].token.symbol} `}
                 </Text>
                 <Text fontSize="12px" textAlign='right' ml='5px'>
                   withdrawl fee
@@ -552,8 +551,8 @@ export default function RemovePoolLiquidity({
             valNet && (
               <Row justify="start" gap="4px">
                 <Text fontSize="12px" color={valNet >= 0 ? 'green' : 'red'} textAlign='left'>
-                  {`${valNet >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[StablesField.SELECTED_SINGLE]].token, valNet >= 0 ? valNet : -valNet).toSignificant(4)
-                    } ${parsedAmounts[StablesField.CURRENCY_SINGLE].token.symbol} `}
+                  {`${valNet >= 0 ? '  ' : '- '}${new TokenAmount(liquidityTradeValues?.[parsedAmounts[PoolField.SELECTED_SINGLE]].token, valNet >= 0 ? valNet : -valNet).toSignificant(4)
+                    } ${parsedAmounts[PoolField.CURRENCY_SINGLE].token.symbol} `}
                 </Text>
                 <Text fontSize="12px" color={valNet >= 0 ? 'green' : 'red'} textAlign='right' ml='5px'>
                   net difference
@@ -573,7 +572,7 @@ export default function RemovePoolLiquidity({
           <thead>
             <tr>
               <Th textAlign="left">Base</Th>
-              {stablePool && stablePool.tokens.map(tok => {
+              {weightedPool && weightedPool.tokens.map(tok => {
                 return (
                   <Th> {tok.symbol}</Th>
                 )
@@ -582,13 +581,13 @@ export default function RemovePoolLiquidity({
           </thead>
           <tbody>
             {
-              stablePool && stablePool.tokens.map((tokenRow, i) => {
+              weightedPool && weightedPool.tokens.map((tokenRow, i) => {
                 return (
                   <tr>
                     <Td textAlign="left" fontSize={fontsize}>
                       1 {tokenRow.symbol} =
                     </Td>
-                    {stablePool.tokens.map((__, j) => {
+                    {weightedPool.tokens.map((__, j) => {
                       return (
 
                         <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
@@ -613,13 +612,13 @@ export default function RemovePoolLiquidity({
           </Text>
           <RowFixed>
             <AutoColumn>
-              <PoolLogo tokens={stablePool?.tokens} margin />
+              <PoolLogo tokens={weightedPool?.tokens} margin />
             </AutoColumn>
-            <Text>{parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)}</Text>
+            <Text>{parsedAmounts[PoolField.LIQUIDITY]?.toSignificant(6)}</Text>
           </RowFixed>
         </RowBetween>
-        <AutoColumn>{stablePool && priceMatrixComponent('13px', '110%')}</AutoColumn>
-        {stableRemovalState === StableRemovalState.BY_LP || true ? (
+        <AutoColumn>{weightedPool && priceMatrixComponent('13px', '110%')}</AutoColumn>
+        {poolRemovalState === PoolRemovalState.BY_LP || true ? (
           <Button
             disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
             onClick={onStablesLpRemove}
@@ -631,7 +630,7 @@ export default function RemovePoolLiquidity({
             disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
             onClick={onStablesAmountsRemove}
           >
-            Confirm removal by Stable Coin Amounts
+            Confirm removal by Token Amounts
           </Button>
         )}
       </>
@@ -644,13 +643,13 @@ export default function RemovePoolLiquidity({
       <>
         <RowBetween>
           <Text>
-            {`${stablePool?.tokens[0].symbol}-${stablePool?.tokens[1].symbol}-${stablePool?.tokens[2].symbol}-${stablePool?.tokens[3].symbol} Stable Swap LP burned`}
+            {`${weightedPool?.tokens[0].symbol}-${weightedPool?.tokens[1].symbol}-${weightedPool?.tokens[2].symbol}-${weightedPool?.tokens[3].symbol} Stable Swap LP burned`}
           </Text>
           <RowFixed>
             <AutoColumn>
-              <PoolLogo tokens={stablePool?.tokens} margin />
+              <PoolLogo tokens={weightedPool?.tokens} margin />
             </AutoColumn>
-            <Text>{parsedAmounts[StablesField.LIQUIDITY_SINGLE]?.toSignificant(6)}</Text>
+            <Text>{parsedAmounts[PoolField.LIQUIDITY_SINGLE]?.toSignificant(6)}</Text>
           </RowFixed>
         </RowBetween>
         {/* <AutoColumn>{stablePool && priceMatrixComponent('13px', '110%')}</AutoColumn> */}
@@ -669,11 +668,11 @@ export default function RemovePoolLiquidity({
     return (
       <AutoColumn gap="md">
         <RowBetween align="flex-end">
-          <Text fontSize="24px">{parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(6)}</Text>
+          <Text fontSize="24px">{parsedAmounts[PoolField.CURRENCY_SINGLE]?.toSignificant(6)}</Text>
           <RowFixed gap="4px">
-            <CurrencyLogo chainId={chainId} currency={parsedAmounts[StablesField.CURRENCY_SINGLE]?.token} size="24px" />
+            <CurrencyLogo chainId={chainId} currency={parsedAmounts[PoolField.CURRENCY_SINGLE]?.token} size="24px" />
             <Text fontSize="24px" ml="10px" mr="5px">
-              {stablePool?.tokens[0].symbol}
+              {weightedPool?.tokens[0].symbol}
             </Text>
           </RowFixed>
         </RowBetween>
@@ -688,7 +687,7 @@ export default function RemovePoolLiquidity({
 
   const pendingText = summaryText
 
-  const pendingTextSingle = `Removing ${parsedAmounts[StablesField.CURRENCY_SINGLE]?.toSignificant(3)} ${stablePool?.tokens[0].symbol
+  const pendingTextSingle = `Removing ${parsedAmounts[PoolField.CURRENCY_SINGLE]?.toSignificant(3)} ${weightedPool?.tokens[0].symbol
     } from Requiem Stable Swap`
 
 
@@ -696,20 +695,20 @@ export default function RemovePoolLiquidity({
     setSignatureData(null) // important that we clear signature data to avoid bad sigs
     // if there was a tx hash, we want to clear the input
     if (txHash) {
-      onLpInput(StablesField.LIQUIDITY_PERCENT, '0')
+      onLpInput(PoolField.LIQUIDITY_PERCENT, '0')
     }
     setTxHash('')
   }, [txHash, onLpInput])
 
   const liquidityPercentChangeCallback = useCallback(
     (value: number) => {
-      onLpInput(StablesField.LIQUIDITY_PERCENT, value.toString())
+      onLpInput(PoolField.LIQUIDITY_PERCENT, value.toString())
     },
     [onLpInput],
   )
 
   const [innerLiquidityPercentage, setInnerLiquidityPercentage] = useDebouncedChangeHandler(
-    Number.parseInt(parsedAmounts[StablesField.LIQUIDITY_PERCENT].toFixed(0)),
+    Number.parseInt(parsedAmounts[PoolField.LIQUIDITY_PERCENT].toFixed(0)),
     liquidityPercentChangeCallback,
   )
 
@@ -748,7 +747,7 @@ export default function RemovePoolLiquidity({
           chainId={chainId}
           account={account}
           backTo={`/${chain}/liquidity`}
-          title="Remove Stable Swap Liquidity"
+          title="Remove Pool Liquidity"
           subtitle={`To receive ${symbolText}`}
           noConfig
         />
@@ -758,19 +757,19 @@ export default function RemovePoolLiquidity({
             <Text textAlign="center">Select withdrawl Type</Text>
 
             <LiquidityStateButtonWrapper>
-              <ButtonMenu activeIndex={stableRemovalState} onItemClick={handleClick} scale="sm" marginBottom="1px">
+              <ButtonMenu activeIndex={poolRemovalState} onItemClick={handleClick} scale="sm" marginBottom="1px">
                 <ButtonMenuItem>LP Percent</ButtonMenuItem>
                 <ButtonMenuItem>LP Amount</ButtonMenuItem>
-                <ButtonMenuItem>Single Stable</ButtonMenuItem>
+                <ButtonMenuItem>Single Token</ButtonMenuItem>
               </ButtonMenu>
             </LiquidityStateButtonWrapper>
             <RowBetween>
               <Text>{t('Amount')}</Text>
             </RowBetween>
-            {stableRemovalState === StableRemovalState.BY_LP && (
+            {poolRemovalState === PoolRemovalState.BY_LP && (
               <BorderCard>
                 <Text fontSize="40px" bold mb="16px" style={{ lineHeight: 1 }}>
-                  {formattedAmounts[StablesField.LIQUIDITY_PERCENT]}%
+                  {formattedAmounts[PoolField.LIQUIDITY_PERCENT]}%
                 </Text>
                 <Slider
                   name="lp-amount"
@@ -787,7 +786,7 @@ export default function RemovePoolLiquidity({
                     variant="tertiary"
                     scale="sm"
                     onClick={() => {
-                      onLpInput(StablesField.LIQUIDITY_PERCENT, '25')
+                      onLpInput(PoolField.LIQUIDITY_PERCENT, '25')
                     }}
                   >
                     25%
@@ -796,7 +795,7 @@ export default function RemovePoolLiquidity({
                     variant="tertiary"
                     scale="sm"
                     onClick={() => {
-                      onLpInput(StablesField.LIQUIDITY_PERCENT, '50')
+                      onLpInput(PoolField.LIQUIDITY_PERCENT, '50')
                     }}
                   >
                     50%
@@ -805,7 +804,7 @@ export default function RemovePoolLiquidity({
                     variant="tertiary"
                     scale="sm"
                     onClick={() => {
-                      onLpInput(StablesField.LIQUIDITY_PERCENT, '75')
+                      onLpInput(PoolField.LIQUIDITY_PERCENT, '75')
                     }}
                   >
                     75%
@@ -814,7 +813,7 @@ export default function RemovePoolLiquidity({
                     variant="tertiary"
                     scale="sm"
                     onClick={() => {
-                      onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                      onLpInput(PoolField.LIQUIDITY_PERCENT, '100')
                     }}
                   >
                     Max
@@ -823,7 +822,7 @@ export default function RemovePoolLiquidity({
               </BorderCard>
             )}
           </AutoColumn>
-          {stableRemovalState === StableRemovalState.BY_LP && (
+          {poolRemovalState === PoolRemovalState.BY_LP && (
             <>
               <ColumnCenter>
                 <ArrowDownIcon color="textSubtle" width="24px" my="16px" />
@@ -860,23 +859,23 @@ export default function RemovePoolLiquidity({
               </AutoColumn>
             </>
           )}
-          {stableRemovalState === StableRemovalState.BY_TOKENS && (
+          {poolRemovalState === PoolRemovalState.BY_TOKENS && (
             <Box my="16px">
-              <CurrencyInputPanelStable
+              <CurrencyInputPanelPool
                 chainId={chainId}
                 account={account}
                 width="100%"
-                value={formattedAmounts[StablesField.LIQUIDITY]}
+                value={formattedAmounts[PoolField.LIQUIDITY]}
                 onUserInput={(value) => {
-                  onLpInput(StablesField.LIQUIDITY, value)
+                  onLpInput(PoolField.LIQUIDITY, value)
                 }}
                 onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInput(PoolField.LIQUIDITY_PERCENT, '100')
                 }}
                 showMaxButton={!atMaxAmount}
-                stableCurrency={stablePool?.liquidityToken}
+                stableCurrency={weightedPool?.liquidityToken}
                 id="liquidity-amount"
-                stablePool={stablePool}
+                pool={weightedPool}
                 hideBalance={false}
                 balances={relevantTokenBalances}
               />
@@ -889,7 +888,7 @@ export default function RemovePoolLiquidity({
                   {
                     parsedOutputTokenAmounts && parsedOutputTokenAmounts.map((amnt, index) => {
                       return (
-                        <CurrencyInputPanelStable
+                        <CurrencyInputPanelPool
                           chainId={chainId}
                           account={account}
                           width="100%"
@@ -899,7 +898,7 @@ export default function RemovePoolLiquidity({
                           onUserInput={(_: string) => null}
                           // {(value: string) => field1Func(value)}
                           // onMax={() => {
-                          //   onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                          //   onLpInput(PoolField.LIQUIDITY_PERCENT, '100')
                           // }}
                           // showMaxButton={!atMaxAmount}
                           showMaxButton={false}
@@ -919,23 +918,23 @@ export default function RemovePoolLiquidity({
 
             </Box>
           )}
-          {stableRemovalState === StableRemovalState.BY_SINGLE_TOKEN && (
+          {poolRemovalState === PoolRemovalState.BY_SINGLE_TOKEN && (
             <Box my="16px">
-              <CurrencyInputPanelStable
+              <CurrencyInputPanelPool
                 chainId={chainId}
                 account={account}
                 width="100%"
-                value={formattedAmounts[StablesField.LIQUIDITY]}
+                value={formattedAmounts[PoolField.LIQUIDITY]}
                 onUserInput={(value) => {
-                  onLpInput(StablesField.LIQUIDITY, value)
+                  onLpInput(PoolField.LIQUIDITY, value)
                 }}
                 onMax={() => {
-                  onLpInput(StablesField.LIQUIDITY_PERCENT, '100')
+                  onLpInput(PoolField.LIQUIDITY_PERCENT, '100')
                 }}
                 showMaxButton
-                stableCurrency={stablePool?.liquidityToken}
+                stableCurrency={weightedPool?.liquidityToken}
                 id="liquidity-amount"
-                stablePool={stablePool}
+                pool={weightedPool}
                 hideBalance={false}
                 label='Select LP Amount to Burn'
                 balances={relevantTokenBalances}
@@ -943,26 +942,26 @@ export default function RemovePoolLiquidity({
               <ColumnCenter>
                 <ArrowDownIcon width="24px" my="16px" />
               </ColumnCenter>
-              <SingleStableInputPanel
-                chainId={chainId}
+              <SingleTokenInputPanel
+                pool={weightedPool}
                 account={account}
-                value={formattedAmounts[StablesField.CURRENCY_SINGLE]}
+                value={formattedAmounts[PoolField.CURRENCY_SINGLE]}
                 onUserInput={(_: string) => null}
                 onCurrencySelect={(ccy: Token) => {
-                  onSelectStableSingle(stablePool?.tokens.findIndex(token => token.equals(ccy)))
+                  onSelectStableSingle(weightedPool?.tokens.findIndex(token => token.equals(ccy)))
                 }}
                 // onMax={() => {
-                //   onField2Input(StablesField.CURRENCY_SINGLE, '0')
+                //   onField2Input(PoolField.CURRENCY_SINGLE, '0')
                 // }}
                 showMaxButton={false}
-                currency={parsedAmounts[StablesField.CURRENCY_SINGLE]?.token}
+                currency={parsedAmounts[PoolField.CURRENCY_SINGLE]?.token}
                 id="add-liquidity-input-token-single"
                 showCommonBases
                 label='Recieved Amount'
               />
             </Box>
           )}
-          {stableRemovalState !== StableRemovalState.BY_SINGLE_TOKEN ? stablePool && (
+          {poolRemovalState !== PoolRemovalState.BY_SINGLE_TOKEN ? weightedPool && (
             <AutoColumn gap="10px" style={{ marginTop: '16px' }}>
               <Text bold color="secondary" fontSize="12px" textTransform="uppercase">
                 Price Matrix
@@ -970,7 +969,7 @@ export default function RemovePoolLiquidity({
               <LightGreyCard>{priceMatrixComponent('12px', '80%')}</LightGreyCard>
             </AutoColumn>
           )
-            : stablePool && (
+            : weightedPool && (
               <AutoColumn gap="10px" style={{ marginTop: '16px' }}>
                 {tradeValues()}
               </AutoColumn>)
@@ -980,7 +979,7 @@ export default function RemovePoolLiquidity({
               <ConnectWalletButton />
             ) : (
 
-              stableRemovalState !== StableRemovalState.BY_SINGLE_TOKEN ? (
+              poolRemovalState !== PoolRemovalState.BY_SINGLE_TOKEN ? (
                 <RowBetween>
                   <Button
                     variant={approval === ApprovalState.APPROVED || signatureData !== null ? 'success' : 'primary'}
@@ -999,8 +998,7 @@ export default function RemovePoolLiquidity({
                   </Button>
                   <Button
                     variant={
-                      !isValid && !!parsedAmounts[StablesField.CURRENCY_1] && !!parsedAmounts[StablesField.CURRENCY_2]
-                        && !!parsedAmounts[StablesField.CURRENCY_3] && !!parsedAmounts[StablesField.CURRENCY_4]
+                      !isValid && parsedOutputTokenAmounts
                         ? 'danger'
                         : 'primary'
                     }
@@ -1032,7 +1030,7 @@ export default function RemovePoolLiquidity({
                     </Button>
                     <Button
                       variant={
-                        !!parsedAmounts[StablesField.CURRENCY_SINGLE] && !!parsedAmounts[StablesField.LIQUIDITY_SINGLE]
+                        !!parsedAmounts[PoolField.CURRENCY_SINGLE] && !!parsedAmounts[PoolField.LIQUIDITY_SINGLE]
                           ? 'danger'
                           : 'primary'
                       }
@@ -1053,11 +1051,11 @@ export default function RemovePoolLiquidity({
       </AppBody>
 
       {
-        stablePool ? (
+        weightedPool ? (
           <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-            <MinimalStablesPositionCard
-              stablePool={stablePool}
-              userLpPoolBalance={userPoolBalance[stablePool.liquidityToken.address]}
+            <MinimalPoolPositionCard
+              pool={weightedPool}
+              userLpPoolBalance={userPoolBalance[weightedPool.liquidityToken.address]}
             />
           </AutoColumn>
         ) : null

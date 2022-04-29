@@ -60,7 +60,7 @@ interface PositionCardProps extends CardProps {
 
 export function MinimalPoolPositionCard({ userLpPoolBalance, pool }: PositionCardProps) {
 
-  const tokens = pool.tokens
+  const tokens = pool?.tokens
 
   const chainId = pool.chainId
 
@@ -77,13 +77,13 @@ export function MinimalPoolPositionCard({ userLpPoolBalance, pool }: PositionCar
     if (!(pool &&
       totalPoolTokens &&
       userLpPoolBalance && totalPoolTokens.gte(userLpPoolBalance.toBigNumber())))
-      return [undefined, undefined, undefined, undefined]
+      return tokens.map((_, i) => undefined)
     return pool.calculateRemoveLiquidity(userLpPoolBalance.raw)
   },
-    [pool, totalPoolTokens, userLpPoolBalance]
+    [pool, totalPoolTokens, userLpPoolBalance, tokens]
   )
 
-  const amountsDeposited = useMemo(() => { return amountsDepositedRaw.map((amount, index) => new TokenAmount(tokens[index], amount)) }, [amountsDepositedRaw, tokens])
+  const amountsDeposited = useMemo(() => { return tokens && amountsDepositedRaw?.map((amount, index) => tokens[index] && new TokenAmount(tokens[index], amount ?? '0')) }, [amountsDepositedRaw, tokens])
 
   return (
     <>
