@@ -14,3 +14,14 @@ const getLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAddress }) 
 }
 
 export default getLiquidityUrlPathParts
+
+
+// export const getLiquidityUrlFromPool = ({ farm:SerializedFarm }) => {
+//   const wNetworkCCYAddressString = getWNetworkCcyAddress(chainId ?? process.env.REACT_APP_CHAIN_ID)
+//   const quoteTokenAddressString: string = quoteTokenAddress ? quoteTokenAddress[chainId ?? process.env.REACT_APP_CHAIN_ID] : null
+//   const tokenAddressString: string = tokenAddress ? tokenAddress[chainId] : null
+//   const firstPart =
+//     !quoteTokenAddressString || quoteTokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : quoteTokenAddressString
+//   const secondPart = !tokenAddressString || tokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : tokenAddressString
+//   return `${firstPart}/${secondPart}`
+// }

@@ -7,7 +7,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract IFundDistributor",
+        "internalType": "contract IRewardDistributor",
         "name": "_fund",
         "type": "address"
       }
@@ -279,6 +279,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "maturity",
+        "type": "uint256"
+      },
+      {
         "internalType": "contract IERC20",
         "name": "_lpToken",
         "type": "address"
@@ -340,7 +345,7 @@
     "name": "fund",
     "outputs": [
       {
-        "internalType": "contract IFundDistributor",
+        "internalType": "contract IRewardDistributor",
         "name": "",
         "type": "address"
       }
@@ -472,6 +477,11 @@
         "internalType": "uint256",
         "name": "allocPoint",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maturity",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -573,7 +583,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IFundDistributor",
+        "internalType": "contract IRewardDistributor",
         "name": "_fund",
         "type": "address"
       }
@@ -648,9 +658,14 @@
             "internalType": "uint256",
             "name": "allocPoint",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maturity",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct RequiemChef.PoolInfo",
+        "internalType": "struct RequiemMaster.PoolInfo",
         "name": "pool",
         "type": "tuple"
       }

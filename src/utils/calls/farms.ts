@@ -15,7 +15,9 @@ export const stakeFarm = async (chainId, account, masterChefContract, pid, amoun
   //   return receipt.status
   // }
 
-  const tx = await masterChefContract.deposit(pid, value, account, { ...options, gasPrice })
+  const tx = await masterChefContract.deposit(pid, value, account
+    // , { ...options, gasPrice }
+    )
   const receipt = await tx.wait()
   return receipt.status
 }
@@ -42,7 +44,7 @@ export const harvestFarm = async (chainId, account, masterChefContract, pid) => 
   //   return receipt.status
   // }
 
-  const tx = await masterChefContract.harvest(pid, account, { ...options, gasPrice })
+  const tx = await masterChefContract.harvest(pid, account) // , { ...options, gasPrice })
   const receipt = await tx.wait()
   return receipt.status
 }

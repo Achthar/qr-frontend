@@ -12,7 +12,7 @@ export const filterFarmsByQuoteToken = (
 ): SerializedFarm => {
   const preferredFarm = farms.find((farm) => {
     return preferredQuoteTokens.some((quoteToken) => {
-      return farm.quoteToken.symbol === quoteToken
+      return farm.tokens[farm.quoteTokenIndex].symbol === quoteToken
     })
   })
   return preferredFarm || farms[0]

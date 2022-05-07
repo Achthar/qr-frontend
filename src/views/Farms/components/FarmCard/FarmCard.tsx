@@ -58,15 +58,15 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
 
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('REQUIEM', '')
   const earnLabel = farm.dual ? farm.dual.earnLabel : 'REQT + Fees'
-
+  const [tokenIndex, quoteTokenIndex] = farm.quoteTokenIndex === 0 ? [1, 0] : [0, 1]
   const liquidityUrlPathParts = getLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: farm.quoteToken.address,
-    tokenAddress: farm.token.address,
+    quoteTokenAddress: farm.tokens[quoteTokenIndex].address,
+    tokenAddress: farm.tokens[tokenIndex].address,
   })
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
   const lpAddress = getAddress(chainId, farm.lpAddresses)
-  const isPromotedFarm = farm.token.symbol === 'REQT'
+  const isPromotedFarm = farm.tokens[farm.quoteTokenIndex === 0 ? 1 : 0].symbol === 'REQT'
 
   return (
     <StyledCard isActive={isPromotedFarm}>
@@ -75,11 +75,8 @@ const FarmCard: React.FC<FarmCardProps> = ({ chainId, farm, displayApr, removed,
           lpLabel={lpLabel}
           multiplier={farm.multiplier}
           isCommunityFarm={farm.isCommunity}
-          token={farm.token}
-          quoteToken={farm.quoteToken}
-          poolType={farm.lpData?.poolType}
-          token2={farm.token2}
-          token3={farm.token3}
+          tokens={farm.tokens}
+          quoteTokenIndex={farm.quoteTokenIndex}
         />
         {!removed && (
           <Flex justifyContent="space-between" alignItems="center">

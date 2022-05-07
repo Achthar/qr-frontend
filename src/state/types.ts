@@ -751,6 +751,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
   tokenPriceVsQuote?: BigNumber
   poolWeight?: BigNumber
   userData?: DeserializedFarmUserData
+  lockMaturity: number
   lpTokenRatio?: number
 }
 

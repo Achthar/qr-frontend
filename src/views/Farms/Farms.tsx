@@ -13,6 +13,7 @@ import { useFarms, usePollFarmsPublicData, usePollFarmsWithUserData, usePriceCak
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { DeserializedFarm } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
+import { PoolClass } from 'config/constants/types'
 import useRefresh from 'hooks/useRefresh'
 import { useGetRawWeightedPairsState, useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { getBalanceNumber } from 'utils/formatBalance'
@@ -200,10 +201,12 @@ function Farms({
   const farmsList = useCallback(
     (farmsToDisplay: DeserializedFarm[]): FarmWithStakedValue[] => {
       let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
-        if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
-          return farm
-        }
-        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+
+        // if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
+        //   console.log("FARMLIQ D TT", farm.tokens)
+        //   return farm
+        // }
+        const totalLiquidity = farm.quoteTokenPriceBusd === '0' ? farm.lpTotalInQuoteToken : new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
 
         const { reqtRewardsApr, lpRewardsApr } = isActive
           ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, totalLiquidity, farm.lpAddresses[chainId])
@@ -304,23 +307,20 @@ function Farms({
   }, [isIntersecting])
 
   const rowData = chosenFarmsMemoized.map((farm) => {
-    const { token, quoteToken } = farm
+    const { tokens, quoteTokenIndex } = farm
+    const token = tokens[quoteTokenIndex === 0 ? 1 : 0]
+    const quoteToken = tokens[quoteTokenIndex]
     const tokenAddress = token.address[chainId]
     const quoteTokenAddress = quoteToken.address[chainId]
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].replace('PANCAKE', '')
+    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].replace('/', '-')
 
-    const value = farm && pairs && (farm.lpData.poolType === PoolType.StablePairWrapper ?
+    const value = farm && pairs && (farm.poolClass !== PoolClass.STABLE ?
       publicDataLoaded && priceStableFarm(farm, stablePool) :
       reservesAndWeightsLoaded && priceWeightedFarm(farm, pairs))
 
-    console.log("PRICE", farm.lpSymbol, value, value * Number(farm.lpTokenRatio), farm.lpTokenRatio)
-
-
     const { reqtRewardsApr, lpRewardsApr } = isActive
-      ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, new BigNumber(value), farm.lpAddresses[chainId])
+      ? getFarmApr(new BigNumber(farm.poolWeight), cakePrice, new BigNumber(farm.liquidity), farm.lpAddresses[chainId])
       : { reqtRewardsApr: 0, lpRewardsApr: 0 }
-
-    console.log("PRICE APR", reqtRewardsApr, lpRewardsApr, getDisplayApr(reqtRewardsApr, lpRewardsApr), farm?.liquidity?.toString())
 
     const row: RowProps = {
       apr: {
@@ -339,14 +339,18 @@ function Farms({
         chainId,
         label: lpLabel,
         pid: farm.pid,
-        poolType: farm?.lpData?.poolType,
-        token: farm.token,
-        quoteToken: farm.quoteToken,
-        token2: farm?.token2,
-        token3: farm?.token3,
+        tokens: farm.tokens,
+        quoteTokenIndex: farm.quoteTokenIndex
+
+        // poolType: farm?.lpData?.poolType,
+        // token: farm.token,
+        // quoteToken: farm.quoteToken,
+        // token2: farm?.token2,
+        // token3: farm?.token3,
       },
       earned: {
         earnings: getBalanceNumber(new BigNumber(farm.userData.earnings)),
+        earningMaturity: farm.lockMaturity,
         pid: farm.pid,
       },
       liquidity: {

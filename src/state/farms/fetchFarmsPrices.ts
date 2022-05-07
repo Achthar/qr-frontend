@@ -10,7 +10,7 @@ const getFarmFromTokenSymbol = (
   tokenSymbol: string,
   preferredQuoteTokens?: string[],
 ): SerializedFarm => {
-  const farmsWithTokenSymbol = farms.filter((farm) => farm.token.symbol === tokenSymbol)
+  const farmsWithTokenSymbol = farms.filter((farm) => farm.tokens.map(t => t.symbol).includes(tokenSymbol))
   const filteredFarm = filterFarmsByQuoteToken(farmsWithTokenSymbol, preferredQuoteTokens)
   return filteredFarm
 }
@@ -22,11 +22,14 @@ const getFarmBaseTokenPrice = (
 ): BigNumber => {
   const hasTokenPriceVsQuote = Boolean(farm.tokenPriceVsQuote)
 
-  if (farm.quoteToken.symbol === tokens.dai.symbol) {
+  const quoteToken = farm.tokens[farm.quoteTokenIndex]
+  const quoteTokenQuoteFarm = quoteTokenFarm.tokens[quoteTokenFarm.quoteTokenIndex]
+
+  if (quoteToken.symbol === tokens.dai.symbol) {
     return hasTokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO
   }
 
-  if (farm.quoteToken.symbol === tokens.wavax.symbol) {
+  if (quoteToken.symbol === tokens.wavax.symbol) {
     return hasTokenPriceVsQuote ? networkCcyPriceUSD.times(farm.tokenPriceVsQuote) : BIG_ZERO
   }
 
@@ -40,14 +43,14 @@ const getFarmBaseTokenPrice = (
   // If the farm's quote token isn't BUSD or WBNB, we then use the quote token, of the original farm's quote token
   // i.e. for farm PNT - pBTC we use the pBTC farm's quote token - BNB, (pBTC - BNB)
   // from the BNB - pBTC price, we can calculate the PNT - BUSD price
-  if (quoteTokenFarm.quoteToken.symbol === tokens.wavax.symbol) {
+  if (quoteTokenQuoteFarm.symbol === tokens.wavax.symbol) {
     const quoteTokenInBusd = networkCcyPriceUSD.times(quoteTokenFarm.tokenPriceVsQuote)
     return hasTokenPriceVsQuote && quoteTokenInBusd
       ? new BigNumber(farm.tokenPriceVsQuote).times(quoteTokenInBusd)
       : BIG_ZERO
   }
 
-  if (quoteTokenFarm.quoteToken.symbol === tokens.dai.symbol) {
+  if (quoteTokenQuoteFarm.symbol === tokens.dai.symbol) {
     const quoteTokenInBusd = quoteTokenFarm.tokenPriceVsQuote
     return hasTokenPriceVsQuote && quoteTokenInBusd
       ? new BigNumber(farm.tokenPriceVsQuote).times(quoteTokenInBusd)
@@ -63,11 +66,15 @@ const getFarmQuoteTokenPrice = (
   quoteTokenFarm: SerializedFarm,
   networkCcyPriceUSD: BigNumber,
 ): BigNumber => {
-  if (farm.quoteToken.symbol === 'DAI' || farm.quoteToken.symbol === 'USDC') {
+
+  const quoteToken = farm.tokens[farm.quoteTokenIndex]
+  const quoteTokenQuoteFarm = quoteTokenFarm.tokens[quoteTokenFarm.quoteTokenIndex]
+
+  if (quoteToken.symbol === 'DAI' || quoteToken.symbol === 'USDC') {
     return BIG_ONE
   }
 
-  if (farm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId].symbol) {
+  if (quoteToken.symbol === WRAPPED_NETWORK_TOKENS[quoteToken.chainId].symbol) {
     return networkCcyPriceUSD
   }
 
@@ -75,11 +82,11 @@ const getFarmQuoteTokenPrice = (
     return BIG_ZERO
   }
 
-  if (quoteTokenFarm.quoteToken.symbol === WRAPPED_NETWORK_TOKENS[farm.quoteToken.chainId].symbol) {
+  if (quoteTokenQuoteFarm.symbol === WRAPPED_NETWORK_TOKENS[quoteToken.chainId].symbol) {
     return quoteTokenFarm.tokenPriceVsQuote ? networkCcyPriceUSD.times(quoteTokenFarm.tokenPriceVsQuote) : BIG_ZERO
   }
 
-  if (quoteTokenFarm.quoteToken.symbol === 'DAI') {
+  if (quoteTokenQuoteFarm.symbol === 'DAI') {
     return quoteTokenFarm.tokenPriceVsQuote ? new BigNumber(quoteTokenFarm.tokenPriceVsQuote) : BIG_ZERO
   }
 
@@ -91,7 +98,8 @@ const fetchFarmsPrices = async (farms: SerializedFarm[]) => {
   const networkCcyPriceUSD = networkCcyUSDFarm.tokenPriceVsQuote ? BIG_ONE.div(networkCcyUSDFarm.tokenPriceVsQuote) : BIG_ZERO
 
   const farmsWithPrices = farms.map((farm) => {
-    const quoteTokenFarm = getFarmFromTokenSymbol(farms, farm.quoteToken.symbol)
+
+    const quoteTokenFarm = getFarmFromTokenSymbol(farms, farm.tokens[farm.quoteTokenIndex].symbol)
     const tokenPriceBusd = getFarmBaseTokenPrice(farm, quoteTokenFarm, networkCcyPriceUSD)
     const quoteTokenPriceBusd = getFarmQuoteTokenPrice(farm, quoteTokenFarm, networkCcyPriceUSD)
 

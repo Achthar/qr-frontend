@@ -1,9 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Skeleton } from '@requiemswap/uikit'
+import { prettifySeconds } from 'config'
 
 export interface EarnedProps {
   earnings: number
+  earningMaturity: number
   pid: number
 }
 
@@ -17,9 +19,12 @@ const Amount = styled.span<{ earned: number }>`
   align-items: center;
 `
 
-const Earned: React.FunctionComponent<EarnedPropsWithLoading> = ({ earnings, userDataReady }) => {
+const Earned: React.FunctionComponent<EarnedPropsWithLoading> = ({ earnings, earningMaturity, userDataReady }) => {
   if (userDataReady) {
-    return <Amount earned={earnings}>{earnings.toLocaleString()}</Amount>
+    return <>
+      <Amount earned={earnings}>{earnings.toLocaleString()}</Amount>
+      {/* {prettifySeconds(earningMaturity, 'day')} */}
+    </>
   }
   return (
     <Amount earned={0}>

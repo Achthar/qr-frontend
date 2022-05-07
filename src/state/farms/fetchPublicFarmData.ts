@@ -1,8 +1,10 @@
+/* eslint-disable no-continue */
 import { Fraction } from '@requiemswap/sdk'
 import BigNumber from 'bignumber.js'
 // import masterchefABI from 'config/abi/masterchef.json'
 import requiemChefABI from 'config/abi/avax/RequiemChef.json'
 import erc20 from 'config/abi/erc20.json'
+import { PoolClass } from 'config/constants/types'
 import { getAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { BIG_TEN, BIG_ZERO } from 'utils/bigNumber'
 import multicall from 'utils/multicall'
@@ -16,27 +18,38 @@ type PublicFarmData = {
   poolWeight: SerializedBigNumber
   multiplier: string
   lpTokenRatio: SerializedBigNumber
+  tokenAmounts: SerializedBigNumber[]
+  lockMaturity: number
 }
 
-const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
-  const { pid, lpAddresses, token, quoteToken } = farm
+const getAmounts = (quoteTokenIndex: number, tokenBals: BigNumber[], weights: number[], tokenDecimals: number): {
+  tokenAmountTotalInQuote: BigNumber,
+  quoteTokenAmountTotal: BigNumber,
+  price: BigNumber
+} => {
 
-  const chainId = token.chainId
+  let tokenAmountTotalInQuote = new BigNumber(0)
+  let price = new BigNumber(0)
+  const quoteTokenAmountTotal = tokenBals[quoteTokenIndex].div(BIG_TEN.pow(tokenDecimals[quoteTokenIndex]))
+  const quoteWeight = weights[quoteTokenIndex]
+  for (let i = 0; i < tokenBals.length; i++) {
+    if (quoteTokenIndex === i) continue;
+    // Raw amount of token in the LP, including those not staked
+    const amount = tokenBals[i].div(BIG_TEN.pow(tokenDecimals[i]))
+    price = (quoteTokenAmountTotal.multipliedBy(weights[i])).div(amount.multipliedBy(quoteWeight))
+    tokenAmountTotalInQuote = tokenAmountTotalInQuote.plus(amount.multipliedBy(price))
+  }
+  return { tokenAmountTotalInQuote, quoteTokenAmountTotal, price }
+}
+
+
+const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
+  const { pid, lpAddresses, tokens } = farm
+
+  const chainId = tokens[0]?.chainId
   const lpAddress = getAddress(chainId, lpAddresses)
   const calls = [
-    // Balance of token in the LP contract
-    {
-      address: token.address,
-      name: 'balanceOf',
-      params: [lpAddress],
-    },
-    // Balance of quote token on LP contract
-    {
-      address: quoteToken.address,
-      name: 'balanceOf',
-      params: [lpAddress],
-    },
-    // Balance of LP tokens in the master chef contract
+    // lp balance of master
     {
       address: lpAddress,
       name: 'balanceOf',
@@ -47,27 +60,44 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
       address: lpAddress,
       name: 'totalSupply',
     },
-    // Token decimals
-    {
-      address: token.address,
-      name: 'decimals',
-    },
-    // Quote token decimals
-    {
-      address: quoteToken.address,
-      name: 'decimals',
-    },
+    // balances
+    ...tokens.map(tok => {
+      return {
+        address: tok.address,
+        name: 'balanceOf',
+        params: [farm.poolAddress],
+      }
+    }),
+    // decimals
+    ...tokens.map(tok => {
+      return {
+        address: tok.address,
+        name: 'decimals',
+        params: [],
+      }
+    }),
   ]
 
-  const [tokenBalanceLP, quoteTokenBalanceLP, lpTokenBalanceMC, lpTotalSupply, tokenDecimals, quoteTokenDecimals] =
-    await multicall(chainId, erc20, calls)
+  const results = await multicall(chainId, erc20, calls)
+
+  const lpTokenBalanceMC = results[0][0]
+  const lpTotalSupply = results[1][0]
+  const tokenBals = results.slice(2, tokens.length + 2).map(x => x[0])
+  const tokenDecimals = results.slice(tokens.length + 2, results.length).map(x => x[0])
+
 
   // Ratio in % of LP tokens that are staked in the MC, vs the total number in circulation
-  const lpTokenRatio = new BigNumber(lpTokenBalanceMC).div(new BigNumber(lpTotalSupply))
+  const lpTokenRatio = new BigNumber(lpTokenBalanceMC.toString()).div(new BigNumber(lpTotalSupply.toString()))
 
   // Raw amount of token in the LP, including those not staked
-  const tokenAmountTotal = new BigNumber(tokenBalanceLP).div(BIG_TEN.pow(tokenDecimals))
-  const quoteTokenAmountTotal = new BigNumber(quoteTokenBalanceLP).div(BIG_TEN.pow(quoteTokenDecimals))
+  const tokenAmountTotal = new BigNumber(tokenBals[farm.quoteTokenIndex === 0 ? 1 : 0].toString()).div(BIG_TEN.pow(tokenDecimals[farm.quoteTokenIndex === 0 ? 1 : 0]))
+  // const quoteTokenAmountTotal = new BigNumber(tokenBals[farm.quoteTokenIndex].toString()).div(BIG_TEN.pow(tokenDecimals[farm.quoteTokenIndex]))
+
+  const {
+    tokenAmountTotalInQuote,
+    quoteTokenAmountTotal,
+    price
+  } = getAmounts(farm.quoteTokenIndex, tokenBals.map(x => new BigNumber(x.toString())), farm.weights, tokenDecimals)
 
   // Amount of quoteToken in the LP that are staked in the MC
   const quoteTokenAmountMc = quoteTokenAmountTotal.times(lpTokenRatio)
@@ -92,17 +122,20 @@ const fetchFarm = async (farm: SerializedFarm): Promise<PublicFarmData> => {
       ])
       : [null, null]
 
-  const allocPoint = info ? new BigNumber(info.allocPoint?._hex) : BIG_ZERO
+  const allocPoint = info ? new BigNumber(info.allocPoint?.toString()) : BIG_ZERO
   const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO
+
 
   return {
     tokenAmountTotal: tokenAmountTotal.toJSON(),
-    lpTotalSupply: new BigNumber(lpTotalSupply).toJSON(),
-    lpTotalInQuoteToken: lpTotalInQuoteToken.toJSON(),
-    tokenPriceVsQuote: quoteTokenAmountTotal.div(tokenAmountTotal).toJSON(),
+    lpTotalSupply: new BigNumber(lpTotalSupply.toString()).toJSON(),
+    lpTotalInQuoteToken: tokenAmountTotalInQuote.toJSON(),
+    tokenPriceVsQuote: farm.poolClass === PoolClass.PAIR ? price.toJSON() : undefined,
     poolWeight: poolWeight.toJSON(),
     multiplier: `${allocPoint.div(100).toString()}X`,
-    lpTokenRatio: new Fraction(lpTokenBalanceMC, lpTotalSupply).toSignificant(18)
+    lpTokenRatio: new Fraction(lpTokenBalanceMC, lpTotalSupply).toSignificant(18),
+    tokenAmounts: tokenBals.map(bal => bal.toString()),
+    lockMaturity: Number(info.maturity.toString())
   }
 }
 

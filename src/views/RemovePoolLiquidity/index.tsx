@@ -188,14 +188,18 @@ export default function RemovePoolLiquidity({
       priceMatrix.push([])
       for (let j = 0; j < Object.values(weightedPool?.tokens).length; j++) {
         if (i !== j && parsedOutputTokenAmounts[j] !== undefined) {
-          priceMatrix?.[i].push(
-            new Price(
-              weightedPool?.tokens[i],
-              weightedPool?.tokens[j],
-              weightedPool.calculateSwapGivenIn(weightedPool.tokenFromIndex(j), weightedPool.tokenFromIndex(i), parsedOutputTokenAmounts[j].toBigNumber()).toBigInt(),
-              parsedOutputTokenAmounts[j].raw,
-            ),
-          )
+          try {
+            priceMatrix?.[i].push(
+              new Price(
+                weightedPool?.tokens[i],
+                weightedPool?.tokens[j],
+                weightedPool.calculateSwapGivenIn(weightedPool.tokenFromIndex(j), weightedPool.tokenFromIndex(i), parsedOutputTokenAmounts[j].toBigNumber()).toBigInt(),
+                parsedOutputTokenAmounts[j].raw,
+              ),
+            )
+          } catch {
+            priceMatrix?.[i].push(undefined)
+          }
         } else {
           priceMatrix?.[i].push(undefined)
         }
@@ -212,14 +216,14 @@ export default function RemovePoolLiquidity({
     weightedPool?.address,
   )
 
-  const symbolText = useMemo(() => parsedOutputTokenAmounts && parsedOutputTokenAmounts?.map(x => x.token.symbol).join('-'), [parsedOutputTokenAmounts])
+  const symbolText = useMemo(() => weightedPool && weightedPool?.tokens?.map(x => x.symbol).join('-'), [weightedPool])
   const summaryText = useMemo(() => parsedOutputTokenAmounts?.length > 0 ? `Remove [${parsedOutputTokenAmounts?.map(x => x.toSignificant(8)).join(',')}] ${symbolText} for ${parsedAmounts[PoolField.LIQUIDITY]?.toSignificant(6)} LP Tokens` : '',
     [parsedOutputTokenAmounts, symbolText, parsedAmounts]
   )
 
   // function for removing stable swap liquidity
   // REmoval with LP amount as input
-  async function onStablesLpRemove() {
+  async function onLpRemoveExactInMultipleOut() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
 
     if (!parsedOutputTokenAmounts) {
@@ -237,7 +241,7 @@ export default function RemovePoolLiquidity({
     let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidity']
+      methodNames = ['removeLiquidityExactIn']
       args = [
         liquidityAmount.toBigNumber(),
         amountsMin.map(x => x.toHexString()),
@@ -293,7 +297,7 @@ export default function RemovePoolLiquidity({
 
   // function for removing stable swap liquidity
   // REmoval with LP amount as input
-  async function onStablesLpRemoveSingle() {
+  async function onLpRemoveSingleExactOut() {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const {
       [PoolField.LIQUIDITY]: liquidityAmount,
@@ -358,7 +362,7 @@ export default function RemovePoolLiquidity({
 
           addTransaction(response, {
             summary: `Remove ${parsedAmounts[PoolField.CURRENCY_SINGLE]?.toSignificant(3)} ${parsedAmounts[PoolField.CURRENCY_SINGLE].token.symbol
-              } from Requiem Stable Swap`,
+              } from Pool`,
           })
 
           setTxHash(response.hash)
@@ -621,7 +625,7 @@ export default function RemovePoolLiquidity({
         {poolRemovalState === PoolRemovalState.BY_LP || true ? (
           <Button
             disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
-            onClick={onStablesLpRemove}
+            onClick={onLpRemoveExactInMultipleOut}
           >
             Confirm removal by LP Amount
           </Button>
@@ -643,7 +647,7 @@ export default function RemovePoolLiquidity({
       <>
         <RowBetween>
           <Text>
-            {`${weightedPool?.tokens[0].symbol}-${weightedPool?.tokens[1].symbol}-${weightedPool?.tokens[2].symbol}-${weightedPool?.tokens[3].symbol} Stable Swap LP burned`}
+            {`${weightedPool?.name} Pool LP burned`}
           </Text>
           <RowFixed>
             <AutoColumn>
@@ -655,7 +659,7 @@ export default function RemovePoolLiquidity({
         {/* <AutoColumn>{stablePool && priceMatrixComponent('13px', '110%')}</AutoColumn> */}
         <Button
           disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
-          onClick={onStablesLpRemoveSingle}
+          onClick={onLpRemoveSingleExactOut}
         >
           Confirm removal by LP Amount versus single Token
         </Button>

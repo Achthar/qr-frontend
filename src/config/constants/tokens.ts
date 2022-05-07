@@ -74,10 +74,10 @@ export const REQT: { [chainId: number]: Token } = {
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
+    '0x64796164fe724798d07CaFe6D19c05b5276A3903',
     18,
-    'REQT',
-    'Requiem Token',
+    'REQA',
+    'Requiem Alpha',
   ), // not deployed yet, but dummy needed
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
@@ -138,35 +138,35 @@ export const WEIGHTED_POOL_LP: { [chainId: number]: Token } = {
 export const RREQT: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
     ChainId.BSC_MAINNET,
-    '0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A',
+    '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
     'CAKE',
     'PancakeSwap Token',
   ),
   [ChainId.MATIC_TESTNET]: new Token(
     ChainId.MATIC_TESTNET,
-    '0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A',
+    '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
     'REQT',
     'Requiem Token',
   ),
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A',
+    '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
     'RREQ',
     'Red Requiem Token',
   ), // not deployed yet, but dummy needed
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A',
+    '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
     'REQT',
     'Requiem Token',
   ),
   [ChainId.QUARKCHAIN_DEV_S0]: new Token(
     ChainId.QUARKCHAIN_DEV_S0,
-    '0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A',
+    '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
     'WETH',
     'Wrapped ETH',
@@ -448,8 +448,8 @@ const tokens: { [tokenId: string]: TokenEntry } = {
       56: '',
       97: '',
       80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8',
-      43113: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
-      43114: '0x2d90e6d9368b2838a9558B0a609750243C5C4679',
+      43113: '0x64796164fe724798d07CaFe6D19c05b5276A3903',
+      43114: '0x64796164fe724798d07CaFe6D19c05b5276A3903',
       110001: '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
     },
     decimals: 18,

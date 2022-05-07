@@ -22,7 +22,9 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
 
 const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   const { lpAddresses, lpSymbol, pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd } = farm
+
   return {
+    poolAddress: farm.poolAddress,
     lpAddresses,
     lpSymbol,
     pid,
@@ -31,8 +33,8 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     isCommunity,
     quoteTokenPriceBusd,
     tokenPriceBusd,
-    token: deserializeToken(farm.token),
-    quoteToken: deserializeToken(farm.quoteToken),
+    // token: deserializeToken(farm.token),
+    // quoteToken: deserializeToken(farm.quoteToken),
     userData: deserializeFarmUserData(farm),
     tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO,
     lpTotalInQuoteToken: farm.lpTotalInQuoteToken ? new BigNumber(farm.lpTotalInQuoteToken) : BIG_ZERO,
@@ -41,8 +43,11 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     tokenPriceVsQuote: farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO,
     poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
     lpData: farm.lpData,
-    token2: farm.token2 ? deserializeToken(farm.token2) : undefined,
-    token3: farm.token3 ? deserializeToken(farm.token3) : undefined,
+    tokens: farm.tokens.map(t => deserializeToken(t)),
+    quoteTokenIndex: farm.quoteTokenIndex,
+    lockMaturity: farm.lockMaturity
+    // token2: farm.token2 ? deserializeToken(farm.token2) : undefined,
+    // token3: farm.token3 ? deserializeToken(farm.token3) : undefined,
   }
 }
 

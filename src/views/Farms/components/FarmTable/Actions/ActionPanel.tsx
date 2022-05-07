@@ -4,6 +4,7 @@ import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text } from '@requiemswap/uikit'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
+import { PoolClass } from 'config/constants/types'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
@@ -144,13 +145,14 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
 
   const { t } = useTranslation()
   const isActive = farm.multiplier !== '0X'
-  const { quoteToken, token, dual } = farm
+
   const lpLabel = farm.lpSymbol && farm.lpSymbol.toUpperCase().replace('REQUIEM', '')
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({
+  const liquidityUrlPathParts = farm.tokens.length === 2 ? getLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: quoteToken.address,
-    tokenAddress: token.address,
-  })
+    quoteTokenAddress: farm.tokens[0],
+    tokenAddress: farm.tokens[1],
+  }) : farm.poolClass === PoolClass.STABLE ? 'stables' : 'weighted'
+
   const lpAddress = getAddress(chainId, farm.lpAddresses)
   const bsc = getNetworkExplorerLink(lpAddress, 'address')
   const info = `/info/pool/${lpAddress}`
@@ -169,7 +171,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         <StyledLinkExternal href={info}>{t('See Pair Info')}</StyledLinkExternal>
         <TagsContainer>
           {farm.isCommunity ? <CommunityTag /> : <CoreTag />}
-          {dual ? <DualTag /> : null}
+          {/* {dual ? <DualTag /> : null} */}
         </TagsContainer>
       </InfoContainer>
       <ValueContainer>

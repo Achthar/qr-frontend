@@ -274,9 +274,9 @@ export const tokenList = {
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WAVAX.png"
             },
             {
-                "name": "Requiem Token",
-                "symbol": "REQT",
-                "address": "0x2d90e6d9368b2838a9558B0a609750243C5C4679",
+                "name": "Requiem Alpha",
+                "symbol": "REQA",
+                "address": "0x64796164fe724798d07CaFe6D19c05b5276A3903",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
@@ -284,7 +284,7 @@ export const tokenList = {
             {
                 "name": "Red Requiem Token",
                 "symbol": "RREQ",
-                "address": "0x8404CF2ad95E5A1eaC1c2c500D489e441993D74A",
+                "address": "0x2AadF607A5260f8223c4b604297Cf7DC31926Ada",
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/RREQ.png"

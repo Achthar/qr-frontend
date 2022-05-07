@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { BLOCKS_PER_YEAR, REQ_PER_YEAR } from 'config'
+import { BLOCKS_PER_YEAR, REWARD_PER_YEAR } from 'config'
 import lpAprs from 'config/constants/lpAprs.json'
 
 /**
@@ -35,14 +35,16 @@ export const getFarmApr = (
   poolLiquidityUsd: BigNumber,
   farmAddress: string,
 ): { reqtRewardsApr: number; lpRewardsApr: number } => {
-  const yearlyCakeRewardAllocation = REQ_PER_YEAR.times(poolWeight)
-  const reqtRewardsApr = yearlyCakeRewardAllocation.times(reqtPriceUsd).div(poolLiquidityUsd).times(100)
+  const yearlyRewardAllocation = REWARD_PER_YEAR.times(poolWeight)
+
+  const reqtRewardsApr = yearlyRewardAllocation.times(reqtPriceUsd).div(poolLiquidityUsd).times(100)
+  
   let reqtRewardsAprAsNumber = null
   if (!reqtRewardsApr.isNaN() && reqtRewardsApr.isFinite()) {
     reqtRewardsAprAsNumber = reqtRewardsApr.toNumber()
   }
   const lpRewardsApr = lpAprs[farmAddress?.toLocaleLowerCase()] ?? 0
-  
+
   return { reqtRewardsApr: reqtRewardsAprAsNumber, lpRewardsApr }
 }
 
@@ -53,20 +55,20 @@ export const getFarmApr = (
  * @param poolLiquidityUsd Total pool liquidity in USD
  * @returns
  */
- export const getBondApr = (
+export const getBondApr = (
   poolWeight: BigNumber,
   reqtPriceUsd: BigNumber,
   poolLiquidityUsd: BigNumber,
   farmAddress: string,
 ): { reqtRewardsApr: number; lpRewardsApr: number } => {
-  const yearlyCakeRewardAllocation = REQ_PER_YEAR.times(poolWeight)
-  const reqtRewardsApr = yearlyCakeRewardAllocation.times(reqtPriceUsd).div(poolLiquidityUsd).times(100)
+  const yearlyRewardAllocation = REWARD_PER_YEAR.times(poolWeight)
+  const reqtRewardsApr = yearlyRewardAllocation.times(reqtPriceUsd).div(poolLiquidityUsd).times(100)
   let reqtRewardsAprAsNumber = null
   if (!reqtRewardsApr.isNaN() && reqtRewardsApr.isFinite()) {
     reqtRewardsAprAsNumber = reqtRewardsApr.toNumber()
   }
   const lpRewardsApr = lpAprs[farmAddress?.toLocaleLowerCase()] ?? 0
-  
+
   return { reqtRewardsApr: reqtRewardsAprAsNumber, lpRewardsApr }
 }
 

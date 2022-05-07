@@ -144,12 +144,13 @@ export interface FarmConfig {
 interface FarmConfigBaseProps {
   pid: number
   lpSymbol: string
+  quoteTokenIndex: number
   lpAddresses: Address
+  poolAddress: string,
   lpData?: {
-    poolType: PoolType
     weight?: number
     fee?: number
-    pricerKey?:string[]
+    pricerKey?: string[]
   }
   multiplier?: string
   isCommunity?: boolean
@@ -160,11 +161,18 @@ interface FarmConfigBaseProps {
   }
 }
 
+export enum PoolClass {
+  PAIR,
+  STABLE,
+  WEIGHTED
+}
+
 export interface SerializedFarmConfig extends FarmConfigBaseProps {
-  token: SerializedToken
-  quoteToken: SerializedToken
-  token2?: SerializedToken
-  token3?: SerializedToken
+  poolAddress: string
+  poolClass: PoolClass
+  tokens: SerializedToken[]
+  weights: number[]
+  lockMaturity: number
   lpProperties?: {
     weightToken: number
     weightQuoteToken: number
@@ -173,11 +181,8 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
 }
 
 export interface DeserializedFarmConfig extends FarmConfigBaseProps {
-  poolType?: PoolType
-  token: Token
-  quoteToken: Token
-  token2?: Token
-  token3?: Token
+  poolClass?: PoolClass
+  tokens: Token[]
 }
 
 // ------- bond interfaces 

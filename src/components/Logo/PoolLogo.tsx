@@ -21,25 +21,32 @@ interface PoolLogoProps {
   size?: number
   tokens?: Token[]
   tokensInRow?: number
+  overlap?: string
 }
 
 export default function PoolLogo({
   tokens,
   size = 20,
   margin = false,
-  tokensInRow = 2
+  tokensInRow = 2,
+  overlap = '-7px'
 }: PoolLogoProps) {
   const chainId = tokens?.[0].chainId ?? 43113
+  const chunks = tokens && sliceIntoChunks(tokens, tokensInRow)
+
   return (
     <AutoColumn>
-      {tokens && sliceIntoChunks(tokens, tokensInRow).map(ts => {
+      {chunks.map((ts, rowIndex) => {
 
         return (
           <Wrapper margin={margin}>
-            <Flex alignContent='center' justifyContent='flex-end'>
-              {ts && ts.map(t => {
+            <Flex alignContent='center' justifyContent='center'>
+              {ts && ts.map((t, colIndex) => {
                 return (
-                  <CurrencyLogo chainId={chainId} currency={t} size={`${size.toString()}px`} />
+                  <CurrencyLogo chainId={chainId} currency={t} size={`${size.toString()}px`}
+                    style={
+                      { marginLeft: colIndex === 0 ? '0px' : overlap, marginTop: rowIndex === 0 ? '0px' : overlap }
+                    } />
                 )
               })}
             </Flex>

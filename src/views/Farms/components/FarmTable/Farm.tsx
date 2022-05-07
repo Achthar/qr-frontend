@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useFarmUser } from 'state/farms/hooks'
-import { useTranslation } from 'contexts/Localization'
 import { Text } from '@requiemswap/uikit'
 // import { Token } from '@requiemswap/sdk'
 import { getBalanceNumber } from 'utils/formatBalance'
@@ -10,16 +9,15 @@ import { SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { PoolType } from '@requiemswap/sdk'
 import QuadCurrencyLogo from 'components/Logo/QuadLogo'
+import PoolLogo from 'components/Logo/PoolLogo'
 
 export interface FarmProps {
   chainId: number
   label: string
   pid: number
-  token: SerializedToken
-  quoteToken: SerializedToken
+  tokens: SerializedToken[]
+  quoteTokenIndex: number
   poolType?: PoolType
-  token2?: SerializedToken
-  token3?: SerializedToken
 }
 
 const Container = styled.div`
@@ -41,16 +39,15 @@ const TokenWrapper = styled.div`
   }
 `
 
-const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, label, pid, poolType, token2, token3 }) => {
+const Farm: React.FunctionComponent<FarmProps> = ({ chainId, tokens, label, pid, poolType, quoteTokenIndex }) => {
   const { stakedBalance } = useFarmUser(pid)
-  const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
 
   const handleRenderFarming = (): JSX.Element => {
     if (rawStakedBalance) {
       return (
         <Text color="secondary" fontSize="12px" bold textTransform="uppercase">
-          {t('Farming')}
+          Farming
         </Text>
       )
     }
@@ -61,22 +58,25 @@ const Farm: React.FunctionComponent<FarmProps> = ({ chainId, token, quoteToken, 
   return (
     <Container>
       {
-        poolType !== PoolType.StablePairWrapper && token && quoteToken ? (
-          <TokenWrapper>
-            <TokenPairImage variant="inverted" chainId={chainId} primaryToken={deserializeToken(token)} secondaryToken={deserializeToken(quoteToken)} width={40} height={40} />
-          </TokenWrapper>)
-          : token2 && token3 && (
-            <TokenWrapper>
-              <QuadCurrencyLogo
-                currency0={deserializeToken(token)}
-                currency1={deserializeToken(quoteToken)}
-                currency2={deserializeToken(token2)}
-                currency3={deserializeToken(token3)}
-                size={10}
-                margin
-              />
-            </TokenWrapper>
-          )
+        <TokenWrapper>
+          <PoolLogo tokens={tokens.map(t => deserializeToken(t))} />
+        </TokenWrapper>
+        // poolType !== PoolType.StablePairWrapper && token && quoteToken ? (
+        //   <TokenWrapper>
+        //     <PoolLogo variant="inverted" chainId={chainId} primaryToken={deserializeToken(token)} secondaryToken={deserializeToken(quoteToken)} width={40} height={40} />
+        //   </TokenWrapper>)
+        //   : token2 && token3 && (
+        //     <TokenWrapper>
+        //       <QuadCurrencyLogo
+        //         currency0={deserializeToken(token)}
+        //         currency1={deserializeToken(quoteToken)}
+        //         currency2={deserializeToken(token2)}
+        //         currency3={deserializeToken(token3)}
+        //         size={10}
+        //         margin
+        //       />
+        //     </TokenWrapper>
+        //   )
       }
       <div>
         {handleRenderFarming()}

@@ -1,5 +1,5 @@
 import { Percent, TokenAmount, StablePool, Token, WeightedPool, ZERO } from '@requiemswap/sdk'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils'
@@ -72,32 +72,39 @@ export function useDerivedBurnPoolLpInfo(
   let calculatedValuesFormatted = poolTokens?.map((_, i) => typedValues[i]) ?? ['0', '0', '0', '0', '0']
   let feeFinal = tokens[PoolField.CURRENCY_SINGLE] && new TokenAmount(tokens[PoolField.CURRENCY_SINGLE], ZERO)
   let singleAmount = ZERO
-
+  let singleAmountCalculated = ZERO
+  let fee = ZERO
 
   const independentAmounts = poolTokens?.map((t, index) => tryParseAmount(chainId, typedValues[index] === '' ? '0' : typedValues[index], t))
 
   const independentLpAmount = tryParseAmount(chainId, typedValueLiquidity === '' ? '0' : typedValueLiquidity, tokens[PoolField.LIQUIDITY])
   const singleLpAmount = tryParseAmount(chainId, typedValueSingle === '' ? '0' : typedValueSingle, weightedPool?.liquidityToken)
-
+  let error: string | undefined
   // user specified a %
   if (independentPoolField === PoolField.LIQUIDITY_PERCENT) {
     percentToRemove = new Percent(typedValueLiquidity, '100')
 
     if (weightedPool && percentToRemove.greaterThan('0')) {
-      poolAmountsFromLp = weightedPool.calculateRemoveLiquidity( // BigNumber.from(percentToRemove.multiply(userLiquidity))
-        BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)
+      try {
+        poolAmountsFromLp = weightedPool.calculateRemoveLiquidity( // BigNumber.from(percentToRemove.multiply(userLiquidity))
+          BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)
+          )
         )
-      )
-
+        const { amountOut, swapFee } = weightedPool.calculateRemoveLiquidityOneToken(
+          BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)),
+          selectedStableSingle
+        )
+        singleAmountCalculated = amountOut
+        fee = swapFee
+      } catch {
+        error = 'Invalid Amount'
+      }
       calculatedValuesFormatted = poolAmountsFromLp.map(
         (amount, index) => new TokenAmount(poolTokens[index], amount)
       ).map(amount => amount.toSignificant(6))
 
 
-      const { dy: singleAmountCalculated, fee } = weightedPool.calculateRemoveLiquidityOneToken(
-        BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)),
-        selectedStableSingle
-      )
+
       feeFinal = new TokenAmount(tokens[PoolField.CURRENCY_SINGLE], fee)
       singleAmount = singleAmountCalculated
 
@@ -106,9 +113,19 @@ export function useDerivedBurnPoolLpInfo(
   // user specified a specific amount of liquidity tokens
   else if (independentPoolField === PoolField.LIQUIDITY) {
     if (weightedPool && independentLpAmount) {
-      poolAmountsFromLp = weightedPool.calculateRemoveLiquidity(
-        independentLpAmount.toBigNumber()
-      )
+      try {
+        poolAmountsFromLp = weightedPool.calculateRemoveLiquidity(
+          independentLpAmount.toBigNumber()
+        )
+        const { amountOut, swapFee } = weightedPool.calculateRemoveLiquidityOneToken(
+          independentLpAmount.toBigNumber(),
+          selectedStableSingle
+        )
+        singleAmountCalculated = amountOut
+        fee = swapFee
+      } catch {
+        error = 'Invalid Amount'
+      }
       calculatedValuesFormatted = poolAmountsFromLp.map(
         (amount, index) => new TokenAmount(poolTokens[index], amount)
       ).map(amount => amount.toSignificant(6))
@@ -117,10 +134,7 @@ export function useDerivedBurnPoolLpInfo(
         percentToRemove = new Percent(independentLpAmount.raw, userLiquidity.raw)
       }
 
-      const { dy: singleAmountCalculated, fee } = weightedPool.calculateRemoveLiquidityOneToken(
-        independentLpAmount.toBigNumber(),
-        selectedStableSingle
-      )
+
       feeFinal = new TokenAmount(tokens[PoolField.CURRENCY_SINGLE], fee)
       singleAmount = singleAmountCalculated
 
@@ -131,10 +145,15 @@ export function useDerivedBurnPoolLpInfo(
   // this can hapen fully idependently from each other
   else
     if (weightedPool) {
-      liquidityAmount = weightedPool.getLiquidityAmount(
-        independentAmounts?.map(a => a.raw),
-        false // false for withdrawl
-      )
+      try {
+        liquidityAmount = weightedPool.getLiquidityAmount(
+          independentAmounts?.map(a => a.raw),
+          false // false for withdrawl
+        )
+      } catch {
+        liquidityAmount = ZERO
+        error = 'Invariant ratio'
+      }
       percentToRemove = liquidityAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liquidityAmount.toBigInt(), totalSupply.toBigInt())
 
     }
@@ -173,7 +192,7 @@ export function useDerivedBurnPoolLpInfo(
     [PoolField.CURRENCY_SINGLE]: tokens[PoolField.CURRENCY_SINGLE] && new TokenAmount(tokens[PoolField.CURRENCY_SINGLE], singleAmount.toBigInt())
   }
 
-  let error: string | undefined
+
   let errorSingle: string | undefined
   if (!account) {
     error = 'Connect Wallet'
@@ -191,11 +210,20 @@ export function useDerivedBurnPoolLpInfo(
     newPool.setTokenBalances(newPool.getBalances().map((val, index) => val.sub(finalSingleAmounts[index].toBigNumber())))
   }
 
-  const liquidityValues = weightedPool &&
-    totalSupply &&
-    userLiquidity && tokens && finalSingleAmounts &&
-    // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => weightedPool?.getLiquidityValue(0, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
+  const liquidityValues = useMemo(() => {
+    let vals = weightedPool?.tokens.map(tk => new TokenAmount(tk, ZERO))
+    if (weightedPool &&
+      totalSupply &&
+      userLiquidity  && finalSingleAmounts) {
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      try {
+        vals = totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => weightedPool?.getLiquidityValue(0, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
+      } catch {
+        return vals
+      }
+    }
+    return vals
+  }, [finalSingleAmounts, poolTokens, totalSupply, userLiquidity, weightedPool])
 
   return {
     parsedAmounts,

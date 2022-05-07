@@ -12,6 +12,7 @@ import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
+import { PoolClass } from 'config/constants/types'
 import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getLiquidityUrlPathParts from 'utils/getLiquidityUrlPathParts'
@@ -40,8 +41,8 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   lpSymbol,
   lpLabel,
   lpAddresses,
-  quoteToken,
-  token,
+  tokens,
+  poolClass,
   userDataReady,
   displayApr,
 }) => {
@@ -58,11 +59,12 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
   const lpAddress = getAddress(chainId, lpAddresses)
-  const liquidityUrlPathParts = getLiquidityUrlPathParts({
+  const liquidityUrlPathParts = tokens.length === 2 ? getLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: quoteToken.address,
-    tokenAddress: token.address,
-  })
+    quoteTokenAddress: tokens[0],
+    tokenAddress: tokens[1],
+  }) : poolClass === PoolClass.STABLE ? 'stables' : 'weighted'
+
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
   const handleStake = async (amount: string) => {

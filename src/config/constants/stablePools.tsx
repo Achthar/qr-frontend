@@ -18,16 +18,16 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
                 serializeToken(STABLES[43113][3])
             ],
             balances: ['1', '1', '1', '1'],
-            lpAddress: '0x99674285c50cdb86ae423aac9be7917d7d054994',
+            lpAddress: '0x99674285c50CdB86AE423aac9be7917d7D054994',
             lpToken: {
                 chainId: 43113,
                 decimals: 18,
-                address: '0x99674285c50cdb86ae423aac9be7917d7d054994',
+                address: '0x99674285c50CdB86AE423aac9be7917d7D054994',
                 symbol: 'req4USD'
             },
             swapStorage: {
                 tokenMultipliers: ['1000000000000', '1000000000000', '1', '1'],
-                lpToken: '0x99674285c50cdb86ae423aac9be7917d7d054994',
+                lpToken: '0x99674285c50CdB86AE423aac9be7917d7D054994',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
                 initialA: BigNumber.from('0xea60').toString(),

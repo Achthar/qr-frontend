@@ -14,6 +14,7 @@ import { SerializedFarmsState, SerializedFarm } from '../types'
 
 const noAccountFarmConfig = farmsConfig(43113).map((farm) => ({
   ...farm,
+  lockMaturity: 0,
   userData: {
     allowance: '0',
     tokenBalance: '0',
@@ -39,6 +40,7 @@ export const fetchFarmsPublicDataAsync = createAsyncThunk<SerializedFarm[], { ch
     // Add price helper farms
     const farmsWithPriceHelpers = farmsToFetch // .concat(priceHelperLpsConfig)
     const farms = await fetchFarms(farmsWithPriceHelpers)
+
     const farmsWithPrices = await fetchFarmsPrices(farms)
     // Filter out price helper LP config farms
     const farmsWithoutHelperLps = farmsWithPrices.filter((farm: SerializedFarm) => {

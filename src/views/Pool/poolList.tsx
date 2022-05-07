@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
 import { REQT, DAI } from 'config/constants/tokens'
 import { AmplifiedWeightedPair, TokenAmount } from '@requiemswap/sdk'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon } from '@requiemswap/uikit'
+import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Box } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -13,6 +13,7 @@ import getChain from 'utils/getChain'
 import { useWeb3React } from '@web3-react/core'
 import { useUserPairs } from 'state/user/hooks'
 import Column from 'components/Column'
+import Row from 'components/Row'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
@@ -29,6 +30,22 @@ import Page from '../Page'
 const Body = styled(CardBody)`
   background-color: ${({ theme }) => theme.colors.dropdownDeep};
 `
+
+const Line = styled.hr`
+  height: 3px;
+  border:  none;
+  background-color: ${({ theme }) => theme.colors.cardBorder};
+  color: white;
+  width: 20%;
+  size: 0.1;
+`;
+
+const TextContainer = styled.div`
+  margin-top: 0px;
+  :hover {
+    text-decoration: bold;
+  }
+`;
 
 export default function PoolList({
   history,
@@ -188,17 +205,71 @@ export default function PoolList({
           )}
         </Body>
         <CardFooter style={{ textAlign: 'center' }}>
-          <Button
-            id="join-pool-button"
-            as={Link}
-            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}/25`}
-            width="100%"
-            startIcon={<AddIcon color={theme.colors.backgroundAlt} />}
-          >
-            {t('Add Liquidity')}
-          </Button>
+          <Flex flexDirection="row" marginBottom='15px'>
+            <Line />
+            <Text fontSize='15px' textAlign='center' bold>
+              Add Liquidity by Risk Profile
+            </Text>
+            <Line />
+          </Flex>
+          <Row width='100%' height='50px' marginTop='10px'>
+            <Button
+              as={Link}
+              to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+              variant="secondary"
+              width="100%"
+              height='70px'
+              mb="8px"
+              style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+            >
+              <Flex flexDirection="column">
+                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                  Amplified Pairs
+                </Text>
+                <Text fontSize='10px' textAlign='center'>
+                  Volatile
+                </Text>
+              </Flex>
+            </Button>
+            <Button
+              as={Link}
+              to={`/${getChain(chainId)}/add/weighted`}
+              variant="secondary"
+              width="100%"
+              height='70px'
+              mb="8px"
+              style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+            >
+              <Flex flexDirection="column">
+                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                  Weighted Pools
+                </Text>
+                <Text fontSize='10px' textAlign='center'>
+                  Diversified
+                </Text>
+              </Flex>
+            </Button>
+            <Button
+              as={Link}
+              to={`/${getChain(chainId)}/add/stables`}
+              variant="secondary"
+              width="100%"
+              height='70px'
+              mb="8px"
+              style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+            >
+              <Flex flexDirection="column">
+                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                  Stable Pools
+                </Text>
+                <Text fontSize='10px' textAlign='center'>
+                  Conservative
+                </Text>
+              </Flex>
+            </Button>
+          </Row>
         </CardFooter>
       </AppBody>
-    </Page>
+    </Page >
   )
 }

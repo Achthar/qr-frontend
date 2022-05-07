@@ -1,5 +1,6 @@
 import { PoolType, STABLECOINS, StablePool, TokenAmount } from '@requiemswap/sdk'
 import { ABREQ, DAI, REQT } from 'config/constants/tokens'
+import { PoolClass } from 'config/constants/types'
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils'
 import { SerializedFarm, SerializedWeightedPair } from 'state/types'
@@ -14,7 +15,7 @@ export const priceWeightedFarm = (farm: SerializedFarm | FarmWithStakedValue, al
     const keys = farm.lpData.pricerKey
     if (!allPairs || !allPairs[keys[0]])
         return 0
-    const quote = getAddress(farm.quoteToken.address)
+    const quote = getAddress(farm.tokens[farm.quoteTokenIndex].address)
     const quoteIs0 = quote === Object.values(allPairs[keys[0]])[0].token0.address
     const key2 = quoteIs0 ? `${100 - farm.lpData.weight}-${farm.lpData.fee}` : `${farm.lpData.weight}-${farm.lpData.fee}`
     if (!allPairs[keys[0]][key2]?.value0)
@@ -35,9 +36,9 @@ export const priceWeightedFarm = (farm: SerializedFarm | FarmWithStakedValue, al
 }
 
 export const priceStableFarm = (farm: SerializedFarm | FarmWithStakedValue, stablePool: StablePool): number => {
-    if (!stablePool || farm.lpData.poolType !== PoolType.StablePairWrapper)
+    if (!stablePool || farm.poolClass !== PoolClass.STABLE)
         return 0
-    const quote = deserializeToken(farm.quoteToken)
+    const quote = deserializeToken(farm.tokens[farm.quoteTokenIndex])
     const quoteIndex = stablePool.indexFromToken(quote)
     let val = BigNumber.from(0)
 
