@@ -26,7 +26,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
     {
       pid: 0,
       poolAddress: '0x086AbCBD5377fFCD5441f0da1969eb468903b693',
-      lpSymbol: 'AREQ-DAI LP',
+      lpSymbol: 'REQA-DAI LP',
       lpAddresses: {
         97: '',
         56: '',

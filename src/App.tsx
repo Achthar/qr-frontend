@@ -21,7 +21,6 @@ import {
   RedirectToAddLiquidity,
 } from './views/AddLiquidity/redirects'
 
-import CustomMenu from './CustomNav'
 import CustomNav from './CustomMenu'
 import Balances from './Balances'
 import GlobalStyle from './style/Global'
