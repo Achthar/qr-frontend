@@ -8,6 +8,8 @@ import { useWeb3React } from '@web3-react/core'
 import { Web3ReactContextInterface } from '@web3-react/core/dist/types'
 import { useChainIdHandling } from './useChainIdHandle'
 
+const supportedChains = [43113]
+
 /**
  * Provides a web3 provider with or without user's signer
  * Recreate web3 instance only if the provider change
@@ -28,7 +30,9 @@ const useActiveWeb3React = (id?: string): Web3ReactContextInterface<Web3Provider
       setprovider(library || simpleRpcProvider(chainId, `useActiveWeb3React`))
       refEth.current = library
     }
-  }, [chainId, library])
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chainId, library])
 
   return { library: provider, chainId, ...web3React }
 }

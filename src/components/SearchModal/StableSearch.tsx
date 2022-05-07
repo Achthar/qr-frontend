@@ -19,6 +19,7 @@ import useTokenComparator from './sorting'
 
 
 interface StableSearchProps {
+  account: string
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
   otherSelectedCurrency?: Token | null
@@ -30,6 +31,7 @@ interface StableSearchProps {
 const swapSound = new Audio('swap.mp3')
 
 function StableSearch({
+  account,
   selectedCurrency,
   onCurrencySelect,
   otherSelectedCurrency,
@@ -93,6 +95,7 @@ function StableSearch({
         ) : filteredSortedTokens?.length > 0 || filteredInactiveTokens?.length > 0 ? (
           <Box margin="24px -24px">
             <TokenList
+              account={account}
               currencies={
                 filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
               }

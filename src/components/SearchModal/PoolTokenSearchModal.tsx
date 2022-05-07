@@ -41,6 +41,7 @@ const StyledModalBody = styled.div`
 `
 
 interface CurrencySearchModalProps extends InjectedModalProps {
+  account: string
   pool: Pool
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
@@ -48,6 +49,7 @@ interface CurrencySearchModalProps extends InjectedModalProps {
 }
 
 export default function PoolTokenSearchModal({
+  account,
   pool,
   onDismiss = () => null,
   onCurrencySelect,
@@ -93,6 +95,7 @@ export default function PoolTokenSearchModal({
       </ModalHeader>
       <StyledModalBody>
         <TokenSearch
+          account={account}
           tokens={pool.tokens}
           onCurrencySelect={handleCurrencySelect}
           selectedCurrency={selectedCurrency}

@@ -104,6 +104,8 @@ function CurrencyRow({
 }
 
 export default function CurrencyList({
+  chainId,
+  account,
   height,
   currencies,
   selectedCurrency,
@@ -115,6 +117,8 @@ export default function CurrencyList({
   setImportToken,
   breakIndex,
 }: {
+  chainId: number
+  account: string
   height: number
   currencies: Currency[]
   selectedCurrency?: Currency | null
@@ -126,8 +130,6 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const { account } = useActiveWeb3React()
-  const { chainId } = useNetworkState()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [NETWORK_CCY[chainId], ...currencies] : currencies

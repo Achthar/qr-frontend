@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import getChain from 'utils/getChain'
 
 import { useBurnActionHandlers } from 'state/burn/hooks'
@@ -44,7 +45,7 @@ interface WeightedPositionCardProps extends CardProps {
 }
 
 export function MinimalWeightedPositionCardExtended({ weightedPair, totalSupply, userBalance, showUnwrapped = false }: WeightedPositionCardProps) {
-  const { account, chainId } = useActiveWeb3React()
+  const { chainId } = useNetworkState()
 
   const { t } = useTranslation()
 

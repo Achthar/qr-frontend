@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { createLock, increaseMaturity, increasePosition } from 'utils/calls'
 import { useRedRequiemContract } from 'hooks/useContract'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useWeb3React } from '@web3-react/core'
 import { Lock } from 'state/governance/reducer'
 
 export const useCreateLock = () => {
   const redReqContract = useRedRequiemContract()
-  const { chainId, account } = useActiveWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const func = useCallback(
     async (amount: string, end: number) => {
@@ -21,7 +21,7 @@ export const useCreateLock = () => {
 
 export const useIncreasePosition = () => {
   const redReqContract = useRedRequiemContract()
-  const { chainId, account } = useActiveWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const func = useCallback(
     async (amount: string, lock: Lock) => {
@@ -35,7 +35,7 @@ export const useIncreasePosition = () => {
 
 export const useIncreaseMaturity = () => {
   const redReqContract = useRedRequiemContract()
-  const { chainId, account } = useActiveWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const func = useCallback(
     async (amount: string, newEnd: number, lock: Lock) => {

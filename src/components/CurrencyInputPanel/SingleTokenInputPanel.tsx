@@ -84,6 +84,7 @@ export default function SingleTokenInputPanel({
 
   const [onPresentCurrencyModal] = useModal(
     <PoolTokenSearchModal
+      account={account}
       pool={pool}
       onCurrencySelect={onCurrencySelect}
       selectedCurrency={currency}

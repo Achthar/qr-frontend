@@ -7,8 +7,6 @@ import { useTranslation } from 'contexts/Localization'
 import Column, { ColumnCenter, AutoColumn } from 'components/Column'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import Row from 'components/Row'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
-import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
 import { RowBetween } from '../Layout/Row'

@@ -145,6 +145,7 @@ export default function WeightedPairFinder({
 
   const [onPresentCurrencyModal] = useModal(
     <CurrencySearchModal
+      account={account}
       chainId={chainId}
       onCurrencySelect={handleCurrencySelect}
       showCommonBases

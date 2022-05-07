@@ -1,6 +1,6 @@
 import { Currency, CurrencyAmount, NETWORK_CCY, Token, TokenAmount } from '@requiemswap/sdk'
 import { useMemo } from 'react'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useWeb3React } from '@web3-react/core'
 import ERC20_INTERFACE from 'config/abi/erc20'
 import { BigNumber } from 'ethers'
 import { useAllTokens } from 'hooks/Tokens'
@@ -136,7 +136,7 @@ export function useCurrencyBalance(chainId: number, account?: string, currency?:
 
 // mimics useAllBalances
 export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId } = useWeb3React()
   const allTokens = useAllTokens(chainId)
   const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [allTokens])
   const balances = useTokenBalances(account ?? undefined, allTokensArray)

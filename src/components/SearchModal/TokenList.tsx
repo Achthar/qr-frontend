@@ -9,7 +9,7 @@ import QuestionHelper from 'components/QuestionHelper'
 import { useTranslation } from 'contexts/Localization'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 // import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
+import { useWeb3React } from '@web3-react/core'
 import { useCombinedActiveList } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { useIsUserAddedToken, useAllInactiveTokens } from '../../hooks/Tokens'
@@ -104,6 +104,7 @@ function TokenRow({
 }
 
 export default function TokenList({
+  account,
   currencies,
   selectedCurrency,
   onCurrencySelect,
@@ -111,6 +112,7 @@ export default function TokenList({
   fixedListRef,
   breakIndex,
 }: {
+  account: string
   currencies: Token[]
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
@@ -118,7 +120,6 @@ export default function TokenList({
   fixedListRef?: MutableRefObject<FixedSizeList | undefined>
   breakIndex: number | undefined
 }) {
-  const { account } = useActiveWeb3React()
 
   const itemData: (Token | undefined)[] = currencies
 

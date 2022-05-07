@@ -129,9 +129,8 @@ function Bonds({
   const { bondData: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
-  const { account, chainId: chainIdWeb3, library } = useActiveWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
+  const { account, chainId } = useActiveWeb3React()
+
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
 

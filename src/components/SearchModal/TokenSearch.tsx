@@ -19,6 +19,7 @@ import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } f
 
 
 interface TokenSearchProps {
+  account: string
   tokens: Token[]
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
@@ -28,6 +29,7 @@ interface TokenSearchProps {
 }
 
 function TokenSearch({
+  account,
   tokens,
   selectedCurrency,
   onCurrencySelect,
@@ -42,37 +44,38 @@ function TokenSearch({
   )
 
   return (
-    
-      <div
-        style={{
-          // position: 'fixed',
-          // bottom: '15px',
-          width: '100%',
-          maxWidth: '420px',
-          // alignItems: 'center',
-          borderRadius: '16px',
-          zIndex: 99,
-        }}
-      >
-        {tokens?.length > 0 ? (
-          <Box height='100%'>
-            <TokenList
-              currencies={tokens}
-              breakIndex={tokens?.length}
-              onCurrencySelect={handleCurrencySelect}
-              otherCurrency={otherSelectedCurrency}
-              selectedCurrency={selectedCurrency}
-            />
-          </Box>
-        ) : (
-          <Column style={{ padding: '20px', height: '100%' }}>
-            <Text color="textSubtle" textAlign="center" mb="20px">
-              <Dots>Loading</Dots>
-            </Text>
-          </Column>
-        )}
-      </div>
-    
+
+    <div
+      style={{
+        // position: 'fixed',
+        // bottom: '15px',
+        width: '100%',
+        maxWidth: '420px',
+        // alignItems: 'center',
+        borderRadius: '16px',
+        zIndex: 99,
+      }}
+    >
+      {tokens?.length > 0 ? (
+        <Box height='100%'>
+          <TokenList
+            account={account}
+            currencies={tokens}
+            breakIndex={tokens?.length}
+            onCurrencySelect={handleCurrencySelect}
+            otherCurrency={otherSelectedCurrency}
+            selectedCurrency={selectedCurrency}
+          />
+        </Box>
+      ) : (
+        <Column style={{ padding: '20px', height: '100%' }}>
+          <Text color="textSubtle" textAlign="center" mb="20px">
+            <Dots>Loading</Dots>
+          </Text>
+        </Column>
+      )}
+    </div>
+
   )
 }
 

@@ -14,11 +14,14 @@ export function useChainIdHandling(chainIdWeb3: number, account: string) {
     const { chainId } = useNetworkState()
     const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
-        if (chainIdWeb3 && supportedChains.includes(chainIdWeb3) && account) {
+        if (chainIdWeb3 && chainId !== chainIdWeb3 && supportedChains.includes(chainIdWeb3) && account) {
             dispatch(setChainId({ chainId: chainIdWeb3 }))
             dispatch(changeChainId({ newChainId: chainIdWeb3 }))
             dispatch(changeChainIdWeighted({ newChainId: chainIdWeb3 }))
             dispatch(changeChainIdStables({ newChainId: chainIdWeb3 }))
         }
-    }, [dispatch, chainId, chainIdWeb3, account])
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dispatch, chainId, chainIdWeb3, account]
+    )
 }

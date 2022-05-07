@@ -1,7 +1,6 @@
 import { Currency, CurrencyAmount, ZERO, NETWORK_CCY, AmplifiedWeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { WeightedPairState } from 'hooks/useWeightedPairs'
 import useTotalSupply from 'hooks/useTotalSupply'
 

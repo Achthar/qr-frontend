@@ -53,7 +53,7 @@ export default function PoolList({
     params: { chain },
   },
 }: RouteComponentProps<{ chain: string }>) {
-  const { chainId, library, account } = useActiveWeb3React()
+  const { chainId, library, account } = useActiveWeb3React("XDD")
 
   const { t } = useTranslation()
   const { theme } = useTheme()

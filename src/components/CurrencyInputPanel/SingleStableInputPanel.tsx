@@ -82,6 +82,7 @@ export default function SingleStableInputPanel({
 
   const [onPresentCurrencyModal] = useModal(
     <StableSearchModal
+      account={account}
       onCurrencySelect={onCurrencySelect}
       selectedCurrency={currency}
       otherSelectedCurrency={otherCurrency}

@@ -1,17 +1,7 @@
 /* eslint react/jsx-boolean-value: 0 */
 import React from 'react'
-import { Token, StablePool, TokenAmount } from '@requiemswap/sdk'
-import { Button, ChevronDownIcon, Text, useModal, Flex } from '@requiemswap/uikit'
-import styled from 'styled-components'
-import { useTranslation } from 'contexts/Localization'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import Column, { ColumnCenter, AutoColumn } from 'components/Column'
-import { useNetworkState } from 'state/globalNetwork/hooks'
-import Row from 'components/Row'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
-import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
-import { CurrencyLogo, DoubleCurrencyLogo } from '../Logo'
 
+import styled from 'styled-components'
 import { RowBetween } from '../Layout/Row'
 import { PercentageInput } from './PercentageInput'
 

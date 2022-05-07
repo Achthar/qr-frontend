@@ -18,6 +18,7 @@ import ImportRow from './ImportRow'
 
 interface CurrencySearchProps {
   chainId: number
+  account: string
   selectedCurrency?: Currency | null
   onCurrencySelect: (currency: Currency) => void
   otherSelectedCurrency?: Currency | null
@@ -30,6 +31,7 @@ const swapSound = new Audio('swap.mp3')
 
 function CurrencySearch({
   chainId,
+  account,
   selectedCurrency,
   onCurrencySelect,
   otherSelectedCurrency,
@@ -148,6 +150,8 @@ function CurrencySearch({
         ) : filteredSortedTokens?.length > 0 || filteredInactiveTokens?.length > 0 ? (
           <Box margin="24px -24px">
             <CurrencyList
+              chainId={chainId}
+              account={account}
               height={390}
               showETH={showETH}
               currencies={
