@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
 import { unstakeFarm } from 'utils/calls'
 import { useMasterchef } from 'hooks/useContract'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 const useUnstakeFarms = (pid: number) => {
   const masterChefContract = useMasterchef()
-  const { chainId, account } = useWeb3React()
+  const { chainId, account } = useActiveWeb3React()
 
   const handleUnstake = useCallback(
     async (amount: string) => {

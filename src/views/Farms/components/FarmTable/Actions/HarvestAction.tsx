@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Button, Flex, Heading, Skeleton, Text, HelpIcon, useTooltip } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { FarmWithStakedValue } from 'views/Farms/components/FarmCard/FarmCard'
 import Balance from 'components/Balance'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -51,7 +51,7 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ lockMaturi
   const { onReward } = useHarvestFarm(pid)
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   return (
     <ActionContainer>

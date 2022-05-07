@@ -5,7 +5,7 @@ import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
 
 import { useDispatch } from 'react-redux'
 import Column from 'components/Column'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
@@ -41,9 +41,7 @@ export default function Balances() {
   const { slowRefresh } = useRefresh()
   const dispatch = useAppDispatch()
 
-  const { account, chainId: chainIdWeb3 } = useWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
+  const { account, chainId } = useActiveWeb3React()
 
   const userAddedTokens: Token[] = useUserAddedTokens()
 

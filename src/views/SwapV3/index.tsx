@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { CurrencyAmount, Swap, Token, TokenAmount, ZERO } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useIsTransactionUnsupported } from 'hooks/TradesV3'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import { RouteComponentProps } from 'react-router-dom'
@@ -46,6 +46,7 @@ import CircleLoader from '../../components/Loader/CircleLoader'
 import Page from '../Page'
 import SwapWarningModal from './components/SwapWarningModal'
 
+
 const Label = styled(Text)`
   font-size: 12px;
   font-weight: bold;
@@ -60,10 +61,8 @@ export default function SwapV3({
 }: RouteComponentProps<{ chain: string }>) {
 
 
-  const { chainId: chainIdWeb3, library, account } = useWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
-
+  const { chainId, library, account } = useActiveWeb3React()
+  
   const loadedUrlParams = useDefaultsFromURLSearch(chainId)
 
   useEffect(() => {

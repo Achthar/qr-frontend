@@ -101,7 +101,6 @@ const StyledButton = styled(Button) <{ balanceShown: boolean, mB: string, width:
 `
 
 const Balances = () => {
-  const { account } = useWeb3React()
   const [balanceShown, showBalance] = useState<boolean>(false)
   const handleClick = () => showBalance(!balanceShown)
   return (

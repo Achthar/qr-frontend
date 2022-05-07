@@ -9,7 +9,7 @@ import QuestionHelper from 'components/QuestionHelper'
 import { useTranslation } from 'contexts/Localization'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 // import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useCombinedActiveList } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { useIsUserAddedToken, useAllInactiveTokens } from '../../hooks/Tokens'
@@ -126,7 +126,7 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   breakIndex: number | undefined
 }) {
-  const { account } = useWeb3React()
+  const { account } = useActiveWeb3React()
   const { chainId } = useNetworkState()
 
   const itemData: (Currency | undefined)[] = useMemo(() => {

@@ -2,7 +2,8 @@ import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { RouteComponentProps } from 'react-router'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
+
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@requiemswap/uikit'
 import { ChainId, Fraction, PoolType } from '@requiemswap/sdk'
 import styled from 'styled-components'
@@ -137,9 +138,8 @@ function Farms({
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = usePersistState(ViewMode.TABLE, { localStorageKey: 'requiem_bond_view' })
 
-  const { account, chainId: chainIdWeb3, } = useWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
+  const { account, chainId } = useActiveWeb3React()
+
 
   const [sortOption, setSortOption] = useState('hot')
   const { observerRef, isIntersecting } = useIntersectionObserver()

@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
@@ -46,7 +46,7 @@ const Staked: React.FunctionComponent<StackedActionProps> = ({
   reqPrice
 }) => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
   const bond = useBondFromBondId(bondId)

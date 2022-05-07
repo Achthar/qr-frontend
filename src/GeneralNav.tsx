@@ -2,7 +2,7 @@ import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoi
 import config, { configData, getIcon } from 'components/Menu/config'
 import Sidebar from 'components/Sidebar'
 import { ChevronsLeft } from 'react-feather'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { useHistory, useLocation } from 'react-router'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -598,9 +598,8 @@ const GeneralNav: React.FC = () => {
   const location = useLocation()
   const { isMobile } = useMatchBreakpoints()
 
-  const { chainId: chainIdWeb3, library, account } = useWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
+  const { chainId, library, account } = useActiveWeb3React()
+
   const menuItems = configDataEntries(chainId)
 
   const activeIndex = menuItems.findIndex((i) => {

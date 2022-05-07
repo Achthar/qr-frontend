@@ -1,9 +1,9 @@
 import { useEffect, useReducer, useRef } from 'react'
 import { noop } from 'lodash'
-import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
 import useToast from 'hooks/useToast'
 import { useTranslation } from 'contexts/Localization'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 type LoadingState = 'idle' | 'loading' | 'success' | 'fail'
 
@@ -89,7 +89,7 @@ const useApproveConfirmTransaction = ({
   onApproveSuccess = noop,
 }: ApproveConfirmTransaction) => {
   const { t } = useTranslation()
-  const { account } = useWeb3React()
+  const { account } = useActiveWeb3React()
   const [state, dispatch] = useReducer(reducer, initialState)
   const handlePreApprove = useRef(onRequiresApproval)
   const { toastError } = useToast()

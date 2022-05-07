@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex } from '@requiemswap/uikit'
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
@@ -129,7 +129,7 @@ function Bonds({
   const { bondData: bondsLP, userDataLoaded } = useBonds()
 
   const [query, setQuery] = useState('')
-  const { account, chainId: chainIdWeb3, library } = useWeb3React()
+  const { account, chainId: chainIdWeb3, library } = useActiveWeb3React()
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()
   const [sortOption, setSortOption] = useState('hot')

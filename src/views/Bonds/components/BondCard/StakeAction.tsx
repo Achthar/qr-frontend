@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { Button, Flex, Heading, IconButton, AddIcon, MinusIcon, useModal } from '@requiemswap/uikit'
@@ -48,7 +48,7 @@ const StakeAction: React.FC<BondCardActionsProps> = ({
   lpLabel,
 }) => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   const bond = useBondFromBondId(bondId)
   const { onStake } = useStakeBonds(chainId, bond)

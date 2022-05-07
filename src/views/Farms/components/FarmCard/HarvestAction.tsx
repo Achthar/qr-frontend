@@ -7,7 +7,7 @@ import { fetchFarmUserDataAsync } from 'state/farms'
 import useToast from 'hooks/useToast'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { usePriceCakeBusd } from 'state/farms/hooks'
 import Balance from 'components/Balance'
 import useHarvestFarm from '../../hooks/useHarvestFarm'
@@ -18,7 +18,7 @@ interface FarmCardActionsProps {
 }
 
 const HarvestAction: React.FC<FarmCardActionsProps> = ({ earnings, pid }) => {
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)

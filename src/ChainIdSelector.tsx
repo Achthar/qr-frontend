@@ -231,7 +231,7 @@ const ChainIdSelector = () => {
   // global network chainId
   const { onChainChange, onAccountChange } = useGlobalNetworkActionHandlers()
 
-  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  const { chainId: chainIdWeb3, library, account } = useActiveWeb3React()
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()
   const dispatch = useDispatch<AppDispatch>()

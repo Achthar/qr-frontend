@@ -7,7 +7,7 @@ import { fetchBondUserDataAsync } from 'state/bonds'
 import useToast from 'hooks/useToast'
 import { getBalanceAmount } from 'utils/formatBalance'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import Balance from 'components/Balance'
 import { useBondFromBondId } from 'state/bonds/hooks'
 import useHarvestBond from '../../hooks/useHarvestBond'
@@ -18,7 +18,7 @@ interface BondCardActionsProps {
 }
 
 const HarvestAction: React.FC<BondCardActionsProps> = ({ earnings, bondId }) => {
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { toastSuccess, toastError } = useToast()
   const { t } = useTranslation()
   const [pendingTx, setPendingTx] = useState(false)

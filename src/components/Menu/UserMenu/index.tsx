@@ -1,5 +1,5 @@
 import React from 'react'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import {
   Flex,
   LogoutIcon,
@@ -18,7 +18,7 @@ import WalletUserMenuItem from './WalletUserMenuItem'
 
 const UserMenu = () => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { logout } = useAuth()
   const { balance, fetchStatus } = useGetNetworkCcyBalance()
   // const { isInitialized, isLoading, profile } = useProfile()

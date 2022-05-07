@@ -11,7 +11,7 @@ import { tryParseTokenAmount } from 'state/swapV3/hooks'
 import { useTranslation } from 'contexts/Localization'
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { useGovernanceInfo } from 'state/governance/hooks'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 
@@ -69,7 +69,7 @@ export default function Governance({
   },
 }: RouteComponentProps<{ chain: string }>) {
 
-  const { chainId: chainIdWeb3, library, account } = useWeb3React()
+  const { chainId: chainIdWeb3, library, account } = useActiveWeb3React()
   useChainIdHandling(chainIdWeb3, account)
   const { chainId } = useNetworkState()
 

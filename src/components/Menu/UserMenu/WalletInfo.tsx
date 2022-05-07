@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Button, Flex, InjectedModalProps, LinkExternal, Message, Text } from '@requiemswap/uikit'
 import { NETWORK_CCY } from '@requiemswap/sdk'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import useTokenBalance, { useGetNetworkCcyBalance } from 'hooks/useTokenBalance'
 import { getRequiemAddress } from 'utils/addressHelpers'
 import useAuth from 'hooks/useAuth'
@@ -18,7 +18,7 @@ interface WalletInfoProps {
 
 const WalletInfo: React.FC<WalletInfoProps> = ({ hasLowNetworkCcyBalance, onDismiss }) => {
   const { t } = useTranslation()
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { balance } = useGetNetworkCcyBalance()
   // const reqtPrice = useReqtPrice(chainId)
   const { balance: requiemBalance } = useTokenBalance(getRequiemAddress(chainId))

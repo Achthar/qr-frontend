@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
@@ -36,7 +36,7 @@ export const usePollBondsPublicData = (chainId: number, includeArchive = false) 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
-  const { account, library } = useWeb3React()
+  const { account, library } = useActiveWeb3React()
 
   useEffect(() => {
     const bondsToFetch = bondList(chainId)

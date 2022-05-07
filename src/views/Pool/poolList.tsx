@@ -10,7 +10,7 @@ import { useTranslation } from 'contexts/Localization'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import getChain from 'utils/getChain'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useUserPairs } from 'state/user/hooks'
 import Column from 'components/Column'
 import Row from 'components/Row'
@@ -53,9 +53,8 @@ export default function PoolList({
     params: { chain },
   },
 }: RouteComponentProps<{ chain: string }>) {
-  const { chainId: chainIdWeb3, library, account } = useWeb3React()
-  useChainIdHandling(chainIdWeb3, account)
-  const { chainId } = useNetworkState()
+  const { chainId, library, account } = useActiveWeb3React()
+
   const { t } = useTranslation()
   const { theme } = useTheme()
 

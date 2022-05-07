@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 import { withdrawFromLock, emergencyWithdrawFromLock } from 'utils/calls'
 import { useRedRequiemContract } from 'hooks/useContract'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { Lock } from 'state/governance/reducer'
 
 export const useWithdrawFromLock = () => {
   const redReqContract = useRedRequiemContract()
-  const { chainId } = useWeb3React()
+  const { chainId } = useActiveWeb3React()
 
   const handleWithdraw = useCallback(
     async (lock: Lock) => {
@@ -21,7 +21,7 @@ export const useWithdrawFromLock = () => {
 
 export const useEmergencyWithdrawFromLock = () => {
   const redReqContract = useRedRequiemContract()
-  const { chainId } = useWeb3React()
+  const { chainId } = useActiveWeb3React()
 
   const handleEmergencyWithdraw = useCallback(
     async (lock: Lock) => {

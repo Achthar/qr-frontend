@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Heading, Skeleton, Text } from '@requiemswap/uikit'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import Balance from 'components/Balance'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -42,7 +42,7 @@ const HarvestAction: React.FunctionComponent<HarvestActionProps> = ({ bondId, us
 
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useActiveWeb3React()
   const { chainId } = useNetworkState()
   const { onReward } = useHarvestBond(chainId, bond)
 

@@ -5,7 +5,7 @@ import application from './application/reducer'
 import blockReducer from './block'
 import farmsReducer from './farms'
 import assetBackedStakingReducer from './assetBackedStaking/reducer'
-import votingReducer from './voting'
+// import votingReducer from './voting'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
@@ -35,7 +35,7 @@ const store = configureStore({
     block: blockReducer,
     bonds: bondReducer,
     farms: farmsReducer,
-    voting: votingReducer,
+    // voting: votingReducer,
     stablePools: stablePoolsReducer,
     weightedPools: weightedPoolsReducer,
     weightedPairs: weightedPairReducer,

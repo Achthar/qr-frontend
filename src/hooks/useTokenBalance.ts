@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { getBep20Contract, getCakeContract } from 'utils/contractHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
@@ -25,7 +25,7 @@ const useTokenBalance = (tokenAddress: string) => {
     balance: BIG_ZERO,
     fetchStatus: NOT_FETCHED,
   })
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { fastRefresh } = useRefresh()
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export const useBurnedBalance = (tokenAddress: string) => {
 }
 
 export const useGetNetworkCcyBalance = () => {
-  const { account, chainId, library } = useWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
   const [balance, setBalance] = useState(BIG_ZERO)
   const { lastUpdated, setLastUpdated } = useLastUpdated()
