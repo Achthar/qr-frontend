@@ -19,22 +19,22 @@ import { AppDispatch, useAppDispatch } from '../state'
 // assumes that the pair is already ordered by addresses of tokens
 export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: TokenPair[]): TokenPair[] => {
     if (additionalTokens.length === 0)
-      return referenceTokens
-  
+        return referenceTokens
+
     const newPairs = []
     for (let i = 0; i < additionalTokens.length; i++) {
-      let pairNew = false
-      for (let j = 0; j < referenceTokens.length; j++) {
-        if (additionalTokens[i].token0.address !== referenceTokens[j].token0.address &&
-          additionalTokens[i].token1.address !== referenceTokens[j].token1.address) {
-          pairNew = true
-          break;
+        let pairNew = false
+        for (let j = 0; j < referenceTokens.length; j++) {
+            if (additionalTokens[i].token0.address !== referenceTokens[j].token0.address &&
+                additionalTokens[i].token1.address !== referenceTokens[j].token1.address) {
+                pairNew = true
+                break;
+            }
         }
-      }
-      newPairs.push(additionalTokens[i])
+        newPairs.push(additionalTokens[i])
     }
     return [...newPairs, ...referenceTokens]
-  }
+}
 
 export function useGetWeightedPairsState(
     chainId: number,
@@ -128,6 +128,7 @@ export function useGetWeightedPairsState(
 
     // finally we get all data as class objects in arrays to be used in the respective views
     const { pairs: allWeightedPairs, balances, totalSupply } = useDeserializedWeightedPairsAndLpBalances(chainId)
+
 
     return {
         pairs: allWeightedPairs,
@@ -406,7 +407,7 @@ export function useGetRawWeightedPairsState(
     // by setting metaDataLoaded to false
     useEffect(() => {
         if (!metaDataLoaded && referenceChain === chainId) {
-            dispatch(fetchWeightedPairMetaData({ chainId,  tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs)  }))
+            dispatch(fetchWeightedPairMetaData({ chainId, tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs) }))
         }
 
     },

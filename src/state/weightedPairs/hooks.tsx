@@ -65,7 +65,7 @@ export const useDeserializedWeightedPairs = (chainId: number): AmplifiedWeighted
 // will be an empty array
 export const useDeserializedWeightedPairsAndLpBalances = (chainId: number): { pairs: AmplifiedWeightedPair[], balances: TokenAmount[], totalSupply: TokenAmount[] } => {
   const pairState = useSelector((state: State) => state.weightedPairs)[chainId]
-  if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded || !pairState.userBalancesLoaded)
+  if (!pairState.metaDataLoaded || !pairState.reservesAndWeightsLoaded)
     return { pairs: [], balances: [], totalSupply: [] }
 
   let rawPairs = []

@@ -812,7 +812,7 @@ export default function AddLiquidity({
         </CardBody>
       </AppBody>
       {!addIsUnsupported ? (
-        weightedPair && !noLiquidity && weightedPairState !== WeightedPairState.INVALID ? (
+        weightedPair && weightedPairState !== WeightedPairState.INVALID ? (
           <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
             <MinimalWeightedPositionCard showUnwrapped={oneCurrencyIsWETH} weightedPair={weightedPair} />
           </AutoColumn>
