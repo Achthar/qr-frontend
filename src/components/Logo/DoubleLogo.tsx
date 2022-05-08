@@ -15,6 +15,7 @@ interface DoubleCurrencyLogoProps {
   chainId?: number
   currency0?: Currency
   currency1?: Currency
+  overlap?: string
 }
 
 export default function DoubleCurrencyLogo({
@@ -23,11 +24,12 @@ export default function DoubleCurrencyLogo({
   currency1,
   size = 20,
   margin = false,
+  overlap = '-7px'
 }: DoubleCurrencyLogoProps) {
   return (
     <Wrapper margin={margin}>
       {currency0 && <CurrencyLogo chainId={chainId} currency={currency0} size={`${size.toString()}px`} style={{ marginRight: '4px' }} />}
-      {currency1 && <CurrencyLogo chainId={chainId} currency={currency1} size={`${size.toString()}px`} />}
+      {currency1 && <CurrencyLogo chainId={chainId} currency={currency1} size={`${size.toString()}px`} style={{ marginLeft: overlap }} />}
     </Wrapper>
   )
 }

@@ -287,7 +287,7 @@ export default function AccountDetails({
                     <WalletAction
                       style={{ fontSize: '.825rem', fontWeight: 400, marginRight: '8px' }}
                       onClick={() => {
-                        ; (connector as any).close()
+                        ; (connector as any).disconnect()
                       }}
                     >
                       {t('accountDetails.disconnect')}

@@ -233,6 +233,8 @@ export interface BondConfig {
   quoteToken?: SerializedToken
   token2?: SerializedToken
   token3?: SerializedToken
+  tokens: SerializedToken[]
+  quoteTokenIndex: number
   lpProperties?: {
     weightToken: number
     weightQuoteToken: number

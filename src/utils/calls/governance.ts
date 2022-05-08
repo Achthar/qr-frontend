@@ -10,7 +10,9 @@ const options = {
 export const withdrawFromLock = async (chainId, redReqContract, lock) => {
     const gasPrice = getGasPrice(chainId)
 
-    const tx = await redReqContract.withdraw(lock.end, lock.amount, { ...options, gasPrice })
+    const tx = await redReqContract.withdraw(lock.end, lock.amount
+        // , { ...options, gasPrice }
+    )
     const receipt = await tx.wait()
     return receipt.status
 }
@@ -18,7 +20,9 @@ export const withdrawFromLock = async (chainId, redReqContract, lock) => {
 export const emergencyWithdrawFromLock = async (chainId, redReqContract, lock) => {
     const gasPrice = getGasPrice(chainId)
 
-    const tx = await redReqContract.emergencyWithdraw(lock.end, { ...options, gasPrice })
+    const tx = await redReqContract.emergencyWithdraw(lock.end
+        // , { ...options, gasPrice }
+    )
     const receipt = await tx.wait()
     return receipt.status
 }
@@ -27,7 +31,9 @@ export const emergencyWithdrawFromLock = async (chainId, redReqContract, lock) =
 export const createLock = async (chainId, address, value, end, redReqContract) => {
     const gasPrice = getGasPrice(chainId)
 
-    const tx = await redReqContract.create_lock(value, end, { ...options, gasPrice })
+    const tx = await redReqContract.create_lock(value, end, address
+        // , { ...options, gasPrice }
+    )
     const receipt = await tx.wait()
     return receipt.status
 }
@@ -35,7 +41,9 @@ export const createLock = async (chainId, address, value, end, redReqContract) =
 export const increasePosition = async (chainId, address, value, redReqContract, lock) => {
     const gasPrice = getGasPrice(chainId)
 
-    const tx = await redReqContract.increase_position(value, lock.end, { ...options, gasPrice })
+    const tx = await redReqContract.increase_position(value, lock.end
+        // , { ...options, gasPrice }
+    )
     const receipt = await tx.wait()
     return receipt.status
 }
@@ -43,7 +51,9 @@ export const increasePosition = async (chainId, address, value, redReqContract, 
 export const increaseMaturity = async (chainId, address, amount, newEnd, redReqContract, lock) => {
     const gasPrice = getGasPrice(chainId)
 
-    const tx = await redReqContract.increase_time_to_maturity(amount, lock.end, newEnd, { ...options, gasPrice })
+    const tx = await redReqContract.increase_time_to_maturity(amount, lock.end, newEnd
+        // , { ...options, gasPrice }
+    )
     const receipt = await tx.wait()
     return receipt.status
 }

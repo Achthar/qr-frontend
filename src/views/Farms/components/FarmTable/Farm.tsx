@@ -58,9 +58,9 @@ const Farm: React.FunctionComponent<FarmProps> = ({ chainId, tokens, label, pid,
   return (
     <Container>
       {
-        <TokenWrapper>
-          <PoolLogo tokens={tokens.map(t => deserializeToken(t))} />
-        </TokenWrapper>
+        // <TokenWrapper>
+          <PoolLogo tokens={tokens.map(t => deserializeToken(t))} size={20} />
+        // </TokenWrapper>
         // poolType !== PoolType.StablePairWrapper && token && quoteToken ? (
         //   <TokenWrapper>
         //     <PoolLogo variant="inverted" chainId={chainId} primaryToken={deserializeToken(token)} secondaryToken={deserializeToken(quoteToken)} width={40} height={40} />

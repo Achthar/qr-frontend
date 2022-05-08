@@ -212,9 +212,7 @@ function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Cu
 
   const tokenPairs = useAllTradeTokenPairs(tokenA, tokenB, chainId)
   const { slowRefresh } = useRefresh()
-  console.log("RPAIRS in", chainId, '', tokenPairs, slowRefresh, slowRefresh)
   const { pairs, metaDataLoaded, reservesAndWeightsLoaded } = useGetWeightedPairsTradeState(chainId, tokenPairs, slowRefresh)
-  console.log("RPAIRS out", pairs, metaDataLoaded, reservesAndWeightsLoaded)
 
   return useMemo(
     () => {

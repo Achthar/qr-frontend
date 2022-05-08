@@ -9,6 +9,7 @@ import { TokenPairImage } from 'components/TokenImage'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 import { DoubleCurrencyLogo } from 'components/Logo'
 import QuadCurrencyLogo from 'components/Logo/QuadLogo'
+import PoolLogo from 'components/Logo/PoolLogo'
 
 export interface BondProps {
   label: string
@@ -18,6 +19,7 @@ export interface BondProps {
   quoteToken: SerializedToken
   token2?: SerializedToken
   token3?: SerializedToken
+  tokens: SerializedToken[]
 }
 
 const Container = styled.div`
@@ -39,7 +41,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bondId, token2, token3, bondType }) => {
+const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bondId, token2, token3, bondType, tokens }) => {
   const { stakedBalance } = useBondUser(bondId)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
@@ -59,11 +61,13 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
 
   return (
     <Container>
-      {
-        bondType === BondType.PairLP && token && quoteToken ? (
-          <TokenWrapper>
-            <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={24} margin />
-          </TokenWrapper>)
+      {/* {
+        bondType === BondType.PairLP && token && quoteToken ? ( */}
+      <TokenWrapper>
+        {/* <DoubleCurrencyLogo currency0={deserializeToken(token)} currency1={deserializeToken(quoteToken)} size={24} margin /> */}
+        <PoolLogo tokens={tokens.map(tok => deserializeToken(tok))} size={25} overlap='-3px' />
+      </TokenWrapper>
+      {/* )
           : token2 && token3 && (
             <TokenWrapper>
               <QuadCurrencyLogo
@@ -76,7 +80,7 @@ const Bond: React.FunctionComponent<BondProps> = ({ token, quoteToken, label, bo
               />
             </TokenWrapper>
           )
-      }
+      } */}
       <div style={{ marginLeft: 25 }}>
         {handleRenderBonding()}
         <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>

@@ -154,7 +154,7 @@ function Bonds({
   } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
   const stablePool = stablePools[0]
 
-  
+
   const reqPrice = useMemo(
     () => {
       return priceAssetBackedRequiem(chainId, pairs)
@@ -315,7 +315,8 @@ function Bonds({
         quoteToken: bond.quoteToken,
         token2: bond.token2,
         token3: bond.token3,
-        bondType: bond.type
+        bondType: bond.type,
+        tokens: bond.tokens
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
