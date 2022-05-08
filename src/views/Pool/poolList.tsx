@@ -216,7 +216,7 @@ export default function PoolList({
               as={Link}
               to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
               variant="secondary"
-              width="100%"
+              width="33%"
               height='70px'
               mb="8px"
               style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
@@ -234,7 +234,7 @@ export default function PoolList({
               as={Link}
               to={`/${getChain(chainId)}/add/weighted`}
               variant="secondary"
-              width="100%"
+              width="33%"
               height='70px'
               mb="8px"
               style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
@@ -252,7 +252,7 @@ export default function PoolList({
               as={Link}
               to={`/${getChain(chainId)}/add/stables`}
               variant="secondary"
-              width="100%"
+              width="33%"
               height='70px'
               mb="8px"
               style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}

@@ -249,8 +249,8 @@ const Collapsible = styled.div<{ open: boolean, isMobile: boolean }>`
   text-align: left;
   width: 100%;
   height:  ${({ open }) => !open ? '0%' : '100%'};
-  transform: ${({ open, isMobile }) => (isMobile ? !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-95%)  scaleY(1.0)' :
-    !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-90%)  scaleY(1.0)')};
+  transform: ${({ open, isMobile }) => (isMobile ? !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-99%)  scaleY(1.0)' :
+    !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-99%)  scaleY(1.0)')};
   transition: transform 300ms ease-in-out;
   position:relative;
 `
