@@ -154,8 +154,8 @@ export const RREQT: { [chainId: number]: Token } = {
     ChainId.AVAX_TESTNET,
     '0x2AadF607A5260f8223c4b604297Cf7DC31926Ada',
     18,
-    'RREQ',
-    'Red Requiem Token',
+    'AGREQ',
+    'Alpha Governance Requiem',
   ), // not deployed yet, but dummy needed
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
@@ -444,6 +444,19 @@ const tokens: { [tokenId: string]: TokenEntry } = {
   },
   'reqt': {
     symbol: 'REQT',
+    address: {
+      56: '',
+      97: '',
+      80001: '0xFf25c956BA06Beb3f69a09E7c3c2974Fa4121Df8',
+      43113: '0x64796164fe724798d07CaFe6D19c05b5276A3903',
+      43114: '0x64796164fe724798d07CaFe6D19c05b5276A3903',
+      110001: '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
+    },
+    decimals: 18,
+    projectLink: 'https://pancakeswap.finance/',
+  },
+  'abreq': {
+    symbol: 'abREQ',
     address: {
       56: '',
       97: '',

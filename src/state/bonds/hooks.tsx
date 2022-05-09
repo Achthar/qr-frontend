@@ -87,6 +87,7 @@ export const useBondUser = (bondId) => {
       tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
       stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
       earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
+      notes: bond?.userData?.notes
     }
   }
 

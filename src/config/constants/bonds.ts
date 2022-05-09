@@ -21,9 +21,9 @@ export const bonds = (chainId: number): BondConfig[] => {
         [ChainId.AVAX_MAINNET]: false
       },
       isLP: false,
-      name: "70/40 AREQ-DAI",
-      displayName: "70% AREQ - 30% DAI",
-      bondToken: "DAI AREQ LP",
+      name: "70/40 abREQ-DAI",
+      displayName: "70% abREQ - 30% DAI",
+      bondToken: "DAI abREQ LP",
       payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
       // bondContractABI: new ethers.utils.Interface(DaiBondContract),
@@ -34,9 +34,9 @@ export const bonds = (chainId: number): BondConfig[] => {
         43114: "0x086AbCBD5377fFCD5441f0da1969eb468903b693",
         43113: "0x086AbCBD5377fFCD5441f0da1969eb468903b693"
       },
-      token: serializedTokens.reqt,
+      token: serializedTokens.abreq,
       quoteToken: serializedTokens.dai,
-      tokens: [serializedTokens.reqt, serializedTokens.dai],
+      tokens: [serializedTokens.abreq, serializedTokens.dai],
       quoteTokenIndex: 1,
       lpProperties: {
         weightToken: 70,

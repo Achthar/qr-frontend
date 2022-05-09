@@ -122,7 +122,8 @@ const NoteContainer = styled.div<{ isMobile: boolean }>`
 const GeneralActionContainer = styled.div`
   display: flex;
   fle-wrap: nowrap;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   width: 100%;
   margin-top:10px;
 `
@@ -257,10 +258,12 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         {details?.userData?.notes.map((
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
-          return (<>
-            <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} />
-            {!isLast && (<Line />)}
-          </>)
+          return (
+            <>
+              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index===0}/>
+              {!isLast && (<Line />)}
+            </>
+          )
         }
         )}
 

@@ -64,15 +64,9 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   }
 
   return (
-    <BondActionContainer isMobile={isMobile}>
-      <ActionTitles>
-        <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px" textAlign="center">
-          {t('Claim All Rewards').toUpperCase()}
-        </Text>
-      </ActionTitles>
       <ActionContent>
-        <Button 
-          width="100%"
+        <Button
+          width="60px"
           disabled={
             pendingTx || noBond
           }
@@ -92,11 +86,11 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
               setPendingTx(false)
             }
           }}
+          style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
         >
           {noBond ? 'No Claims' : pendingTx ? <Dots>Claim ongoing</Dots> : t('Claim')}
         </Button>
       </ActionContent>
-    </BondActionContainer>
   )
 }
 

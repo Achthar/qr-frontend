@@ -31,7 +31,7 @@ const AnnualRoiDisplay = styled(Text)`
 
 interface RedemptionModalProps {
   bondId: number
-  noteIndex:number
+  noteIndex: number
   max: BigNumber
   stakedBalance: BigNumber
   lpLabel?: string
@@ -138,7 +138,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
         <Button
           width="100%"
           disabled={
-            pendingTx || (new BigNumber(bond.userData.interestDue).eq(0) && new BigNumber(bond.userData.pendingPayout).eq(0))
+            pendingTx || (new BigNumber(bond.userData.interestDue).eq(0) && new BigNumber(bond.userData.notes[noteIndex].payout).eq(0))
           }
           onClick={async () => {
             setPendingTx(true)

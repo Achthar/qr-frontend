@@ -15,6 +15,8 @@ interface NoteProps {
     note: Note
     bond: Bond
     reqPrice: number
+    isFirst: boolean
+    isLast: boolean
 }
 
 const ContentCol = styled.div`
@@ -37,7 +39,7 @@ const DescriptionCol = styled.div`
   width: 100%;
   justify-content: flex-end;
   gap: 10px;
-  padding-right: 8px;
+  padding-right: 2px;
   color: ${({ theme }) => theme.colors.primary};
 
   ${({ theme }) => theme.mediaQueries.sm} {
@@ -51,8 +53,9 @@ const ContentRow = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  gap: 10px;
-  padding-right: 8px;
+  gap: 5px;
+  padding-right: 2px;
+  padding-left: 7px;
   color: ${({ theme }) => theme.colors.primary};
 
   ${({ theme }) => theme.mediaQueries.sm} {
@@ -60,21 +63,27 @@ const ContentRow = styled.div`
   }
 `
 
-const Container = styled.div`
+const Container = styled.div<{ isFirst: boolean, isLast: boolean }>`
+border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
+  border-top-right-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
+  border-bottom-left-radius: ${({ isLast }) => isLast ? '16px' : '0px'};
+  border-bottom-right-radius: ${({ isLast }) => isLast ? '16px' : '0px'};
+  background:${({ theme }) => theme.colors.backgroundAlt};
+  align-items:center;
   flex-direction: row;
   display: flex;
   width: 100%;
   justify-content: flex-end;
   gap: 10px;
   padding-right: 8px;
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.backgroundAlt};
 
   ${({ theme }) => theme.mediaQueries.sm} {
     padding-right: 0px;
   }
 `
 
-const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile, reqPrice }) => {
+const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
     const { t } = useTranslation()
 
     const now = Math.round((new Date()).getTime() / 1000);
@@ -90,13 +99,13 @@ const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile, req
         return prettifySeconds(vestingTerm, "");
     };
 
-
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
     const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+
     if (isMobile) {
         return (
-            <Container>
+            <Container isLast={isLast} isFirst={isFirst}>
                 <ContentRow>
                     <DescriptionCol>
                         <Text>Payout:</Text>
@@ -107,22 +116,22 @@ const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile, req
                         <Text>{vestingTime()}</Text>
                     </DescriptionCol>
                 </ContentRow>
-                <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} reqPrice={new BigNumber(reqPrice)} />
+                <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
             </Container>
         )
     }
 
 
     return (
-        <Container>
+        <Container isLast={isLast} isFirst={isFirst}>
             <ContentRow>
                 <DescriptionCol>
                     <Text>Created:</Text>
                     <Text>Expiry:</Text>
                 </DescriptionCol>
                 <DescriptionCol>
-                    <Text>{expiry}</Text>
                     <Text>{created}</Text>
+                    <Text>{expiry}</Text>
                 </DescriptionCol>
             </ContentRow>
             <ContentRow>
@@ -135,7 +144,7 @@ const NoteRow: React.FC<NoteProps> = ({ note, userDataReady, bond, isMobile, req
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
-            <RedemptionAction {...bond} userDataReady={userDataReady} noteIndex={note.noteIndex} reqPrice={new BigNumber(reqPrice)} />
+            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
         </Container>
     )
 

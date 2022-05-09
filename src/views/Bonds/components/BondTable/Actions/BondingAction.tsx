@@ -136,60 +136,20 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   }
 
   if (isApproved) {
-    if (stakedBalance.gt(0)) {
-      return (
-        <BondActionContainer isMobile={isMobile}>
-          <ActionTitles>
-            <Text bold textTransform="uppercase" color="secondary" fontSize="12px" pr="4px">
-              {name}
-            </Text>
-            <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-              {t('Bonded')}
-            </Text>
-          </ActionTitles>
-          <ActionContent>
-            <div>
-              <Heading>{displayBalance()}</Heading>
-            </div>
-            <IconButtonWrapper>
-              <IconButton variant="secondary" onClick={onPresentWithdraw} mr="6px">
-                <MinusIcon color="primary" width="14px" />
-              </IconButton>
-              <IconButton
-                variant="secondary"
-                onClick={onPresentBonding}
-                disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
-              >
-                <AddIcon color="primary" width="14px" />
-              </IconButton>
-            </IconButtonWrapper>
-          </ActionContent>
-        </BondActionContainer>
-      )
-    }
 
     return (
-      <BondActionContainer isMobile={isMobile}>
-        <ActionTitles>
-          <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" pr="4px">
-            {t('Bond').toUpperCase()}
-          </Text>
-          <Text bold textTransform="uppercase" color="secondary" fontSize="12px">
-            {name}
-          </Text>
-        </ActionTitles>
-        <ActionContent>
           <Button
             // marginBottom="-30px"
-            width="100%"
+            width='60px'
             onClick={onPresentBonding}
             variant="primary"
             disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
+            style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+
           >
             {t('Bond LP')}
           </Button>
-        </ActionContent>
-      </BondActionContainer>
+
     )
   }
 
