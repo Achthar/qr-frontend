@@ -140,14 +140,14 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     return (
           <Button
             // marginBottom="-30px"
-            width='60px'
+            width={isMobile ? "40%" : "60px"}
             onClick={onPresentBonding}
             variant="primary"
             disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
             style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
 
           >
-            {t('Bond LP')}
+            {t('Bond')}
           </Button>
 
     )

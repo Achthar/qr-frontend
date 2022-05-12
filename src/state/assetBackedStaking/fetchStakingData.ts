@@ -35,7 +35,7 @@ export const fetchStakingData = createAsyncThunk(
   "assetBackedStaking/fetchStakingData",
   async ({ chainId }: AssetBackedStakingRequest): Promise<any> => {
 
-    const assetBackedstakingContract = getAssetBackedStakingContract(chainId)
+    // const assetBackedstakingContract = getAssetBackedStakingContract(chainId)
     const stakingAddress = getAssetBackedStakingAddress(chainId)
 
     // console.log("RED REQ CALLS inp", account, redRequiemAddress, redRequiemStakingAddress)

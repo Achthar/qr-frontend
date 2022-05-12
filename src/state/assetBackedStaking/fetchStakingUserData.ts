@@ -1,15 +1,10 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { ethers, BigNumber } from 'ethers'
 import multicall from 'utils/multicall';
-import abReqStaking from 'config/abi/avax/Staking.json'
-import { getAssetBackedStakingAddress, getGovernanceRequiemAddress, getRedRequiemAddress, getRedRequiemStakingAddress } from 'utils/addressHelpers';
-import { SerializedBigNumber } from 'state/types';
-import { getAssetBackedStakingContract } from 'utils/contractHelpers';
-
-
-const E_NINE = BigNumber.from('1000000000')
-const E_EIGHTEEN = BigNumber.from('1000000000000000000')
+import staking from 'config/abi/avax/Staking.json'
+import sRequiem from 'config/abi/avax/sRequiem.json'
+import { getAssetBackedStakingAddress } from 'utils/addressHelpers';
+import { GREQ, SREQ } from 'config/constants/tokens';
 
 
 export interface AssetBackedStakingUserRequest {
@@ -17,66 +12,60 @@ export interface AssetBackedStakingUserRequest {
   account: string
 }
 
-// export interface GovernanceLock {
-//   amount: SerializedBigNumber
-//   end: number
-//   minted: SerializedBigNumber
-//   multiplier: SerializedBigNumber
-// }
-
-// export interface AssetBackedStakingUserResponse {
-//   locks: { [end: number]: GovernanceLock }
-//   balance: SerializedBigNumber
-//   allowance: SerializedBigNumber
-//   staked: SerializedBigNumber
-// }
-
-export const fetchStakingData = createAsyncThunk(
-  "assetBackedStaking/fetchStakingData",
+export const fetchStakingUserData = createAsyncThunk(
+  "assetBackedStaking/fetchStakingUserData",
   async ({ chainId, account }: AssetBackedStakingUserRequest): Promise<any> => {
 
-    const assetBackedstakingContract = getAssetBackedStakingContract(chainId)
+    // const assetBackedstakingContract = getAssetBackedStakingContract(chainId)
     const stakingAddress = getAssetBackedStakingAddress(chainId)
 
-    // console.log("RED REQ CALLS inp", account, redRequiemAddress, redRequiemStakingAddress)
     // calls for general bond data
     const calls = [
-      // epoch
-      {
-        address: stakingAddress,
-        name: 'epoch',
-        params: []
-      },
-      // conversion index
-      {
-        address: stakingAddress,
-        name: 'index',
-        params: []
-      },
       // seconds to next epoch
       {
         address: stakingAddress,
-        name: 'secondsToNextEpoch',
-        params: []
+        name: 'warmupInfo',
+        params: [account]
       },
     ]
 
-    console.log("RED REQ CALLS", calls)
+    const [warmupInfo] =
+      await multicall(chainId, staking, calls)
 
-    const [epoch, index, secondsToNextEpoch] =
-      await multicall(chainId, abReqStaking, calls)
 
+    const sREQAddress = SREQ[chainId].address
+    const gREQAddress = GREQ[chainId].address
+
+    // calls for general bond data
+    const callsBalances = [
+      // epoch
+      // seconds to next epoch
+      {
+        address: sREQAddress,
+        name: 'balanceOf',
+        params: [account]
+      },
+      // seconds to next epoch
+      {
+        address: gREQAddress,
+        name: 'balanceOf',
+        params: [account]
+      },
+
+    ]
+    const [balanceSReq, balanceGReq] =
+      await multicall(chainId, sRequiem, callsBalances)
 
 
     return {
-      epoch: {
-        length: Number(epoch.length.toString()),
-        number: Number(epoch.number.toString()),
-        end: Number(epoch.end.toString()),
-        distribute: epoch.distribute.toString()
-      },
-      index: index.toString(),
-      secondsToNextEpoch: secondsToNextEpoch.toString()
+      warmupInfo: {
+        deposit: warmupInfo.deposit.toString(), // if forfeiting
+        gons: warmupInfo.gons.toString(), // staked balance
+        expiry: warmupInfo.expiry.toString(), // end of warmup period
+        lock: warmupInfo.lock, // prevents malicious delays for claim
+        sReqBalance: balanceSReq[0].toString(),
+        gReqBalance: balanceGReq[0].toString()
+      }
     };
   },
 );

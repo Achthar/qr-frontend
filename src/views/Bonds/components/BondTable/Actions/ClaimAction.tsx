@@ -64,33 +64,33 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   }
 
   return (
-      <ActionContent>
-        <Button
-          width="60px"
-          disabled={
-            pendingTx || noBond
+    // <ActionContent>
+      <Button
+        width={isMobile ? "40%" : "60px"}
+        disabled={
+          pendingTx || noBond
+        }
+        onClick={async () => {
+          setPendingTx(true)
+          try {
+            await handleClaim()
+            toastSuccess(t('Claimed!'), t('Your rewards have been transferred to you wallet'))
+            // onDismiss()
+          } catch (e) {
+            toastError(
+              t('Error'),
+              t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
+            )
+            console.error(e)
+          } finally {
+            setPendingTx(false)
           }
-          onClick={async () => {
-            setPendingTx(true)
-            try {
-              await handleClaim()
-              toastSuccess(t('Claimed!'), t('Your rewards have been transferred to you wallet'))
-              // onDismiss()
-            } catch (e) {
-              toastError(
-                t('Error'),
-                t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-              )
-              console.error(e)
-            } finally {
-              setPendingTx(false)
-            }
-          }}
-          style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
-        >
-          {noBond ? 'No Claims' : pendingTx ? <Dots>Claim ongoing</Dots> : t('Claim')}
-        </Button>
-      </ActionContent>
+        }}
+        style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+      >
+        {noBond ? 'No Claims' : pendingTx ? <Dots>Claim ongoing</Dots> : t('Claim')}
+      </Button>
+    // </ActionContent>
   )
 }
 

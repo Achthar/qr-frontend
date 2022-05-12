@@ -137,8 +137,8 @@ export default function GovernanceAssetBackedRequiem({
 
   const { isMobile } = useMatchBreakpoints()
 
-  const { balance: redReqBal, staked, locks, dataLoaded
-  } = useGovernanceInfo(chainId, account)
+  // const { balance: redReqBal, staked, locks, dataLoaded
+  // } = useGovernanceInfo(chainId, account)
 
   const now = Math.round((new Date()).getTime() / 1000);
 
@@ -190,14 +190,14 @@ export default function GovernanceAssetBackedRequiem({
 
   const { slowRefresh } = useRefresh()
 
-  // the user-selected lock
-  const lock = useMemo(() => {
-    if (lockSelected && account && dataLoaded) {
-      return locks[toggledLockEnd]
-    }
+  // // the user-selected lock
+  // const lock = useMemo(() => {
+  //   if (lockSelected && account && dataLoaded) {
+  //     return locks[toggledLockEnd]
+  //   }
 
-    return undefined
-  }, [lockSelected, account, dataLoaded, locks, toggledLockEnd])
+  //   return undefined
+  // }, [lockSelected, account, dataLoaded, locks, toggledLockEnd])
 
 
   const {
@@ -214,9 +214,9 @@ export default function GovernanceAssetBackedRequiem({
   )
 
 
-  const { epoch, stakeData, generalDataLoaded } = useAssetBackedStakingInfo(chainId, account)
+  const { epoch, stakeData, generalDataLoaded, userData, userDataLoaded } = useAssetBackedStakingInfo(chainId, account)
 
-  console.log("staking", epoch, stakeData)
+  console.log("staking", epoch, stakeData, userData)
   const parsedAmounts = useMemo(() => {
     if (isStake) {
       return {
@@ -260,11 +260,6 @@ export default function GovernanceAssetBackedRequiem({
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(chainId, account, parsedAmounts[Field.CURRENCY_A], getAssetBackedStakingAddress(chainId))
 
-  const [approvalSReq, approvalCallbackSReq] = useApproveCallback(
-    chainId, account,
-    new TokenAmount(SREQ[chainId], bn_maxer(Object.values(locks).map(l => l.minted)).toString()),
-    getRedRequiemAddress(chainId)
-  )
 
 
   // const { balance, isLoading } = useGetAssetBackedRequiemAmount(chainId)
@@ -278,11 +273,7 @@ export default function GovernanceAssetBackedRequiem({
 
   const summaryText = action === Action.stake ? `Lock ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${GREQ[chainId]?.name
     } for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name}` :
-    action === Action.wrap ? `Add ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${REQT[chainId]?.name}` :
-      `Add ${lock && (lock?.end - selectedMaturity) / 3600 / 24
-      } days for ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${RREQT[chainId]?.name} to Lock`
-
-
+    action === Action.wrap
   // transactions with lock
   const { onStake } = useStake()
   const { onUnstake } = useUnstake()

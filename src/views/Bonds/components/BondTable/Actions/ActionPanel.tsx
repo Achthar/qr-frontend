@@ -14,7 +14,7 @@ import BondingAction from './BondingAction'
 import ClaimAction from './ClaimAction'
 // import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
-import NoteRow from '../NoteRow'
+import NoteRow, { NoteHeaderRow } from '../NoteRow'
 
 
 export interface ActionPanelProps {
@@ -58,7 +58,7 @@ const Container = styled.div<{ expanded, isMobile: boolean }>`
   display: flex;
   width: 100%;
   flex-direction: column-reverse;
-  padding: 24px;
+   ${({ isMobile }) => isMobile ? 'padding: 2px;' : 'padding: 24px;'}
 
   ${({ theme }) => theme.mediaQueries.lg} {
     flex-direction: row;
@@ -87,7 +87,8 @@ const StakeContainer = styled.div<{ isMobile: boolean }>`
 const TagsContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 25px;
+  margin-top: 15px;
+  margin-left: 20px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     margin-top: 16px;
@@ -134,6 +135,7 @@ const GeneralActionContainerMobile = styled.div`
   flex-direction: row;
   width: 100%;
   margin-top:10px;
+  justify-content: center;
 `
 
 const ActionContainerNoBond = styled.div`
@@ -176,11 +178,11 @@ const ValueWrapper = styled.div`
 
 const Line = styled.hr`
   z-index:5;
-  height: 1px;
-  background-color: ${({ theme }) => theme.colors.text};
-  color: white;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  color: ${({ theme }) => theme.colors.backgroundAlt};
   width: 100%;
-  size: 0.1;
+  size: 0.2;
 `;
 
 const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
@@ -255,13 +257,18 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
       </InfoContainer>
 
       <NoteContainer isMobile={isMobile}>
+        {details?.userData?.notes.length > 0 && (
+          <>
+            <NoteHeaderRow notes={details?.userData?.notes} isMobile={isMobile} bond={bond} userDataReady={userDataReady} reqPrice={reqPrice} />
+            {/* <Line /> */}
+          </>
+        )}
         {details?.userData?.notes.map((
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
           return (
             <>
-              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index===0}/>
-              {!isLast && (<Line />)}
+              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
             </>
           )
         }

@@ -25,7 +25,7 @@ export const ActionContainer = styled.div`
 
 export const BondActionContainer = styled.div<{ isMobile: boolean }>`
   padding: 16px;
-  width: ${({ isMobile }) => isMobile ? '40%' : '80%'};
+  width: ${({ isMobile }) => isMobile ? '90%' : '80%'};
   border: 2px solid ${({ theme }) => theme.colors.input};
   border-radius: 16px;
   flex-grow: 1;

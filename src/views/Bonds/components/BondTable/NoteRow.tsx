@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
-import { useTranslation } from 'contexts/Localization'
 import { Bond, Note } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes } from 'utils/time'
@@ -18,6 +17,15 @@ interface NoteProps {
     isFirst: boolean
     isLast: boolean
 }
+
+interface NoteHeaderProps {
+    userDataReady: boolean
+    isMobile: boolean
+    notes: Note[]
+    bond: Bond
+    reqPrice: number
+}
+
 
 const ContentCol = styled.div`
   flex-direction: column;
@@ -48,6 +56,22 @@ const DescriptionCol = styled.div`
   }
 `
 
+const DescriptionColHeader = styled.div`
+  flex-direction: column;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-right: 2px;
+  padding-left: 20px;
+  color: ${({ theme }) => theme.colors.primary};
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    padding-right: 0px;
+    margin-top: 1px;
+  }
+`
+
 const ContentRow = styled.div`
   flex-direction: row;
   display: flex;
@@ -63,12 +87,17 @@ const ContentRow = styled.div`
   }
 `
 
-const Container = styled.div<{ isFirst: boolean, isLast: boolean }>`
-border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
+const Container = styled.div<{ isFirst: boolean, isLast: boolean, isMobile: boolean }>`
+  border-left: 2px solid   #737373 ;
+  border-right: 2px solid   #737373 ;
+  ${({ isLast }) => isLast ? 'border-bottom: 2px solid   #737373 ;' : ''}
+  border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   border-top-right-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   border-bottom-left-radius: ${({ isLast }) => isLast ? '16px' : '0px'};
   border-bottom-right-radius: ${({ isLast }) => isLast ? '16px' : '0px'};
-  background:${({ theme }) => theme.colors.backgroundAlt};
+  background:${({ theme }) => theme.colors.overlay};
+  ${({ isLast }) => isLast ? '' : 'margin-bottom: 5px;'}
+  ${({ isMobile }) => isMobile ? '' : 'padding-left: 20px;'}
   align-items:center;
   flex-direction: row;
   display: flex;
@@ -76,6 +105,28 @@ border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   justify-content: flex-end;
   gap: 10px;
   padding-right: 8px;
+  color: ${({ theme }) => theme.colors.overlay};
+
+  ${({ theme }) => theme.mediaQueries.sm} {
+    padding-right: 0px;
+  }
+`
+
+const HeaderContainer = styled.div`
+  border-top: 2px solid   #737373 ;
+  border-left: 2px solid   #737373 ;
+  border-right: 2px solid   #737373 ;
+  border-top-left-radius:  16px ;
+  border-top-right-radius: 16px ;
+  margin-bottom:5px;
+  background: linear-gradient(${({ theme }) => theme.colors.backgroundAlt},${({ theme }) => theme.colors.overlay}) ;
+  align-items:center;
+  flex-direction: row;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 8px;
   color: ${({ theme }) => theme.colors.backgroundAlt};
 
   ${({ theme }) => theme.mediaQueries.sm} {
@@ -83,8 +134,69 @@ border-top-left-radius: ${({ isFirst }) => isFirst ? '16px' : '0px'};
   }
 `
 
+
+
+
+
+export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady, bond, isMobile, reqPrice }) => {
+
+
+    const [totalPayout, avgVesting] = useMemo(() => {
+        const now = Math.round((new Date()).getTime() / 1000);
+        const payouts = notes.map((note) => Number(formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18)))
+        const vestingTimes = notes.map(note => Number(note.matured) - now)
+        let sumPa = 0
+        let sumMulti = 0
+        for (let i = 0; i < notes.length; i++) {
+            const payout = payouts[i]
+            sumPa += payout
+            sumMulti += payout * vestingTimes[i]
+
+        }
+        return [sumPa, sumMulti / sumPa]
+
+    }, [notes, isMobile])
+
+
+    const multiplier = 50
+    if (isMobile) {
+        return (
+            <HeaderContainer>
+                <ContentRow>
+                    <DescriptionCol>
+                        <Text>Total Payout</Text>
+                        <Text>{(totalPayout * reqPrice * multiplier).toLocaleString()}$</Text>
+                    </DescriptionCol>
+                    <DescriptionCol>
+                        <Text>Average Maturity</Text>
+                        <Text>{prettifySeconds(avgVesting, 'day')}</Text>
+                    </DescriptionCol>
+                </ContentRow>
+            </HeaderContainer>
+        )
+    }
+
+
+    return (
+        <HeaderContainer>
+            <DescriptionColHeader>
+                <Text>Total Payout</Text>
+                <Text>Average Maturity</Text>
+
+            </DescriptionColHeader>
+            <DescriptionCol>
+                <Text>{totalPayout.toPrecision(4)} gREQ / {(totalPayout * reqPrice * multiplier).toLocaleString()}$</Text>
+                <Text>{prettifySeconds(avgVesting, 'd')}</Text>
+            </DescriptionCol>
+        </HeaderContainer>
+    )
+
+}
+
+
+
+
 const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
-    const { t } = useTranslation()
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
@@ -105,7 +217,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
 
     if (isMobile) {
         return (
-            <Container isLast={isLast} isFirst={isFirst}>
+            <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
                 <ContentRow>
                     <DescriptionCol>
                         <Text>Payout:</Text>
@@ -123,7 +235,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
 
 
     return (
-        <Container isLast={isLast} isFirst={isFirst}>
+        <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
             <ContentRow>
                 <DescriptionCol>
                     <Text>Created:</Text>
@@ -136,7 +248,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout:</Text>
+                    <Text>Payout in gREQ:</Text>
                     <Text>Time to Maturity:</Text>
                 </DescriptionCol>
                 <DescriptionCol>

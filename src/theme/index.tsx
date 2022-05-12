@@ -92,6 +92,63 @@ export function colors(darkMode: boolean): Colors {
   }
 }
 
+
+export function generalColors(): Colors {
+  return {
+    // base
+    white,
+    black,
+
+    // text
+    text1: '#000000',
+    text2: '#565A69',
+    text3: '#888D9B',
+    text4: '#C3C5CB',
+    text5: '#EDEEF2',
+
+    // backgrounds / greys
+    bg1: '#FFFFFF',
+    bg2: '#F7F8FA',
+    bg3: '#EDEEF2',
+    bg4: '#CED0D9',
+    bg5: '#888D9B',
+
+    // specialty colors
+    modalBG: 'rgba(0,0,0,0.3)',
+    advancedBG: 'rgba(255,255,255,0.6)',
+
+    // primary colors
+    primary1: '#FF6B00',
+    primary2: '#FF6B00',
+    primary3: '#FF6B00',
+    primary4: '#FF6B00',
+    primary5: '#FF6B00',
+    primary6: '#FFFFFF',
+
+    // color text
+    primaryText1: '#ffffff',
+
+    // secondary colors
+    secondary1: '#ff007a',
+    secondary2: '#F6DDE8',
+    secondary3: '#FDEAF1',
+
+    // other
+    red1: '#FF6871',
+    red2: '#F82D3A',
+    green1: '#27AE60',
+    yellow1: '#FFE270',
+    yellow2: '#F3841E',
+    blue1: '#2172E5',
+
+    avaxRed: '#E84142'
+
+    // dont wanna forget these blue yet
+    // blue4: darkMode ? '#153d6f70' : '#C4D9F8',
+    // blue5: darkMode ? '#153d6f70' : '#EBF4FF',
+  }
+}
+
 const TextWrapper = styled(Text) <{ color: keyof Colors }>`
   color: ${({ color, theme }) => (theme as any)[color]};
 `
