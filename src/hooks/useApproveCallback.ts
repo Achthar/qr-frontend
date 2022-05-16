@@ -122,16 +122,17 @@ export function useApproveCallback(
 
 
 // wraps useApproveCallback in the context of a swap
-export function useApproveCallbackFromTradeV3(chainId: number, account: string, tradeV3?: Swap, allowedSlippage = 0) {
+export function useApproveCallbackFromTradeV3(chainId: number, account: string, tradeV3?: Swap, allowedSlippage = 0, networkCcyIn = false) {
   const amountToApprove = useMemo(
     () => (tradeV3 ? computeSlippageAdjustedAmountsV3(tradeV3, allowedSlippage)[Field.INPUT] : undefined),
     [tradeV3, allowedSlippage],
   )
+  const validatedIn = useMemo(() => amountToApprove && (networkCcyIn ? CurrencyAmount.networkCCYAmount(chainId, amountToApprove.raw) : amountToApprove), [chainId, networkCcyIn, amountToApprove])
 
   return useApproveCallback(
     chainId,
     account,
-    amountToApprove,
+    validatedIn,
     SWAP_ROUTER[chainId]
   )
 }

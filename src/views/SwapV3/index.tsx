@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CurrencyAmount, Swap, Token, TokenAmount, ZERO } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, Swap, Token, TokenAmount, ZERO } from '@requiemswap/sdk'
 import { Button, Text, ArrowDownIcon, Box, useModal } from '@requiemswap/uikit'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useIsTransactionUnsupported } from 'hooks/TradesV3'
@@ -62,7 +62,7 @@ export default function SwapV3({
 
 
   const { chainId, library, account } = useActiveWeb3React()
-  
+
   const loadedUrlParams = useDefaultsFromURLSearch(chainId)
 
   useEffect(() => {
@@ -197,8 +197,10 @@ export default function SwapV3({
   )
   const noRoute = !route
 
+  const networkCcyIn = !(currencies[Field.INPUT] instanceof Token)
+
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTradeV3(chainId, account, trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallbackFromTradeV3(chainId, account, trade, allowedSlippage, networkCcyIn)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
