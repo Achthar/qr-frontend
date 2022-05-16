@@ -1,20 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
-import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
+
+import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import getChain from 'utils/getChain'
-import HarvestAction from './HarvestAction'
 import BondingAction from './BondingAction'
 import ClaimAction from './ClaimAction'
 // import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
 import NoteRow, { NoteHeaderRow } from '../NoteRow'
+import RedemptionMulti from './RedemptionActionMulti'
 
 
 export interface ActionPanelProps {
@@ -210,7 +211,11 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   })
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const explorer = getNetworkExplorerLink(lpAddress, 'address')
-  const info = `https://requiem.info/pool/${lpAddress}`
+
+  const [sendGREQ, setSendGREQ] = useState(true)
+  const now = Math.floor((new Date()).getTime() / 1000);
+
+  const indexesToRedeem = bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex)
 
   return (
     <Container expanded={expanded} isMobile={isMobile}>
@@ -229,28 +234,41 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         {!isMobile && details?.userData?.notes && details?.userData?.notes.length > 0 && (
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
-            <ClaimAction
+            <RedemptionMulti
+              bondIds={[bond.bondId]}
+              userDataReady={userDataReady}
+              indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
+              sendGREQ={sendGREQ}
+            />
+            {/* <ClaimAction
               {...bond}
               userDataReady={userDataReady}
               lpLabel={lpLabel}
               displayApr={roi.value}
               isMobile={isMobile}
               noBond={details?.userData?.notes.length === 0}
-            />
+            /> */}
           </GeneralActionContainer>
         )}
         {
           isMobile && (
             <GeneralActionContainerMobile>
               <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
-              <ClaimAction
+              <RedemptionMulti
+                bondIds={[bond.bondId]}
+                userDataReady={userDataReady}
+                indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
+                sendGREQ={sendGREQ}
+              />
+
+              {/* <ClaimAction
                 {...bond}
                 userDataReady={userDataReady}
                 lpLabel={lpLabel}
                 displayApr={roi.value}
                 isMobile={isMobile}
                 noBond={details?.userData?.notes.length === 0}
-              />
+              /> */}
             </GeneralActionContainerMobile>
           )
         }

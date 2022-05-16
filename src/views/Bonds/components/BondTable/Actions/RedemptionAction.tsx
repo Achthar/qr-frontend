@@ -8,7 +8,7 @@ import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
+import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
@@ -19,8 +19,7 @@ import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
-import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
-import useStakeBonds from 'views/Bonds/hooks/useStakeBonds'
+
 import useApproveBond from 'views/Bonds/hooks/useApproveBond'
 import useRedeemBond from 'views/Bonds/hooks/useRedeemBond'
 import { Note } from 'state/types'
@@ -60,7 +59,7 @@ interface StackedActionProps extends BondWithStakedValue {
   lpLabel?: string
   displayApr?: string
   reqPrice: BigNumber
-  note:Note
+  note: Note
 }
 
 const Redemption: React.FunctionComponent<StackedActionProps> = ({
@@ -81,11 +80,9 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const noteIndex = note.noteIndex
   // const note = notes.find(n => n.noteIndex === noteIndex)
   const now = Math.floor((new Date()).getTime() / 1000);
-  console.log("NOTE 1", noteIndex, note, note.matured >= now, now)
 
   const bond = useBondFromBondId(bondId)
 
-  const { onUnstake } = useUnstakeBonds(chainId, bond)
   const { onRedeem } = useRedeemBond(chainId, account, bond)
   const location = useLocation()
   const isApproved = account && allowance && allowance.isGreaterThan(0)
@@ -102,15 +99,15 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   })
   const addLiquidityUrl = `${chain}/${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
-  const handleRedemption = async (amount: string) => {
-    await onRedeem()
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+  const handleRedemption = async () => {
+    try {
+      await onRedeem()
+      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const handleUnstake = async (amount: string) => {
-    await onUnstake(amount)
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
-  }
 
   const displayBalance = useCallback(() => {
     const stakedBalanceBigNumber = getBalanceAmount(stakedBalance)
@@ -136,9 +133,6 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
       addLiquidityUrl={addLiquidityUrl}
       reqtPrice={reqPrice}
     />,
-  )
-  const [onPresentWithdraw] = useModal(
-    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={name} />,
   )
 
   const lpContract = useERC20(lpAddress)
@@ -169,13 +163,12 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
 
   if (note && note.matured >= now) {
-    console.log("NOTES SSSSSSSSSSSSSSSSSSSS")
     return (
       <ButtonContainer>
         <ActionContent>
           <Button
             width="100%"
-            onClick={onPresentRedeem}
+            onClick={handleRedemption}
             variant="secondary"
             disabled
           >
@@ -191,7 +184,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
       return (
         <ButtonContainer>
           <ActionContent>
-            <div>
+            {/* <div>
               <Heading>{displayBalance()}</Heading>
             </div>
             <IconButtonWrapper>
@@ -205,7 +198,15 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
               >
                 <AddIcon color="primary" width="14px" />
               </IconButton>
-            </IconButtonWrapper>
+            </IconButtonWrapper> */}
+
+            <Button
+              width="100%"
+              onClick={handleRedemption}
+              variant="secondary"
+            >
+              Redeem
+            </Button>
           </ActionContent>
         </ButtonContainer>
       )
@@ -217,7 +218,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
         <ActionContent>
           <Button
             width="100%"
-            onClick={onPresentRedeem}
+            onClick={handleRedemption}
             variant="secondary"
             disabled
           >

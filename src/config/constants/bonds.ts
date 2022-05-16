@@ -21,7 +21,7 @@ export const bonds = (chainId: number): BondConfig[] => {
         [ChainId.AVAX_MAINNET]: false
       },
       isLP: false,
-      name: "70/40 abREQ-DAI",
+      name: "70/30 abREQ-DAI",
       displayName: "70% abREQ - 30% DAI",
       bondToken: "DAI abREQ LP",
       payoutToken: "abREQ",

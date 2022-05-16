@@ -9,7 +9,7 @@ import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
+import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
@@ -18,7 +18,6 @@ import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 import useDepositBond from 'views/Bonds/hooks/useDepositBond'
-import useUnstakeBonds from 'views/Bonds/hooks/useUnstakeBonds'
 import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
 import useApproveBond from '../../../hooks/useApproveBond'
@@ -51,7 +50,6 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
   const bond = useBondFromBondId(bondId)
   const { onBonding } = useDepositBond(chainId, account, library, bond)
-  const { onUnstake } = useUnstakeBonds(chainId, bond)
   const location = useLocation()
 
   console.log("ALLOWANCE", allowance.toString(), tokenBalance, bondId, bond)
@@ -74,10 +72,6 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
   }
 
-  const handleUnstake = async (amount: string) => {
-    await onUnstake(amount)
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
-  }
 
   const displayBalance = useCallback(() => {
     const stakedBalanceBigNumber = getBalanceAmount(stakedBalance)
@@ -99,9 +93,6 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
     />,
-  )
-  const [onPresentWithdraw] = useModal(
-    <WithdrawModal max={stakedBalance} onConfirm={handleUnstake} tokenName={name} />,
   )
 
   const lpContract = useERC20(lpAddress)
@@ -138,17 +129,19 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   if (isApproved) {
 
     return (
-          <Button
-            // marginBottom="-30px"
-            width={isMobile ? "40%" : "60px"}
-            onClick={onPresentBonding}
-            variant="primary"
-            disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
-            style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+      <Button
+        // marginBottom="-30px"
+        width='35%'
+        onClick={onPresentBonding}
+        variant="primary"
+        disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
+        style={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
 
-          >
-            {t('Bond')}
-          </Button>
+      >
+        <Text fontSize='15px' color='black'>
+          Purchase Bond
+        </Text>
+      </Button>
 
     )
   }

@@ -1,3 +1,6 @@
+import BigNumber from "bignumber.js"
+import { Bond } from "state/types"
+
 export type TableProps = {
   data?: TableDataTypes[]
   selectedFilters?: string
@@ -155,4 +158,10 @@ export const DesktopColumnSchemaNew: ColumnsDefTypes[] = [
 export enum ViewMode {
   'TABLE' = 'TABLE',
   'CARD' = 'CARD',
+}
+
+export interface BondWithStakedValue extends Bond {
+  apr?: number
+  lpRewardsApr?: number
+  liquidity?: BigNumber
 }

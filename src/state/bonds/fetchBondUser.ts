@@ -28,6 +28,7 @@ export const fetchBondUserAllowances = async (chainId: number, account: string, 
 
 export interface BondUserData {
   notes: any[]
+  reward: string
 }
 // payout and interest fetch
 export const fetchBondUserPendingPayoutData = async (chainId: number, account: string): Promise<BondUserData> => {
@@ -45,7 +46,9 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
 
   console.log("NOTES CALLS", callsInfo)
 
-  const notes = await multicall(chainId, bondReserveAVAX, callsInfo)
+  const results = await multicall(chainId, bondReserveAVAX, [...callsInfo, { address: bondDepositoryAddress, name: 'rewards', params: [account] }])
+
+  const notes = results.slice(0, results.length - 1)
 
   console.log("NOTES NOTE RAW", notes)
 
@@ -61,7 +64,8 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
 
       }
     }
-    )
+    ),
+    reward: results[results.length - 1].toString()
   }
 }
 

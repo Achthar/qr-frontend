@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
+import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'

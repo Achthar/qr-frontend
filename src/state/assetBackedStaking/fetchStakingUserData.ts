@@ -38,14 +38,13 @@ export const fetchStakingUserData = createAsyncThunk(
 
     // calls for general bond data
     const callsBalances = [
-      // epoch
-      // seconds to next epoch
+      // sreq
       {
         address: sREQAddress,
         name: 'balanceOf',
         params: [account]
       },
-      // seconds to next epoch
+      // greq
       {
         address: gREQAddress,
         name: 'balanceOf',

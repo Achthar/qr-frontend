@@ -26,6 +26,11 @@ export function useStakedRequiem(chainId: number) {
     return { stakedRequiem: state.staking[chainId]?.stakedRequiem, stakedRequiemLoaded: state.staking[chainId].stakedReqLoaded }
 }
 
+export function useAssetStakingUser(chainId: number) {
+    const state = useSelector<AppState, AppState['assetBackedStaking']>((_state) => _state.assetBackedStaking)
+    // const { data } = state.staking[chainId]?.userData    const { sReqBalance, gReqBalance, warmupInfo } = data
+    return { userData: state.staking[chainId]?.userData, userDataLoaded: state.staking[chainId].userDataLoaded }
+}
 
 
 

@@ -57,7 +57,7 @@ export const formatBigNumberToFixed = (number: ethers.BigNumber, displayDecimals
  * Note: rounds
  */
 export const formatSerializedBigNumber = (number: string, displayDecimals = 18, decimals = 18) => {
-  return formatBigNumber(ethers.BigNumber.from(number), displayDecimals, decimals)
+  return formatBigNumber(ethers.BigNumber.from(number ?? '0'), displayDecimals, decimals)
 }
 
 

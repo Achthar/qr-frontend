@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { fetchBondUserDataAsync } from 'state/bonds'
-import { BondWithStakedValue } from 'views/Bonds/components/BondCard/BondCard'
+import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import useClaimRewards from 'views/Bonds/hooks/useClaimRewards'
 import useToast from 'hooks/useToast'
@@ -17,19 +17,17 @@ import { BondActionContainer, ActionTitles, ActionContent } from './styles'
 
 
 
-interface ClaimActionProps extends BondWithStakedValue {
+interface ClaimActionProps {
   noBond: boolean
   isMobile: boolean
   userDataReady: boolean
-  lpLabel?: string
-  displayApr?: string
+  bondIds: number[]
 }
 
 const Claim: React.FunctionComponent<ClaimActionProps> = ({
   noBond,
   isMobile,
-  bondId,
-  name,
+  bondIds
 }) => {
   const { t } = useTranslation()
   const { account, chainId } = useActiveWeb3React()
@@ -42,7 +40,7 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   const dispatch = useAppDispatch()
   const handleClaim = async () => {
     await onClaim()
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
   }
 
 
@@ -50,46 +48,39 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
 
   if (!account) {
     return (
-      <BondActionContainer isMobile={isMobile}>
-        <ActionTitles>
-          <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-            {t('Claim Rewards ')}
-          </Text>
-        </ActionTitles>
-        <ActionContent>
-          <ConnectWalletButton width="100%" />
-        </ActionContent>
-      </BondActionContainer>
+      <ConnectWalletButton width="100%" />
+
     )
   }
 
   return (
     // <ActionContent>
-      <Button
-        width={isMobile ? "40%" : "60px"}
-        disabled={
-          pendingTx || noBond
+    <Button
+      height='auto'
+      width={isMobile ? "40%" : "80px"}
+      disabled={
+        pendingTx || noBond
+      }
+      onClick={async () => {
+        setPendingTx(true)
+        try {
+          await handleClaim()
+          toastSuccess(t('Claimed!'), t('Your rewards have been transferred to you wallet'))
+          // onDismiss()
+        } catch (e) {
+          toastError(
+            t('Error'),
+            t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
+          )
+          console.error(e)
+        } finally {
+          setPendingTx(false)
         }
-        onClick={async () => {
-          setPendingTx(true)
-          try {
-            await handleClaim()
-            toastSuccess(t('Claimed!'), t('Your rewards have been transferred to you wallet'))
-            // onDismiss()
-          } catch (e) {
-            toastError(
-              t('Error'),
-              t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-            )
-            console.error(e)
-          } finally {
-            setPendingTx(false)
-          }
-        }}
-        style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
-      >
-        {noBond ? 'No Claims' : pendingTx ? <Dots>Claim ongoing</Dots> : t('Claim')}
-      </Button>
+      }}
+      style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px'}}
+    >
+      {noBond ? 'No Claims' : pendingTx ? <Dots>Claiming</Dots> : t('Claim')}
+    </Button>
     // </ActionContent>
   )
 }

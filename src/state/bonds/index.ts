@@ -87,7 +87,8 @@ export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondU
     let notesFinal = []
     // try {
     const {
-      notes
+      notes,
+      reward
     } = await fetchBondUserPendingPayoutData(chainId, account)
     notesFinal = notes
     // } catch {
@@ -97,27 +98,6 @@ export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondU
       return info.payout.toString();
     })
 
-    console.log("NOTES b4 ST", userBondAllowances.map((_, index) => {
-      console.log("NOTES INDEX", index, notesFinal.filter(note => note.marketId === bondIds[index]))
-      return {
-        // bondId: bondIds[index],
-        allowance: userBondAllowances[index],
-        tokenBalance: userBondTokenBalances[index],
-        stakedBalance: 0, // userStakedBalances[index],
-        earnings: 0, //  userBondEarnings[index],
-        notes: notesFinal.filter(note => note.marketId === bondIds[index]).map(note => {
-          return {
-            payout: note[index]?.payout,
-            created: note[index]?.created,
-            matured: note[index]?.matured,
-            redeemed: note[index]?.redeemed,
-            marketId: note[index]?.marketdId
-          }
-        }),
-        interestDue: interestDue[index],
-        balance: userBondTokenBalances[index]
-      }
-    }))
 
     return Object.assign({}, ...userBondAllowances.map((_, index) => {
       console.log("NOTES INDEX", index, notesFinal.filter(note => note.marketId === bondIds[index]))
@@ -127,7 +107,7 @@ export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondU
           allowance: userBondAllowances[index],
           tokenBalance: userBondTokenBalances[index],
           stakedBalance: 0, // userStakedBalances[index],
-          earnings: 0, //  userBondEarnings[index],
+          earnings: reward, //  userBondEarnings[index],
           notes: notesFinal.filter(note => note.marketId === bondIds[index]),
           interestDue: interestDue[index],
           balance: userBondTokenBalances[index]

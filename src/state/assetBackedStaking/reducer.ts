@@ -36,15 +36,10 @@ export interface Claim {
 
 
 export interface UserData {
-  data: {
     warmupInfo: Claim,
     sReqBalance: SerializedBigNumber,
     gReqBalance: SerializedBigNumber
-  }
 }
-
-
-
 
 
 export interface AssetBackedStakingState {
@@ -88,11 +83,9 @@ const initialState: AssetBackedStakingState = {
         distribute: '0'
       },
       userData: {
-        data: {
           warmupInfo: { deposit: '0', gons: '0', expiry: 0, lock: false },
           sReqBalance: '0',
           gReqBalance: '0'
-        }
       },
       userDataLoaded: false,
       stakedReqLoaded: false,
