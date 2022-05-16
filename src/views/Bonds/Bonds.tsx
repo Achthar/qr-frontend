@@ -403,10 +403,24 @@ function Bonds({
   },
     [bondsLP, userDataLoaded])
 
-  const notes = bondsLP && userDataLoaded && Object.values(bondsLP).map(x => x?.userData?.notes ?? []).reduce((n, current) => [...n, ...current])
+  const notes = useMemo(() => { // bondsLP && userDataLoaded && Object.values(bondsLP).map(x => x?.userData?.notes ?? []).reduce((n, current) => [...n, ...current])
+    let _notes = []
+    const bondKeys = Object.keys(bondsLP)
+    for (let k = 0; k < bondKeys.length; k++) {
+      const _userData = bondsLP[bondKeys[k]]?.userData
+      if (!userDataLoaded || !_userData)
+        break;
+
+      for (let l = 0; l < _userData.notes.length; l++)
+        _notes = [..._notes, ..._userData.notes]
+    }
+
+    return _notes
+  }, [bondsLP, userDataLoaded])
+
 
   const [totalPayout, avgVesting] = useMemo(() => {
-    if (!notes)
+    if (!notes || notes.length === 0)
       return [0, 0]
     const now = Math.round((new Date()).getTime() / 1000);
     const payouts = notes.map((note) => Number(formatSerializedBigNumber(note.payout, 5, 18)))
@@ -422,15 +436,6 @@ function Bonds({
     return [sumPa, sumMulti / sumPa]
 
   }, [notes])
-
-
-
-
-  const totalPayoutAllNotes = useMemo(() => {
-    const val = bondsLP && userDataLoaded && Object.values(bondsLP).map(x => x?.userData ? (x?.userData?.notes.map(n => ethers.BigNumber.from(n.payout)).reduce((sum, current) => sum.add(current))) : ZERO).reduce((x, y) => x.add(y))
-    return val && Number(formatSerializedBigNumber(val.toString(), 4, 18))
-  },
-    [userDataLoaded, bondsLP])
 
 
 
