@@ -98,7 +98,7 @@ export const REQT: { [chainId: number]: Token } = {
 export const ABREQ: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x5d8894Ff5e16f5Fd749369A370A87B3Fd6d29204',
+    '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
     18,
     'abREQ',
     'Asset-Backed Requiem Token',

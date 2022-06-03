@@ -152,6 +152,8 @@ export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   status?: string
+  liveMarkets?: number[]
+  metaLoaded: boolean
   bondData: {
     [bondId: number]: Bond
   }

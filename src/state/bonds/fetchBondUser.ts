@@ -40,8 +40,9 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
   // fetch indexres
   const indexes = await multicall(chainId, bondReserveAVAX, callInfoIndexes)
   console.log("NOTES INDEX", indexes[0][0])
-  const callsInfo = indexes[0][0].map((index) => {
-    return { address: bondDepositoryAddress, name: 'notes', params: [account, index] }
+  const cleanIndexes = indexes[0][0].map(_index => Number(_index.toString()))
+  const callsInfo = cleanIndexes.map((index) => {
+    return { address: bondDepositoryAddress, name: 'userTerms', params: [account, index] }
   })
 
   console.log("NOTES CALLS", callsInfo)
@@ -60,7 +61,7 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
         matured: Number(note.matured),
         redeemed: note.redeemed.toString(),
         marketId: Number(note.marketID),
-        noteIndex: index
+        noteIndex: cleanIndexes[index]
 
       }
     }

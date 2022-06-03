@@ -3,7 +3,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
 import { bonds as bondList } from 'config/constants/bonds'
 import { BondConfig } from 'config/constants/types'
-import { getContractForReserve } from 'utils/contractHelpers';
+import multicall from 'utils/multicall';
+import { getBondingDepositoryAddress } from 'utils/addressHelpers';
+import { getAddress } from 'ethers/lib/utils';
+import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import {
   fetchBondUserAllowancesAndBalances,
   fetchBondUserPendingPayoutData,
@@ -46,6 +49,7 @@ function initialState(chainId: number): BondsState {
     bondData: {}, // noAccountBondConfig(chainId),
     loadArchivedBondsData: false,
     userDataLoaded: false,
+    metaLoaded: false,
     status: 'idle'
   }
 }
@@ -73,6 +77,42 @@ interface BondUserDataResponse {
 }
 
 
+export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[] }, { chainId: number, bondMeta: BondConfig[] }>(
+  'bonds/fetchBondMeta',
+  async ({ chainId, bondMeta }) => {
+    const addresses = bondMeta.map(cfg => getAddress(cfg.reserveAddress[chainId]))
+    const depoAddress = getBondingDepositoryAddress(chainId)
+    // fetch all bond data for provided assets addresses
+    const calls = addresses.map(_address => {
+      return {
+        address: depoAddress,
+        name: 'liveMarketsFor',
+        params: [_address]
+      }
+    })
+
+    const bondIds = await multicall(chainId, bondReserveAVAX, calls)
+    const bondCfgs = []
+    for (let j = 0; j < addresses.length; j++) {
+      const availableIds = bondIds[j].map(id => Number(id.toString()))
+      const address = addresses[j]
+      for (let k = 0; k < availableIds.length; k++) {
+        const bondData = bondMeta.find(
+          _bond => {
+            return getAddress(_bond.reserveAddress[chainId]) === getAddress(address)
+          }
+        )
+        bondData.bondId = availableIds[k]
+        bondCfgs.push(bondData)
+      }
+
+    }
+    return {
+      bondConfigWithIds: bondCfgs
+    }
+
+  },
+)
 
 export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondUserDataResponse }, { chainId: number, account: string; bondIds: number[] }>(
   'bonds/fetchBondUserDataAsync',
@@ -94,13 +134,15 @@ export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondU
     // } catch {
     //   notesFinal = []
     // }
+    console.log("NOTES FINAL",notesFinal)
     const interestDue = notesFinal.map((info) => {
       return info.payout.toString();
     })
 
 
     return Object.assign({}, ...userBondAllowances.map((_, index) => {
-      console.log("NOTES INDEX", index, notesFinal.filter(note => note.marketId === bondIds[index]))
+      console.log("NOTES INDEX", index, notesFinal) // .filter(note => note.marketId === bondIds[index]))
+      const numberIndex = Number(index.toString())
       return {
         [bondIds[index]]: {
           bondId: bondIds[index],
@@ -134,6 +176,23 @@ export const bondsSlice = createSlice({
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
+      .addCase(fetchBondMeta.pending, state => {
+        state.metaLoaded = false;
+      })
+      .addCase(fetchBondMeta.fulfilled, (state, action) => {
+        const { bondConfigWithIds } = action.payload
+        for (let i = 0; i < bondConfigWithIds.length; i++) {
+          const bond = bondConfigWithIds[i]
+          console.log("BOND", i, bond, bond.bondId)
+          state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...bond };
+        }
+        state.metaLoaded = true;
+      })
+      .addCase(fetchBondMeta.rejected, (state, { error }) => {
+        state.metaLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
       .addCase(calcSingleBondDetails.pending, state => {
         state.userDataLoaded = false;
       })
@@ -162,13 +221,18 @@ export const bondsSlice = createSlice({
       })
       // Update bonds with user data
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
-
         console.log("NOTES USER PAYLOAD", action.payload)
         Object.keys(action.payload).forEach((bondId) => {
           console.log("NOTES ID", bondId, action.payload[bondId], state.bondData[bondId])
           state.bondData[bondId].userData = { ...state.bondData[bondId].userData, ...action.payload[bondId] }
         })
         state.userDataLoaded = true
+      }).addCase(fetchBondUserDataAsync.pending, state => {
+        state.userDataLoaded = false;
+      }).addCase(fetchBondUserDataAsync.rejected, (state, { error }) => {
+        state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
       })
   },
 })

@@ -131,7 +131,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     return (
       <Button
         // marginBottom="-30px"
-        width='35%'
+        width={isMobile ? '45%' : '35%'}
         onClick={onPresentBonding}
         variant="primary"
         disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}

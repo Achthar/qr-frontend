@@ -204,7 +204,8 @@ interface BondOpts {
 export enum BondType {
   StableAsset,
   PairLP,
-  StableSwapLP
+  StableSwapLP,
+  WeightedPoolLP
 }
 
 
@@ -214,21 +215,21 @@ export interface Available {
 }
 
 export interface BondConfig {
-  bondId: number;
+  bondId?: number;
   name: string;
   displayName: string;
-  isBondable: Available;
-  isClaimable: Available;
+  isBondable?: Available;
+  isClaimable?: Available;
   type: BondType;
   bondIconSvg?: React.ReactNode;
   // bondContractABI: ethers.ContractInterface; // Bond ABI
-  reserveAddress: Address;
+  reserveAddress?: Address;
   bondToken: string;
   payoutToken: string;
   // The following two fields will differ on how they are set depending on bond type
   isLP: boolean;
   // reserveContract: ethers.ContractInterface; // Token ABI
-  displayUnits: string;
+  displayUnits?: string;
   token?: SerializedToken
   quoteToken?: SerializedToken
   token2?: SerializedToken

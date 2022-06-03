@@ -40,6 +40,7 @@ interface RedeemMultiProps {
   indexes: number[]
   bondIds: number[]
   sendGREQ: boolean
+  isMobile: boolean
 }
 
 const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
@@ -47,6 +48,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   bondIds,
   sendGREQ,
   userDataReady,
+  isMobile
 }) => {
   const { account, chainId } = useActiveWeb3React()
 
@@ -74,9 +76,8 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
 
   if (indexes.length === 0) {
     return (
-      <ActionContent>
         <Button
-          width="60%"
+          width={isMobile ? '45%' : "40%"}
           onClick={handleRedemption}
           variant="secondary"
           disabled
@@ -86,7 +87,6 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
             None Matured
           </Text>
         </Button>
-      </ActionContent>
     )
   }
 

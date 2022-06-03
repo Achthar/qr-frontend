@@ -48,7 +48,10 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
 
   if (!account) {
     return (
-      <ConnectWalletButton width="100%" />
+      <ConnectWalletButton 
+      height='auto'
+      width={isMobile ? "40%" : "80px"}
+      style={{fontSize:'12px', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '10px', borderTopRightRadius: '10px' }} />
 
     )
   }
@@ -77,7 +80,7 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
           setPendingTx(false)
         }
       }}
-      style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px'}}
+      style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
     >
       {noBond ? 'No Claims' : pendingTx ? <Dots>Claiming</Dots> : t('Claim')}
     </Button>

@@ -128,6 +128,7 @@ const GeneralActionContainer = styled.div`
   align-items: center;
   width: 100%;
   margin-top:10px;
+  margin-bottom: 5px;
 `
 
 const GeneralActionContainerMobile = styled.div`
@@ -137,6 +138,7 @@ const GeneralActionContainerMobile = styled.div`
   width: 100%;
   margin-top:10px;
   justify-content: center;
+  margin-bottom: 5px;
 `
 
 const ActionContainerNoBond = styled.div`
@@ -235,6 +237,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
             <RedemptionMulti
+              isMobile={isMobile}
               bondIds={[bond.bondId]}
               userDataReady={userDataReady}
               indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
@@ -255,6 +258,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
             <GeneralActionContainerMobile>
               <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
               <RedemptionMulti
+                isMobile={isMobile}
                 bondIds={[bond.bondId]}
                 userDataReady={userDataReady}
                 indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}

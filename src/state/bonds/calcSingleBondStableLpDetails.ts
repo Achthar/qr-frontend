@@ -14,10 +14,9 @@ const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 export const calcSingleBondStableLpDetails = createAsyncThunk(
   "bonds/calcBondStableLpDetails",
-  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
+  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk): Promise<Bond> => {
 
     const bondContract = getContractForBondDepo(chainId, provider);
-    const reserveContract = getContractForLpReserve(chainId, bond, provider)
 
     // cals for general bond data
     const calls = [

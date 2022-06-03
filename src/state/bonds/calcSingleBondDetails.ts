@@ -1,8 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useMemo } from 'react';
 import { deserializeToken } from 'state/user/hooks/helpers';
-import { getContractForBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { getContractForBondDepo } from 'utils/contractHelpers';
 import { ethers, BigNumber, BigNumberish } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
@@ -21,10 +20,9 @@ const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 export const calcSingleBondDetails = createAsyncThunk(
   "bonds/calcBondDetails",
-  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk, { dispatch }): Promise<Bond> => {
+  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk): Promise<Bond> => {
 
     const bondContract = getContractForBondDepo(chainId, provider);
-    const reserveContract = getContractForLpReserve(chainId, bond, provider)
 
     // cals for general bond data
     const calls = [
@@ -53,7 +51,7 @@ export const calcSingleBondDetails = createAsyncThunk(
         params: [bond.bondId]
       },
     ]
-
+    console.log("BOND HERE")
     const [market, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
@@ -61,24 +59,23 @@ export const calcSingleBondDetails = createAsyncThunk(
     const callsPair = [
       // max payout
       {
-        address: reserveContract.address,
+        address: market.quoteToken,
         name: 'getReserves'
       },
       // debt ratio
       {
-        address: reserveContract.address,
+        address: market.quoteToken,
         name: 'totalSupply',
       },
       {
-        address: reserveContract.address,
+        address: market.quoteToken,
         name: 'balanceOf',
         params: [getAddress(addresses.treasury[chainId])]
       },
     ]
 
-    const [reserves, supply, purchasedQuery] =
-      await multicall(chainId, weightedPairABI, callsPair)
-
+    const [reserves, supply, purchasedQuery] = await multicall(chainId, weightedPairABI, callsPair)
+    console.log("BOND reserves", reserves)
     // calculate price
     const price = bond.token && bond.quoteToken && bond.type === BondType.PairLP ? priceFromData(
       deserializeToken(bond.token),

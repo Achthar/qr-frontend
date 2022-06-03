@@ -2,27 +2,12 @@
   {
     "inputs": [
       {
-        "internalType": "contract IAuthority",
-        "name": "_authority",
-        "type": "address"
-      },
-      {
         "internalType": "contract IERC20",
         "name": "_req",
         "type": "address"
       },
       {
-        "internalType": "contract IgREQ",
-        "name": "_greq",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IStaking",
-        "name": "_staking",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ITreasury",
+        "internalType": "address",
         "name": "_treasury",
         "type": "address"
       }
@@ -298,9 +283,9 @@
     "name": "debtDecay",
     "outputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint64"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -590,50 +575,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "notes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "payout",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint48",
-        "name": "created",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "matured",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "redeemed",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "marketID",
-        "type": "uint48"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -697,7 +638,7 @@
         "type": "uint256"
       }
     ],
-    "name": "pullNote",
+    "name": "pullTerms",
     "outputs": [
       {
         "internalType": "uint256",
@@ -721,7 +662,7 @@
         "type": "uint256"
       }
     ],
-    "name": "pushNote",
+    "name": "pushTerms",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -737,11 +678,6 @@
         "internalType": "uint256[]",
         "name": "_indexes",
         "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_sendgREQ",
-        "type": "bool"
       }
     ],
     "name": "redeem",
@@ -761,11 +697,6 @@
         "internalType": "address",
         "name": "_user",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_sendgREQ",
-        "type": "bool"
       }
     ],
     "name": "redeemAll",
@@ -886,6 +817,50 @@
     "name": "updateTreasury",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "userTerms",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "payout",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint48",
+        "name": "created",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "matured",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "redeemed",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "marketID",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

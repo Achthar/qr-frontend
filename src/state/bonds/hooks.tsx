@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { getBalanceAmount } from 'utils/formatBalance'
-import { bonds as bondList } from 'config/constants/bonds'
+import { bonds as bondList, bondConfig } from 'config/constants/bonds'
 // import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
 import { Price, TokenAmount } from '@requiemswap/sdk'
 import { DAI, REQT } from 'config/constants/tokens'
@@ -14,7 +14,7 @@ import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
 import { BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
-import { fetchBondUserDataAsync, nonArchivedBonds } from '.'
+import { fetchBondMeta, fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
 
@@ -38,30 +38,47 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
   const { account, library } = useWeb3React()
-
+  const { metaLoaded, bondData, userDataLoaded } = useBonds()
   useEffect(() => {
-    const bondsToFetch = bondList(chainId)
-    const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
+    // const bondsToFetch = bondList(chainId)
 
-    bondsToFetch.map(
-      (bond) => {
-        if (bond.type === BondType.PairLP) {
-          dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+
+    // const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
+
+    if (!metaLoaded) {
+      const bondMeta = bondConfig(chainId)
+      dispatch(fetchBondMeta({ chainId, bondMeta }))
+    } else {
+      const bondsToFetch = Object.values(bondData)
+      bondsToFetch.map(
+        (bond) => {
+          if (bond.type === BondType.PairLP) {
+            dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          }
+          if (bond.type === BondType.StableSwapLP) {
+            dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          }
+          return 0
         }
-        if (bond.type === BondType.StableSwapLP) {
-          dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-        }
-        return 0
+      )
+
+      if (account) {
+        const bondIds = Object.keys(bondData).map(k => Number(k))
+        dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
       }
-    )
-
-    if (account) {
-      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
     }
-  }, [chainId, includeArchive,
-    dispatch,
-    library,
-    slowRefresh, account])
+
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      chainId,
+      includeArchive,
+      dispatch,
+      library,
+      slowRefresh,
+      account,
+      metaLoaded
+    ])
 }
 
 /**

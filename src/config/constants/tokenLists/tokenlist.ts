@@ -340,27 +340,11 @@ export const tokenList = {
             {
                 "name": "Asset Backed Requiem",
                 "symbol": "abREQ",
-                "address": "0x5d8894Ff5e16f5Fd749369A370A87B3Fd6d29204",
+                "address": "0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
-            },
-            {
-                "name": "Staked Requiem",
-                "symbol": "sREQ",
-                "address": "0x754A5Efde9E5Aec67A8983989E85bd3B0dBB112e",
-                "chainId": 43113,
-                "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
-            },
-            {
-                "name": "Governance Requiem",
-                "symbol": "sREQ",
-                "address": "0x147F7feF8C1c46B7Fc9eE790eE95A041F255F022",
-                "chainId": 43113,
-                "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
-            },
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/abREQ.png"
+            }
         ]
     },
     43114: {
