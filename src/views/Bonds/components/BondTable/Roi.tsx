@@ -54,12 +54,13 @@ const Roi: React.FC<RoiProps> = ({
   originalValue,
   hideButton = false,
 }) => {
-  const {chainId} = useNetworkState()
+  const { chainId } = useNetworkState()
   const bond = useBondFromBondId(bondId)
+  const tokenIndex = bond?.quoteTokenIndex === 0 ? 1 : 0
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond?.quoteToken?.address,
-    tokenAddress: bond?.token?.address,
+    quoteTokenAddress: bond?.tokens[bond.quoteTokenIndex]?.address,
+    tokenAddress: bond?.tokens[tokenIndex].address,
     weightQuote: bond?.lpProperties?.weightQuoteToken,
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee

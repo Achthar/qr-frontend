@@ -222,7 +222,53 @@ export const bondConfig = (chainId: number): BondConfig[] => {
         weightQuoteToken: 20,
         fee: 25
       }
-    }
+    },
+    {
+      isLP: false,
+      name: "60-ABREQ/40-DAI LP",
+      displayName: "REQ Pair LP",
+      bondToken: "RLP",
+      payoutToken: "abREQ",
+      bondIconSvg: 'CvxImg',
+      // bondContractABI: new ethers.utils.Interface(DaiBondContract),
+      // reserveContract: '',
+      type: BondType.PairLP,
+      displayUnits: '4',
+      tokens: [serializedTokens.dai, serializedTokens.abreq],
+      quoteTokenIndex: 0,
+      reserveAddress: {
+        43114: "0x51991dfd191D15d7055c45f4DB849Fea0e8004CD",
+        43113: "0x51991dfd191D15d7055c45f4DB849Fea0e8004CD"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
+      }
+    },
+    {
+      isLP: false,
+      name: "REQ3 Classic LP",
+      displayName: "REQT - CLassic LP",
+      bondToken: "Stable Swap LP",
+      payoutToken: "abREQ",
+      bondIconSvg: 'CvxImg',
+      // bondContractABI: new ethers.utils.Interface(DaiBondContract),
+      // reserveContract: '',
+      type: BondType.WeightedPoolLP,
+      displayUnits: '4',
+      tokens: [serializedTokens.wbtc, serializedTokens.weth, serializedTokens.usdt],
+      quoteTokenIndex: 2,
+      reserveAddress: {
+        43114: "0xa9767ba217ac2543799409e5b4970b7cb3df3ed5",
+        43113: "0xa9767ba217ac2543799409e5b4970b7cb3df3ed5"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
+      }
+    },
   ]
   // ],
   // [ChainId.BSC_TESTNET]: [],

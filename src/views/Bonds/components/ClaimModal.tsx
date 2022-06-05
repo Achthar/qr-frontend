@@ -40,7 +40,6 @@ const ClaimModal: React.FC<ClaimModalProps> = ({
   reqtPrice,
 }) => {
   const bond = useBondFromBondId(bondId)
-  const chainId = bond.token.chainId
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)

@@ -14,7 +14,6 @@ export const redeemBond = async (chainId, account, bondDepositoryContract, bondI
   const tx = await bondDepositoryContract.redeem(
     account, // user
     [bondId], // indexes
-    false,  // sendingREQ
     // { ...options, gasPrice }
   )
   const receipt = await tx.wait()
@@ -26,7 +25,6 @@ export const redeemPositions = async (chainId, account, bondDepositoryContract, 
   const tx = await bondDepositoryContract.redeem(
     account, // user
     noteIndexes, // indexes
-    sendGREQ,  // sendingREQ
     // { ...options, gasPrice }
   )
   const receipt = await tx.wait()

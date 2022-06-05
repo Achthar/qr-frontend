@@ -119,8 +119,14 @@ export interface Bond extends BondConfig, IBondDetails {
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber
-    reserve0: SerializedBigNumber
-    reserve1: SerializedBigNumber
+    // relevant data for pairs
+    reserve0?: SerializedBigNumber
+    reserve1?: SerializedBigNumber
+    vReserve0?: SerializedBigNumber
+    vReserve1?: SerializedBigNumber
+    // data for general pools (stable / weighted)
+    reserves?: SerializedBigNumber[]
+    // only relevant for pair
     priceInQuote: SerializedBigNumber
   },
   bondTerms?: {
@@ -138,14 +144,7 @@ export interface Bond extends BondConfig, IBondDetails {
     sold: SerializedBigNumber;
     purchased: SerializedBigNumber;
   }
-  // bondId?: number
-  bond?: string
-  // displayName?: string
-  // isLP?: boolean
-  allowance?: number
-  balance?: string
-  interestDue?: number
-  bondMaturationBlock?: number
+  purchasedInQuote?: SerializedBigNumber
 }
 
 export interface BondsState {

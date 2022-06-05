@@ -84,7 +84,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "quoteToken",
+        "name": "asset",
         "type": "address"
       },
       {
@@ -186,7 +186,7 @@
     "inputs": [
       {
         "internalType": "contract IERC20",
-        "name": "_quoteToken",
+        "name": "_asset",
         "type": "address"
       },
       {
@@ -472,7 +472,7 @@
       },
       {
         "internalType": "contract IERC20",
-        "name": "quoteToken",
+        "name": "asset",
         "type": "address"
       },
       {
@@ -565,7 +565,7 @@
       },
       {
         "internalType": "uint8",
-        "name": "quoteDecimals",
+        "name": "assetDecimals",
         "type": "uint8"
       }
     ],
@@ -718,6 +718,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "req",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

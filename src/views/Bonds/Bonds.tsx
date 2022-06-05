@@ -2,15 +2,16 @@ import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useRouteMatch, useLocation, NavLink, Link } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Box, useMatchBreakpoints } from '@requiemswap/uikit'
+import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Box, useMatchBreakpoints, ChevronRightIcon } from '@requiemswap/uikit'
 import { TokenAmount, ZERO } from '@requiemswap/sdk'
 import { ethers } from 'ethers'
-import { SREQ } from 'config/constants/tokens'
+import { ABREQ, SREQ } from 'config/constants/tokens'
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import Page from 'components/Layout/Page'
-import TokenPositionCard from 'components/PositionCard/TokenPosition'
-import { useBonds, usePollBondsWithUserData, usePollBondsPublicData } from 'state/bonds/hooks'
+import { TokenImage } from 'components/TokenImage'
+import { useBonds, usePollBondsWithUserData, useLpPricing } from 'state/bonds/hooks'
+import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 import { Bond } from 'state/types'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router'
@@ -26,7 +27,7 @@ import { formatSerializedBigNumber } from 'utils/formatBalance'
 import { latinise } from 'utils/latinise'
 import { useAssetBackedStakingInfo } from 'state/assetBackedStaking/hooks'
 import useRefresh from 'hooks/useRefresh'
-import { useGetRawWeightedPairsState } from 'hooks/useGetWeightedPairsState'
+import { useGetRawWeightedPairsState, useGetWeightedPairsPricerState } from 'hooks/useGetWeightedPairsState'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import Select, { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
@@ -305,7 +306,6 @@ function Bonds({
     numberOfBondsVisible,
   ]) // end chosenBondsMemoized
 
-  const dispatch = useAppDispatch()
 
   const { bondData } = useBonds()
 
@@ -319,6 +319,11 @@ function Bonds({
     [chainId, chain, history],
   )
 
+  const {
+    stablePools,
+    stableAmounts,
+    publicDataLoaded
+  } = useGetStablePoolState(chainId, account, slowRefresh, slowRefresh)
 
   useEffect(() => {
     const showMoreBonds = (entries) => {
@@ -343,24 +348,34 @@ function Bonds({
     }
   }, [chosenBondsMemoized, observerIsSet])
 
+  const {
+    pairs: _pairs
+  } = useGetWeightedPairsPricerState(chainId, slowRefresh)
+
+  const {
+    weightedPools,
+    publicDataLoaded: weightedLoaded
+  } = useGetWeightedPoolState(chainId, account, slowRefresh, slowRefresh)
+
+  useLpPricing({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded: publicDataLoaded, pairs: _pairs, pairsLoaded: metaDataLoaded && reservesAndWeightsLoaded })
 
   const rowData = Object.values(bondData).map((bond) => {
-
-    const purchased = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
+    const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
+    const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
     const row: RowProps = {
       bond: {
         label: bond.name,
         bondId: bond.bondId,
-        token: bond.token,
-        quoteToken: bond.quoteToken,
-        token2: bond.token2,
-        token3: bond.token3,
+        token: bond.tokens[0],
+        quoteToken: bond.tokens[bond.quoteTokenIndex],
+        token2: bond.tokens?.[1],
+        token3: bond.tokens?.[2],
         bondType: bond.type,
         tokens: bond.tokens
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
-      price: bond.bondPrice,
+      // price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
         value: String(Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100),
@@ -370,32 +385,20 @@ function Bonds({
         originalValue: 3
 
       },
-      purchased,
-      reqPrice,
+      purchased: {
+        purchasedUnits,
+        purchasedInQuote,
+      },
+      reqPrice: Number(reqPrice),
+      price: {
+        reqPrice,
+        price: bond.bondPrice,
+      }
     }
 
     return row
   })
 
-  // const sreqSupp = useMemo(() => { return stakedRequiemLoaded && Number(formatSerializedBigNumber(stakedRequiem.totalSupplySReq, 0, 18)) }, [stakedRequiem, stakedRequiemLoaded])
-
-  // const greqSupp = useMemo(() => { return stakedRequiemLoaded && Number(formatSerializedBigNumber(stakedRequiem.totalSupplyGReq, 0, 18)) }, [stakedRequiem, stakedRequiemLoaded])
-
-  // const sreqBalance = useMemo(() => { return userData && stakeUserDataLoaded && Number(formatSerializedBigNumber(userData?.sReqBalance, 0, 18)) }, [userData, stakeUserDataLoaded])
-
-  // const greqBalance = useMemo(() => { return userData && stakeUserDataLoaded && Number(formatSerializedBigNumber(userData?.gReqBalance, 0, 18)) }, [userData, stakeUserDataLoaded])
-
-  // const userStaked = useMemo(() => {
-  //   if (!stakeUserDataLoaded)
-  //     return 0
-  //   const gonsPerFragment = ethers.BigNumber.from(stakedRequiem?.gonsPerFragment ?? '1')
-  //   const bal = ethers.BigNumber.from(userData?.warmupInfo?.gons ?? '0')
-
-  //   console.log("STaKED B", stakedRequiem?.gonsPerFragment, userData?.warmupInfo?.gons, gonsPerFragment.toString(), bal.toString())
-  //   return Number(formatSerializedBigNumber(bal.div(gonsPerFragment).toString(), 18, 18))
-  // },
-  //   [userData, stakedRequiem, stakeUserDataLoaded]
-  // )
 
   const userRewards = useMemo(() => {
     const oneBond = Object.values(bondsLP)[0]
@@ -403,7 +406,7 @@ function Bonds({
   },
     [bondsLP, userDataLoaded])
 
-  const notes = useMemo(() => { // bondsLP && userDataLoaded && Object.values(bondsLP).map(x => x?.userData?.notes ?? []).reduce((n, current) => [...n, ...current])
+  const notes = useMemo(() => {
     let _notes = []
     const bondKeys = Object.keys(bondsLP)
     for (let k = 0; k < bondKeys.length; k++) {
@@ -439,240 +442,132 @@ function Bonds({
 
 
 
-  // const renderSupplySReq = (): JSX.Element => {
-  //   return (
-  //     <Flex flexDirection="column">
 
-  //       <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-  //         {stakedRequiemLoaded && `${sreqSupp.toLocaleString()} sREQ / $${(Math.round(sreqSupp * reqPrice / 1e6)).toLocaleString()}M`}
-  //       </Text>
-  //       <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
-  //         Total Supply
-  //       </Text>
-  //     </Flex>
-  //   )
-  // }
+  const renderTerms = (): JSX.Element => {
+    return (
+      <Flex flexDirection="column">
+        <Flex flexDirection="row">
+          <Flex flexDirection="column" marginRight='15px'>
+            <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+              {userDataLoaded && `${totalPayout.toLocaleString()} ABREQ / $${Math.round(totalPayout * reqPrice).toLocaleString()}`}
+            </Text>
+            <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
+              Total Claims
+            </Text>
+          </Flex>
+          <Flex flexDirection="column">
+            <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+              {userRewards && `${userRewards.toLocaleString()} ABREQ / $${Math.round(userRewards * reqPrice).toLocaleString()}`}
+            </Text>
+            <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
+              Claimable ABREQ
+            </Text>
+          </Flex>
+        </Flex>
+        <Flex flexDirection="column" marginTop='15px'>
+          <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+            {avgVesting && prettifySeconds(avgVesting, 's')}
+          </Text>
+          <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
+            Average Maturity
+          </Text>
+        </Flex>
 
-  // const formattedEpoch = useMemo(() => {
-  //   return generalDataLoaded && {
-  //     length: prettifySeconds(epoch.length),
-  //     number: epoch.number,
-  //     end: timeConverter(epoch.end),
-  //     distribute: (Number(formatSerializedBigNumber(epoch.distribute, 0, 18)) * reqPrice).toLocaleString()
-  //   }
-  // }, [epoch, generalDataLoaded, reqPrice])
-
-  // const renderEpochSReq = (): JSX.Element => {
-
-  //   return (
-  //     <Flex flexDirection="row" justifyContent='center'>
-  //       <Flex flexDirection="column" marginRight='15px'>
-  //         <Text fontSize='15px' textAlign='left' lineHeight='20px' >
-  //           Number
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='left' lineHeight='20px' >
-  //           Duration
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='left' lineHeight='20px' >
-  //           End
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='left' lineHeight='20px' >
-  //           Distribution
-  //         </Text>
-  //       </Flex>
-
-  //       <Flex flexDirection="column">
-  //         <Text fontSize='15px' textAlign='center' lineHeight='20px' bold >
-  //           {formattedEpoch.number}
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='center' lineHeight='20px' bold >
-  //           {formattedEpoch.length}
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='center' lineHeight='20px' bold >
-  //           {formattedEpoch.end}
-  //         </Text>
-  //         <Text fontSize='15px' textAlign='center' lineHeight='20px' bold >
-  //           {formattedEpoch.distribute}
-  //         </Text>
-  //       </Flex>
-  //     </Flex>
-  //   )
-  // }
-
-
-  // const renderSupplyGReq = (): JSX.Element => {
-
-  //   return (
-  //     <Flex flexDirection="column">
-
-  //       <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-  //         {stakedRequiemLoaded && `${greqSupp.toLocaleString()} gREQ / $${(Math.round(greqSupp * reqPrice * 50)).toLocaleString()}`}
-  //       </Text>
-  //       <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
-  //         Total Supply
-  //       </Text>
-  //     </Flex>
-  //   )
-  // }
-
-  // const renderTerms = (): JSX.Element => {
-
-
-  //   return (
-
-  //     <Flex flexDirection="column">
-
-  //       <Flex flexDirection="row">
-
-  //         <Flex flexDirection="column" marginRight='15px'>
-
-  //           <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-  //             {userDataLoaded && `${totalPayout.toLocaleString()} gREQ / $${Math.round(totalPayout * reqPrice * 50).toLocaleString()}`}
-  //           </Text>
-  //           <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
-  //             Total Claims
-  //           </Text>
-  //         </Flex>
-
-  //         <Flex flexDirection="column">
-
-  //           <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-  //             {userRewards && `${userRewards.toLocaleString()} abREQ / $${Math.round(userRewards * reqPrice).toLocaleString()}`}
-  //           </Text>
-  //           <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
-  //             Claimable abREQ
-  //           </Text>
-  //         </Flex>
-
-  //       </Flex>
+      </Flex>
+    )
+  }
 
 
 
-  //       <Flex flexDirection="column" marginTop='15px'>
-  //         <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-  //           {avgVesting && prettifySeconds(avgVesting, 's')}
-  //         </Text>
-  //         <Text fontSize='10px' textAlign='center' lineHeight='16px' bold marginLeft='20px'>
-  //           Average Maturity
-  //         </Text>
-  //       </Flex>
+  const renderSummary = (): JSX.Element => {
+    return (
+      <Flex flexDirection="column">
+        <Flex flexDirection="row" marginRight='15px'>
+          <ChevronRightIcon width={20} />
+          <Text fontSize='15px' textAlign='left' lineHeight='16px' bold marginLeft='20px'>
+            Get LP from our DEX
+          </Text>
+        </Flex>
+        <Flex flexDirection="row" marginTop='5px'>
+          <ChevronRightIcon width={20} />
+          <Text fontSize='15px' textAlign='left' lineHeight='16px' bold marginLeft='20px'>
+            Select your ideal Terms for Bonding
+          </Text>
+        </Flex>
+        <Flex flexDirection="row" marginTop='5px'>
+          <ChevronRightIcon width={20} />
+          <Text fontSize='15px' textAlign='left' lineHeight='16px' bold marginLeft='20px' marginRight='2px'>
+            3 Bond the Asset in Return for
+          </Text>
+          <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} marginLeft='2px' />
+        </Flex>
 
-  //     </Flex>
-  //   )
-  // }
+      </Flex>
+    )
+  }
 
 
 
 
-
-  // const renderHeader = (): JSX.Element => {
-  //   const widthComponent = isMobile ? '100%' : '33%'
-
-  //   return (
-  //     <>{stakedRequiemLoaded && (
-  //       <Box>
-  //         <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
-  //           <Flex flexDirection="column" width={widthComponent} marginRight='2px' >
-  //             <HeaderBox
-  //               btl='16px'
-  //               btr='3px'
-  //               bbl='3px'
-  //               bbr='3px'
-  //               width="100%"
-  //               height='80px'
-  //               ml='1px'
-  //               mr='2px'
-  //               mb='4px'
-  //               mt='0px'
-  //             >
-  //               <Flex flexDirection="column">
-  //                 <Text fontSize='17px' textAlign='left' bold marginLeft='-20px' marginTop='2px'>
-  //                   Staking
-  //                 </Text>
-  //                 <Line />
-  //                 <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-  //                   {renderSupplySReq()}
-  //                 </Flex>
-  //               </Flex>
-  //             </HeaderBox>
-  //             <HeaderBox
-  //               btl='3px'
-  //               btr='3px'
-  //               bbl='16px'
-  //               bbr='3px'
-  //               width="100%"
-  //               height='80px'
-  //               ml='1px'
-  //               mr='2px'
-  //               mb='2px'
-  //               mt='0px'
-  //             >
-  //               <Flex flexDirection="column">
-  //                 <Text fontSize='17px' textAlign='left' bold marginLeft='-20px' marginTop='2px'>
-  //                   Governance
-  //                 </Text>
-  //                 <Line />
-  //                 <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-
-  //                   {renderSupplyGReq()}
-  //                 </Flex>
-  //               </Flex>
-  //             </HeaderBox>
-
-  //           </Flex>
-  //           <HeaderBox
-  //             btl='3px'
-  //             btr='3px'
-  //             bbl='3px'
-  //             bbr='3px'
-  //             width={widthComponent}
-  //             height='164px'
-  //             ml='2px'
-  //             mr='2px'
-  //             mb='10px'
-  //             mt='0px'
-  //           >
-  //             <Flex flexDirection="column">
-  //               <Text fontSize='17px' textAlign='left' bold marginLeft='-20px' marginTop='2px'>
-  //                 Epoch
-  //               </Text>
-  //               <Line />
-  //               <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-  //                 {renderEpochSReq()}
-  //               </Flex>
-  //             </Flex>
-  //           </HeaderBox>
-  //           <HeaderBox
-  //             btl='3px'
-  //             btr='16px'
-  //             bbl='3px'
-  //             bbr='16px'
-  //             width={widthComponent}
-  //             height='164px'
-  //             ml='1px'
-  //             mr='2px'
-  //             mb='10px'
-  //             mt='0px'
-  //           >
-  //             <Flex flexDirection="column" justifyContent='center'>
-  //               <Flex flexDirection="row" justifyContent='flex-start' >
-  //                 <Text fontSize='17px' textAlign='left' bold marginLeft='5px' marginTop='2px' marginRight='20px'>
-  //                   Your Term Sheet
-  //                 </Text>
-  //                 <Claim isMobile={isMobile} userDataReady={userDataLoaded} noBond={false} bondIds={Object.keys(bondsLP).map(n => Number(n))} />
-  //               </Flex>
-  //               <Line />
-  //               <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-  //                 {renderTerms()}
-  //               </Flex>
-  //             </Flex>
-  //           </HeaderBox>
-  //         </Flex>
-  //       </Box>)}
-  //     </>
-  //   )
-  // }
-
+  const renderHeader = (): JSX.Element => {
+    return (
+      <>
+        <Box>
+          <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
+            <HeaderBox
+              btl='16px'
+              btr='3px'
+              bbl='16px'
+              bbr='3px'
+              width='50%'
+              height='164px'
+              ml='1px'
+              mr='2px'
+              mb='2px'
+              mt='0px'
+            >
+              <Flex flexDirection="column" justifyContent='center'>
+                <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='17px' textAlign='left' bold marginLeft='5px' marginTop='2px' marginRight='20px'>
+                    Bond Tokens for Asset-Backed Requiem
+                  </Text>
+                </Flex>
+                <Line />
+                <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                  {renderSummary()}
+                </Flex>
+              </Flex>
+            </HeaderBox>
+            <HeaderBox
+              btl='3px'
+              btr='16px'
+              bbl='3px'
+              bbr='16px'
+              width='50%'
+              height='164px'
+              ml='1px'
+              mr='2px'
+              mb='2px'
+              mt='0px'
+            >
+              <Flex flexDirection="column" justifyContent='center'>
+                <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='17px' textAlign='left' bold marginLeft='5px' marginTop='2px' marginRight='20px'>
+                    Your Term Sheet
+                  </Text>
+                  <Claim isMobile={isMobile} userDataReady={userDataLoaded} noBond={false} bondIds={Object.keys(bondsLP).map(n => Number(n))} />
+                </Flex>
+                <Line />
+                <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                  {renderTerms()}
+                </Flex>
+              </Flex>
+            </HeaderBox>
+          </Flex>
+        </Box>
+      </>
+    )
+  }
   const renderContent = (): JSX.Element => {
     const columnSchema = DesktopColumnSchema
 
@@ -701,7 +596,7 @@ function Bonds({
   return (
     <>
       <Page>
-        {/* {renderHeader()} */}
+        {renderHeader()}
         {renderContent()}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

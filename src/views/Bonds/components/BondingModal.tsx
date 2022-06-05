@@ -10,9 +10,11 @@ import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatB
 import useToast from 'hooks/useToast'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import { useBondFromBondId } from 'state/bonds/hooks'
-import { payoutFor } from '@requiemswap/sdk'
+import { payoutFor, Token, TokenAmount } from '@requiemswap/sdk'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { blocksToDays, prettifySeconds } from 'config'
+import { priceBonding } from 'utils/bondUtils'
+import { ABREQ } from 'config/constants/tokens'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;
@@ -37,7 +39,7 @@ interface BondingModalProps {
   apr?: number
   displayApr?: string
   addLiquidityUrl?: string
-  reqtPrice?: BigNumber
+  reqPrice?: number
 }
 
 const BondingModal: React.FC<BondingModalProps> = (
@@ -48,6 +50,7 @@ const BondingModal: React.FC<BondingModalProps> = (
     onDismiss,
     tokenName = '',
     addLiquidityUrl,
+    reqPrice
   }
 ) => {
   const bond = useBondFromBondId(bondId)
@@ -62,24 +65,28 @@ const BondingModal: React.FC<BondingModalProps> = (
   const lpTokensToStake = new BigNumber(val)
   const fullBalanceNumber = new BigNumber(fullBalance)
 
-
-  const token = deserializeToken(bond.token)
-  const quoteToken = deserializeToken(bond.quoteToken)
-
-
-  const payout = useMemo(() => {
+  // calculates the payout fom the input and the payout itself in USD equivalent tokens
+  const [payout, inputUSD] = useMemo(() => {
     let returnVal = ethers.BigNumber.from(0)
+    let inpUSD = ethers.BigNumber.from(0)
+    const formattedInput = new BigNumber(val).multipliedBy(new BigNumber('10').pow(18)).toString()
     try {
-      returnVal = payoutFor(
-        ethers.BigNumber.from(val === '' ? 0 : new BigNumber(val).multipliedBy('1000000000000000000').toString()),
-        ethers.BigNumber.from(bond.marketPrice)
+      returnVal = priceBonding(
+        ethers.BigNumber.from(val === '' ? 0 : formattedInput),
+        bond
       )
     }
-    catch {
-      returnVal = ethers.BigNumber.from(0)
+    catch (Error) {
+      console.log(Error)
     }
 
-    return returnVal
+    try {
+      inpUSD = ethers.BigNumber.from(bond.purchasedInQuote).mul(formattedInput).div(bond.market.purchased)
+    } catch (Error) {
+      console.log(Error)
+    }
+
+    return [Number(ethers.utils.formatEther(returnVal)), Number(ethers.utils.formatEther(inpUSD))]
   }, [
     val,
     bond
@@ -106,21 +113,20 @@ const BondingModal: React.FC<BondingModalProps> = (
     [fullBalance, setVal]
   )
 
-  const payoutNumber = Number(formatBigNumber(payout, 18, 18))
-  const price = Number(formatSerializedBigNumber(bond.marketPrice, 18, 18))
 
-  console.log("MP", bond.market.maxPayout)
   const maxPriceText = (): string => {
     let text = ''
     try {
 
-      text = `${Math.round(Number(formatSerializedBigNumber(bond.market.maxPayout, 18, 18)) * 100) / 100}`
+      text = `${Math.round(Number(formatSerializedBigNumber(bond.market.maxPayout, 18, 18)) * 100) / 100} ABREQ`
     }
     catch {
       text = 'no limit'
     }
     return text
   }
+
+  const profits = useMemo(() => { return payout * reqPrice / bond.bondPrice - inputUSD }, [payout, reqPrice, bond.bondPrice, inputUSD])
 
   return (
     <Modal title={t('Bond LP tokens')} onDismiss={onDismiss}>
@@ -135,23 +141,44 @@ const BondingModal: React.FC<BondingModalProps> = (
       />
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
+          You Will Pay
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          {`${val} ${bond.name}`}
+          {inputUSD > 0 ? (` / ${Math.round(inputUSD * 10) / 10} USD`) : (``)}
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
           You Will Get
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(payoutNumber * 1000) / 1000} REQ`}
-          {price > 0 ?
+          {`${Math.round(payout / bond.bondPrice * 1000) / 1000} ABREQ`}
+          {reqPrice > 0 ?
             (` / ${Math.round(
-              payoutNumber * price * 1000
-            ) / 1000
+              payout * reqPrice / bond.bondPrice * 10
+            ) / 10
               } USD`) : (``)}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
-          Discount
+          Your Profits
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(bond.bondDiscount * 10000) / 100}%`}
+          {inputUSD > 0 ?
+            (`${Math.round(
+              profits * 10
+            ) / 10
+              } USD`) : (`-`)}
+        </Text>
+      </Flex>
+      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+        <Text mr="8px" color="textSubtle">
+          Return
+        </Text>
+        <Text mr="8px" color="textSubtle" textAlign='center'>
+          {`${Math.round(profits / inputUSD * 10000) / 100}%`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -167,7 +194,7 @@ const BondingModal: React.FC<BondingModalProps> = (
           Debt Ratio
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(bnParser(ethers.BigNumber.from(bond.debtRatio), ethers.BigNumber.from('1000000000')) * 10000) / 100}%`}
+          {`${Math.round(Number(ethers.utils.formatEther(bond.debtRatio)) * 10000) / 100}%`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -189,7 +216,7 @@ const BondingModal: React.FC<BondingModalProps> = (
             !lpTokensToStake.isFinite() ||
             lpTokensToStake.eq(0) ||
             lpTokensToStake.gt(fullBalanceNumber) ||
-            payout.gt(ethers.BigNumber.from(bond.market.maxPayout))
+            payout > Number(ethers.utils.formatEther(bond.market.maxPayout))
           }
           onClick={async () => {
             setPendingTx(true)

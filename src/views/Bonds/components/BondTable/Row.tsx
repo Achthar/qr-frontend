@@ -21,15 +21,28 @@ import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
 import BondMobile from './BondMobile'
 
+interface PurchasedProps {
+  purchasedUnits: number
+  purchasedInQuote: number
+}
+
+interface PriceProps {
+  // req price
+  reqPrice: number
+  // bond price
+  price: number
+}
+
 export interface RowProps {
   bond: BondProps
   details: BondWithStakedValue
   discount: number
-  price: number
+  price: PriceProps
   roi: RoiProps
-  purchased: number
+  purchased: PurchasedProps
   term: number
-  reqPrice?: number
+  reqPrice: number
+  // prices: PriceProps
 }
 
 interface RowPropsWithLoading extends RowProps {
@@ -167,7 +180,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label={t('Price')}>
                         <Text>
-                          {`$${Math.round(props.price * 10000) / 10000}`}
+                          {`$${Math.round(props.price.price * 10000) / 10000}`}
                         </Text>
                       </CellLayout>
                     </CellInner>
@@ -179,7 +192,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     <CellInner>
                       <CellLayout label={t('Purchased')}>
                         <Text>
-                          {props.purchased}
+                          {`$${Math.round(props.purchased.purchasedInQuote).toLocaleString()}/${props.purchased.purchasedUnits} units`}
                         </Text>
                       </CellLayout>
                     </CellInner>
@@ -282,7 +295,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
       {shouldRenderChild && (
         <tr>
           <td colSpan={6}>
-            <ActionPanel {...props} expanded={actionPanelExpanded} reqPrice={props.price}/>
+            <ActionPanel {...props} expanded={actionPanelExpanded} />
           </td>
         </tr>
       )}

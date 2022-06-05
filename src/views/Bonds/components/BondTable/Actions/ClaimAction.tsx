@@ -10,6 +10,7 @@ import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import useClaimRewards from 'views/Bonds/hooks/useClaimRewards'
 import useToast from 'hooks/useToast'
+import { useBondFromBondId, useBondFromBondIds } from 'state/bonds/hooks'
 import { useAppDispatch } from 'state'
 import Dots from 'components/Loader/Dots'
 import { BondActionContainer, ActionTitles, ActionContent } from './styles'
@@ -33,14 +34,14 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   const { account, chainId } = useActiveWeb3React()
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-
+  const bonds = useBondFromBondIds(bondIds)
   const { onClaim } = useClaimRewards(chainId)
 
 
   const dispatch = useAppDispatch()
   const handleClaim = async () => {
     await onClaim()
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
+    dispatch(fetchBondUserDataAsync({ chainId, account, bonds }))
   }
 
 
@@ -48,10 +49,10 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
 
   if (!account) {
     return (
-      <ConnectWalletButton 
-      height='auto'
-      width={isMobile ? "40%" : "80px"}
-      style={{fontSize:'12px', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '10px', borderTopRightRadius: '10px' }} />
+      <ConnectWalletButton
+        height='auto'
+        width={isMobile ? "40%" : "80px"}
+        style={{ fontSize: '12px', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '10px', borderTopRightRadius: '10px' }} />
 
     )
   }

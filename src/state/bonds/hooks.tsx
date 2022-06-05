@@ -5,34 +5,21 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
-import { getBalanceAmount } from 'utils/formatBalance'
-import { bonds as bondList, bondConfig } from 'config/constants/bonds'
-// import { useWeightedPairs, WeightedPairState } from 'hooks/useWeightedPairs'
-import { Price, TokenAmount } from '@requiemswap/sdk'
-import { DAI, REQT } from 'config/constants/tokens'
+import { bondConfig } from 'config/constants/bonds'
+import { AmplifiedWeightedPair, Price, StablePool, TokenAmount, WeightedPool } from '@requiemswap/sdk'
+import { pairValuation } from 'utils/pricers/weightedPairPricer'
+import { stablePoolValuation } from 'utils/pricers/stablePoolPricer'
+import { weightedPoolValuation } from 'utils/pricers/weightedPoolPricer'
+import { ethers } from 'ethers'
+import { deserializeToken } from 'state/user/hooks/helpers'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
 import { BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
+import { calcSingleBondDetails } from './calcSingleBondDetails'
+import { setLpPrice } from './actions'
 import { fetchBondMeta, fetchBondUserDataAsync, nonArchivedBonds } from '.'
 import { State, Bond, BondsState } from '../types'
-import { calcSingleBondDetails } from './calcSingleBondDetails'
-
-
-export const usePollBondsPublicData = (chainId: number, includeArchive = false) => {
-  const dispatch = useAppDispatch()
-  const { slowRefresh } = useRefresh()
-
-  useEffect(() => {
-    const bondsToFetch = includeArchive ? bondList(chainId) : nonArchivedBonds(chainId)
-    console.log(bondsToFetch)
-    const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
-    // dispatch(fetchBondsPublicDataAsync())
-  }, [
-    includeArchive,
-    //  dispatch, 
-    slowRefresh, chainId])
-}
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
@@ -55,7 +42,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
           if (bond.type === BondType.PairLP) {
             dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
           }
-          if (bond.type === BondType.StableSwapLP) {
+          if (bond.type === BondType.StableSwapLP || bond.type === BondType.WeightedPoolLP) {
             dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
           }
           return 0
@@ -64,7 +51,8 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
 
       if (account) {
         const bondIds = Object.keys(bondData).map(k => Number(k))
-        dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
+        // const relevantAddresses = useReserveAddressFromBondIds(chainId, bondIds)
+        dispatch(fetchBondUserDataAsync({ chainId, account, bonds: bondsToFetch }))
       }
     }
 
@@ -90,12 +78,27 @@ export const useBonds = (): BondsState => {
   return bonds
 }
 
+export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
+  const bonds = useSelector((state: State) => state.bonds)
+  return bondIds.map(id => bonds.bondData[id].reserveAddress[chainId])
+
+}
+
 export const useBondFromBondId = (bondId): Bond => {
 
   const bond = useSelector((state: State) => state.bonds.bondData[bondId])
   return bond
 }
 
+export const useBondFromBondIds = (bondIds: number[]): Bond[] => {
+
+  const bond = useSelector((state: State) => state.bonds.bondData)
+  return bondIds.map(bId => bond[bId])
+}
+
+/**
+ *  Returns bobnd user data for id
+ */
 export const useBondUser = (bondId) => {
   const bond = useBondFromBondId(bondId)
   if (bond) {
@@ -117,29 +120,96 @@ export const useBondUser = (bondId) => {
 }
 
 
+export interface PricingInput {
+  chainId: number
+  weightedPools: WeightedPool[]
+  weightedLoaded: boolean
+  stablePools: StablePool[]
+  stableLoaded: boolean
+  pairs: AmplifiedWeightedPair[]
+  pairsLoaded: boolean
+}
+
+
+/**
+ *  Prices all bonds using the trading state (pairs and pools)
+ */
+export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded, pairs, pairsLoaded }: PricingInput) => {
+  const bonds = useBonds()
+  const dispatch = useAppDispatch()
+  const data = bonds.bondData
+  const metaLoaded = bonds.metaLoaded
+
+  useEffect(() => {
+    if (!metaLoaded) return;
+    const bondsWithIds = Object.values(data)
+    bondsWithIds.map(bondWithNoPrice => {
+      let price: ethers.BigNumber;
+      const bondType = bondWithNoPrice.type
+
+      if (!bondWithNoPrice.lpData) {
+        // eslint-disable-next-line no-useless-return
+        return;
+      }
+
+      // pair LP
+      if (bondType === BondType.PairLP) {
+        const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
+
+        if (!pairsLoaded) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
+        price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
+      }
+      // stable pool LP
+      else if (bondType === BondType.StableSwapLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = stablePools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!stableLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
+        price = stablePoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+      // weighted pool LP
+      else if (bondType === BondType.WeightedPoolLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = weightedPools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!weightedLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
+        price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId }))
+      // eslint-disable-next-line no-useless-return
+      return;
+    })
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, metaLoaded, chainId, pairsLoaded, stableLoaded]
+  )
+}
+
 // /!\ Deprecated , use the BUSD hook in /hooks
 
 export const usePriceNetworkCCYUsd = (): BigNumber => {
   const bnbUsdBond = useBondFromBondId(1)
   return new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
 }
-
-// export const usePriceReqtUsd = (chainId: number): BigNumber => {
-//   // const reqtnetworkCCYBond = useBondFromBondId(0)
-//   const [pairState, pair] = useWeightedPairs(chainId, [[REQT[chainId], DAI[chainId]]], [80], [25])[0]
-
-//   return useMemo(
-//     () => {
-//       const inAmount = new TokenAmount(REQT[chainId], '1000000000000000000')
-
-//       const [outAmount,] = pairState === WeightedPairState.EXISTS
-//         ? pair.clone().getOutputAmount(inAmount)
-//         : [new TokenAmount(DAI[chainId], '1'),]
-//       return new BigNumber(outAmount.raw.toString()) // reqtnetworkCCYBond.token.busdPrice
-//     },
-//     [chainId, pair, pairState]
-//   )
-// }
 
 
 export const usePriceNetworkDollar = (): BigNumber => {

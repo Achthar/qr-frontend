@@ -4,6 +4,7 @@ import { TokenList } from '@uniswap/token-lists'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { TokenPair } from 'config/constants/types'
+import { deserializeWeightedPair } from 'utils/bondUtils'
 import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, usePairIsInState, useSerializedWeightedPairsData, useWeightedPairsState } from 'state/weightedPairs/hooks'
 import { addTokenPair, changeChainIdWeighted } from 'state/weightedPairs/actions'
 import { fetchWeightedPairMetaData, isNewTokenPair } from 'state/weightedPairs/fetchWeightedPairMetaData'
@@ -357,7 +358,7 @@ export function useGetWeightedPairsPricerState(
     const addressKeys = Object.keys(weightedPairs).sort()
     const pairs = []
     for (let i = 0; i < addressKeys.length; i++) {
-        const pair = Object.values(weightedPairs[addressKeys[i]]).reduce((prev, current) => (prev.totalSupply > current.totalSupply) ? prev : current)
+        const pair = deserializeWeightedPair(Object.values(weightedPairs[addressKeys[i]]).reduce((prev, current) => (prev.totalSupply > current.totalSupply) ? prev : current))
         pairs.push(pair)
     }
 

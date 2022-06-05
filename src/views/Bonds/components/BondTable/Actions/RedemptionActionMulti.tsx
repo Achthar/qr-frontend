@@ -6,6 +6,7 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { fetchBondUserDataAsync } from 'state/bonds'
 import { useAppDispatch } from 'state'
+import { useBondFromBondIds } from 'state/bonds/hooks'
 import { useRedeemNotes } from 'views/Bonds/hooks/useRedeemBond'
 import { ActionContent } from './styles'
 
@@ -53,13 +54,13 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   const { account, chainId } = useActiveWeb3React()
 
 
-  console.log("REDEEM", indexes, bondIds)
+  const bonds = useBondFromBondIds(bondIds)
   const { onRedeem } = useRedeemNotes(chainId, account, indexes, sendGREQ)
 
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bonds }))
     } catch (error) {
       console.log(error)
     }

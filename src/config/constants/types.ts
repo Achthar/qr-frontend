@@ -205,7 +205,8 @@ export enum BondType {
   StableAsset,
   PairLP,
   StableSwapLP,
-  WeightedPoolLP
+  WeightedPoolLP,
+  RequiemLP
 }
 
 
@@ -230,10 +231,6 @@ export interface BondConfig {
   isLP: boolean;
   // reserveContract: ethers.ContractInterface; // Token ABI
   displayUnits?: string;
-  token?: SerializedToken
-  quoteToken?: SerializedToken
-  token2?: SerializedToken
-  token3?: SerializedToken
   tokens: SerializedToken[]
   quoteTokenIndex: number
   lpProperties?: {

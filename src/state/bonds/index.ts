@@ -14,6 +14,7 @@ import {
 import { calcSingleBondDetails } from './calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
+import { setLpPrice } from './actions';
 
 
 // import { chain } from 'lodash'
@@ -94,19 +95,22 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[] 
     const bondIds = await multicall(chainId, bondReserveAVAX, calls)
     const bondCfgs = []
     for (let j = 0; j < addresses.length; j++) {
-      const availableIds = bondIds[j].map(id => Number(id.toString()))
+      const availableIds = bondIds[j][0].map(id => Number(id.toString()))
       const address = addresses[j]
+      const bondData = bondMeta.find(
+        _bond => {
+          return getAddress(_bond.reserveAddress[chainId]) === getAddress(address)
+        }
+      )
+
       for (let k = 0; k < availableIds.length; k++) {
-        const bondData = bondMeta.find(
-          _bond => {
-            return getAddress(_bond.reserveAddress[chainId]) === getAddress(address)
-          }
-        )
-        bondData.bondId = availableIds[k]
-        bondCfgs.push(bondData)
+        const _bondToAdd = { ...bondData }
+        _bondToAdd.bondId = availableIds[k]
+        bondCfgs.push(_bondToAdd)
       }
 
     }
+
     return {
       bondConfigWithIds: bondCfgs
     }
@@ -114,35 +118,30 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[] 
   },
 )
 
-export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondUserDataResponse }, { chainId: number, account: string; bondIds: number[] }>(
+export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondUserDataResponse }, { chainId: number, account: string; bonds: BondConfig[] }>(
   'bonds/fetchBondUserDataAsync',
-  async ({ chainId, account, bondIds }) => {
+  async ({ chainId, account, bonds }) => {
 
-    const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
+    // const bondsToFetch = bondList(chainId).filter((bondConfig) => bondIds.includes(bondConfig.bondId))
 
     const {
       allowances: userBondAllowances,
       balances: userBondTokenBalances
-    } = await fetchBondUserAllowancesAndBalances(chainId, account, bondsToFetch)
+    } = await fetchBondUserAllowancesAndBalances(chainId, account, bonds)
+
     let notesFinal = []
-    // try {
     const {
       notes,
       reward
     } = await fetchBondUserPendingPayoutData(chainId, account)
     notesFinal = notes
-    // } catch {
-    //   notesFinal = []
-    // }
-    console.log("NOTES FINAL",notesFinal)
+
     const interestDue = notesFinal.map((info) => {
       return info.payout.toString();
     })
 
-
+    const bondIds = bonds.map(b => b.bondId)
     return Object.assign({}, ...userBondAllowances.map((_, index) => {
-      console.log("NOTES INDEX", index, notesFinal) // .filter(note => note.marketId === bondIds[index]))
-      const numberIndex = Number(index.toString())
       return {
         [bondIds[index]]: {
           bondId: bondIds[index],
@@ -183,7 +182,6 @@ export const bondsSlice = createSlice({
         const { bondConfigWithIds } = action.payload
         for (let i = 0; i < bondConfigWithIds.length; i++) {
           const bond = bondConfigWithIds[i]
-          console.log("BOND", i, bond, bond.bondId)
           state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...bond };
         }
         state.metaLoaded = true;
@@ -233,6 +231,9 @@ export const bondsSlice = createSlice({
         state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
+      })
+      .addCase(setLpPrice, (state, action) => {
+        state.bondData[action.payload.bondId].purchasedInQuote = action.payload.price
       })
   },
 })

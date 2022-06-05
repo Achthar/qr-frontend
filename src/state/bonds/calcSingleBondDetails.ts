@@ -8,6 +8,7 @@ import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
 import { BondType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
 import { ICalcBondDetailsAsyncThunk } from './types';
@@ -59,16 +60,16 @@ export const calcSingleBondDetails = createAsyncThunk(
     const callsPair = [
       // max payout
       {
-        address: market.quoteToken,
+        address: market.asset,
         name: 'getReserves'
       },
       // debt ratio
       {
-        address: market.quoteToken,
+        address: market.asset,
         name: 'totalSupply',
       },
       {
-        address: market.quoteToken,
+        address: market.asset,
         name: 'balanceOf',
         params: [getAddress(addresses.treasury[chainId])]
       },
@@ -77,9 +78,9 @@ export const calcSingleBondDetails = createAsyncThunk(
     const [reserves, supply, purchasedQuery] = await multicall(chainId, weightedPairABI, callsPair)
     console.log("BOND reserves", reserves)
     // calculate price
-    const price = bond.token && bond.quoteToken && bond.type === BondType.PairLP ? priceFromData(
-      deserializeToken(bond.token),
-      deserializeToken(bond.quoteToken),
+    const price = bond.tokens && bond.quoteTokenIndex && bond.type === BondType.PairLP ? priceFromData(
+      deserializeToken(getNonQuoteToken(bond)),
+      deserializeToken(getQuoteToken(bond)),
       BigNumber.from(bond.lpProperties.weightToken),
       BigNumber.from(bond.lpProperties.weightQuoteToken),
       reserves[0],

@@ -57,7 +57,6 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   reqtPrice,
 }) => {
   const bond = useBondFromBondId(bondId)
-  const chainId = bond.token.chainId
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -96,7 +95,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Pending Rewards
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${(new TokenAmount(deserializeToken(bond.token), String(bond.userData.interestDue) ?? '0')).toSignificant(4)} REQ`}
+          {`${(new TokenAmount(deserializeToken(bond.tokens[0]), String(bond.userData.interestDue) ?? '0')).toSignificant(4)} REQ`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -104,7 +103,7 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
           Claimable Rewards
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${(new TokenAmount(deserializeToken(bond.token), bond.userData.notes[noteIndex].payout ?? '0')).toSignificant(4)} REQ`}
+          {`${(new TokenAmount(deserializeToken(bond.tokens[0]), bond.userData.notes[noteIndex].payout ?? '0')).toSignificant(4)} REQ`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

@@ -13,6 +13,7 @@ import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import getChain from 'utils/getChain'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils'
 import { ethers } from 'ethers'
 
 import { useAppDispatch } from 'state'
@@ -91,8 +92,8 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const lpAddress = getAddress(chainId, reserveAddress)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond?.quoteToken?.address,
-    tokenAddress: bond?.token?.address,
+    quoteTokenAddress: getQuoteToken(bond)?.address,
+    tokenAddress: getNonQuoteToken(bond)?.address,
     weightQuote: bond?.lpProperties?.weightQuoteToken,
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
@@ -102,7 +103,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
     } catch (error) {
       console.log(error)
     }
@@ -143,13 +144,13 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
 
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
     }
-  }, [onApprove, dispatch, account, bondId, chainId])
+  }, [onApprove, dispatch, account, bond, chainId])
 
   if (!account) {
     return (

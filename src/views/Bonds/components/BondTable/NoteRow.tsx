@@ -158,14 +158,13 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady,
     }, [notes, isMobile])
 
 
-    const multiplier = 50
     if (isMobile) {
         return (
             <HeaderContainer>
                 <ContentRow>
                     <DescriptionCol>
                         <Text>Total Payout</Text>
-                        <Text>{(totalPayout * reqPrice * multiplier).toLocaleString()}$</Text>
+                        <Text>{(totalPayout * reqPrice).toLocaleString()}$</Text>
                     </DescriptionCol>
                     <DescriptionCol>
                         <Text>Average Maturity</Text>
@@ -185,7 +184,7 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady,
 
             </DescriptionColHeader>
             <DescriptionCol>
-                <Text>{totalPayout.toPrecision(4)} gREQ / {(totalPayout * reqPrice * multiplier).toLocaleString()}$</Text>
+                <Text>{totalPayout.toPrecision(4)} ABREQ / {(totalPayout * reqPrice).toLocaleString()}$</Text>
                 <Text>{prettifySeconds(avgVesting, 'd')}</Text>
             </DescriptionCol>
         </HeaderContainer>
@@ -248,7 +247,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout in gREQ:</Text>
+                    <Text>Payout in ABREQ:</Text>
                     <Text>Time to Maturity:</Text>
                 </DescriptionCol>
                 <DescriptionCol>

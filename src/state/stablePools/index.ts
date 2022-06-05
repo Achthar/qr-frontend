@@ -1,8 +1,5 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import isArchivedBondId from 'utils/bondHelpers'
-import { bonds as bondList } from 'config/constants/bonds'
-import { BondConfig } from 'config/constants/types'
 import { stableSwapInitialData } from 'config/constants/stablePools';
 import { fetchStablePoolData } from './fetchStablePoolData';
 import { PoolConfig } from '../types'
@@ -22,8 +19,6 @@ function initialState(chainId: number) {
   }
 
 }
-
-export function nonArchivedBonds(chainId: number): BondConfig[] { return bondList(chainId).filter(({ bondId }) => !isArchivedBondId(bondId)) }
 
 interface PoolUserDataResponse {
   index: number

@@ -12,6 +12,7 @@ import { fetchBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
@@ -23,6 +24,7 @@ import WithdrawModal from '../../WithdrawModal'
 import useApproveBond from '../../../hooks/useApproveBond'
 import { BondActionContainer, ActionTitles, ActionContent } from './styles'
 
+
 const IconButtonWrapper = styled.div`
   display: flex;
 `
@@ -32,6 +34,8 @@ interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
   lpLabel?: string
   displayApr?: string
+  reqPrice?: number
+
 }
 
 const Bonded: React.FunctionComponent<StackedActionProps> = ({
@@ -43,6 +47,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   reserveAddress,
   userDataReady,
   displayApr,
+  reqPrice
 }) => {
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
@@ -52,14 +57,13 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const location = useLocation()
 
-  console.log("ALLOWANCE", allowance.toString(), tokenBalance, bondId, bond)
   const isApproved = account && allowance && allowance.isGreaterThan(0)
 
   const lpAddress = getAddress(chainId, reserveAddress)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond?.quoteToken?.address,
-    tokenAddress: bond?.token?.address,
+    quoteTokenAddress: getQuoteToken(bond)?.address,
+    tokenAddress: getNonQuoteToken(bond)?.address,
     weightQuote: bond?.lpProperties?.weightQuoteToken,
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
@@ -69,7 +73,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   const handleStake = async (amount: string) => {
     await onBonding(amount, amountWSlippage)
-    dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+    dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
   }
 
 
@@ -92,6 +96,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
       onConfirm={handleStake}
       tokenName={name}
       addLiquidityUrl={addLiquidityUrl}
+      reqPrice={reqPrice}
     />,
   )
 
@@ -103,13 +108,13 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bondIds: [bondId] }))
+      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
 
       setRequestedApproval(false)
     } catch (e) {
       console.error(e)
     }
-  }, [onApprove, dispatch, account, bondId, chainId])
+  }, [onApprove, dispatch, account, bond, chainId])
 
   if (!account) {
     return (

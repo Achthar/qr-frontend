@@ -5,6 +5,7 @@ import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils'
 
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
@@ -12,10 +13,10 @@ import { useNetworkState } from 'state/globalNetwork/hooks'
 import getChain from 'utils/getChain'
 import BondingAction from './BondingAction'
 import ClaimAction from './ClaimAction'
+import RedemptionMulti from './RedemptionActionMulti'
 // import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
 import NoteRow, { NoteHeaderRow } from '../NoteRow'
-import RedemptionMulti from './RedemptionActionMulti'
 
 
 export interface ActionPanelProps {
@@ -24,6 +25,10 @@ export interface ActionPanelProps {
   userDataReady: boolean
   expanded: boolean
   reqPrice: number
+  price: {
+    reqPrice: number
+    price: number
+  }
 }
 
 const expandAnimation = keyframes`
@@ -193,7 +198,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   roi,
   userDataReady,
   expanded,
-  reqPrice
+  price
 }) => {
   const bond = details
 
@@ -205,8 +210,8 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const chain = getChain(chainId)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
-    quoteTokenAddress: bond?.quoteToken?.address,
-    tokenAddress: bond?.token?.address,
+    quoteTokenAddress: getQuoteToken(bond)?.address,
+    tokenAddress: getNonQuoteToken(bond)?.address,
     weightQuote: bond?.lpProperties?.weightQuoteToken,
     weightToken: bond?.lpProperties?.weightToken,
     fee: bond?.lpProperties?.fee
@@ -218,7 +223,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const now = Math.floor((new Date()).getTime() / 1000);
 
   const indexesToRedeem = bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex)
-
+  console.log("REQ PRICE P", price.reqPrice)
   return (
     <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>
@@ -235,7 +240,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         </TagsContainer>
         {!isMobile && details?.userData?.notes && details?.userData?.notes.length > 0 && (
           <GeneralActionContainer>
-            <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+            <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
             <RedemptionMulti
               isMobile={isMobile}
               bondIds={[bond.bondId]}
@@ -281,7 +286,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
       <NoteContainer isMobile={isMobile}>
         {details?.userData?.notes.length > 0 && (
           <>
-            <NoteHeaderRow notes={details?.userData?.notes} isMobile={isMobile} bond={bond} userDataReady={userDataReady} reqPrice={reqPrice} />
+            <NoteHeaderRow notes={details?.userData?.notes} isMobile={isMobile} bond={bond} userDataReady={userDataReady} reqPrice={price?.reqPrice} />
             {/* <Line /> */}
           </>
         )}
@@ -290,7 +295,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           const isLast = index === details?.userData?.notes.length - 1
           return (
             <>
-              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
+              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
             </>
           )
         }

@@ -69,6 +69,7 @@ const BondTable: React.FC<ITableProps> = (props) => {
     })
   }
 
+
   return (
     <Container>
       <TableContainer>
@@ -76,6 +77,7 @@ const BondTable: React.FC<ITableProps> = (props) => {
           <StyledTable>
             <TableBody>
               {rows.map((row) => {
+
                 return <Row {...row.original} userDataReady={userDataReady} key={`table-row-${row.id}`} />
               })}
             </TableBody>
