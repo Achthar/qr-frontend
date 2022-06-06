@@ -14,7 +14,7 @@ import {
 import { calcSingleBondDetails } from './calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
-import { setLpPrice } from './actions';
+import { setLpLink, setLpPrice } from './actions';
 
 
 // import { chain } from 'lodash'
@@ -51,6 +51,7 @@ function initialState(chainId: number): BondsState {
     loadArchivedBondsData: false,
     userDataLoaded: false,
     metaLoaded: false,
+    userReward: '0',
     status: 'idle'
   }
 }
@@ -118,7 +119,7 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[] 
   },
 )
 
-export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondUserDataResponse }, { chainId: number, account: string; bonds: BondConfig[] }>(
+export const fetchBondUserDataAsync = createAsyncThunk<{ rewards: string, bondUserData: { [bondId: number]: BondUserDataResponse } }, { chainId: number, account: string; bonds: BondConfig[] }>(
   'bonds/fetchBondUserDataAsync',
   async ({ chainId, account, bonds }) => {
 
@@ -141,21 +142,24 @@ export const fetchBondUserDataAsync = createAsyncThunk<{ [bondId: number]: BondU
     })
 
     const bondIds = bonds.map(b => b.bondId)
-    return Object.assign({}, ...userBondAllowances.map((_, index) => {
-      return {
-        [bondIds[index]]: {
-          bondId: bondIds[index],
-          allowance: userBondAllowances[index],
-          tokenBalance: userBondTokenBalances[index],
-          stakedBalance: 0, // userStakedBalances[index],
-          earnings: reward, //  userBondEarnings[index],
-          notes: notesFinal.filter(note => note.marketId === bondIds[index]),
-          interestDue: interestDue[index],
-          balance: userBondTokenBalances[index]
+    return {
+      rewards: reward,
+      bondUserData: Object.assign({}, ...userBondAllowances.map((_, index) => {
+        return {
+          [bondIds[index]]: {
+            bondId: bondIds[index],
+            allowance: userBondAllowances[index],
+            tokenBalance: userBondTokenBalances[index],
+            stakedBalance: 0, // userStakedBalances[index],
+            earnings: reward, //  userBondEarnings[index],
+            notes: notesFinal.filter(note => note.marketId === bondIds[index]),
+            interestDue: interestDue[index],
+            balance: userBondTokenBalances[index]
+          }
         }
-      }
-    })
-    )
+      })
+      )
+    }
   },
 )
 
@@ -175,6 +179,7 @@ export const bondsSlice = createSlice({
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
+      // metadata fetch
       .addCase(fetchBondMeta.pending, state => {
         state.metaLoaded = false;
       })
@@ -191,6 +196,7 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
+      // public detail fetch
       .addCase(calcSingleBondDetails.pending, state => {
         state.userDataLoaded = false;
       })
@@ -204,6 +210,7 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
+      // detail fetch for stable pool (and currently weighted pool)
       .addCase(calcSingleBondStableLpDetails.pending, state => {
         state.userDataLoaded = false;
       })
@@ -219,11 +226,10 @@ export const bondsSlice = createSlice({
       })
       // Update bonds with user data
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
-        console.log("NOTES USER PAYLOAD", action.payload)
-        Object.keys(action.payload).forEach((bondId) => {
-          console.log("NOTES ID", bondId, action.payload[bondId], state.bondData[bondId])
-          state.bondData[bondId].userData = { ...state.bondData[bondId].userData, ...action.payload[bondId] }
+        Object.keys(action.payload.bondUserData).forEach((bondId) => {
+          state.bondData[bondId].userData = { ...state.bondData[bondId].userData, ...action.payload.bondUserData[bondId] }
         })
+        state.userReward = action.payload.rewards
         state.userDataLoaded = true
       }).addCase(fetchBondUserDataAsync.pending, state => {
         state.userDataLoaded = false;
@@ -232,8 +238,12 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
+      // setters for prices calculated with pools and links
       .addCase(setLpPrice, (state, action) => {
         state.bondData[action.payload.bondId].purchasedInQuote = action.payload.price
+      })
+      .addCase(setLpLink, (state, action) => {
+        state.bondData[action.payload.bondId].lpLink = action.payload.link
       })
   },
 })

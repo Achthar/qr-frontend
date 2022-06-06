@@ -228,7 +228,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
     <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>
         <StakeContainer isMobile={isMobile}>
-          <StyledLinkExternal href={`/${chain}/add/${liquidityUrlPathParts}`}>
+          <StyledLinkExternal href={bond.lpLink}>
             Get LP for Bond
           </StyledLinkExternal>
           <StyledLinkExternal href={explorer}>{t('View Contract')}</StyledLinkExternal>

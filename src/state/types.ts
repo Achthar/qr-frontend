@@ -145,6 +145,7 @@ export interface Bond extends BondConfig, IBondDetails {
     purchased: SerializedBigNumber;
   }
   purchasedInQuote?: SerializedBigNumber
+  lpLink?: string
 }
 
 export interface BondsState {
@@ -155,7 +156,8 @@ export interface BondsState {
   metaLoaded: boolean
   bondData: {
     [bondId: number]: Bond
-  }
+  },
+  userReward: string
 }
 
 

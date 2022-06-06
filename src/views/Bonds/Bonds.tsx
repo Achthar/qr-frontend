@@ -124,23 +124,8 @@ const Line = styled.hr`
   size: 0.2;
 `;
 
-
-const StyledImage = styled(Image)`
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 58px;
-`
 const NUMBER_OF_BONDS_VISIBLE = 12
 
-const getDisplayApr = (reqtRewardsApr?: number, lpRewardsApr?: number) => {
-  if (reqtRewardsApr && lpRewardsApr) {
-    return (reqtRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
-  }
-  if (reqtRewardsApr) {
-    return reqtRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
-  }
-  return null
-}
 
 function Bonds({
   history,
@@ -152,7 +137,7 @@ function Bonds({
 
   const { isMobile } = useMatchBreakpoints()
   const { pathname } = useLocation()
-  const { bondData: bondsLP, userDataLoaded, } = useBonds()
+  const { bondData: bondsLP, userDataLoaded, userReward } = useBonds()
 
   const [query, setQuery] = useState('')
   const { account, chainId } = useActiveWeb3React()
@@ -474,9 +459,6 @@ function Bonds({
     )
   }
 
-
-
-
   const renderHeader = (): JSX.Element => {
     return (
       <>
@@ -523,7 +505,7 @@ function Bonds({
                   <Text fontSize='17px' textAlign='left' bold marginLeft='5px' marginTop='2px' marginRight='20px'>
                     Your Term Sheet
                   </Text>
-                  <Claim isMobile={isMobile} userDataReady={userDataLoaded} noBond={false} bondIds={Object.keys(bondsLP).map(n => Number(n))} />
+                  <Claim isMobile={isMobile} userDataReady={userDataLoaded} noBond={userDataLoaded ? Number(userReward) === 0 : false} bondIds={Object.keys(bondsLP).map(n => Number(n))} />
                 </Flex>
                 <Line />
                 <Flex flexDirection="row" alignItems='center' justifyContent='center'>

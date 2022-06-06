@@ -4,7 +4,7 @@ const useGetDocumentTitlePrice = () => {
   const reqtPriceBusd = 5 //useCakeBusdPrice()
   useEffect(() => {
     const reqtPriceBusdString = reqtPriceBusd ? reqtPriceBusd.toFixed(2) : ''
-    document.title = `Pancake Swap - ${reqtPriceBusdString}`
+    document.title = `Requiem Finance - ${reqtPriceBusdString}`
   }, [reqtPriceBusd])
 }
 export default useGetDocumentTitlePrice

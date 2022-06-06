@@ -81,7 +81,7 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
           setPendingTx(false)
         }
       }}
-      style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
+      style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: 'auto', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px', fontSize: '14px' }}
     >
       {noBond ? 'No Claims' : pendingTx ? <Dots>Claiming</Dots> : t('Claim')}
     </Button>

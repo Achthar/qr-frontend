@@ -1,7 +1,7 @@
 {
   "short_name": "RequiemFinance",
   "name": "RequiemFinance",
-  "description": "Farm REQT with Requiem LP Tokens",
+  "description": "Farm REQA with Requiem LP Tokens",
   "homepage_url": "https://requiem.finance",
   "start_url": ".",
   "display": "standalone",

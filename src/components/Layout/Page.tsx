@@ -39,7 +39,7 @@ const PageMeta = () => {
 
   const pageMeta = getCustomMeta(pathname, t) || {}
   const { title, description, image } = { ...DEFAULT_META, ...pageMeta }
-  const pageTitle = reqtPriceUsdDisplay ? [title, reqtPriceUsdDisplay].join(' - ') : title
+  const pageTitle = title
 
   return (
     <Helmet>

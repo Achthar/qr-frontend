@@ -11,14 +11,16 @@ import { pairValuation } from 'utils/pricers/weightedPairPricer'
 import { stablePoolValuation } from 'utils/pricers/stablePoolPricer'
 import { weightedPoolValuation } from 'utils/pricers/weightedPoolPricer'
 import { ethers } from 'ethers'
+import getChain from 'utils/getChain'
+import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
 import { BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
-import { setLpPrice } from './actions'
-import { fetchBondMeta, fetchBondUserDataAsync, nonArchivedBonds } from '.'
+import { setLpLink, setLpPrice } from './actions'
+import { fetchBondMeta, fetchBondUserDataAsync } from '.'
 import { State, Bond, BondsState } from '../types'
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
@@ -145,6 +147,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
     const bondsWithIds = Object.values(data)
     bondsWithIds.map(bondWithNoPrice => {
       let price: ethers.BigNumber;
+      let link: string;
       const bondType = bondWithNoPrice.type
 
       if (!bondWithNoPrice.lpData) {
@@ -156,13 +159,14 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
       if (bondType === BondType.PairLP) {
         const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
-        const pair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
+        const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
 
         if (!pairsLoaded) {
           // eslint-disable-next-line no-useless-return
           return;
         }
 
+        link = `/${getChain(chainId)}/add/${pair.weight0}-${pair.token0.address}/${pair.weight1}-${pair.token1.address}`
         price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
       }
       // stable pool LP
@@ -176,7 +180,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
           // eslint-disable-next-line no-useless-return
           return;
         }
-
+        link = `/${getChain(chainId)}/add/stables`
         price = stablePoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
       // weighted pool LP
@@ -190,11 +194,12 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
           // eslint-disable-next-line no-useless-return
           return;
         }
-
+        link = `/${getChain(chainId)}/add/weighted`
         price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
 
       dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId }))
       // eslint-disable-next-line no-useless-return
       return;
     })
