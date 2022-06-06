@@ -1,11 +1,10 @@
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
-import { Route, useRouteMatch, useLocation, NavLink, Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { Image, Heading, RowType, Toggle, Text, Button, ArrowForwardIcon, Flex, Box, useMatchBreakpoints, ChevronRightIcon } from '@requiemswap/uikit'
-import { TokenAmount, ZERO } from '@requiemswap/sdk'
+import { Image, RowType, Text, Flex, Box, useMatchBreakpoints, ChevronRightIcon } from '@requiemswap/uikit'
 import { ethers } from 'ethers'
-import { ABREQ, SREQ } from 'config/constants/tokens'
+import { ABREQ } from 'config/constants/tokens'
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import Page from 'components/Layout/Page'
@@ -13,11 +12,7 @@ import { TokenImage } from 'components/TokenImage'
 import { useBonds, usePollBondsWithUserData, useLpPricing } from 'state/bonds/hooks'
 import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 import { Bond } from 'state/types'
-import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps } from 'react-router'
-import Row from 'components/Row'
-import { timeConverter } from 'utils/time'
-import { useAppDispatch } from 'state'
 import { getBondApr } from 'utils/apr'
 import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
@@ -25,17 +20,15 @@ import { blocksToDays, prettifySeconds } from 'config'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 
 import { latinise } from 'utils/latinise'
-import { useAssetBackedStakingInfo } from 'state/assetBackedStaking/hooks'
 import useRefresh from 'hooks/useRefresh'
 import { useGetRawWeightedPairsState, useGetWeightedPairsPricerState } from 'hooks/useGetWeightedPairsState'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
-import Select, { OptionProps } from 'components/Select/Select'
+import { OptionProps } from 'components/Select/Select'
 import Loading from 'components/Loading'
-import { priceAssetBackedRequiem, priceRequiem } from 'utils/poolPricer'
-// import { BigNumber } from 'ethers'
+import { priceAssetBackedRequiem } from 'utils/poolPricer'
 import { RowProps } from './components/BondTable/Row'
 import Claim from './components/BondTable/Actions/ClaimAction'
-import { BondWithStakedValue, DesktopColumnSchema, ViewMode } from './components/types'
+import { BondWithStakedValue, DesktopColumnSchema } from './components/types'
 import Table from './components/BondTable/BondTable'
 
 
@@ -179,22 +172,6 @@ function Bonds({
     reservesAndWeightsLoaded,
   } = useGetRawWeightedPairsState(chainId, account, [], slowRefresh)
 
-  // const {
-  //   epoch,
-  //   stakeData,
-  //   generalDataLoaded,
-  //   userData,
-  //   userDataLoaded: stakeUserDataLoaded,
-  //   stakedRequiem,
-  //   stakedRequiemLoaded
-  // } = useAssetBackedStakingInfo(chainId, account)
-
-  // const { data } = userData ?? {}
-
-  // const { warmupInfo } = data ?? {}
-  // const { gons } = warmupInfo ?? {}
-
-  // console.log("REQUIEM", stakedRequiem, userData, userData?.warmupInfo?.gons)
 
   const reqPrice = useMemo(
     () => {
@@ -209,15 +186,10 @@ function Bonds({
   // Connected users should see loading indicator until first userData has loaded
   const userDataReady = !account || (!!account && userDataLoaded)
 
-  // const [stakedOnly, setStakedOnly] = useUserBondStakedOnly(isActive)
-
   const activeBonds = Object.values(bondsLP) // .filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
   const inactiveBonds = Object.values(bondsLP).filter((bond) => bond.bondId !== 0 && !isArchivedPid(bond.bondId))
   const archivedBonds = Object.values(bondsLP).filter((bond) => isArchivedPid(bond.bondId))
 
-  // const stakedOnlyBonds = activeBonds.filter(
-  //   (bond) => bond.userData && new BigNumber(bond.userData.stakedBalance).isGreaterThan(0),
-  // )
 
   const stakedInactiveBonds = inactiveBonds.filter(
     (bond) => bond.userData && new BigNumber(bond.userData.stakedBalance).isGreaterThan(0),
@@ -366,10 +338,6 @@ function Bonds({
       bond: {
         label: bond.name,
         bondId: bond.bondId,
-        token: bond.tokens[0],
-        quoteToken: bond.tokens[bond.quoteTokenIndex],
-        token2: bond.tokens?.[1],
-        token3: bond.tokens?.[2],
         bondType: bond.type,
         tokens: bond.tokens
       },
@@ -497,7 +465,7 @@ function Bonds({
         <Flex flexDirection="row" marginTop='5px'>
           <ChevronRightIcon width={20} />
           <Text fontSize='15px' textAlign='left' lineHeight='16px' bold marginLeft='20px' marginRight='2px'>
-            3 Bond the Asset in Return for
+            Bond the Asset in Return for
           </Text>
           <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} marginLeft='2px' />
         </Flex>
@@ -516,10 +484,10 @@ function Bonds({
           <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
             <HeaderBox
               btl='16px'
-              btr='3px'
-              bbl='16px'
+              btr={isMobile ? '16px' : '3px'}
+              bbl={isMobile ? '3px' : '16px'}
               bbr='3px'
-              width='50%'
+              width={isMobile ? '100%' : '50%'}
               height='164px'
               ml='1px'
               mr='2px'
@@ -528,7 +496,7 @@ function Bonds({
             >
               <Flex flexDirection="column" justifyContent='center'>
                 <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='17px' textAlign='left' bold marginLeft='5px' marginTop='2px' marginRight='20px'>
+                  <Text fontSize='17px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='20px'>
                     Bond Tokens for Asset-Backed Requiem
                   </Text>
                 </Flex>
@@ -540,15 +508,15 @@ function Bonds({
             </HeaderBox>
             <HeaderBox
               btl='3px'
-              btr='16px'
-              bbl='3px'
+              btr={isMobile ? '3px' : '16px'}
+              bbl={isMobile ? '16px' : '3px'}
               bbr='16px'
-              width='50%'
+              width={isMobile ? '100%' : '50%'}
               height='164px'
               ml='1px'
               mr='2px'
               mb='2px'
-              mt='0px'
+              mt={isMobile ? '5px' : '0px'}
             >
               <Flex flexDirection="column" justifyContent='center'>
                 <Flex flexDirection="row" justifyContent='flex-start' >

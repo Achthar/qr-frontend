@@ -223,7 +223,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const now = Math.floor((new Date()).getTime() / 1000);
 
   const indexesToRedeem = bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex)
-  console.log("REQ PRICE P", price.reqPrice)
+
   return (
     <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>

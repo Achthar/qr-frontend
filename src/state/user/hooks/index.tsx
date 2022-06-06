@@ -466,8 +466,6 @@ export function getMainAmounts(chainId: number, balances: {
     return [
       WRAPPED_NETWORK_TOKENS[chainId],
       ABREQ[chainId],
-      SREQ[chainId],
-      GREQ[chainId],
       REQT[chainId],
       WBTC[chainId],
       WETH[chainId]
@@ -507,7 +505,7 @@ export function useGetAssetBackedRequiemAmount(chainId: number) {
 
 export function useGetRequiemAmounts(chainId: number) {
   const balState = useUserBalances(chainId)
-  const requiems = chainId === 43113 ? [REQT[chainId], ABREQ[chainId], SREQ[chainId], GREQ[chainId]] : [REQT[chainId]]
+  const requiems = chainId === 43113 ? [REQT[chainId], ABREQ[chainId]] : [REQT[chainId]]
   return {
     balances: Object.assign({}, ...requiems.map(req => { return { [req.address]: new TokenAmount(req, balState?.balances[req.address].balance ?? '0') } })),
     isLoading: balState.isLoadingTokens
