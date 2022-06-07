@@ -214,7 +214,7 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
 
         </Flex>
 
-        <Flex flexDirection="row" width='100%' justifyContent='space-between' marginTop='5px'>
+        <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
           <Text width='50%' fontSize='15px' marginLeft='5px'>
             Generated Profits
           </Text>
