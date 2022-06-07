@@ -5,16 +5,11 @@ import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal } from '@requiemswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { bnParser } from 'utils/helper'
 import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import { useBondFromBondId } from 'state/bonds/hooks'
-import { payoutFor, Token, TokenAmount } from '@requiemswap/sdk'
-import { deserializeToken } from 'state/user/hooks/helpers'
 import { blocksToDays, prettifySeconds } from 'config'
 import { priceBonding } from 'utils/bondUtils'
-import { ABREQ } from 'config/constants/tokens'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;

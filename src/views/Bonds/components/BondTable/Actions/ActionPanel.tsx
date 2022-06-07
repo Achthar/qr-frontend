@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
+import { useWeb3React } from '@web3-react/core'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
@@ -17,6 +18,7 @@ import RedemptionMulti from './RedemptionActionMulti'
 // import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
 import NoteRow, { NoteHeaderRow } from '../NoteRow'
+import { PreviewPanel } from './PreviewPanel'
 
 
 export interface ActionPanelProps {
@@ -203,7 +205,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const bond = details
 
   const { isMobile, isTablet, isDesktop } = useMatchBreakpoints()
-  const { chainId } = useNetworkState()
+  const { chainId, account } = useWeb3React()
   const { t } = useTranslation()
   // const { quoteToken, token, dual } = bond
   const lpLabel = 'Bond'
@@ -243,10 +245,12 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
             <RedemptionMulti
               isMobile={isMobile}
+              thisBond={bond}
               bondIds={[bond.bondId]}
               userDataReady={userDataReady}
               indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
               sendGREQ={sendGREQ}
+              reqPrice={price.reqPrice}
             />
             {/* <ClaimAction
               {...bond}
@@ -261,14 +265,24 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         {
           isMobile && (
             <GeneralActionContainerMobile>
-              <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
-              <RedemptionMulti
+              {account ? (
+                <>
+                  <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+                  <RedemptionMulti
+                    isMobile={isMobile}
+                    bondIds={[bond.bondId]}
+                    thisBond={bond}
+                    userDataReady={userDataReady}
+                    indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
+                    sendGREQ={sendGREQ}
+                    reqPrice={price.reqPrice}
+                  />
+                </>
+              ) : <PreviewPanel
                 isMobile={isMobile}
-                bondIds={[bond.bondId]}
-                userDataReady={userDataReady}
-                indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
-                sendGREQ={sendGREQ}
-              />
+                thisBond={bond}
+                reqPrice={price.reqPrice}
+              />}
 
               {/* <ClaimAction
                 {...bond}

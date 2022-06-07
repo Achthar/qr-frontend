@@ -6,12 +6,12 @@ import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { fetchBondUserDataAsync } from 'state/bonds'
+import { TokenImage } from 'components/TokenImage'
+import { ABREQ } from 'config/constants/tokens'
 import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { useAppDispatch } from 'state'
-import { TokenImage } from 'components/TokenImage'
-import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
 import { Bond } from 'state/types'
 import { useBondFromBondIds } from 'state/bonds/hooks'
@@ -64,7 +64,7 @@ export const ButtonContainer = styled.div`
 `
 
 
-export const PreviewPanel = styled.div`
+export const PreviewPanelContainer = styled.div`
   padding: 1px;
   border-radius: 2px;
   border: solid 5px #fea43022;
@@ -104,42 +104,18 @@ const StyledInput = styled(Input)`
 `
 
 
-interface RedeemMultiProps {
-  userDataReady: boolean
-  indexes: number[]
-  bondIds: number[]
+interface PreviewPanelProps {
   reqPrice: number
   thisBond: Bond
-  sendGREQ: boolean
   isMobile: boolean
 }
 
-const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
-  indexes,
-  bondIds,
+export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
   thisBond,
-  sendGREQ,
-  userDataReady,
   isMobile,
   reqPrice
 }) => {
   const { account, chainId } = useActiveWeb3React()
-
-
-  const bonds = useBondFromBondIds(bondIds)
-  const { onRedeem } = useRedeemNotes(chainId, account, indexes, sendGREQ)
-
-  const handleRedemption = async () => {
-    try {
-      await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds }))
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-
-  const dispatch = useAppDispatch()
 
   const [val, setVal] = useState('')
 
@@ -148,7 +124,6 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
     let returnVal = ethers.BigNumber.from(0)
     let inpUSD = ethers.BigNumber.from(0)
     const formattedInput = new BigNumber(val).multipliedBy(new BigNumber('10').pow(18)).toString()
-    if (!thisBond?.userData) return [Number(ethers.utils.formatEther(returnVal)), Number(ethers.utils.formatEther(inpUSD))]
     try {
       returnVal = priceBonding(
         ethers.BigNumber.from(val === '' ? 0 : formattedInput),
@@ -171,13 +146,6 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
     thisBond
   ])
 
-  const isApproved = useMemo(() => {
-    if (!thisBond.userData) return true
-    return ethers.BigNumber.from(thisBond.userData.allowance).gt(0)
-  },
-    [thisBond.userData]
-  )
-
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
@@ -186,21 +154,21 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
     },
     [setVal],
   )
-
-
-  if (!isApproved || !userDataReady || indexes.length === 0) {
-    const decimals = 18
-    return (
-      <InputContainer isMobile={isMobile}>
-        <Flex flexDirection="column" width='100%' justifyContent='center'>
-          <Flex flexDirection="row" width='100%' alignItems='space-between' justifyContent='space-between'>
-            <Text fontSize='15px' marginLeft='5px'>
-              You pay
-            </Text>
-            <Text bold>
-              Preview
-            </Text>
-          </Flex>
+  console.log("PANEL BOND", thisBond, val, payout, inputUSD)
+  const decimals = 18
+  return (
+    <InputContainer isMobile={isMobile}>
+      <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='center'>
+        <Text bold textAlign='left' marginLeft='3px'>
+          Bonding preview
+        </Text>
+        <ConnectWalletButton style={{ borderRadius: '16px', width: '150px', height: '25px', fontSize: '12px', textAlign: 'center' }} />
+      </Flex>
+      <Flex flexDirection="column" width='100%' justifyContent='space-between'>
+        <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center' marginTop='5px'>
+          <Text width='30%' fontSize='15px' marginLeft='5px'>
+            You pay
+          </Text>
           <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'>
             <StyledInput
               pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
@@ -210,72 +178,35 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
               onChange={handleChange}
               placeholder="0"
               value={val}
-              style={{ height: '15px', borderRadius: '3px', width: '60%', marginBottom: '1px' }}
+              style={{ height: '15px', borderRadius: '3px', width: '40%' }}
             />
             {thisBond?.tokens && (<PoolLogo tokens={thisBond.tokens.map(t => deserializeToken(t))} overlap='-8px' />)}
           </Flex>
-          <Text fontSize='10px' marginTop='2px' textAlign='center'>
-            {`~$${(Math.round(inputUSD * 100) / 100)?.toLocaleString()}`}
+          <Text fontSize='10px' marginTop='2px' textAlign='right' width='30%'>
+            {`~$${(Math.round(inputUSD))?.toLocaleString()}`}
           </Text>
-          <Text fontSize='15px' marginLeft='5px'>
-            You will get
+        </Flex>
+        <Flex flexDirection="row" width='100%' justifyContent='space-between' marginTop='5px'>
+          <Text width='33%' fontSize='15px' marginLeft='5px'>
+            You get
           </Text>
           <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'>
-            <Text marginRight='3px' bold>
+            <Text textAlign='right' bold marginRight='3px'>
               {`$${Math.round(payout * reqPrice / thisBond.bondPrice * 100) / 100} in`}
             </Text>
             <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
           </Flex>
-          <Text fontSize='15px' marginLeft='5px'>
-            {thisBond?.vestingTerm ? `with vesting period ${prettifySeconds(thisBond.vestingTerm)}` : ''}
+        </Flex>
+        <Flex flexDirection="row" width='100%' justifyContent='space-between' marginTop='5px'>
+          <Text width='33%' fontSize='15px' marginLeft='5px'>
+            Vesting Term
+          </Text>
+          <Text textAlign='center'>
+            {thisBond?.vestingTerm ? `${prettifySeconds(thisBond.vestingTerm)}` : ''}
           </Text>
         </Flex>
-      </InputContainer >
-    )
-  }
-
-  if (indexes.length === 0) {
-    return (
-      <Button
-        width={isMobile ? '45%' : "40%"}
-        onClick={handleRedemption}
-        variant="secondary"
-        disabled
-        style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
-      >
-        <Text fontSize='15px' >
-          None Matured
-        </Text>
-      </Button>
-    )
-  }
-
-
-
-
-
-  if (!userDataReady) {
-    return (
-      <ActionContent>
-        <Skeleton width={180} marginBottom={28} marginTop={14} />
-      </ActionContent>
-    )
-  }
-
-  return (
-    <ActionContent>
-      <Button
-        width="50%"
-        onClick={handleRedemption}
-        variant="primary"
-        style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
-      >
-        <Text fontSize='15px' color='black'>
-          Redeem Matured
-        </Text>
-      </Button>
-    </ActionContent>
+      </Flex>
+    </InputContainer >
   )
-}
 
-export default RedemptionMulti
+}

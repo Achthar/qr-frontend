@@ -40,8 +40,6 @@ export const BondActionContainer = styled.div<{ isMobile: boolean }>`
 
     max-height: 110px;
   }
-
-  
 `
 
 export const ActionTitles = styled.div` 

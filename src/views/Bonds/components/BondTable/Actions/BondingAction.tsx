@@ -22,7 +22,25 @@ import useDepositBond from 'views/Bonds/hooks/useDepositBond'
 import BondingModal from '../../BondingModal'
 import WithdrawModal from '../../WithdrawModal'
 import useApproveBond from '../../../hooks/useApproveBond'
-import { BondActionContainer, ActionTitles, ActionContent } from './styles'
+import { ActionTitles, ActionContent } from './styles'
+
+
+export const BondActionContainer = styled.div<{ isMobile: boolean }>`
+  padding: 16px;
+  width: ${({ isMobile }) => isMobile ? '30%' : '40%'};
+  border: 2px solid ${({ theme }) => theme.colors.input};
+  border-radius: 16px;
+  margin-bottom: 16px;
+  ${({ isMobile }) => isMobile ? 'margin-right: 5px;' : ''};
+  ${({ theme }) => theme.mediaQueries.sm} {
+    max-height: 110px;
+  }
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+
+    max-height: 110px;
+  }
+`
 
 
 const IconButtonWrapper = styled.div`
@@ -169,13 +187,15 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   return (
     <BondActionContainer isMobile={isMobile}>
       <ActionTitles>
-        <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px">
-          {t('Enable Bond')}
+        <Text bold textTransform="uppercase" color="textSubtle" fontSize="12px" textAlign='center'>
+          Enable Bond
         </Text>
       </ActionTitles>
       <ActionContent>
-        <Button width="100%" disabled={requestedApproval} onClick={handleApprove} variant="secondary">
-          {t('Enable')}
+        <Button width="100%" disabled={requestedApproval} onClick={handleApprove} variant="secondary"
+          style={{ borderRadius: '6px' }}
+        >
+          Enable
         </Button>
       </ActionContent>
     </BondActionContainer>
