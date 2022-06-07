@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
-import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
+import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading, useTooltip, HelpIcon, Flex } from '@requiemswap/uikit'
 import { useLocation } from 'react-router-dom'
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
@@ -26,12 +26,16 @@ import { ActionTitles, ActionContent } from './styles'
 
 
 export const BondActionContainer = styled.div<{ isMobile: boolean }>`
+  display:flex;
+  flex-direction:column;
+  align-items: center;
+  justify-content: center;
   padding: 16px;
-  width: ${({ isMobile }) => isMobile ? '30%' : '40%'};
+  width: ${({ isMobile }) => isMobile ? '30%' : '20%'};
   border: 2px solid ${({ theme }) => theme.colors.input};
   border-radius: 16px;
   margin-bottom: 16px;
-  ${({ isMobile }) => isMobile ? 'margin-right: 5px;' : ''};
+  ${({ isMobile }) => isMobile ? 'margin-right: 5px;' : 'margin-left: 5px;'}
   ${({ theme }) => theme.mediaQueries.sm} {
     max-height: 110px;
   }
@@ -41,7 +45,9 @@ export const BondActionContainer = styled.div<{ isMobile: boolean }>`
     max-height: 110px;
   }
 `
-
+const ReferenceElement = styled.div`
+  display: inline-block;
+`
 
 const IconButtonWrapper = styled.div`
   display: flex;
@@ -53,6 +59,7 @@ interface StackedActionProps extends BondWithStakedValue {
   lpLabel?: string
   displayApr?: string
   reqPrice?: number
+  otr?: boolean
 
 }
 
@@ -65,7 +72,8 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   reserveAddress,
   userDataReady,
   displayApr,
-  reqPrice
+  reqPrice,
+  otr = false
 }) => {
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
@@ -95,19 +103,24 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   }
 
 
-  const displayBalance = useCallback(() => {
-    const stakedBalanceBigNumber = getBalanceAmount(stakedBalance)
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0000001)) {
-      return stakedBalanceBigNumber.toFixed(10, BigNumber.ROUND_DOWN)
-    }
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0001)) {
-      return getFullDisplayBalance(stakedBalance).toLocaleString()
-    }
-    return stakedBalanceBigNumber.toFixed(3, BigNumber.ROUND_DOWN)
-  }, [stakedBalance])
+  const tooltipContent = (
+    <>
+      <Text>
+        {`Before interacting with our Bonding Contract, you have to approve spending of your ${bond.displayName} tokens.`}
+      </Text>
+      <Text my="24px">
+        Make always sure that you understand the risk profiles of Bonding by reading our docs.
+      </Text>
+    </>
+  )
+  const { targetRef, tooltip, tooltipVisible } = useTooltip(tooltipContent, {
+    placement: 'top-end',
+    tooltipOffset: [20, 10],
+  })
 
   const [onPresentBonding] = useModal(
     <BondingModal
+      chainId={chainId}
       bondId={bondId}
       max={tokenBalance}
       lpLabel={lpLabel}
@@ -150,21 +163,19 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   }
 
   if (isApproved) {
-
     return (
       <Button
-        // marginBottom="-30px"
-        width={isMobile ? '45%' : '35%'}
+        width={isMobile ? '45%' : otr ? '20%' : '35%'}
         onClick={onPresentBonding}
         variant="primary"
         disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
-        style={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
-
+        style={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px', marginLeft: `${otr ? '16px' : '5px'}`, marginRight: `${otr ? '16px' : '3px'}`, borderBottomRightRadius: `${otr ? '16px' : '3px'}`, borderTopRightRadius: `${otr ? '16px' : '3px'}` }
+        }
       >
         <Text fontSize='15px' color='black'>
           Purchase Bond
         </Text>
-      </Button>
+      </Button >
 
     )
   }
@@ -191,13 +202,19 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
           Enable Bond
         </Text>
       </ActionTitles>
-      <ActionContent>
-        <Button width="100%" disabled={requestedApproval} onClick={handleApprove} variant="secondary"
-          style={{ borderRadius: '6px' }}
-        >
-          Enable
-        </Button>
-      </ActionContent>
+      {/* <ActionContent> */}
+      <Button width="100%" disabled={requestedApproval} onClick={handleApprove} variant="secondary"
+        style={{ borderRadius: '6px', width: '95%', fontSize: '13px' }}
+      >
+        Enable
+      </Button>
+      {/* </ActionContent> */}
+      <Flex flexDirection='column' justifyContent='center' marginTop='5px' alignItems='center' width='100%'>
+        <ReferenceElement ref={targetRef}>
+          <HelpIcon color="textSubtle" />
+        </ReferenceElement>
+        {tooltipVisible && tooltip}
+      </Flex >
     </BondActionContainer>
   )
 }

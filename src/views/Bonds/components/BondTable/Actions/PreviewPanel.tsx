@@ -22,7 +22,7 @@ import { ActionContent } from './styles'
 
 export const InputContainer = styled.div<{ isMobile: boolean }>`
   padding: 3px;
-  width: ${({ isMobile }) => isMobile ? '90%' : '80%'};
+  width: ${({ isMobile }) => isMobile ? '90%' : '300px'};
   border: 2px solid ${({ theme }) => theme.colors.input};
   border-radius: 16px;
   flex-grow: 1;
@@ -30,12 +30,12 @@ export const InputContainer = styled.div<{ isMobile: boolean }>`
   margin-bottom: 16px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    max-height: 110px;
+    max-height: 140px;
   }
 
   ${({ theme }) => theme.mediaQueries.xl} {
 
-    max-height: 110px;
+    max-height: 150px;
   }
   `
 
@@ -108,14 +108,18 @@ interface PreviewPanelProps {
   reqPrice: number
   thisBond: Bond
   isMobile: boolean
+  chainId: number
+  account: string
 }
 
 export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
   thisBond,
   isMobile,
-  reqPrice
+  reqPrice,
+  chainId,
+  account
 }) => {
-  const { account, chainId } = useActiveWeb3React()
+  // const { account, chainId } = useActiveWeb3React()
 
   const [val, setVal] = useState('')
 
@@ -158,53 +162,76 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
   const decimals = 18
   return (
     <InputContainer isMobile={isMobile}>
-      <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='center'>
+      <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='center' marginBottom='5px'>
         <Text bold textAlign='left' marginLeft='3px'>
           Bonding preview
         </Text>
-        <ConnectWalletButton style={{ borderRadius: '16px', width: '150px', height: '25px', fontSize: '12px', textAlign: 'center' }} />
+        {!account && (<ConnectWalletButton style={{ borderRadius: '16px', width: '150px', height: '25px', fontSize: '12px', textAlign: 'center' }} />)}
       </Flex>
       <Flex flexDirection="column" width='100%' justifyContent='space-between'>
-        <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center' marginTop='5px'>
-          <Text width='30%' fontSize='15px' marginLeft='5px'>
+
+        <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='space-between' marginTop='5px'>
+          <Text width='30%' fontSize='15px' marginLeft='5px' marginRight='3px' height='20px'>
             You pay
           </Text>
-          <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'>
-            <StyledInput
-              pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
-              inputMode="decimal"
-              step="any"
-              min="0"
-              onChange={handleChange}
-              placeholder="0"
-              value={val}
-              style={{ height: '15px', borderRadius: '3px', width: '40%' }}
-            />
-            {thisBond?.tokens && (<PoolLogo tokens={thisBond.tokens.map(t => deserializeToken(t))} overlap='-8px' />)}
-          </Flex>
-          <Text fontSize='10px' marginTop='2px' textAlign='right' width='30%'>
+          {/* <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'> */}
+          <StyledInput
+            pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
+            inputMode="decimal"
+            step="any"
+            min="0"
+            onChange={handleChange}
+            placeholder="0"
+            value={val}
+            style={{ height: '20px', borderRadius: '3px', width: '40%', alignSelf: 'center' }}
+          />
+          {thisBond?.tokens && (<PoolLogo tokens={thisBond.tokens.map(t => deserializeToken(t))} overlap='-8px' size={15} width='20px' />)}
+          {/* </Flex> */}
+          <Text fontSize='10px' textAlign='center' width='30%'>
             {`~$${(Math.round(inputUSD))?.toLocaleString()}`}
           </Text>
         </Flex>
-        <Flex flexDirection="row" width='100%' justifyContent='space-between' marginTop='5px'>
-          <Text width='33%' fontSize='15px' marginLeft='5px'>
+
+        <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='space-between' marginTop='5px'>
+          <Text width='30%' fontSize='15px' marginLeft='5px' marginRight='3px' height='20px'>
             You get
           </Text>
-          <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'>
-            <Text textAlign='right' bold marginRight='3px'>
-              {`$${Math.round(payout * reqPrice / thisBond.bondPrice * 100) / 100} in`}
-            </Text>
-            <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
-          </Flex>
+          <StyledInput
+            pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
+            inputMode="none"
+            step="any"
+            min="0"
+            onChange={() => null}
+            placeholder="0"
+            value={`${(Math.round(payout * 100) / 100)?.toLocaleString()}`}
+            style={{ height: '20px', borderRadius: '3px', width: '40%' }}
+          />
+
+          <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
+          <Text fontSize='10px' textAlign='center' width='30%'>
+            {`~$${Math.round(payout * reqPrice / thisBond.bondPrice)?.toLocaleString()}`}
+          </Text>
+
         </Flex>
+
         <Flex flexDirection="row" width='100%' justifyContent='space-between' marginTop='5px'>
-          <Text width='33%' fontSize='15px' marginLeft='5px'>
+          <Text width='50%' fontSize='15px' marginLeft='5px'>
+            Generated Profits
+          </Text>
+          <Text fontSize='15px' textAlign='center' color='green' width='50%'>
+            {`+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}`}
+          </Text>
+        </Flex>
+
+        <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
+          <Text width='50%' fontSize='15px' marginLeft='5px'>
             Vesting Term
           </Text>
-          <Text textAlign='center'>
+          <Text textAlign='center' width='50%'>
             {thisBond?.vestingTerm ? `${prettifySeconds(thisBond.vestingTerm)}` : ''}
           </Text>
         </Flex>
+
       </Flex>
     </InputContainer >
   )

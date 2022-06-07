@@ -203,7 +203,7 @@ export const bondConfig = (chainId: number): BondConfig[] => {
     {
       isLP: false,
       name: "req4USD LP",
-      displayName: "REQT - Stable LP",
+      displayName: "4-USD Stable Pool LP",
       bondToken: "Stable Swap LP",
       payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
@@ -225,8 +225,8 @@ export const bondConfig = (chainId: number): BondConfig[] => {
     },
     {
       isLP: false,
-      name: "60-ABREQ/40-DAI LP",
-      displayName: "REQ Pair LP",
+      name: "ABREQ/DAI LP",
+      displayName: "60-ABREQ/40-DAI LP",
       bondToken: "RLP",
       payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',
@@ -248,8 +248,8 @@ export const bondConfig = (chainId: number): BondConfig[] => {
     },
     {
       isLP: false,
-      name: "REQ3 Classic LP",
-      displayName: "REQT - CLassic LP",
+      name: "REQ3 Classic",
+      displayName: "wETH/wBTC/USDT 3-Pool LP",
       bondToken: "Stable Swap LP",
       payoutToken: "abREQ",
       bondIconSvg: 'CvxImg',

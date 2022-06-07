@@ -22,6 +22,7 @@ interface PoolLogoProps {
   tokens?: Token[]
   tokensInRow?: number
   overlap?: string
+  width?: string
 }
 
 export default function PoolLogo({
@@ -29,13 +30,14 @@ export default function PoolLogo({
   size = 20,
   margin = false,
   tokensInRow = 2,
-  overlap = '-7px'
+  overlap = '-7px',
+  width = '100%'
 }: PoolLogoProps) {
   const chainId = tokens?.[0].chainId ?? 43113
   const chunks = tokens && sliceIntoChunks(tokens, tokensInRow)
 
   return (
-    <AutoColumn>
+    <AutoColumn style={{ width: `${width}` }}>
       {chunks.map((ts, rowIndex) => {
 
         return (

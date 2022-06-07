@@ -10,6 +10,10 @@ import useToast from 'hooks/useToast'
 import { useBondFromBondId } from 'state/bonds/hooks'
 import { blocksToDays, prettifySeconds } from 'config'
 import { priceBonding } from 'utils/bondUtils'
+import PoolLogo from 'components/Logo/PoolLogo'
+import { deserializeToken } from 'state/user/hooks/helpers'
+import { ABREQ } from 'config/constants/tokens'
+import { TokenImage } from 'components/TokenImage'
 
 const AnnualRoiContainer = styled(Flex)`
   cursor: pointer;
@@ -24,6 +28,7 @@ const AnnualRoiDisplay = styled(Text)`
 `
 
 interface BondingModalProps {
+  chainId: number
   bondId: number
   max: BigNumber
   multiplier?: string
@@ -39,6 +44,7 @@ interface BondingModalProps {
 
 const BondingModal: React.FC<BondingModalProps> = (
   {
+    chainId,
     bondId,
     max,
     onConfirm,
@@ -134,38 +140,50 @@ const BondingModal: React.FC<BondingModalProps> = (
         addLiquidityUrl={addLiquidityUrl}
         inputTitle={t('Bond')}
       />
-      <Flex mt="24px" alignItems="center" justifyContent="space-between">
+      <Flex mt="24px" alignItems="center" justifyContent="space-between" flexDirection='row'>
         <Text mr="8px" color="textSubtle">
           You Will Pay
         </Text>
-        <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${val} ${bond.name}`}
-          {inputUSD > 0 ? (` / ${Math.round(inputUSD * 10) / 10} USD`) : (``)}
-        </Text>
+        <Flex alignItems="center" justifyContent="space-between" flexDirection='row' width='60%'>
+
+          <Flex alignItems="center" justifyContent="center" flexDirection='row' width='100%'>
+            {bond?.tokens && (<PoolLogo tokens={bond.tokens.map(tk => deserializeToken(tk))} width='20%' />)}
+            <Text ml='10px' mr="2px" color="textSubtle" textAlign='left' bold >
+              {inputUSD > 0 ? val : '-'}
+            </Text>
+          </Flex>
+
+          <Text ml='2px' fontSize='13px' mr="2px" color="textSubtle" textAlign='center'>
+            {inputUSD > 0 ? (`~$${Math.round(inputUSD * 10) / 10}`) : (`-`)}
+          </Text>
+        </Flex>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           You Will Get
         </Text>
-        <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(payout / bond.bondPrice * 1000) / 1000} ABREQ`}
-          {reqPrice > 0 ?
-            (` / ${Math.round(
-              payout * reqPrice / bond.bondPrice * 10
-            ) / 10
-              } USD`) : (``)}
-        </Text>
+        <Flex alignItems="center" justifyContent="space-between" flexDirection='row' width='60%'>
+
+          <Flex alignItems="center" justifyContent="center" flexDirection='row' width='100%'>
+            <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
+            <Text ml='10px' mr="2px" color="textSubtle" textAlign='left' bold>
+              {payout > 0 ? `${Math.round(payout / bond.bondPrice * 100) / 100}` : '-'}
+            </Text>
+          </Flex>
+
+          <Text ml='2px' fontSize='13px' mr="2px" color="textSubtle" textAlign='center'>
+            {(reqPrice > 0 && payout > 0) ?
+              (`~$${Math.round(payout * reqPrice / bond.bondPrice * 10) / 10}`) : (`-`)}
+          </Text>
+        </Flex>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
           Your Profits
         </Text>
-        <Text mr="8px" color="textSubtle" textAlign='center'>
+        <Text mr="8px" textAlign='center' bold color='green'>
           {inputUSD > 0 ?
-            (`${Math.round(
-              profits * 10
-            ) / 10
-              } USD`) : (`-`)}
+            (`~$${(Math.round(profits * 10) / 10).toLocaleString()}`) : (`-`)}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
@@ -173,7 +191,7 @@ const BondingModal: React.FC<BondingModalProps> = (
           Return
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(profits / inputUSD * 10000) / 100}%`}
+          {inputUSD ? `${Math.round(profits / inputUSD * 10000) / 100}%` : '-'}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

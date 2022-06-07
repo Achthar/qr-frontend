@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
-import { useWeb3React } from '@web3-react/core'
+import useActiveWeb3React from "hooks/useActiveWeb3React";
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
@@ -81,9 +81,9 @@ align-self:flex-start;
 
 const StakeContainer = styled.div<{ isMobile: boolean }>`
   color: ${({ theme }) => theme.colors.text};
-  align-items: center;
+  align-items: space-between;
   flex-direction: ${({ isMobile }) => isMobile ? 'row' : 'column'};
-  width: ${({ isMobile }) => isMobile ? '300px' : '100%'};
+  width: ${({ isMobile }) => isMobile ? '10s0%' : '100%'};
   display: flex;
   justify-content: space-between;
 
@@ -145,6 +145,7 @@ const GeneralActionContainerMobile = styled.div`
   width: 100%;
   margin-top:10px;
   justify-content: center;
+  align-items:center;
   margin-bottom: 5px;
 `
 
@@ -153,7 +154,8 @@ const ActionContainerNoBond = styled.div`
   display: flex;
   fle-wrap: nowrap;
   flex-direction: row;
-  width: 80%;
+  width: 100%;
+  height:100%;
   margin-top:2px;
 `
 
@@ -205,7 +207,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const bond = details
 
   const { isMobile, isTablet, isDesktop } = useMatchBreakpoints()
-  const { chainId, account } = useWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const { t } = useTranslation()
   // const { quoteToken, token, dual } = bond
   const lpLabel = 'Bond'
@@ -235,11 +237,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           </StyledLinkExternal>
           <StyledLinkExternal href={explorer}>{t('View Contract')}</StyledLinkExternal>
         </StakeContainer>
-
-
-        <TagsContainer>
-          <CoreTag />
-        </TagsContainer>
         {!isMobile && details?.userData?.notes && details?.userData?.notes.length > 0 && (
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
@@ -251,6 +248,9 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
               indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
               sendGREQ={sendGREQ}
               reqPrice={price.reqPrice}
+              chainId={chainId}
+              account={account}
+              hasPosition={details?.userData?.notes.length > 0}
             />
             {/* <ClaimAction
               {...bond}
@@ -267,7 +267,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
             <GeneralActionContainerMobile>
               {account ? (
                 <>
-                  <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
+                  <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
                   <RedemptionMulti
                     isMobile={isMobile}
                     bondIds={[bond.bondId]}
@@ -276,22 +276,18 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
                     indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
                     sendGREQ={sendGREQ}
                     reqPrice={price.reqPrice}
+                    chainId={chainId}
+                    account={account}
+                    hasPosition={details?.userData?.notes.length > 0}
                   />
                 </>
               ) : <PreviewPanel
                 isMobile={isMobile}
                 thisBond={bond}
                 reqPrice={price.reqPrice}
+                chainId={chainId}
+                account={account}
               />}
-
-              {/* <ClaimAction
-                {...bond}
-                userDataReady={userDataReady}
-                lpLabel={lpLabel}
-                displayApr={roi.value}
-                isMobile={isMobile}
-                noBond={details?.userData?.notes.length === 0}
-              /> */}
             </GeneralActionContainerMobile>
           )
         }
@@ -317,15 +313,17 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
 
         {(!isMobile && (!details?.userData?.notes || details?.userData?.notes.length === 0) && (
           <ActionContainerNoBond>
-            <Text width="30%" bold textAlign='center' marginLeft='50px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
-            <ActionContainerNoBondButton>
-              <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} />
-            </ActionContainerNoBondButton>
+            <Text width="20%" bold textAlign='center' marginLeft='20px' marginRight='20px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
+            <PreviewPanel
+              isMobile={isMobile}
+              thisBond={bond}
+              reqPrice={price.reqPrice}
+              chainId={chainId}
+              account={account}
+            />
+            {account && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} otr />)}
           </ActionContainerNoBond>
         ))}
-
-        {/* <RedemptionAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} noteIndex={0} />
-        <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} /> */}
       </NoteContainer>
     </Container>
   )
