@@ -44,7 +44,7 @@ const IconWrapper = styled.div<{ height?: number, width?: number }>`
 `
 
 const StyledIcon = styled.div<{ height?: number, width?: number, isActive: boolean }>`
-margin-right:15px;
+  margin-right:15px;
   display: flex;
   justify-content: center;
   fill: ${({ theme }) => theme.colors.primary};
@@ -102,7 +102,7 @@ const Details: React.FC<DetailsProps> = ({ actionPanelToggled }) => {
       {!isDesktop &&
         (
           <>
-            <StyledIcon height={20} width={80} isActive={actionPanelToggled}>
+            <StyledIcon height={22} width={80} isActive={actionPanelToggled}>
               <img src={Book} alt='' />
             </StyledIcon>
             <StyledIconAbs height={20} width={80} isActive={actionPanelToggled}>

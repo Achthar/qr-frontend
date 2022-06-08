@@ -142,7 +142,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
     return prettifySeconds(Number(bond?.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
   };
 
-  const loading = useMemo(() => !(props?.price?.price > 0 || props?.discount < 10000000), [props.price, props.discount])
+  const loading = useMemo(() => !(props?.price?.price === 0 || props?.discount > -100), [props.price, props.discount])
 
   const handleRenderRow = () => {
     if (!isMobile) {

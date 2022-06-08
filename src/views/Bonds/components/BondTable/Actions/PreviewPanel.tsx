@@ -202,13 +202,13 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
             min="0"
             onChange={() => null}
             placeholder="0"
-            value={`${(Math.round(payout * 100) / 100)?.toLocaleString()}`}
+            value={`${thisBond.bondPrice > 0 ? (Math.round(payout / thisBond.bondPrice * 100) / 100)?.toLocaleString() : ''}`}
             style={{ height: '20px', borderRadius: '3px', width: '40%' }}
           />
 
           <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
           <Text fontSize='10px' textAlign='center' width='30%'>
-            {`~$${Math.round(payout * reqPrice / thisBond.bondPrice)?.toLocaleString()}`}
+            {thisBond.bondPrice > 0 ? `~$${Math.round(payout * reqPrice / thisBond.bondPrice)?.toLocaleString()}` : ''}
           </Text>
 
         </Flex>
@@ -218,7 +218,7 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
             {isMobile ? 'Your Profits' : 'Generated Profits'}
           </Text>
           <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='50%'>
-            {`+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}`}
+            {thisBond.bondPrice > 0 ? `+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}` : ''}
           </Text>
         </Flex>
 

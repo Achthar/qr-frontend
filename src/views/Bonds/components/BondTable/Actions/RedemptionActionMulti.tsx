@@ -236,7 +236,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
               min="0"
               onChange={() => null}
               placeholder="0"
-              value={(Math.round(payout * 100) / 100)?.toLocaleString()}
+              value={thisBond.bondPrice > 0 ? (Math.round(payout / thisBond.bondPrice * 100) / 100)?.toLocaleString() : ''}
               style={{ height: '15px', borderRadius: '3px', width: '70%' }}
             />
             <Flex style={{ width: '30%' }} flexDirection='row' justifyContent='center' alignItems='center'>
@@ -248,10 +248,10 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
             {reqPrice && reqPrice > 0 && (
               <>
                 <Text fontSize='10px' marginTop='2px' textAlign='center' marginRight='10px'>
-                  {`~$${(Math.round(payout * reqPrice / thisBond.bondPrice * 100) / 100).toLocaleString()}`}
+                  {thisBond.bondPrice > 0 ? `~$${(Math.round(payout * reqPrice / thisBond.bondPrice * 100) / 100).toLocaleString()}` : ''}
                 </Text>
                 <Text fontSize='10px' marginTop='2px' textAlign='center' color='green'>
-                  {`+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}`}
+                  {thisBond.bondPrice > 0 ? `+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}` : ''}
                 </Text>
               </>
             )}
