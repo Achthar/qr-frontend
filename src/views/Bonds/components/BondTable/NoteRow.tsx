@@ -200,15 +200,10 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
-        // return prettyVestingPeriod(chainId, currentBlock, Number(bond.userData.notes.matured));
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
-    const vestingPeriod = () => {
-        const vestingTerm = parseInt(bond.bondTerms.vesting);
-        // const seconds = secondsUntilBlock(chainId, currentBlock, vestingBlock);
-        return prettifySeconds(vestingTerm, "");
-    };
+    console.log("NOTE WITH BID", bond.name, bond?.bondId, note)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])

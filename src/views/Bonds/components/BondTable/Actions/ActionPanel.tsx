@@ -81,11 +81,11 @@ align-self:flex-start;
 
 const StakeContainer = styled.div<{ isMobile: boolean }>`
   color: ${({ theme }) => theme.colors.text};
-  align-items: space-between;
+  align-items: ${({ isMobile }) => isMobile ? 'space-between' : 'center'};
   flex-direction: ${({ isMobile }) => isMobile ? 'row' : 'column'};
   width: ${({ isMobile }) => isMobile ? '10s0%' : '100%'};
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ isMobile }) => isMobile ? 'space-between' : 'center'};
 
   ${({ theme }) => theme.mediaQueries.sm} {
     justify-content: flex-start;
@@ -237,11 +237,11 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           </StyledLinkExternal>
           <StyledLinkExternal href={explorer}>{t('View Contract')}</StyledLinkExternal>
         </StakeContainer>
-        {!isMobile && details?.userData?.notes && details?.userData?.notes.length > 0 && (
+        {!isMobile && userDataReady && details?.userData?.notes && details?.userData?.notes.length > 0 && (
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
             <RedemptionMulti
-              isMobile={isMobile}
+              isMobile={false}
               thisBond={bond}
               bondIds={[bond.bondId]}
               userDataReady={userDataReady}
@@ -252,14 +252,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
               account={account}
               hasPosition={details?.userData?.notes.length > 0}
             />
-            {/* <ClaimAction
-              {...bond}
-              userDataReady={userDataReady}
-              lpLabel={lpLabel}
-              displayApr={roi.value}
-              isMobile={isMobile}
-              noBond={details?.userData?.notes.length === 0}
-            /> */}
           </GeneralActionContainer>
         )}
         {
@@ -295,23 +287,18 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
 
       <NoteContainer isMobile={isMobile}>
         {details?.userData?.notes.length > 0 && (
-          <>
-            <NoteHeaderRow notes={details?.userData?.notes} isMobile={isMobile} bond={bond} userDataReady={userDataReady} reqPrice={price?.reqPrice} />
-            {/* <Line /> */}
-          </>
+          <NoteHeaderRow notes={details?.userData?.notes} isMobile={isMobile} bond={bond} userDataReady={userDataReady} reqPrice={price?.reqPrice} />
         )}
         {details?.userData?.notes.map((
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
           return (
-            <>
               <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
-            </>
           )
         }
         )}
 
-        {(!isMobile && (!details?.userData?.notes || details?.userData?.notes.length === 0) && (
+        {(!isMobile && (!userDataReady || !details?.userData?.notes) && (
           <ActionContainerNoBond>
             <Text width="20%" bold textAlign='center' marginLeft='20px' marginRight='20px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
             <PreviewPanel

@@ -68,7 +68,7 @@ export const stablePoolSlice = createSlice({
     // Update bonds with live data
     builder
       .addCase(fetchStablePoolData.pending, state => {
-        state.poolData[state.referenceChain].publicDataLoaded = false;
+        // state.poolData[state.referenceChain].publicDataLoaded = false;
       })
       .addCase(fetchStablePoolData.fulfilled, (state, action) => {
         const pool = action.payload

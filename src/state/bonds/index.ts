@@ -51,6 +51,8 @@ function initialState(chainId: number): BondsState {
     loadArchivedBondsData: false,
     userDataLoaded: false,
     metaLoaded: false,
+    userDataLoading: false,
+    publicDataLoading: false,
     userReward: '0',
     status: 'idle'
   }
@@ -198,7 +200,7 @@ export const bondsSlice = createSlice({
       })
       // public detail fetch
       .addCase(calcSingleBondDetails.pending, state => {
-        state.userDataLoaded = false;
+        state.userDataLoading = true;
       })
       .addCase(calcSingleBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
@@ -232,7 +234,7 @@ export const bondsSlice = createSlice({
         state.userReward = action.payload.rewards
         state.userDataLoaded = true
       }).addCase(fetchBondUserDataAsync.pending, state => {
-        state.userDataLoaded = false;
+        state.userDataLoading = true;
       }).addCase(fetchBondUserDataAsync.rejected, (state, { error }) => {
         state.userDataLoaded = true;
         console.log(error, state)

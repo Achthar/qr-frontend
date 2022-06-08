@@ -22,7 +22,7 @@ import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathP
 import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
 
 import useApproveBond from 'views/Bonds/hooks/useApproveBond'
-import useRedeemBond from 'views/Bonds/hooks/useRedeemBond'
+import useRedeemNote from 'views/Bonds/hooks/useRedeemBond'
 import { Note } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 import RedemptionModal from '../../RedemptionModal'
@@ -57,8 +57,6 @@ export const ButtonContainer = styled.div`
 
 interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
-  lpLabel?: string
-  displayApr?: string
   reqPrice: BigNumber
   note: Note
 }
@@ -66,39 +64,19 @@ interface StackedActionProps extends BondWithStakedValue {
 const Redemption: React.FunctionComponent<StackedActionProps> = ({
   bondId,
   note,
-  apr,
-  name,
-  lpLabel,
-  reserveAddress,
   userDataReady,
-  displayApr,
-  reqPrice
 }) => {
   const { t } = useTranslation()
   const { account, chainId } = useActiveWeb3React()
-  const [requestedApproval, setRequestedApproval] = useState(false)
-  const { allowance, tokenBalance, stakedBalance, notes } = useBondUser(bondId)
-  const noteIndex = note.noteIndex
-  // const note = notes.find(n => n.noteIndex === noteIndex)
+
   const now = Math.floor((new Date()).getTime() / 1000);
 
   const bond = useBondFromBondId(bondId)
 
-  const { onRedeem } = useRedeemBond(chainId, account, bond)
-  const location = useLocation()
-  const isApproved = account && allowance && allowance.isGreaterThan(0)
+  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
 
-  const chain = getChain(chainId)
-  const lpAddress = getAddress(chainId, reserveAddress)
-  const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
-    chainId,
-    quoteTokenAddress: getQuoteToken(bond)?.address,
-    tokenAddress: getNonQuoteToken(bond)?.address,
-    weightQuote: bond?.lpProperties?.weightQuoteToken,
-    weightToken: bond?.lpProperties?.weightToken,
-    fee: bond?.lpProperties?.fee
-  })
-  const addLiquidityUrl = `${chain}/${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
+
+  const dispatch = useAppDispatch()
 
   const handleRedemption = async () => {
     try {
@@ -110,47 +88,6 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   }
 
 
-  const displayBalance = useCallback(() => {
-    const stakedBalanceBigNumber = getBalanceAmount(stakedBalance)
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0000001)) {
-      return stakedBalanceBigNumber.toFixed(10, BigNumber.ROUND_DOWN)
-    }
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0001)) {
-      return getFullDisplayBalance(stakedBalance).toLocaleString()
-    }
-    return stakedBalanceBigNumber.toFixed(3, BigNumber.ROUND_DOWN)
-  }, [stakedBalance])
-
-  const [onPresentRedeem] = useModal(
-    <RedemptionModal
-      bondId={bondId}
-      noteIndex={noteIndex}
-      max={tokenBalance}
-      lpLabel={lpLabel}
-      apr={apr}
-      stakedBalance={stakedBalance}
-      onConfirm={handleRedemption}
-      tokenName={name}
-      addLiquidityUrl={addLiquidityUrl}
-      reqtPrice={reqPrice}
-    />,
-  )
-
-  const lpContract = useERC20(lpAddress)
-  const dispatch = useAppDispatch()
-  const { onApprove } = useApproveBond(chainId, lpContract, bond)
-
-  const handleApprove = useCallback(async () => {
-    try {
-      setRequestedApproval(true)
-      await onApprove()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
-
-      setRequestedApproval(false)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [onApprove, dispatch, account, bond, chainId])
 
   if (!account) {
     return (
@@ -180,27 +117,11 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
     )
   }
 
-  if (isApproved && note) {
+  if (note) {
     if (ethers.BigNumber.from(note.payout).gt(0)) {
       return (
         <ButtonContainer>
           <ActionContent>
-            {/* <div>
-              <Heading>{displayBalance()}</Heading>
-            </div>
-            <IconButtonWrapper>
-              <IconButton variant="secondary" onClick={onPresentWithdraw} mr="6px">
-                <MinusIcon color="primary" width="14px" />
-              </IconButton>
-              <IconButton
-                variant="secondary"
-                onClick={onPresentRedeem}
-                disabled={['history', 'archived'].some((item) => location.pathname.includes(item))}
-              >
-                <AddIcon color="primary" width="14px" />
-              </IconButton>
-            </IconButtonWrapper> */}
-
             <Button
               width="100%"
               onClick={handleRedemption}

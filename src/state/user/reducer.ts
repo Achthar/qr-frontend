@@ -220,7 +220,7 @@ export default createReducer<UserState>(initialState, (builder) =>
     .addCase(fetchUserTokenData.pending, (state) => {
       if (!state.userBalances[state.referenceChainId])
         state.userBalances[state.referenceChainId] = { ...state.userBalances[state.referenceChainId], isLoadingTokens: true }
-      state.userBalances[state.referenceChainId].isLoadingTokens = true
+      // state.userBalances[state.referenceChainId].isLoadingTokens = true
     }
     )
     .addCase(fetchUserNetworkCcyBalance.fulfilled, (state, action) => {
@@ -231,7 +231,7 @@ export default createReducer<UserState>(initialState, (builder) =>
     }
     )
     .addCase(fetchUserNetworkCcyBalance.pending, (state, action) => {
-      state.userBalances[state.referenceChainId].isLoadingNetworkCcy = true
+      // state.userBalances[state.referenceChainId].isLoadingNetworkCcy = true
     }
     )
     .addCase(refreshNetworkCcyBalance, (state, { payload: { newBalance } }) => {

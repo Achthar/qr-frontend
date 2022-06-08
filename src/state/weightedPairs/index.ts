@@ -55,7 +55,7 @@ export const stablePoolSlice = createSlice({
       })
       // 1) fetch addresses for existing pairs
       .addCase(fetchWeightedPairMetaData.pending, (state, action) => {
-        state[action.meta.arg.chainId].metaDataLoaded = false;
+        // state[action.meta.arg.chainId].metaDataLoaded = false;
       })
       .addCase(fetchWeightedPairMetaData.fulfilled, (state, action) => {
         const chainId = action.meta.arg.chainId
@@ -72,7 +72,7 @@ export const stablePoolSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       }).addCase(fetchWeightedPairData.pending, state => {
-        state[state.currentChain].reservesAndWeightsLoaded = false;
+        // state[state.currentChain].reservesAndWeightsLoaded = false;
       })
       // 2) fetch reserves and weights for these pairs
       .addCase(fetchWeightedPairData.fulfilled, (state, action) => {
@@ -133,7 +133,7 @@ export const stablePoolSlice = createSlice({
         console.error(error.message);
       }) // reseres only updater
       .addCase(fetchWeightedPairReserves.pending, state => {
-        state[state.currentChain].reservesAndWeightsLoaded = false;
+        // state[state.currentChain].reservesAndWeightsLoaded = false;
       })
       // 2) fetch reserves and weights for these pairs
       .addCase(fetchWeightedPairReserves.fulfilled, (state, action) => {

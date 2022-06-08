@@ -151,6 +151,8 @@ export interface Bond extends BondConfig, IBondDetails {
 export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
+  userDataLoading: boolean
+  publicDataLoading: boolean
   status?: string
   liveMarkets?: number[]
   metaLoaded: boolean

@@ -229,7 +229,7 @@ const BondingModal: React.FC<BondingModalProps> = (
             !lpTokensToStake.isFinite() ||
             lpTokensToStake.eq(0) ||
             lpTokensToStake.gt(fullBalanceNumber) ||
-            payout > Number(ethers.utils.formatEther(bond.market.maxPayout))
+            payout / bond.bondPrice > Number(ethers.utils.formatEther(bond.market.maxPayout))
           }
           onClick={async () => {
             setPendingTx(true)

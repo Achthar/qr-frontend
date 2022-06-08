@@ -9,18 +9,18 @@ const options = {
 }
 
 
-export const redeemBond = async (chainId, account, bondDepositoryContract, bondId) => {
+export const redeemNote = async (chainId, account, bondDepositoryContract, noteIndex) => {
   const gasPrice = getGasPrice(chainId)
   const tx = await bondDepositoryContract.redeem(
     account, // user
-    [bondId], // indexes
+    [noteIndex], // indexes
     // { ...options, gasPrice }
   )
   const receipt = await tx.wait()
   return receipt.status
 }
 
-export const redeemPositions = async (chainId, account, bondDepositoryContract, noteIndexes, sendGREQ) => {
+export const redeemPositions = async (chainId, account, bondDepositoryContract, noteIndexes) => {
   const gasPrice = getGasPrice(chainId)
   const tx = await bondDepositoryContract.redeem(
     account, // user
