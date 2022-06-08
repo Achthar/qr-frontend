@@ -4,8 +4,9 @@ import { Text, Input, Box } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { FixedSizeList } from 'react-window'
 import { useAudioModeManager } from 'state/user/hooks'
+import { ethers } from 'ethers'
 import useDebounce from 'hooks/useDebounce'
-import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList } from '../../hooks/Tokens'
+import { useAllTokens, useToken, useIsUserAddedToken, useFoundOnInactiveList, useTokenSearch } from '../../hooks/Tokens'
 import { isAddress } from '../../utils'
 import Column, { AutoColumn } from '../Layout/Column'
 import Row from '../Layout/Row'
@@ -13,7 +14,6 @@ import CommonBases from './CommonBases'
 import CurrencyListExpanded from './CurrencyListExpanded'
 import { filterTokens, useSortedTokensByQuery } from './filtering'
 import useTokenComparator from './sorting'
-
 import ImportRow from './ImportRow'
 
 interface CurrencySearchExpandedProps {
@@ -28,6 +28,7 @@ interface CurrencySearchExpandedProps {
   showCommonBases?: boolean
   showImportView: () => void
   setImportToken: (token: Token) => void
+  message?: string
 }
 
 const swapSound = new Audio('swap.mp3')
@@ -58,7 +59,7 @@ function CurrencySearchExpanded({
   const allTokens = useAllTokens(chainId ?? 43113)
 
   // if they input an address, use it
-  const searchToken = useToken(chainId, debouncedQuery)
+  const searchToken = useTokenSearch(chainId, debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
 
   const [audioPlay] = useAudioModeManager()

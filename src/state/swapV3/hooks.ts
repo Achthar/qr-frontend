@@ -224,7 +224,7 @@ function useAllCommonWeightedPairsFromState(currencyA?: Currency, currencyB?: Cu
 }
 
 // from the current swap inputs, compute the best trade and return it.
-export function useDerivedSwapV3Info(chainId: number, account: string): {
+export function useDerivedSwapV3Info(chainId: number, account: string, tokenBalances: { [address: string]: TokenAmount }, networkCcyBalance: CurrencyAmount): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
@@ -257,10 +257,37 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
   const recipientLookup = useENS(chainId, recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
+  // fetch balances from state if available
+  const [inputCurrencyBalance, outputCurrencyBalance] = useMemo(() => {
+    let _inputCurrencyBalance: CurrencyAmount
+    let _outputCurrencyBalance: CurrencyAmount
+    if (!inputCurrency) {
+      _inputCurrencyBalance = undefined
+    } else if (inputCurrency === NETWORK_CCY[chainId]) {
+      _inputCurrencyBalance = networkCcyBalance
+    } else {
+      _inputCurrencyBalance = tokenBalances[(inputCurrency as Token).address]
+    }
+
+    if (!outputCurrency) {
+      _outputCurrencyBalance = undefined
+    } else if (outputCurrency === NETWORK_CCY[chainId]) {
+      _outputCurrencyBalance = networkCcyBalance
+    } else {
+      _outputCurrencyBalance = tokenBalances[(outputCurrency as Token).address]
+    }
+
+
+    return [_inputCurrencyBalance, _outputCurrencyBalance]
+  },
+    [inputCurrency, outputCurrency, tokenBalances, networkCcyBalance, chainId])
+
+  // if balances are in state do not load them manually - if not fetch them here
   const relevantTokenBalances = useCurrencyBalances(chainId, account ?? undefined, [
-    inputCurrency ?? undefined,
-    outputCurrency ?? undefined,
+    inputCurrencyBalance?.currency ? undefined : inputCurrency ?? undefined,
+    outputCurrencyBalance?.currency ? undefined : outputCurrency ?? undefined,
   ])
+
 
   const [inputToken, outputToken] = useMemo(() => {
     return [
@@ -285,9 +312,10 @@ export function useDerivedSwapV3Info(chainId: number, account: string): {
 
   const v3Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
 
+  // assign the user balances
   const currencyBalances = {
-    [Field.INPUT]: relevantTokenBalances[0],
-    [Field.OUTPUT]: relevantTokenBalances[1],
+    [Field.INPUT]: inputCurrencyBalance ?? relevantTokenBalances[0],
+    [Field.OUTPUT]: outputCurrencyBalance ?? relevantTokenBalances[1],
   }
 
   const currencies: { [field in Field]?: Currency } = {

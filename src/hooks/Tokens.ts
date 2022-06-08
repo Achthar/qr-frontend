@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { parseBytes32String } from '@ethersproject/strings'
 import { Currency, Token, currencyEquals, NETWORK_CCY, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { arrayify } from 'ethers/lib/utils'
+import { ethers } from 'ethers'
 import {
   TokenAddressMap,
   useDefaultTokenList,
@@ -134,14 +135,13 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
 // undefined if invalid or does not exist
 // null if loading
 // otherwise returns the token
-export function useToken(chainId: number, tokenAddress?: string): Token | undefined | null {
-  // const { chainId } = useNetworkState()
-  const tokens = useAllTokens(chainId)
+export function useToken(chainId: number, tokenAddress: string): Token | undefined | null {
 
   const address = isAddress(tokenAddress)
 
   const tokenContract = useTokenContract(address || undefined, false)
   const tokenContractBytes32 = useBytes32TokenContract(address || undefined, false)
+  const tokens = useAllTokens(chainId)
   const token: Token | undefined = address ? tokens[address] : undefined
 
   const tokenName = useSingleCallResult(chainId, token ? undefined : tokenContract, 'name', undefined, NEVER_RELOAD)
@@ -155,6 +155,64 @@ export function useToken(chainId: number, tokenAddress?: string): Token | undefi
   const symbol = useSingleCallResult(chainId, token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
   const symbolBytes32 = useSingleCallResult(chainId, token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
   const decimals = useSingleCallResult(chainId, token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
+
+  return useMemo(() => {
+    if (token) return token
+    if (!chainId || !address) return undefined
+    if (decimals.loading || symbol.loading || tokenName.loading) return null
+    if (decimals.result) {
+      return new Token(
+        chainId,
+        address,
+        decimals.result[0],
+        parseStringOrBytes32(symbol.result?.[0], symbolBytes32.result?.[0], 'UNKNOWN'),
+        parseStringOrBytes32(tokenName.result?.[0], tokenNameBytes32.result?.[0], 'Unknown Token'),
+      )
+    }
+    return undefined
+  }, [
+    address,
+    chainId,
+    decimals.loading,
+    decimals.result,
+    symbol.loading,
+    symbol.result,
+    symbolBytes32.result,
+    token,
+    tokenName.loading,
+    tokenName.result,
+    tokenNameBytes32.result,
+  ])
+}
+
+
+
+// undefined if invalid or does not exist
+// null if loading
+// otherwise returns the token
+export function useTokenSearch(chainId: number, tokenAddress: string): Token | undefined | null {
+
+
+
+  const address = isAddress(tokenAddress)
+
+  const tokenContract = useTokenContract(address || undefined, false)
+  const tokenContractBytes32 = useBytes32TokenContract(address || undefined, false)
+  const tokens = useAllTokens(chainId)
+  const token: Token | undefined = address ? tokens[address] : undefined
+
+  const tokenName = useSingleCallResult(chainId, token ? undefined : tokenContract, 'name', undefined, NEVER_RELOAD)
+  const tokenNameBytes32 = useSingleCallResult(
+    chainId,
+    token ? undefined : tokenContractBytes32,
+    'name',
+    undefined,
+    NEVER_RELOAD,
+  )
+  const symbol = useSingleCallResult(chainId, token ? undefined : tokenContract, 'symbol', undefined, NEVER_RELOAD)
+  const symbolBytes32 = useSingleCallResult(chainId, token ? undefined : tokenContractBytes32, 'symbol', undefined, NEVER_RELOAD)
+  const decimals = useSingleCallResult(chainId, token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
+
 
   return useMemo(() => {
     if (token) return token

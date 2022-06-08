@@ -130,7 +130,7 @@ export default function SwapV3({
     currencies,
     inputError: swapInputError,
     poolDict
-  } = useDerivedSwapV3Info(chainId, account)
+  } = useDerivedSwapV3Info(chainId, account, tokenBalances, networkCcyBalance)
 
   const {
     wrapType,
