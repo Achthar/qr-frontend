@@ -1,6 +1,6 @@
 /* eslint react/destructuring-assignment: 0 */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
@@ -9,6 +9,7 @@ import useDelayedUnmount from 'hooks/useDelayedUnmount'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { useBlock } from 'state/block/hooks'
 import { prettifySeconds, secondsUntilBlock } from 'config'
+import CircleLoader from 'components/Loader/CircleLoader'
 import Roi, { RoiProps } from './Roi'
 import Apr, { AprProps } from './Apr'
 import Bond, { BondProps } from './Bond'
@@ -20,6 +21,7 @@ import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
 import BondMobile from './BondMobile'
+
 
 interface PurchasedProps {
   purchasedUnits: number
@@ -140,6 +142,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
     return prettifySeconds(Number(bond?.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
   };
 
+  const loading = useMemo(() => !(props?.price?.price > 0 || props?.discount < 10000000), [props.price, props.discount])
 
   const handleRenderRow = () => {
     if (!isMobile) {
@@ -167,9 +170,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   <td key={key}>
                     <CellInner>
                       <CellLayout label='Discount'>
-                        <Text>
-                          {`${Math.round(props.discount * 100000) / 1000}%`}
-                        </Text>
+                        {!loading ? (<Text>
+                          {`${Math.round(props.discount * 10000) / 100}%`}
+                        </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
                   </td>
@@ -179,9 +182,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   <td key={key}>
                     <CellInner>
                       <CellLayout label={t('Price')}>
-                        <Text>
+                        {!loading ? (<Text>
                           {`$${Math.round(props.price.price * 10000) / 10000}`}
-                        </Text>
+                        </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
                   </td>
@@ -191,9 +194,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   <td key={key}>
                     <CellInner>
                       <CellLayout label={t('Purchased')}>
-                        <Text>
+                        {!loading ? (<Text>
                           {`$${Math.round(props.purchased.purchasedInQuote).toLocaleString()}/${props.purchased.purchasedUnits} units`}
-                        </Text>
+                        </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
                   </td>
@@ -215,9 +218,10 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   <td key={key}>
                     <CellInner>
                       <CellLayout label={t('ROI')}>
-                        <Text>
-                          <Roi {...props.roi} hideButton />
-                        </Text>
+                        {!loading ? (
+                          <Text>
+                            <Roi {...props.roi} hideButton />
+                          </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
                   </td>
@@ -258,22 +262,22 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
           <td>
             <tr>
               <TermMobileCell>
-                <CellLayout label={t('Vesting Period')}>
-                  <Text>
+                <CellLayout label={t('Vesting')}>
+                  {!loading ? (<Text fontSize='13px' >
                     {vesting()}
-                  </Text>
+                  </Text>) : <CircleLoader />}
                 </CellLayout>
               </TermMobileCell>
               <DiscountMobileCell>
                 <CellLayout label={t('Discount')}>
-                  <Text>
-                    {`${Math.round(props.discount * 100000) / 1000}%`}
-                  </Text>
+                  {!loading ? (<Text fontSize='13px'>
+                    {`${Math.round(props.discount * 10000) / 100}%`}
+                  </Text>) : <CircleLoader />}
                 </CellLayout>
               </DiscountMobileCell>
               <AprMobileCell>
                 <CellLayout label={t('ROI')}>
-                  <Roi {...props.roi} hideButton />
+                  {!loading ? (<Roi {...props.roi} hideButton isMobile />) : <CircleLoader />}
                 </CellLayout>
               </AprMobileCell>
 

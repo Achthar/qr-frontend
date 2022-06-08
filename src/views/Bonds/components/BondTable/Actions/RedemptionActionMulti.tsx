@@ -198,7 +198,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
       <InputContainer isMobile={isMobile}>
         <Flex flexDirection="column" width='100%' justifyContent='center'>
           <Flex flexDirection="row" width='100%' alignItems='space-between' justifyContent='space-between'>
-            <Text fontSize='15px' marginLeft='5px'>
+            <Text fontSize='13px' marginLeft='5px'>
               You pay
             </Text>
             <Text bold marginRight='2px'>
@@ -224,7 +224,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
             {`~$${(Math.round(inputUSD * 100) / 100)?.toLocaleString()}`}
           </Text>
 
-          <Text fontSize='15px' marginLeft='5px'>
+          <Text fontSize='13px' marginLeft='5px'>
             You will get
           </Text>
 
@@ -263,7 +263,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
             </Text>
             <TokenImage token={ABREQ[chainId]} chainId={chainId} width={20} height={20} />
           </Flex> */}
-          <Text fontSize='15px' marginLeft='5px' textAlign='center'>
+          <Text fontSize='13px' marginLeft='5px' textAlign='center'>
             {thisBond?.vestingTerm ? `with ${prettifySeconds(thisBond.vestingTerm)} vesting` : ''}
           </Text>
         </Flex>

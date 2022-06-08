@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
-import { Flex, IconButton, useModal, CalculateIcon } from '@requiemswap/uikit'
+import { Flex, IconButton, useModal, CalculateIcon, Text } from '@requiemswap/uikit'
 import BondRoiCalculatorModal from 'components/RoiCalculatorModal/BondRoiCalculator'
 import { useTranslation } from 'contexts/Localization'
 import { useBondUser } from 'state/bonds/hooks'
@@ -23,6 +23,7 @@ export interface RoiButtonProps {
   roi?: number
   displayRoi?: string
   addLiquidityUrl?: string
+  isMobile?: boolean
 }
 
 const RoiButton: React.FC<RoiButtonProps> = ({
@@ -34,6 +35,7 @@ const RoiButton: React.FC<RoiButtonProps> = ({
   roi,
   displayRoi,
   addLiquidityUrl,
+  isMobile = false
 }) => {
   const { t } = useTranslation()
   const lpPrice = new BigNumber(1) // useLpTokenPrice(lpSymbol)
@@ -41,7 +43,9 @@ const RoiButton: React.FC<RoiButtonProps> = ({
 
   return (
     <RoiLabelContainer alignItems="center" onClick={() => { return null }}>
-      {displayRoi} %
+      <Text fontSize={isMobile ? '13px' : '15px'}>
+        {displayRoi}%
+      </Text>
       {variant === 'text-and-button' && (
         <IconButton variant="text" scale="sm" ml="4px">
           <CalculateIcon width="18px" />

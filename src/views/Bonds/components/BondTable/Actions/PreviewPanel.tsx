@@ -158,7 +158,6 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
     },
     [setVal],
   )
-  console.log("PANEL BOND", thisBond, val, payout, inputUSD)
   const decimals = 18
   return (
     <InputContainer isMobile={isMobile}>
@@ -171,7 +170,7 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
       <Flex flexDirection="column" width='100%' justifyContent='space-between'>
 
         <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='space-between' marginTop='5px'>
-          <Text width='30%' fontSize='15px' marginLeft='5px' marginRight='3px' height='20px'>
+          <Text width='30%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px' marginRight='3px' height='20px'>
             You pay
           </Text>
           {/* <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'> */}
@@ -193,7 +192,7 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
         </Flex>
 
         <Flex flexDirection="row" width='100%' justifyContent='space-between' alignItems='space-between' marginTop='5px'>
-          <Text width='30%' fontSize='15px' marginLeft='5px' marginRight='3px' height='20px'>
+          <Text width='30%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px' marginRight='3px' height='20px'>
             You get
           </Text>
           <StyledInput
@@ -215,19 +214,19 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
         </Flex>
 
         <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
-          <Text width='50%' fontSize='15px' marginLeft='5px'>
-            Generated Profits
+          <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
+            {isMobile ? 'Your Profits' : 'Generated Profits'}
           </Text>
-          <Text fontSize='15px' textAlign='center' color='green' width='50%'>
+          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='50%'>
             {`+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}`}
           </Text>
         </Flex>
 
         <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
-          <Text width='50%' fontSize='15px' marginLeft='5px'>
+          <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
             Vesting Term
           </Text>
-          <Text textAlign='center' width='50%'>
+          <Text textAlign='center' width='50%' fontSize={isMobile ? '13px' : '15px'}>
             {thisBond?.vestingTerm ? `${prettifySeconds(thisBond.vestingTerm)}` : ''}
           </Text>
         </Flex>

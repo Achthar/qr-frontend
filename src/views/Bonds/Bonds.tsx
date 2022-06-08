@@ -331,7 +331,7 @@ function Bonds({
       // price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
-        value: String(Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100),
+        value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
         bondId: 1,
         lpLabel: 'string',
         reqtPrice: new BigNumber(reqPrice),

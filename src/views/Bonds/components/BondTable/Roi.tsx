@@ -19,6 +19,7 @@ export interface RoiProps {
   reqtPrice: BigNumber
   originalValue: number
   hideButton?: boolean
+  isMobile?: boolean
 }
 
 const Container = styled.div`
@@ -52,6 +53,7 @@ const Roi: React.FC<RoiProps> = ({
   quoteTokenAddress,
   reqtPrice,
   originalValue,
+  isMobile = false,
   hideButton = false,
 }) => {
   const { chainId } = useNetworkState()
@@ -72,6 +74,7 @@ const Roi: React.FC<RoiProps> = ({
     <Container>
       {originalValue ? (
         <RoiButton
+          isMobile={isMobile}
           variant={hideButton ? 'text' : 'text-and-button'}
           bondId={bondId}
           lpSymbol={lpSymbol}
