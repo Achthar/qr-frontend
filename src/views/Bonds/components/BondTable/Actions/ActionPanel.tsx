@@ -237,7 +237,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           </StyledLinkExternal>
           <StyledLinkExternal href={explorer}>{t('View Contract')}</StyledLinkExternal>
         </StakeContainer>
-        {!isMobile && userDataReady && details?.userData?.notes && details?.userData?.notes.length > 0 && (
+        {!isMobile && userDataReady && details?.userData?.notes && (
           <GeneralActionContainer>
             <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
             <RedemptionMulti
@@ -293,12 +293,12 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
           return (
-              <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
+            <NoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
           )
         }
         )}
 
-        {(!isMobile && (!userDataReady || !details?.userData?.notes) && (
+        {(!isMobile && (!userDataReady || (!details?.userData?.notes || details?.userData?.notes.length === 0)) && (
           <ActionContainerNoBond>
             <Text width="20%" bold textAlign='center' marginLeft='20px' marginRight='20px'>Bond LP tokens to receive asset-backed Requiem Tokens</Text>
             <PreviewPanel

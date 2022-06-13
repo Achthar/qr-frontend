@@ -3,12 +3,8 @@ import React from 'react'
 import styled from "styled-components";
 import PageSection from 'components/PageSection'
 import Container from 'components/Layout/Container'
-import { Text, Step, Stepper, Card, CardBody, Image, useMatchBreakpoints } from '@requiemswap/uikit'
+import { Text, Step, Stepper, Card, CardBody, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
-import iconREQTransparent from 'assets/REQ_Transparent.png';
-import requiem from 'assets/requiem-finance.png';
-import requiemMid from 'assets/requiem-finance-logo-mid.png';
-
 import Row from 'components/Row'
 
 
@@ -69,7 +65,7 @@ const Home: React.FC = () => {
 
 
               <RequiemImage
-                src={isMobile ? requiem : requiemMid}
+                src='https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance-column.svg'
               />
 
             </Row>

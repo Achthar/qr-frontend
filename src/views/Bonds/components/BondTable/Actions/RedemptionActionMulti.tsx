@@ -281,7 +281,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
         style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
       >
         <Text fontSize='15px' >
-          {hasPosition ? 'None Matured' : 'No open Position'}
+          {hasPosition ? 'None Matured' : 'No Positions'}
         </Text>
       </Button>
     )
