@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
@@ -7,6 +7,7 @@ import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathP
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils'
+import { ethers } from 'ethers';
 
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
@@ -121,11 +122,15 @@ const NoteContainer = styled.div<{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 2px;
-  ${({ isMobile }) => isMobile && `
+  ${({ isMobile }) => isMobile ? `
   overflow-y: auto;
   ::-webkit-scrollbar {
     width: 12px;
-  }`}
+  }` : `max-height: 500px;
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 12px;
+  }` }
 `
 
 const GeneralActionContainer = styled.div`
@@ -226,8 +231,12 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const [sendGREQ, setSendGREQ] = useState(true)
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const indexesToRedeem = bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex)
-
+  const isApproved = useMemo(() => {
+    if (!bond.userData) return false
+    return ethers.BigNumber.from(bond.userData.allowance).gt(0)
+  },
+    [bond.userData]
+  )
   return (
     <Container expanded={expanded} isMobile={isMobile}>
       <InfoContainer>
@@ -239,7 +248,7 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
         </StakeContainer>
         {!isMobile && userDataReady && details?.userData?.notes && (
           <GeneralActionContainer>
-            <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
+            {isApproved && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />)}
             <RedemptionMulti
               isMobile={false}
               thisBond={bond}

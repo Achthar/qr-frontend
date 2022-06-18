@@ -110,7 +110,7 @@ export const addresses = {
     43113: '0x788E4f71c710f3dbe028aA19aD52afc42f24F904'
   },
   bondDepository: {
-    43113: '0xd57697959027073D3f5276Bb2b1124fCe3fd2540'
+    43113: '0x2479902372c1cd91e2d9d3c1ebed0940167efca2'
   },
   staking: {
     43113: '0x8B047E942DA91c98221E2Ca9aa81864966E208A7'

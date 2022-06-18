@@ -207,7 +207,7 @@ const BondingModal: React.FC<BondingModalProps> = (
           Debt Ratio
         </Text>
         <Text mr="8px" color="textSubtle" textAlign='center'>
-          {`${Math.round(Number(ethers.utils.formatEther(bond.debtRatio)) * 10000) / 100}%`}
+          {`${Math.round(Number(ethers.utils.formatEther(bond.debtRatio)) * 100) / 100}%`}
         </Text>
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

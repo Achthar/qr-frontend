@@ -192,7 +192,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   )
 
 
-  if (!isApproved || !userDataReady) {
+  if (isMobile ? (!isApproved || (!hasPosition && !userDataReady)) : (!isApproved && !hasPosition && !userDataReady)) {
     const decimals = 18
     return (
       <InputContainer isMobile={isMobile}>
@@ -274,11 +274,11 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   if (indexes.length === 0) {
     return (
       <Button
-        width={isMobile ? '45%' : "40%"}
+        width={isMobile ? '45%' : isApproved ? "40%" : "80%"}
         onClick={handleRedemption}
         variant="secondary"
         disabled
-        style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
+        style={{ borderTopLeftRadius: `${isApproved ? '3px' : '16px'}`, borderBottomLeftRadius: `${isApproved ? '3px' : '16px'}`, marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
       >
         <Text fontSize='15px' >
           {hasPosition ? 'None Matured' : 'No Positions'}
