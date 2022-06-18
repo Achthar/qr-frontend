@@ -129,6 +129,33 @@ export default function AddLiquidity({
     totalSupply: supplyLp
   } = useGetWeightedPairsState(chainId, account, tokens.token0 && tokens.token1 ? [tokens] : [], slowRefresh, fastRefresh)
 
+
+  // console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
+  // use balances from the balance state instead of manually loading them
+  const {
+    networkCcyBalance: networkCcyBalanceString,
+    balances: tokenBalancesStrings,
+    isLoadingNetworkCcy,
+    isLoadingTokens
+  } = useUserBalances(chainId)
+
+  const isLoading = isLoadingNetworkCcy && isLoadingTokens
+  const defaultTokens = useAllTokens(chainId)
+  const tokenBalances = useMemo(
+    () => Object.assign({},
+      ...Object.values(defaultTokens).map(
+        (x) => ({ [x.address]: new TokenAmount(x, tokenBalancesStrings[x?.address]?.balance ?? '0') })
+      )
+    ),
+    [defaultTokens, tokenBalancesStrings]
+  )
+
+  const networkCcyBalance = useMemo(
+    () => CurrencyAmount.networkCCYAmount(chainId, networkCcyBalanceString ?? '0'),
+    [chainId, networkCcyBalanceString]
+  )
+
+
   // get derived info for selected pair
   const {
     dependentField,
@@ -153,36 +180,11 @@ export default function AddLiquidity({
     weightB,
     currencyA ?? undefined,
     currencyB ?? undefined,
+    tokenBalances,
+    networkCcyBalance,
     pairs,
     userBalances,
     supplyLp
-  )
-
-
-  // console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
-  // use balances from the balance state instead of manually loading them
-  const {
-    networkCcyBalance: networkCcyBalanceString,
-    balances: tokenBalancesStrings,
-    isLoadingNetworkCcy,
-    isLoadingTokens
-  } = useUserBalances(chainId)
-
-
-  const isLoading = isLoadingNetworkCcy && isLoadingTokens
-  const defaultTokens = useAllTokens(chainId)
-  const tokenBalances = useMemo(
-    () => Object.assign({},
-      ...Object.values(defaultTokens).map(
-        (x) => ({ [x.address]: new TokenAmount(x, tokenBalancesStrings[x?.address]?.balance ?? '0') })
-      )
-    ),
-    [defaultTokens, tokenBalancesStrings]
-  )
-
-  const networkCcyBalance = useMemo(
-    () => CurrencyAmount.networkCCYAmount(chainId, networkCcyBalanceString ?? '0'),
-    [chainId, networkCcyBalanceString]
   )
 
   const { isMobile, isDesktop } = useMatchBreakpoints()
@@ -222,15 +224,18 @@ export default function AddLiquidity({
     {},
   )
 
-  const atMaxAmounts: { [field in WeightedField]?: TokenAmount } = [WeightedField.CURRENCY_A, WeightedField.CURRENCY_B].reduce(
-    (accumulator, field) => {
-      return {
-        ...accumulator,
-        [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
-      }
-    },
-    {},
-  )
+  // const maxAmountA: CurrencyAmount | undefined = maxAmountSpend(chainId, currencyBalances[WeightedField.CURRENCY_A])
+  // const maxAmountB: CurrencyAmount | undefined = maxAmountSpend(chainId, currencyBalances[WeightedField.CURRENCY_B])
+
+  // const atMaxAmounts: { [field in WeightedField]?: TokenAmount } = [WeightedField.CURRENCY_A, WeightedField.CURRENCY_B].reduce(
+  //   (accumulator, field) => {
+  //     return {
+  //       ...accumulator,
+  //       [field]: maxAmounts[field]?.equalTo(parsedAmounts[field] ?? '0'),
+  //     }
+  //   },
+  //   {},
+  // )
   const [addressA, addressB] = tokens?.token1?.address && tokens?.token0?.address ? (
     aIs0 ?
       [ethers.utils.getAddress(tokens.token0.address), ethers.utils.getAddress(tokens.token1.address)]
@@ -525,7 +530,7 @@ export default function AddLiquidity({
   return (
     <Page>
       <AppBody>
-      <Row width='100%' height='50px' marginTop='3px'>
+        <Row width='100%' height='50px' marginTop='3px'>
           <Button
             variant="primary"
             width="100%"

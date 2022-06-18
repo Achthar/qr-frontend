@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ZERO, NETWORK_CCY, AmplifiedWeightedPair, Percent, Price, TokenAmount } from '@requiemswap/sdk'
+import { Currency, CurrencyAmount, ZERO, NETWORK_CCY, AmplifiedWeightedPair, Percent, Price, TokenAmount, Token } from '@requiemswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { WeightedPairState } from 'hooks/useWeightedPairs'
@@ -87,11 +87,13 @@ export function useDerivedMintWeightedPairInfo(
     weightB: string | undefined,
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
+    // this is input from the balances state
+    tokenBalances: { [address: string]: TokenAmount },
+    networkCcyBalance: CurrencyAmount,
     // this is input from the weightedPairState
     loadedPairs?: AmplifiedWeightedPair[],
     loadedBalances?: TokenAmount[],
     loadedSupply?: TokenAmount[],
-    // this is input from the balances state
 ): {
     dependentField: WeightedField,
     dependentWeightField: WeightedField,
@@ -197,17 +199,48 @@ export function useDerivedMintWeightedPairInfo(
         [pairData])
 
     // balances
-    const balances = useCurrencyBalances(chainId, account ?? undefined, [
-        currencies[WeightedField.CURRENCY_A],
-        currencies[WeightedField.CURRENCY_B],
+    // fetch balances from state if available
+    const [currencyABalance, currencyBBalance] = useMemo(() => {
+        let _currencyABalance: CurrencyAmount
+        let _currencyBBalance: CurrencyAmount
+        if (!currencyA) {
+            _currencyABalance = undefined
+        } else if (currencyA === NETWORK_CCY[chainId]) {
+            _currencyABalance = networkCcyBalance
+        } else {
+            _currencyABalance = tokenBalances[(currencyA as Token).address]
+        }
+
+        if (!currencyB) {
+            _currencyBBalance = undefined
+        } else if (currencyB === NETWORK_CCY[chainId]) {
+            _currencyBBalance = networkCcyBalance
+        } else {
+            _currencyBBalance = tokenBalances[(currencyB as Token).address]
+        }
+
+
+        return [_currencyABalance, _currencyBBalance]
+    },
+        [currencyA, currencyB, tokenBalances, networkCcyBalance, chainId]
+    )
+
+    // if balances are in state do not load them manually - if not fetch them here
+    const relevantTokenBalances = useCurrencyBalances(chainId, account ?? undefined, [
+        currencyABalance?.currency ? undefined : currencyA ?? undefined,
+        currencyBBalance?.currency ? undefined : currencies[WeightedField.CURRENCY_B] ?? undefined,
     ])
+
+
+    // assign the user balances
     const currencyBalances: { [field in WeightedField]?: CurrencyAmount } = useMemo(() => {
         return {
-            [WeightedField.CURRENCY_A]: balances[0],
-            [WeightedField.CURRENCY_B]: balances[1],
+            [WeightedField.CURRENCY_A]: currencyABalance ?? relevantTokenBalances[0],
+            [WeightedField.CURRENCY_B]: currencyBBalance ?? relevantTokenBalances[1],
         }
     },
-        [balances])
+        [relevantTokenBalances, currencyABalance, currencyBBalance]
+    )
 
     // amounts
     const independentAmount: CurrencyAmount | undefined = useMemo(() => {

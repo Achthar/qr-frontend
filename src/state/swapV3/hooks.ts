@@ -280,7 +280,8 @@ export function useDerivedSwapV3Info(chainId: number, account: string, tokenBala
 
     return [_inputCurrencyBalance, _outputCurrencyBalance]
   },
-    [inputCurrency, outputCurrency, tokenBalances, networkCcyBalance, chainId])
+    [inputCurrency, outputCurrency, tokenBalances, networkCcyBalance, chainId]
+  )
 
   // if balances are in state do not load them manually - if not fetch them here
   const relevantTokenBalances = useCurrencyBalances(chainId, account ?? undefined, [
