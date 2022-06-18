@@ -114,7 +114,7 @@ export function useSwapV3Callback(
   const gasPrice = useGasPrice(chainId)
 
   const swapCalls = useSwapV3CallArguments(chainId, account, library, trade, input, output, allowedSlippage, recipientAddressOrName)
-  console.log("CALLS", swapCalls)
+
   const addTransaction = useTransactionAdder()
 
   // const { address: recipientAddress } = useENS(chainId, recipientAddressOrName)

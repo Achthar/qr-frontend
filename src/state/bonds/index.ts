@@ -214,7 +214,7 @@ export const bondsSlice = createSlice({
       })
       // detail fetch for stable pool (and currently weighted pool)
       .addCase(calcSingleBondStableLpDetails.pending, state => {
-        state.userDataLoaded = false;
+        // state.userDataLoaded = false;
       })
       .addCase(calcSingleBondStableLpDetails.fulfilled, (state, action) => {
         const bond = action.payload

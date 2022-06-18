@@ -8,8 +8,12 @@ import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import { RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
 import SwapWarningTokens from 'config/constants/swapWarningTokens'
-import { useNetworkState } from 'state/globalNetwork/hooks'
-import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import { useTradeRefreshData } from 'hooks/useGetTradeDataRefresh'
+import { fetchWeightedPairData } from 'state/weightedPairs/fetchWeightedPairData'
+import { fetchWeightedPoolData } from 'state/weightedPools/fetchWeightedPoolData'
+import { useAppDispatch } from 'state'
+import useRefresh from 'hooks/useRefresh'
+import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { getAddress } from 'utils/addressHelpers'
 import getChain from 'utils/getChain'
 import AddressInputPanel from './components/AddressInputPanel'
@@ -45,6 +49,7 @@ import { computeTradeV3PriceBreakdown, warningSeverity } from '../../utils/price
 import CircleLoader from '../../components/Loader/CircleLoader'
 import Page from '../Page'
 import SwapWarningModal from './components/SwapWarningModal'
+
 
 
 const Label = styled(Text)`
@@ -113,6 +118,11 @@ export default function SwapV3({
     [chainId, networkCcyBalanceString]
   )
 
+  const {
+    weightedPools,
+    stablePools,
+    pairsMeta
+  } = useTradeRefreshData(chainId)
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager()
@@ -189,7 +199,7 @@ export default function SwapV3({
       ? parsedAmounts[independentField]?.toExact() ?? ''
       : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
   }
-
+  const dispatch = useAppDispatch()
   const route = trade?.route
 
   const userHasSpecifiedInputOutput = Boolean(
@@ -242,7 +252,39 @@ export default function SwapV3({
           txHash: undefined,
         })
       })
-  }, [priceImpactWithoutFee, swapCallback, tradeToConfirm])
+  },
+    [priceImpactWithoutFee, swapCallback, tradeToConfirm])
+
+  const [modalOpen, setModalOpen] = useState(false)
+
+  function refreshPools() {
+    console.log("Refresh Pools")
+    dispatch(fetchWeightedPairData({ chainId, pairMetaData: pairsMeta }))
+    Object.values(weightedPools).map(
+      (pool) => {
+        dispatch(fetchWeightedPoolData({ pool, chainId }))
+
+        return 0
+      }
+    )
+    Object.values(stablePools).map(
+      (pool) => {
+        dispatch(fetchStablePoolData({ pool, chainId }))
+
+        return 0
+      }
+    )
+  }
+
+  const { fastRefresh } = useRefresh()
+  useEffect(() => {
+    if (!modalOpen) {
+      refreshPools()
+    }
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fastRefresh]
+  )
 
   // errors
   const [showInverted, setShowInverted] = useState<boolean>(false)
@@ -265,6 +307,7 @@ export default function SwapV3({
     if (txHash) {
       onUserInput(Field.INPUT, '')
     }
+    setModalOpen(false)
   }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash])
 
   const handleAcceptChanges = useCallback(() => {
@@ -510,6 +553,7 @@ export default function SwapV3({
                         swapErrorMessage: undefined,
                         txHash: undefined,
                       })
+                      setModalOpen(true)
                       onPresentConfirmModal()
                     }
                   }}

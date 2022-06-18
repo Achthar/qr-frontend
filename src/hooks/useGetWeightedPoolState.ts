@@ -92,3 +92,24 @@ export function useGetWeightedPoolState(
         userDataLoaded
     }
 }
+
+
+
+export function useWeightedPoolRefresh(
+    chainId: number,
+): void {
+
+    const dispatch = useAppDispatch()
+
+
+    const { pools } = useWeightedPools(chainId)
+
+    Object.values(pools).map(
+        (pool) => {
+            dispatch(fetchWeightedPoolData({ pool, chainId }))
+
+            return 0
+        }
+    )
+
+}

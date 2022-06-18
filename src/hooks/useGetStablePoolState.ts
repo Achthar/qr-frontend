@@ -91,3 +91,23 @@ export function useGetStablePoolState(
         userDataLoaded
     }
 }
+
+
+export function useStablePoolRefresh(
+    chainId: number,
+): void {
+
+    const dispatch = useAppDispatch()
+
+
+    const { pools } = useStablePools(chainId)
+
+    Object.values(pools).map(
+        (pool) => {
+            dispatch(fetchStablePoolData({ pool, chainId }))
+
+            return 0
+        }
+    )
+
+}

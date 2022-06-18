@@ -68,7 +68,6 @@ interface PairRequestMetaData {
 export const fetchWeightedPairData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairData",
   async ({ chainId, pairMetaData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: { [weight0Fee: string]: SerializedWeightedPair } }> => {
-    console.log("WP: INPUT DATA WWW", pairMetaData)
 
     // // cals for existing pool addresses
     let pairAddresses = []
@@ -98,9 +97,9 @@ export const fetchWeightedPairData = createAsyncThunk(
     // uint32 swapFee,
     // uint32 amp,
     // IWeightedPair.ReserveData memory reserveData }
-    console.log("WP D CALLS", calls, dataPoints)
+
     const rawData = await multicall(chainId, formulaABI, calls)
-    console.log("WP RAWREG DATA", rawData)
+
     return Object.assign(
       {}, ...sortedKeys.map(
         (key, index) => {
@@ -194,7 +193,6 @@ export const reduceDataFromDict = (pairData: { [pastedAddresses: string]: { [wei
 export const fetchWeightedPairUserData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairUserData",
   async ({ chainId, account, pairData }: PairRequestUserData): Promise<{ [addresses: string]: { [key: string]: SerializedWeightedPair } }> => {
-    console.log("WPRS: DU INPUT DATA USER", pairData)
 
     // // cals for existing pool addresses
 
@@ -236,7 +234,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
         params: [account, SWAP_ROUTER[chainId]]
       }
     })
-    console.log("WPRS CALLS", [...callsSupply, ...callsBalance, ...callsAllowancePm])
+
     const rawData = await multicall(chainId, weightedPairABI, [...callsSupply, ...callsBalance, ...callsAllowancePm])
 
     const sliceLength = callsSupply.length
@@ -251,7 +249,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
     const allowance = rawData.slice(2 * sliceLength, 3 * sliceLength).map((a) => {
       return a.toString()
     })
-    console.log("WPRS: RAWUSER DATA", rawData, supply, balances, allowance)
+
     const returnDict = {}
     for (let i = 0; i < sortedKeys.length; i++) {
 
@@ -272,7 +270,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
 
       }
     }
-    console.log("WP PD", returnDict)
+
     return returnDict
 
   }

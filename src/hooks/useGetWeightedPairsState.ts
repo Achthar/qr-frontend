@@ -450,3 +450,17 @@ export function useGetRawWeightedPairsState(
         reservesAndWeightsLoaded
     }
 }
+
+export function useWeightedPairRefresh(
+    chainId: number
+): void {
+    const dispatch = useAppDispatch()
+
+    const {
+        weightedPairMeta,
+    } = useWeightedPairsState(chainId)
+
+
+    dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
+
+}
