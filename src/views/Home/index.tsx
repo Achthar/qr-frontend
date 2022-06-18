@@ -65,7 +65,7 @@ const Home: React.FC = () => {
 
 
               <RequiemImage
-                src='https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance-column.svg'
+                src={isMobile ? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance.svg' : 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance-column.svg'}
               />
 
             </Row>
