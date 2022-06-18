@@ -265,7 +265,7 @@ export default function AddLiquidityToPool({
                               {approvalStates[i] === ApprovalState.PENDING ? (
                                 <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
                               ) : (
-                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
+                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading allowance</Dots>
                               )
                               }
                             </Text>

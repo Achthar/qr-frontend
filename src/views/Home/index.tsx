@@ -70,7 +70,7 @@ const Home: React.FC = () => {
 
             </Row>
           </div>
-          <Text fontSize="24px" color='white'>
+          <Text fontSize={isMobile ? "14px" : "24px"} color='white' marginBottom='10px'>
             {intro}
           </Text>
           <Stepper>
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
               </Step>
             ))}
           </Stepper>
-          <Text fontSize="24px" color='white'>
+          <Text fontSize={isMobile ? "14px" : "24px"} color='white' marginTop='10px'>
             {outlook}
           </Text>
         </Container>
