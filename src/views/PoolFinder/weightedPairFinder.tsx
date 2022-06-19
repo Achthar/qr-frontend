@@ -6,9 +6,11 @@ import { useTranslation } from 'contexts/Localization'
 import getChain from 'utils/getChain'
 import { serializeToken } from 'state/user/hooks/helpers'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
+import { setMetdataLoaded } from 'state/weightedPairs/actions'
 import { RouteComponentProps } from 'react-router-dom'
 import { useAddPair, useGetWeightedPairsState, useTokenPair } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
+import { useAppDispatch } from 'state'
 import { MinimalWeightedPositionCardExtended } from 'components/PositionCard/WeightedPairPositionExtended'
 import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
@@ -74,23 +76,37 @@ export default function WeightedPairFinder({
   const tB = wrappedCurrency(currency1, chainId)
 
   const tokenPair = useTokenPair(tA, tB, chainId)
-
+  const dispatch = useAppDispatch()
   const { pairs, userBalancesLoaded, reservesAndWeightsLoaded, balances, metaDataLoaded, totalSupply } = useGetWeightedPairsState(chainId, account, [tokenPair], slowRefresh, slowRefresh)
 
+  // check all standard pairs first
   const pairsAvailable = useMemo(() => pairs.filter(
     pair => pair.token0.address === tokenPair.token0.address
       && pair.token1.address === tokenPair.token1.address),
     [pairs, tokenPair])
 
+  // use this to set a flag whether pair data has been loaded
+  const [pairChecked, setPairChecked] = useState(false)
+
+  // if pair is not checked, add it to the token pair query and set metaDataLoaded flag to false
+  useEffect(() => {
+    if (!pairChecked && pairsAvailable.length === 0) {
+      dispatch(setMetdataLoaded())
+      setPairChecked(true)
+    }
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pairChecked, pairsAvailable.length, tokenPair]
+  )
+
   const addPair = useSerializedPairAdder()
 
+  // if pairsAvailable changes, add the pair to user Pairs
   useEffect(() => {
     if (pairsAvailable.length > 0) {
       addPair({ token0: serializeToken(pairsAvailable[0].token0), token1: serializeToken(pairsAvailable[0].token1) })
     }
   }, [pairsAvailable, addPair])
-
-
 
 
   const dataWithUserBalances: { pair: AmplifiedWeightedPair, balance: TokenAmount, totalSupply: TokenAmount }[] = useMemo(
@@ -102,7 +118,6 @@ export default function WeightedPairFinder({
     [pairs, balances, totalSupply, tokenPair],
   )
 
-  console.log("DATA WUB", dataWithUserBalances)
   const lpWithUserBalances = useMemo(
     () =>
       pairsAvailable.filter((_, index) =>
@@ -147,7 +162,10 @@ export default function WeightedPairFinder({
     <CurrencySearchModal
       account={account}
       chainId={chainId}
-      onCurrencySelect={handleCurrencySelect}
+      onCurrencySelect={(ccy: Currency) => {
+        handleCurrencySelect(ccy)
+        setPairChecked(false) // set check to false
+      }}
       showCommonBases
       selectedCurrency={(activeField === Fields.TOKEN0 ? currency1 : currency0) ?? undefined}
     />,

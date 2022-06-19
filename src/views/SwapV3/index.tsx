@@ -16,6 +16,8 @@ import useRefresh from 'hooks/useRefresh'
 import { fetchStablePoolData } from 'state/stablePools/fetchStablePoolData'
 import { getAddress } from 'utils/addressHelpers'
 import getChain from 'utils/getChain'
+import { tokenList } from 'config/constants/tokenLists/tokenlist'
+import { ethers } from 'ethers'
 import AddressInputPanel from './components/AddressInputPanel'
 import { GreyCard } from '../../components/Card'
 import Column, { AutoColumn } from '../../components/Layout/Column'
@@ -258,7 +260,6 @@ export default function SwapV3({
   const [modalOpen, setModalOpen] = useState(false)
 
   function refreshPools() {
-    console.log("Refresh Pools")
     dispatch(fetchWeightedPairData({ chainId, pairMetaData: pairsMeta }))
     Object.values(weightedPools).map(
       (pool) => {

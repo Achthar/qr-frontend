@@ -153,11 +153,11 @@ export default function CurrencyListExpanded({
   const Row = useCallback(
     ({ data, index, style }) => {
       const currencyAmount: CurrencyAmount = data[index]
-      const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currencyAmount.currency))
-      const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currencyAmount.currency))
+      const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currencyAmount?.currency))
+      const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currencyAmount?.currency))
       const handleSelect = () => onCurrencySelect(currencyAmount.currency)
 
-      const token = wrappedCurrency(currencyAmount.currency, chainId)
+      const token = wrappedCurrency(currencyAmount?.currency, chainId)
 
       const showImport = inactiveTokens && token && Object.keys(inactiveTokens).includes(token.address)
 

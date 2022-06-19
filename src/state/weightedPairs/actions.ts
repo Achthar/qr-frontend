@@ -10,4 +10,6 @@ export const triggerRefreshUserData = createAction<{ chainId: number }>('weighte
 
 export const addTokenPair = createAction<{ tokenPair:TokenPair }>('weightedPairs/addTokenPair')
 
+export const setMetdataLoaded = createAction('weightedPairs/setMetdataLoaded')
+
 export const pricePairs = createAction('weightedPairs/pricePairs')

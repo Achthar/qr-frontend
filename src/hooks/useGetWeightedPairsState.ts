@@ -6,12 +6,13 @@ import { useDispatch } from 'react-redux'
 import { TokenPair } from 'config/constants/types'
 import { deserializeWeightedPair } from 'utils/bondUtils'
 import { useDeserializedWeightedPairs, useDeserializedWeightedPairsAndLpBalances, useDeserializedWeightedPairsData, usePairIsInState, useSerializedWeightedPairsData, useWeightedPairsState } from 'state/weightedPairs/hooks'
-import { addTokenPair, changeChainIdWeighted } from 'state/weightedPairs/actions'
+import { addTokenPair, changeChainIdWeighted, setMetdataLoaded } from 'state/weightedPairs/actions'
 import { fetchWeightedPairMetaData, isNewTokenPair } from 'state/weightedPairs/fetchWeightedPairMetaData'
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData, reduceDataFromDict } from 'state/weightedPairs/fetchWeightedPairData'
 import { Currency, TokenAmount, AmplifiedWeightedPair } from '@requiemswap/sdk'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { serializeToken } from 'state/user/hooks/helpers'
+
 import { SerializedWeightedPair } from 'state/types'
 import { AppDispatch, useAppDispatch } from '../state'
 
@@ -178,12 +179,19 @@ export function useGetWeightedPairsTradeState(
         userBalancesLoaded
     } = useWeightedPairsState(chainId)
 
+    // set matadata loaded to false if new pairs included
+    useEffect(() => {
+        if (additionalTokenPairs.length > tokenPairs.length) {
+            dispatch(setMetdataLoaded())
+        }
+    })
+
     // metatedata is supposed to be fetched once
     // actions in the reducer allow a re-trigger of the metaData fetch
     // by setting metaDataLoaded to false
     useEffect(() => {
         if (!metaDataLoaded && referenceChain === chainId) {
-            dispatch(fetchWeightedPairMetaData({ chainId, tokenPairs: cleanTokenPairs(additionalTokenPairs, tokenPairs) }))
+            dispatch(fetchWeightedPairMetaData({ chainId, tokenPairs: additionalTokenPairs }))
         }
 
     },

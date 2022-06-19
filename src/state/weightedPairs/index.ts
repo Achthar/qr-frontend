@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { getAllTokenPairs } from 'config/constants/tokenPairs';
 import { fetchWeightedPairMetaData } from './fetchWeightedPairMetaData';
-import { addTokenPair, changeChainIdWeighted, metaDataChange, triggerRefreshUserData } from './actions';
+import { addTokenPair, changeChainIdWeighted, metaDataChange, setMetdataLoaded, triggerRefreshUserData } from './actions';
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData } from './fetchWeightedPairData';
 
 function initialState(chainId: number) {
@@ -165,6 +165,8 @@ export const stablePoolSlice = createSlice({
         state[state.currentChain].metaDataLoaded = false;
         state[state.currentChain].reservesAndWeightsLoaded = false;
         state[state.currentChain].tokenPairs.push(action.payload.tokenPair)
+      }).addCase(setMetdataLoaded, (state, action) => {
+        state[state.currentChain].metaDataLoaded = false;
       })
   },
 })
