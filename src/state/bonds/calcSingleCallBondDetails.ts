@@ -1,8 +1,8 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { deserializeToken } from 'state/user/hooks/helpers';
-import { getContractForBondDepo } from 'utils/contractHelpers';
-import { ethers, BigNumber, BigNumberish } from 'ethers'
+import { getContractForCallBondDepo } from 'utils/contractHelpers';
+import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
@@ -15,15 +15,14 @@ import { ICalcBondDetailsAsyncThunk } from './types';
 import { priceFromData } from './loadMarketPrice';
 import { BondsState, Bond } from '../types'
 
-const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 
-export const calcSingleBondDetails = createAsyncThunk(
-  "bonds/calcBondDetails",
+export const calcCallSingleBondDetails = createAsyncThunk(
+  "bonds/calcCallSingleBondDetails",
   async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk): Promise<Bond> => {
 
-    const bondContract = getContractForBondDepo(chainId, provider);
+    const bondContract = getContractForCallBondDepo(chainId, provider);
 
     // cals for general bond data
     const calls = [
@@ -76,7 +75,7 @@ export const calcSingleBondDetails = createAsyncThunk(
     ]
 
     const [reserves, supply, purchasedQuery] = await multicall(chainId, weightedPairABI, callsPair)
-    console.log("BOND reserves", reserves)
+
     // calculate price
     const price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
       deserializeToken(getNonQuoteToken(bond)),

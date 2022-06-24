@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { BigNumber } from 'ethers'
 import { Price, StablePool, STABLES_LP_TOKEN, StableSwapStorage, Token, TokenAmount } from '@requiemswap/sdk'
-import { BondType, SerializedToken } from 'config/constants/types'
+import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { State, Bond, BondsState, StablePoolsState, StablePoolData } from '../types'
 

@@ -1,51 +1,54 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useLocation, Link, useRouteMatch } from 'react-router-dom'
-import { ButtonMenu, ButtonMenuItem, NotificationDot } from '@requiemswap/uikit'
-import { useTranslation } from 'contexts/Localization'
+import { Button, ButtonMenu, ButtonMenuItem, NotificationDot } from '@requiemswap/uikit'
 
-interface FarmTabButtonsProps {
+interface BondTabButtonsProps {
   hasStakeInFinishedBonds: boolean
+  onLive: () => void;
+  isLive: boolean
 }
 
-const FarmTabButtons: React.FC<FarmTabButtonsProps> = ({ hasStakeInFinishedBonds }) => {
-  const { url } = useRouteMatch()
-  const location = useLocation()
-  const { t } = useTranslation()
+const BondTabButtons: React.FC<BondTabButtonsProps> = ({ hasStakeInFinishedBonds, onLive, isLive }) => {
 
   let activeIndex
-  switch (location.pathname) {
-    case '/bonds':
-      activeIndex = 0
-      break
-    case '/bonds/history':
-      activeIndex = 1
-      break
-    case '/bonds/archived':
-      activeIndex = 2
-      break
-    default:
-      activeIndex = 0
-      break
+  const otherBool = !isLive;
+  if (isLive) {
+    activeIndex = 0
+  } else {
+    activeIndex = 1
   }
-
+  console.log("ISLIVE", isLive)
   return (
     <Wrapper>
-      <ButtonMenu activeIndex={activeIndex} scale="sm">
-        <ButtonMenuItem as={Link} to={`${url}`}>
-          {t('Live')}
-        </ButtonMenuItem>
-        <NotificationDot show={hasStakeInFinishedBonds}>
-          <ButtonMenuItem as={Link} to={`${url}/history`}>
-            {t('Finished')}
-          </ButtonMenuItem>
-        </NotificationDot>
-      </ButtonMenu>
+      {/* <ButtonMenu activeIndex={activeIndex} scale="sm"> */}
+      <Button
+        width="130px"
+        height='30px'
+        onClick={onLive}
+        variant="primary"
+        disabled={isLive}
+        style={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
+      >
+        Live
+      </Button>
+      <NotificationDot show={hasStakeInFinishedBonds}>
+        <Button
+          width="130px"
+          height='30px'
+          onClick={onLive}
+          variant="primary"
+          disabled={!isLive}
+          style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
+        >
+          Closed
+        </Button>
+      </NotificationDot>
+      {/* </ButtonMenu> */}
     </Wrapper>
   )
 }
 
-export default FarmTabButtons
+export default BondTabButtons
 
 const Wrapper = styled.div`
   display: flex;

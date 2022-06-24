@@ -16,18 +16,19 @@ import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
-import { BondType } from 'config/constants/types'
+import { BondAssetType, BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
 import { setLpLink, setLpPrice } from './actions'
 import { fetchBondMeta, fetchBondUserDataAsync } from '.'
 import { State, Bond, BondsState } from '../types'
+import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
   const { account, library } = useWeb3React()
-  const { metaLoaded, bondData, userDataLoaded } = useBonds()
+  const { metaLoaded, bondData, userDataLoaded, callBondData} = useBonds()
   useEffect(() => {
     // const bondsToFetch = bondList(chainId)
 
@@ -41,11 +42,35 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       const bondsToFetch = Object.values(bondData)
       bondsToFetch.map(
         (bond) => {
-          if (bond.type === BondType.PairLP) {
-            dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          if (bond.bondType === BondType.Vanilla) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
           }
-          if (bond.type === BondType.StableSwapLP || bond.type === BondType.WeightedPoolLP) {
-            dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          if (bond.bondType === BondType.Call) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+          }
+          return 0
+        }
+      )
+      const callBondsToFetch = Object.values(callBondData)
+      callBondsToFetch.map(
+        (bond) => {
+          if (bond.bondType === BondType.Call) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
           }
           return 0
         }
@@ -148,7 +173,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
     bondsWithIds.map(bondWithNoPrice => {
       let price: ethers.BigNumber;
       let link: string;
-      const bondType = bondWithNoPrice.type
+      const bondType = bondWithNoPrice.assetType
 
       if (!bondWithNoPrice.lpData) {
         // eslint-disable-next-line no-useless-return
@@ -156,7 +181,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
       }
 
       // pair LP
-      if (bondType === BondType.PairLP) {
+      if (bondType === BondAssetType.PairLP) {
         const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
@@ -170,7 +195,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
       }
       // stable pool LP
-      else if (bondType === BondType.StableSwapLP) {
+      else if (bondType === BondAssetType.StableSwapLP) {
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pool = stablePools.find(p =>
           ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
@@ -184,7 +209,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = stablePoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
       // weighted pool LP
-      else if (bondType === BondType.WeightedPoolLP) {
+      else if (bondType === BondAssetType.WeightedPoolLP) {
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pool = weightedPools.find(p =>
           ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])

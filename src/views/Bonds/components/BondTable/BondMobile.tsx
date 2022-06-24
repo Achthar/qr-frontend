@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BondType, SerializedToken } from 'config/constants/types'
+import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
 
 export interface BondProps {
   label: string
   bondId: number
-  bondType: BondType
+  bondType: BondAssetType
   tokens: SerializedToken[]
 }
 

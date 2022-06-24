@@ -4,14 +4,14 @@ import { useBondUser } from 'state/bonds/hooks'
 import { useTranslation } from 'contexts/Localization'
 import { Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import { getBalanceNumber } from 'utils/formatBalance'
-import { BondType, SerializedToken } from 'config/constants/types'
+import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
 
 export interface BondProps {
   label: string
   bondId: number
-  bondType: BondType
+  bondType: BondAssetType
   tokens: SerializedToken[]
 }
 

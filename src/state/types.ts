@@ -87,7 +87,7 @@ export interface IBondDetails {
   marketPrice?: SerializedBigNumber;
 }
 
-export interface Note {
+export interface VanillaNote {
   payout: SerializedBigNumber;
   created: number;
   matured: number;
@@ -95,6 +95,18 @@ export interface Note {
   marketId: number;
   noteIndex: number;
 }
+
+export interface CallNote {
+  payout: SerializedBigNumber;
+  created: number;
+  matured: number;
+  redeemed: SerializedBigNumber;
+  marketId: number;
+  noteIndex: number;
+  cryptoIntitialPrice: SerializedBigNumber; // reference price at opening
+
+}
+
 
 export interface Bond extends BondConfig, IBondDetails {
   tokenAmount?: SerializedBigNumber
@@ -115,7 +127,60 @@ export interface Bond extends BondConfig, IBondDetails {
     interestDue: string
     balance: string
     bondMaturationBlock: number
-    notes: Note[]
+    notes: VanillaNote[]
+  },
+  lpData?: {
+    lpTotalSupply: SerializedBigNumber
+    // relevant data for pairs
+    reserve0?: SerializedBigNumber
+    reserve1?: SerializedBigNumber
+    vReserve0?: SerializedBigNumber
+    vReserve1?: SerializedBigNumber
+    // data for general pools (stable / weighted)
+    reserves?: SerializedBigNumber[]
+    // only relevant for pair
+    priceInQuote: SerializedBigNumber
+  },
+  bondTerms?: {
+    controlVariable: SerializedBigNumber; // scaling variable for price
+    maxDebt: SerializedBigNumber;
+    conclusion: SerializedBigNumber;
+    vesting: SerializedBigNumber;
+    fixedTerm: boolean;
+  }
+  market?: {
+    capacity: SerializedBigNumber;
+    capacityInQuote: boolean;
+    totalDebt: SerializedBigNumber;
+    maxPayout: SerializedBigNumber;
+    sold: SerializedBigNumber;
+    purchased: SerializedBigNumber;
+  }
+  purchasedInQuote?: SerializedBigNumber
+  lpLink?: string
+}
+
+
+export interface CallBond extends BondConfig, IBondDetails {
+  tokenAmount?: SerializedBigNumber
+  quoteTokenAmountMc?: SerializedBigNumber
+  tokenAmountTotal?: SerializedBigNumber
+  quoteTokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber,
+  price?: SerializedBigNumber,
+  userData?: {
+    allowance: string
+    tokenBalance: string
+    stakedBalance: string
+    earnings: string
+    pendingPayout: string
+    interestDue: string
+    balance: string
+    bondMaturationBlock: number
+    notes: VanillaNote[]
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber
@@ -159,7 +224,13 @@ export interface BondsState {
   bondData: {
     [bondId: number]: Bond
   },
+  callBondData: {
+    [bondId: number]: CallBond
+  },
   userReward: string
+  vanillaNotesClosed: VanillaNote[]
+  callNotesClosed: CallNote[]
+
 }
 
 

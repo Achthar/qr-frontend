@@ -30,6 +30,8 @@ import { RowProps } from './components/BondTable/Row'
 import Claim from './components/BondTable/Actions/ClaimAction'
 import { BondWithStakedValue, DesktopColumnSchema } from './components/types'
 import Table from './components/BondTable/BondTable'
+import BondTabButtons from './components/BondTabButtons'
+import { NoteTable } from './components/BondTable/NoteTable'
 
 
 
@@ -137,9 +139,14 @@ function Bonds({
 
   const { isMobile } = useMatchBreakpoints()
   const { pathname } = useLocation()
-  const { bondData: bondsLP, userDataLoaded, userReward } = useBonds()
+  const { bondData: bondsLP, userDataLoaded, userReward, vanillaNotesClosed, callNotesClosed } = useBonds()
 
   const [query, setQuery] = useState('')
+
+  const [liveSelected, setLive] = useState(true)
+
+  const handleSelectMarkets = () => setLive(!liveSelected)
+
   const { account, chainId } = useActiveWeb3React()
 
   const [sortOption, setSortOption] = useState('hot')
@@ -323,7 +330,7 @@ function Bonds({
       bond: {
         label: bond.name,
         bondId: bond.bondId,
-        bondType: bond.type,
+        bondType: bond.assetType,
         tokens: bond.tokens
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
@@ -518,6 +525,60 @@ function Bonds({
       </>
     )
   }
+
+
+  const renderGeneralHeader = (): JSX.Element => {
+    return (
+      <>
+        <Box>
+          <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
+            <HeaderBox
+              btl='16px'
+              btr={isMobile ? '16px' : '3px'}
+              bbl={isMobile ? '3px' : '16px'}
+              bbr='3px'
+              width={isMobile ? '100%' : '50%'}
+              height='40px'
+              ml='1px'
+              mr='2px'
+              mb='2px'
+              mt='0px'
+            >
+              <Flex flexDirection="column" justifyContent='center'>
+                <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='17px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='20px'>
+                    Bond Tokens for fixed payoff
+                  </Text>
+                </Flex>
+              </Flex>
+            </HeaderBox>
+            <HeaderBox
+              btl='3px'
+              btr={isMobile ? '3px' : '16px'}
+              bbl={isMobile ? '16px' : '3px'}
+              bbr='16px'
+              width={isMobile ? '100%' : '50%'}
+              height='40px'
+              ml='1px'
+              mr='2px'
+              mb='2px'
+              mt={isMobile ? '5px' : '0px'}
+            >
+              <Flex flexDirection="column" justifyContent='center'>
+                <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                  <BondTabButtons hasStakeInFinishedBonds={vanillaNotesClosed.length > 0} isLive={liveSelected} onLive={handleSelectMarkets} />
+                </Flex>
+              </Flex>
+            </HeaderBox>
+          </Flex>
+        </Box>
+      </>
+    )
+  }
+
+
+
+
   const renderContent = (): JSX.Element => {
     const columnSchema = DesktopColumnSchema
 
@@ -547,7 +608,10 @@ function Bonds({
     <>
       <Page>
         {renderHeader()}
-        {renderContent()}
+        {renderGeneralHeader()}
+        {liveSelected ? renderContent() : (
+          <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} />
+        )}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">
             <Loading />

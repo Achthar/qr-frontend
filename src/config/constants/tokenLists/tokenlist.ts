@@ -344,6 +344,14 @@ export const tokenList = {
                 "chainId": 43113,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/abREQ.png"
+            },
+            {
+                "name": "ChainLink Token",
+                "symbol": "LINK",
+                "address": "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
+                "chainId": 43113,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/LINK.svg"
             }
         ]
     },

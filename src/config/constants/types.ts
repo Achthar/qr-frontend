@@ -201,7 +201,8 @@ interface BondOpts {
   payoutToken: string; // Token the user will receive - currently OHM on ethereum, wsOHM on arbitrum
 }
 
-export enum BondType {
+// Asset type to be bonded
+export enum BondAssetType {
   StableAsset,
   PairLP,
   StableSwapLP,
@@ -209,6 +210,12 @@ export enum BondType {
   RequiemLP
 }
 
+// Bond Depo Structure type
+export enum BondType {
+  Vanilla,
+  Call,
+  Digital
+}
 
 export interface Available {
   [ChainId.AVAX_MAINNET]: boolean;
@@ -221,14 +228,14 @@ export interface BondConfig {
   displayName: string;
   isBondable?: Available;
   isClaimable?: Available;
-  type: BondType;
-  bondIconSvg?: React.ReactNode;
-  // bondContractABI: ethers.ContractInterface; // Bond ABI
+  // the following two will be assigned initially
+  assetType?: BondAssetType;
+  bondType?: BondType;
+  
   reserveAddress?: Address;
   bondToken: string;
   payoutToken: string;
   // The following two fields will differ on how they are set depending on bond type
-  isLP: boolean;
   // reserveContract: ethers.ContractInterface; // Token ABI
   displayUnits?: string;
   tokens: SerializedToken[]

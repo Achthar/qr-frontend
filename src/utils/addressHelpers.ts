@@ -91,6 +91,11 @@ export const getBondingDepositoryAddress = (chainId: number) => {
   return getAddress(chainId, addresses.bondDepository)
 }
 
+export const getCallBondingDepositoryAddress = (chainId: number) => {
+  return getAddress(chainId, addresses.callBondDepository)
+}
+
+
 export const getAssetBackedStakingAddress = (chainId: number) => {
   return getAddress(chainId, addresses.staking)
 }

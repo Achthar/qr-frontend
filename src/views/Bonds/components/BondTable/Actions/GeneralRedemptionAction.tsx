@@ -55,14 +55,13 @@ export const ButtonContainer = styled.div`
 `
 
 
-interface StackedActionProps extends BondWithStakedValue {
+interface StackedActionProps {
   userDataReady: boolean
   reqPrice: BigNumber
   note: VanillaNote
 }
 
-const Redemption: React.FunctionComponent<StackedActionProps> = ({
-  bondId,
+const GeneralRedemption: React.FunctionComponent<StackedActionProps> = ({
   note,
   userDataReady,
 }) => {
@@ -71,17 +70,14 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const bond = useBondFromBondId(bondId)
+
 
   const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
 
 
-  const dispatch = useAppDispatch()
-
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
     } catch (error) {
       console.log(error)
     }
@@ -166,4 +162,4 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   )
 }
 
-export default Redemption
+export default GeneralRedemption

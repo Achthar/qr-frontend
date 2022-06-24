@@ -8,7 +8,7 @@ import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import weightedPoolAVAX from 'config/abi/avax/WeightedPool.json'
 import erc20 from 'config/abi/erc20.json'
 import { weightedSwapInitialData } from 'config/constants/weightedPool';
-import { BondType } from 'config/constants/types';
+import { BondAssetType } from 'config/constants/types';
 import { Fraction, TokenAmount } from '@requiemswap/sdk';
 import { BondsState, Bond, PoolConfig, SerializedWeightedPool } from '../types'
 

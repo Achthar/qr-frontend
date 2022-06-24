@@ -7,12 +7,13 @@ import { timeConverter, timeConverterNoMinutes } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import RedemptionAction from './Actions/RedemptionAction'
+import GeneralRedemption from './Actions/GeneralRedemptionAction'
+import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
 
 interface NoteProps {
     isMobile: boolean
     userDataReady: boolean
     note: VanillaNote
-    bond: Bond
     reqPrice: number
     isFirst: boolean
     isLast: boolean
@@ -22,7 +23,6 @@ interface NoteHeaderProps {
     userDataReady: boolean
     isMobile: boolean
     notes: VanillaNote[]
-    bond: Bond
     reqPrice: number
 }
 
@@ -134,11 +134,27 @@ const HeaderContainer = styled.div`
   }
 `
 
+const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
+  margin-top:0px;
+  width:100%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  ${({ isMobile }) => isMobile ? `
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 12px;
+  }` : `max-height: 500px;
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 12px;
+  }` }
+`
 
 
 
-
-export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady, bond, isMobile, reqPrice }) => {
+export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
 
 
     const [totalPayout, avgVesting] = useMemo(() => {
@@ -187,6 +203,9 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady,
                 <Text>{totalPayout.toPrecision(4)} ABREQ / {(totalPayout * reqPrice).toLocaleString()}$</Text>
                 <Text>{prettifySeconds(avgVesting, 'd')}</Text>
             </DescriptionCol>
+            <DescriptionCol>
+                <GeneralRedemptionMulti notes={notes} userDataReady/>
+            </DescriptionCol>
         </HeaderContainer>
     )
 
@@ -195,15 +214,13 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady,
 
 
 
-const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
+const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
-
-    console.log("NOTE WITH BID", bond.name, bond?.bondId, note)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
@@ -222,7 +239,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
                         <Text>{vestingTime()}</Text>
                     </DescriptionCol>
                 </ContentRow>
-                <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+                <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
             </Container>
         )
     }
@@ -250,10 +267,38 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
-            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+            <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
         </Container>
     )
 
 }
 
-export default NoteRow
+
+
+
+export const NoteTable: React.FunctionComponent<{ notes: VanillaNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
+}) => {
+
+    const { isMobile } = useMatchBreakpoints()
+
+    const now = Math.floor((new Date()).getTime() / 1000);
+
+    return (
+
+        <GeneralNoteContainer isMobile={isMobile}>
+            {notes.length > 0 && (
+                <NoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
+            )}
+            {notes.map((
+                note, index) => {
+                const isLast = index === notes.length - 1
+                return (
+                    <NoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
+                )
+            }
+            )}
+
+        </GeneralNoteContainer>
+    )
+}
+

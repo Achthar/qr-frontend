@@ -9,7 +9,7 @@ import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import redRequiemAvax from 'config/abi/avax/RedRequiem.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
-import { BondType } from 'config/constants/types';
+import { BondAssetType } from 'config/constants/types';
 import { getRedRequiemAddress, getRedRequiemStakingAddress } from 'utils/addressHelpers';
 import { SerializedBigNumber } from 'state/types';
 
