@@ -200,11 +200,11 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
             </DescriptionColHeader>
             <DescriptionCol>
-                <Text>{totalPayout.toPrecision(4)} ABREQ / {(totalPayout * reqPrice).toLocaleString()}$</Text>
+                <Text>{totalPayout.toLocaleString()} ABREQ / {(Math.round(totalPayout * reqPrice * 100) / 100).toLocaleString()}$</Text>
                 <Text>{prettifySeconds(avgVesting, 'd')}</Text>
             </DescriptionCol>
             <DescriptionCol>
-                <GeneralRedemptionMulti notes={notes} userDataReady/>
+                <GeneralRedemptionMulti notes={notes} userDataReady />
             </DescriptionCol>
         </HeaderContainer>
     )
@@ -275,21 +275,28 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
 
 
 
+function compareMaturities(a: VanillaNote, b: VanillaNote) {
+    if (a.matured < b.matured) {
+        return -1;
+    }
+    if (a.matured > b.matured) {
+        return 1;
+    }
+    return 0;
+}
 
 export const NoteTable: React.FunctionComponent<{ notes: VanillaNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
 }) => {
 
     const { isMobile } = useMatchBreakpoints()
-
-    const now = Math.floor((new Date()).getTime() / 1000);
-
+    let orderedNotes = useMemo(() => notes.slice(), [notes])
+    orderedNotes = useMemo(() => { return orderedNotes.sort((a, b) => a.matured - b.matured) }, [orderedNotes])
     return (
-
         <GeneralNoteContainer isMobile={isMobile}>
             {notes.length > 0 && (
                 <NoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
             )}
-            {notes.map((
+            {orderedNotes.map((
                 note, index) => {
                 const isLast = index === notes.length - 1
                 return (

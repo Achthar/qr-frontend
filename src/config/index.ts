@@ -52,7 +52,16 @@ export function prettifySeconds(seconds: number, resolution?: string) {
   const m = Math.floor((seconds % 3600) / 60);
 
   if (resolution === "day") {
-    return d + (d === 1 ? " day" : " days");
+    if (d > 0) {
+      return d + (d === 1 ? " day" : " days");
+    }
+
+    if (h > 0) {
+      return h + (h === 1 ? " hr" : " hrs");
+    }
+
+    return m + (m === 1 ? " min" : " mins")
+
   }
 
   const dDisplay = d > 0 ? d + (d === 1 ? " day, " : " days, ") : "";
