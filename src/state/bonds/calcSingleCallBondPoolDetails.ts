@@ -5,8 +5,8 @@ import { BigNumber } from 'ethers'
 import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
-import { ICalcBondDetailsAsyncThunk } from './types';
-import { Bond } from '../types'
+import { ICalcCallBondDetailsAsyncThunk } from './types';
+import { CallBond } from '../types'
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
@@ -14,7 +14,7 @@ const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 export const calcSingleCallBondPoolDetails = createAsyncThunk(
   "bonds/calcSingleCallBondPoolDetails",
-  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk): Promise<Bond> => {
+  async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<CallBond> => {
 
     const bondContract = getContractForCallBondDepo(chainId, provider);
 

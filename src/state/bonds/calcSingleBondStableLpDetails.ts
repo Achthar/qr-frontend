@@ -43,7 +43,7 @@ export const calcSingleBondStableLpDetails = createAsyncThunk(
         address: bondContract.address,
         name: 'marketPrice',
         params: [bond.bondId]
-      },
+      }
     ]
 
     const [market, debtRatio, terms, bondPrice] =

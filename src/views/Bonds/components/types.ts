@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js"
-import { Bond } from "state/types"
+import { Bond, CallBond } from "state/types"
 
 export type TableProps = {
   data?: TableDataTypes[]
@@ -116,6 +116,60 @@ export const DesktopColumnSchema: ColumnsDefTypes[] = [
 ]
 
 
+export const DesktopColumnSchemaCall: ColumnsDefTypes[] = [
+  {
+    id: 1,
+    name: 'bond',
+    sortable: true,
+    label: '',
+  },
+  // {
+  //   id: 3,
+  //   name: 'multiplier',
+  //   sortable: true,
+  //   label: 'Multiplier',
+  // },
+  {
+    id: 4,
+    name: 'discount',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 5,
+    name: 'term',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 6,
+    name: 'price',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 7,
+    name: 'purchased',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 8,
+    name: 'roi',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 9,
+    name: 'details',
+    sortable: true,
+    label: '',
+  },
+
+]
+
+
+
 export const DesktopColumnSchemaNew: ColumnsDefTypes[] = [
   {
     id: 1,
@@ -161,6 +215,13 @@ export enum ViewMode {
 }
 
 export interface BondWithStakedValue extends Bond {
+  apr?: number
+  lpRewardsApr?: number
+  liquidity?: BigNumber
+}
+
+
+export interface CallBondWithStakedValue extends CallBond {
   apr?: number
   lpRewardsApr?: number
   liquidity?: BigNumber

@@ -38,7 +38,6 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
 
   // fetch indexres
   const indexes = await multicall(chainId, bondReserveAVAX, callInfoIndexes)
-  console.log("NOTES INDEX", indexes[0][0])
   const cleanIndexes = indexes[0][0].map(_index => Number(_index.toString()))
   const callsInfo = cleanIndexes.map((index) => {
     return { address: bondDepositoryAddress, name: 'userTerms', params: [account, index] }
@@ -65,8 +64,12 @@ export const fetchBondUserPendingPayoutData = async (chainId: number, account: s
   }
 }
 
+export interface CallBondUserData {
+  notes: any[]
+  reward: string
+}
 // payout and interest fetch for call bond
-export const fetchCallBondUserPendingPayoutData = async (chainId: number, account: string): Promise<BondUserData> => {
+export const fetchCallBondUserPendingPayoutData = async (chainId: number, account: string): Promise<CallBondUserData> => {
 
   const bondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
 
@@ -75,7 +78,7 @@ export const fetchCallBondUserPendingPayoutData = async (chainId: number, accoun
   // fetch indexres
   const indexes = await multicall(chainId, callBondReserveAVAX, callInfoIndexes)
   const cleanIndexes = indexes[0][0].map(_index => Number(_index.toString()))
-  
+
   const callsInfo = cleanIndexes.map((index) => {
     return { address: bondDepositoryAddress, name: 'userTerms', params: [account, index] }
   })

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
-import { Bond, VanillaNote } from 'state/types'
+import { CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
@@ -19,19 +19,19 @@ import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
  * - filter
  */
 
-interface NoteProps {
+interface CallNoteProps {
     isMobile: boolean
     userDataReady: boolean
-    note: VanillaNote
+    note: CallNote
     reqPrice: number
     isFirst: boolean
     isLast: boolean
 }
 
-interface NoteHeaderProps {
+interface CallNoteHeaderProps {
     userDataReady: boolean
     isMobile: boolean
-    notes: VanillaNote[]
+    notes: CallNote[]
     reqPrice: number
 }
 
@@ -163,7 +163,7 @@ const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
 
 
 
-export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
+export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
 
 
     const [totalPayout, avgVesting] = useMemo(() => {
@@ -223,7 +223,7 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
 
 
-const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
+const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
@@ -284,7 +284,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
 
 
 
-function compareMaturities(a: VanillaNote, b: VanillaNote) {
+function compareMaturities(a: CallNote, b: CallNote) {
     if (a.matured < b.matured) {
         return -1;
     }
@@ -294,7 +294,7 @@ function compareMaturities(a: VanillaNote, b: VanillaNote) {
     return 0;
 }
 
-export const NoteTable: React.FunctionComponent<{ notes: VanillaNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
+export const NoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
 }) => {
 
     const { isMobile } = useMatchBreakpoints()
@@ -303,13 +303,13 @@ export const NoteTable: React.FunctionComponent<{ notes: VanillaNote[], reqPrice
     return (
         <GeneralNoteContainer isMobile={isMobile}>
             {notes.length > 0 && (
-                <NoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
+                <CallNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
             )}
             {orderedNotes.map((
                 note, index) => {
                 const isLast = index === notes.length - 1
                 return (
-                    <NoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
+                    <CallNoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
                 )
             }
             )}

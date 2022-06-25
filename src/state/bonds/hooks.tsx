@@ -20,15 +20,15 @@ import { BondAssetType, BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
 import { setLpLink, setLpPrice } from './actions'
-import { fetchBondMeta, fetchBondUserDataAsync } from '.'
-import { State, Bond, BondsState } from '../types'
+import { fetchBondMeta, fetchBondUserDataAsync, fetchCallBondUserDataAsync } from '.'
+import { State, Bond, BondsState, CallBond } from '../types'
 import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
   const { account, library } = useWeb3React()
-  const { metaLoaded, bondData, userDataLoaded, callBondData} = useBonds()
+  const { metaLoaded, bondData, userDataLoaded, callBondData } = useBonds()
   useEffect(() => {
     // const bondsToFetch = bondList(chainId)
 
@@ -40,6 +40,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       dispatch(fetchBondMeta({ chainId, bondMeta }))
     } else {
       const bondsToFetch = Object.values(bondData)
+      const callBondsToFetch = Object.values(callBondData)
       bondsToFetch.map(
         (bond) => {
           if (bond.bondType === BondType.Vanilla) {
@@ -50,18 +51,10 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
               dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
           }
-          if (bond.bondType === BondType.Call) {
-            if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-            }
-            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-            }
-          }
           return 0
         }
       )
-      const callBondsToFetch = Object.values(callBondData)
+
       callBondsToFetch.map(
         (bond) => {
           if (bond.bondType === BondType.Call) {
@@ -76,10 +69,10 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
         }
       )
 
+      // fetch user data if account provided
       if (account) {
-        const bondIds = Object.keys(bondData).map(k => Number(k))
-        // const relevantAddresses = useReserveAddressFromBondIds(chainId, bondIds)
         dispatch(fetchBondUserDataAsync({ chainId, account, bonds: bondsToFetch }))
+        dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: callBondsToFetch }))
       }
     }
 
@@ -123,11 +116,49 @@ export const useBondFromBondIds = (bondIds: number[]): Bond[] => {
   return bondIds.map(bId => bond[bId])
 }
 
+
+export const useCallBondFromBondId = (bondId): CallBond => {
+
+  const bond = useSelector((state: State) => state.bonds.callBondData[bondId])
+  return bond
+}
+
+export const useCallBondFromBondIds = (bondIds: number[]): CallBond[] => {
+
+  const bond = useSelector((state: State) => state.bonds.callBondData)
+  return bondIds.map(bId => bond[bId])
+}
+
+
+
 /**
- *  Returns bobnd user data for id
+ *  Returns bond user data for id
  */
 export const useBondUser = (bondId) => {
   const bond = useBondFromBondId(bondId)
+  if (bond) {
+    return {
+      allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
+      tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
+      stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
+      earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
+      notes: bond?.userData?.notes
+    }
+  }
+
+  return {
+    allowance: BIG_ZERO,
+    tokenBalance: BIG_ZERO,
+    stakedBalance: BIG_ZERO,
+    earnings: BIG_ZERO,
+  }
+}
+
+/**
+ *  Returns bond user data for id
+ */
+export const useCallBondUser = (bondId) => {
+  const bond = useCallBondFromBondId(bondId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,

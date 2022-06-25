@@ -162,6 +162,8 @@ export interface Bond extends BondConfig, IBondDetails {
 
 
 export interface CallBond extends BondConfig, IBondDetails {
+  currentUnderlyingPrice?: SerializedBigNumber;
+  underlyingDecimals?: number;
   tokenAmount?: SerializedBigNumber
   quoteTokenAmountMc?: SerializedBigNumber
   tokenAmountTotal?: SerializedBigNumber
@@ -180,7 +182,7 @@ export interface CallBond extends BondConfig, IBondDetails {
     interestDue: string
     balance: string
     bondMaturationBlock: number
-    notes: VanillaNote[]
+    notes: CallNote[]
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber
@@ -217,6 +219,8 @@ export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   userDataLoading: boolean
+  userCallDataLoaded: boolean
+  userCallDataLoading: boolean
   publicDataLoading: boolean
   status?: string
   liveMarkets?: number[]

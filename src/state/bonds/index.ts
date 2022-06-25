@@ -24,6 +24,8 @@ function initialState(): BondsState {
     callBondData: {},
     loadArchivedBondsData: false,
     userDataLoaded: false,
+    userCallDataLoading: false,
+    userCallDataLoaded: false,
     metaLoaded: false,
     userDataLoading: false,
     publicDataLoading: false,
@@ -85,6 +87,7 @@ interface CallBondUserDataResponse {
 }
 
 
+
 export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[], callBondConfigWithIds: BondConfig[] }, { chainId: number, bondMeta: BondConfig[] }>(
   'bonds/fetchBondMeta',
   async ({ chainId, bondMeta }) => {
@@ -109,7 +112,7 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
     })
 
     const bondIds = await multicall(chainId, bondReserveAVAX, [...calls, ...callBondCalls])
-    
+
     const bondCfgs = []
     const callBondCfgs = []
 
@@ -271,7 +274,7 @@ export const bondsSlice = createSlice({
 
         for (let i = 0; i < callBondConfigWithIds.length; i++) {
           const bond = callBondConfigWithIds[i]
-          state.callBondData[bond.bondId] = { ...state.bondData[bond.bondId], ...bond };
+          state.callBondData[bond.bondId] = { ...state.callBondData[bond.bondId], ...bond };
         }
         state.metaLoaded = true;
       })
@@ -336,6 +339,22 @@ export const bondsSlice = createSlice({
       }).addCase(fetchBondUserDataAsync.pending, state => {
         state.userDataLoading = true;
       }).addCase(fetchBondUserDataAsync.rejected, (state, { error }) => {
+        state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
+      // Update call bonds with user data
+      .addCase(fetchCallBondUserDataAsync.fulfilled, (state, action) => {
+        const callBondData = action.payload.dataAssignedToBonds
+        Object.keys(callBondData.bondUserData).forEach((bondId) => {
+          state.callBondData[bondId].userData = { ...state.callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
+        })
+        state.vanillaNotesClosed = action.payload.closedNotes
+        state.userReward = callBondData.rewards
+        state.userDataLoaded = true
+      }).addCase(fetchCallBondUserDataAsync.pending, state => {
+        state.userDataLoading = true;
+      }).addCase(fetchCallBondUserDataAsync.rejected, (state, { error }) => {
         state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);

@@ -19,6 +19,7 @@ import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays, prettifySeconds } from 'config'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 
+import { useOracles } from 'state/oracles/hooks'
 import { latinise } from 'utils/latinise'
 import useRefresh from 'hooks/useRefresh'
 import { useGetRawWeightedPairsState, useGetWeightedPairsPricerState } from 'hooks/useGetWeightedPairsState'
@@ -28,7 +29,7 @@ import Loading from 'components/Loading'
 import { priceAssetBackedRequiem } from 'utils/poolPricer'
 import { RowProps } from './components/BondTable/Row'
 import Claim from './components/BondTable/Actions/ClaimAction'
-import { BondWithStakedValue, DesktopColumnSchema } from './components/types'
+import { BondWithStakedValue, DesktopColumnSchema, DesktopColumnSchemaCall } from './components/types'
 import Table from './components/BondTable/BondTable'
 import BondTabButtons from './components/BondTabButtons'
 import { NoteTable } from './components/BondTable/NoteTable'
@@ -172,6 +173,8 @@ function Bonds({
     [pairs, chainId]
   )
 
+  const { dataLoaded, oracles } = useOracles(chainId)
+
   usePollBondsWithUserData(chainId, isArchived)
 
   // Users with no wallet connected should see 0 as Earned amount
@@ -271,7 +274,7 @@ function Bonds({
   ]) // end chosenBondsMemoized
 
 
-  const { bondData } = useBonds()
+  const { bondData, callBondData } = useBonds()
 
   chosenBondsLength.current = chosenBondsMemoized.length
 
@@ -324,6 +327,42 @@ function Bonds({
   useLpPricing({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded: publicDataLoaded, pairs: _pairs, pairsLoaded: metaDataLoaded && reservesAndWeightsLoaded })
 
   const rowData = Object.values(bondData).map((bond) => {
+    const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
+    const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
+    const row: RowProps = {
+      bond: {
+        label: bond.name,
+        bondId: bond.bondId,
+        bondType: bond.assetType,
+        tokens: bond.tokens
+      },
+      discount: (reqPrice - bond.bondPrice) / reqPrice,
+      details: bond,
+      // price: bond.bondPrice,
+      term: blocksToDays(bond.vestingTerm ?? 0, chainId),
+      roi: {
+        value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
+        bondId: 1,
+        lpLabel: 'string',
+        reqtPrice: new BigNumber(reqPrice),
+        originalValue: 3
+
+      },
+      purchased: {
+        purchasedUnits,
+        purchasedInQuote,
+      },
+      reqPrice: Number(reqPrice),
+      price: {
+        reqPrice,
+        price: bond.bondPrice,
+      }
+    }
+
+    return row
+  })
+
+  const callRowData = Object.values(callBondData).map((bond) => {
     const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
     const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
     const row: RowProps = {
@@ -599,6 +638,29 @@ function Bonds({
 
     return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
   }
+
+
+  const renderCallContent = (): JSX.Element => {
+    const columnSchema = DesktopColumnSchemaCall
+
+    const columns = columnSchema.map((column) => ({
+      id: column.id,
+      name: column.name,
+      label: column.label,
+      sort: (a: RowType<RowProps>, b: RowType<RowProps>) => {
+        switch (column.name) {
+          case 'bond':
+            return b.id - a.id
+          default:
+            return 1
+        }
+      },
+      sortable: column.sortable,
+    }))
+
+    return <Table data={rowData} columns={columns} userDataReady={userDataReady} />
+  }
+
 
   const handleSortOptionChange = (option: OptionProps): void => {
     setSortOption(option.value)

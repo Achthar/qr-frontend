@@ -18,6 +18,7 @@ import mintStables from './mintStables/reducer'
 import mintPoolLp from './mintPoolLp/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
 import governance from './governance/reducer'
+import oracles from './oracles/reducer'
 import weightedPairReducer from './weightedPairs'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
@@ -40,6 +41,7 @@ const store = configureStore({
     weightedPools: weightedPoolsReducer,
     weightedPairs: weightedPairReducer,
     governance,
+    oracles,
     assetBackedStaking: assetBackedStakingReducer,
     // Exchange
     user,

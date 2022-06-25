@@ -1,28 +1,18 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
-import { Bond, VanillaNote } from 'state/types'
+import { CallBond, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
-import GeneralRedemption from './Actions/GeneralRedemptionAction'
-import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
-
-
-/**
- * Implementation for showing positions of users that are not assigned to live markets anymore
- * Should provide:
- * - claim function for single position
- * - claim function for all matured ones
- * - sort notes
- * - filter
- */
+import RedemptionAction from './Actions/RedemptionAction'
 
 interface NoteProps {
     isMobile: boolean
     userDataReady: boolean
-    note: VanillaNote
+    note: CallNote
+    bond: CallBond
     reqPrice: number
     isFirst: boolean
     isLast: boolean
@@ -31,7 +21,8 @@ interface NoteProps {
 interface NoteHeaderProps {
     userDataReady: boolean
     isMobile: boolean
-    notes: VanillaNote[]
+    notes: CallNote[]
+    bond: CallBond
     reqPrice: number
 }
 
@@ -143,27 +134,11 @@ const HeaderContainer = styled.div`
   }
 `
 
-const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
-  margin-top:0px;
-  width:100%;
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-  padding: 2px;
-  ${({ isMobile }) => isMobile ? `
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 12px;
-  }` : `max-height: 500px;
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 12px;
-  }` }
-`
 
 
 
-export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
+
+export const CallNoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady, bond, isMobile, reqPrice }) => {
 
 
     const [totalPayout, avgVesting] = useMemo(() => {
@@ -209,11 +184,8 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
             </DescriptionColHeader>
             <DescriptionCol>
-                <Text>{totalPayout.toLocaleString()} ABREQ / {(Math.round(totalPayout * reqPrice * 100) / 100).toLocaleString()}$</Text>
+                <Text>{totalPayout.toPrecision(4)} ABREQ / {(totalPayout * reqPrice).toLocaleString()}$</Text>
                 <Text>{prettifySeconds(avgVesting, 'd')}</Text>
-            </DescriptionCol>
-            <DescriptionCol>
-                <GeneralRedemptionMulti notes={notes} userDataReady />
             </DescriptionCol>
         </HeaderContainer>
     )
@@ -223,13 +195,15 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
 
 
-const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
+const CallNoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
+
+    console.log("NOTE WITH BID", bond.name, bond?.bondId, note)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
@@ -248,7 +222,7 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
                         <Text>{vestingTime()}</Text>
                     </DescriptionCol>
                 </ContentRow>
-                <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+                <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
             </Container>
         )
     }
@@ -276,45 +250,10 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
-            <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
         </Container>
     )
 
 }
 
-
-
-function compareMaturities(a: VanillaNote, b: VanillaNote) {
-    if (a.matured < b.matured) {
-        return -1;
-    }
-    if (a.matured > b.matured) {
-        return 1;
-    }
-    return 0;
-}
-
-export const NoteTable: React.FunctionComponent<{ notes: VanillaNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
-}) => {
-
-    const { isMobile } = useMatchBreakpoints()
-    let orderedNotes = useMemo(() => notes.slice(), [notes])
-    orderedNotes = useMemo(() => { return orderedNotes.sort((a, b) => a.matured - b.matured) }, [orderedNotes])
-    return (
-        <GeneralNoteContainer isMobile={isMobile}>
-            {notes.length > 0 && (
-                <NoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
-            )}
-            {orderedNotes.map((
-                note, index) => {
-                const isLast = index === notes.length - 1
-                return (
-                    <NoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
-                )
-            }
-            )}
-
-        </GeneralNoteContainer>
-    )
-}
-
+export default CallNoteRow
