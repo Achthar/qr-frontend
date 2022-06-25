@@ -27,7 +27,7 @@ import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
   const { slowRefresh } = useRefresh()
-  const { account, library } = useWeb3React()
+  const { account, library } = useActiveWeb3React()
   const { metaLoaded, bondData, userDataLoaded, callBondData } = useBonds()
   useEffect(() => {
     // const bondsToFetch = bondList(chainId)

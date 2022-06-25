@@ -6,7 +6,7 @@ import { CallBondWithStakedValue } from 'views/Bonds/components/types'
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
-import { useBondFromBondId, useBondUser, useCallBondUser } from 'state/bonds/hooks'
+import { useCallBondFromBondId, useBondUser, useCallBondUser } from 'state/bonds/hooks'
 import { useBlock } from 'state/block/hooks'
 import { prettifySeconds, secondsUntilBlock } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
@@ -122,7 +122,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
   const { t } = useTranslation()
 
-  const bond = useBondFromBondId(details.bondId)
+  const bond = useCallBondFromBondId(details.bondId)
 
   const toggleActionPanel = () => {
     setActionPanelExpanded(!actionPanelExpanded)

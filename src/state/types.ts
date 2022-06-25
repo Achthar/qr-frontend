@@ -232,6 +232,7 @@ export interface BondsState {
     [bondId: number]: CallBond
   },
   userReward: string
+  userRewardCall: string
   vanillaNotesClosed: VanillaNote[]
   callNotesClosed: CallNote[]
 

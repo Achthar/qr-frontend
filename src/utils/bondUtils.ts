@@ -1,7 +1,7 @@
 import { AmplifiedWeightedPair, Token, TokenAmount } from "@requiemswap/sdk"
 import { SerializedToken } from "config/constants/types"
 import { BigNumber, ethers } from "ethers"
-import { Bond, SerializedWeightedPair } from "state/types"
+import { Bond, CallBond, SerializedWeightedPair } from "state/types"
 import { deserializeToken } from "state/user/hooks/helpers"
 
 /**
@@ -39,7 +39,7 @@ export const deserializeWeightedPair = (serializedPair: SerializedWeightedPair):
 /**
  * Price an input amount with bond - assumes that bond has all data loaded
  */
-export const priceBonding = (amount: BigNumber, bond: Bond): ethers.BigNumber => {
+export const priceBonding = (amount: BigNumber, bond: Bond | CallBond): ethers.BigNumber => {
     if (!bond || !bond.market || !bond.purchasedInQuote) return ethers.BigNumber.from(0)
     return amount.mul(bond.purchasedInQuote).div(bond.market.purchased)
 }

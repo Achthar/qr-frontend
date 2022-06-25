@@ -3,20 +3,13 @@ import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
-import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
-import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils'
 import { ethers } from 'ethers';
 
 import { CallBondWithStakedValue } from 'views/Bonds/components/types'
-import { CommunityTag, CoreTag, DualTag } from 'components/Tags'
-import { useNetworkState } from 'state/globalNetwork/hooks'
-import getChain from 'utils/getChain'
 import BondingAction from './BondingAction'
-import ClaimAction from './ClaimAction'
 import RedemptionMulti from './RedemptionActionMulti'
-// import RedemptionAction from './RedemptionAction'
 import Roi, { RoiProps } from '../Roi'
 import CallNoteRow, { CallNoteHeaderRow } from '../CallNoteRow'
 import { PreviewPanel } from './PreviewPanel'
@@ -220,7 +213,6 @@ const ActionPanel: React.FunctionComponent<CallActionPanelProps> = ({
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const explorer = getNetworkExplorerLink(lpAddress, 'address')
 
-  const [sendGREQ, setSendGREQ] = useState(true)
   const now = Math.floor((new Date()).getTime() / 1000);
 
   const isApproved = useMemo(() => {
@@ -247,7 +239,6 @@ const ActionPanel: React.FunctionComponent<CallActionPanelProps> = ({
               bondIds={[bond.bondId]}
               userDataReady={userDataReady}
               indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
-              sendGREQ={sendGREQ}
               reqPrice={price.reqPrice}
               chainId={chainId}
               account={account}
@@ -267,7 +258,6 @@ const ActionPanel: React.FunctionComponent<CallActionPanelProps> = ({
                     thisBond={bond}
                     userDataReady={userDataReady}
                     indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
-                    sendGREQ={sendGREQ}
                     reqPrice={price.reqPrice}
                     chainId={chainId}
                     account={account}

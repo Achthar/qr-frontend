@@ -2,13 +2,11 @@ import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading, useTooltip, HelpIcon, Flex } from '@requiemswap/uikit'
 import { useLocation } from 'react-router-dom'
-import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
-import { fetchBondUserDataAsync } from 'state/bonds'
+import { useCallBondFromBondId, useBondUser, useCallBondUser } from 'state/bonds/hooks'
+import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
@@ -17,12 +15,11 @@ import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
-import { getBalanceAmount, getBalanceNumber, getFullDisplayBalance } from 'utils/formatBalance'
-import useDepositBond from 'views/Bonds/hooks/useDepositBond'
+import useDepositBond from 'views/Bonds/hooks/callBond/useDepositBond'
 import BondingModal from '../../BondingModal'
-import WithdrawModal from '../../WithdrawModal'
-import useApproveBond from '../../../hooks/useApproveBond'
+import useApproveBond from '../../../hooks/callBond/useApproveBond'
 import { ActionTitles, ActionContent } from './styles'
+import CallBondingModal from '../CallBondingModal'
 
 
 export const BondActionContainer = styled.div<{ isMobile: boolean }>`
@@ -78,8 +75,8 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
-  const bond = useBondFromBondId(bondId)
+  const { allowance, tokenBalance, stakedBalance } = useCallBondUser(bondId)
+  const bond = useCallBondFromBondId(bondId)
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const location = useLocation()
 
@@ -99,7 +96,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   const handleStake = async (amount: string) => {
     await onBonding(amount, amountWSlippage)
-    dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
+    dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
   }
 
 
@@ -119,7 +116,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   })
 
   const [onPresentBonding] = useModal(
-    <BondingModal
+    <CallBondingModal
       chainId={chainId}
       bondId={bondId}
       max={tokenBalance}
@@ -133,13 +130,13 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
 
   const lpContract = useERC20(lpAddress)
   const dispatch = useAppDispatch()
-  const { onApprove } = useApproveBond(chainId, lpContract, bond)
+  const { onApprove } = useApproveBond(chainId, lpContract)
 
   const handleApprove = useCallback(async () => {
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
+      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
 
       setRequestedApproval(false)
     } catch (e) {

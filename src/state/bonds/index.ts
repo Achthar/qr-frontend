@@ -30,6 +30,7 @@ function initialState(): BondsState {
     userDataLoading: false,
     publicDataLoading: false,
     userReward: '0',
+    userRewardCall: '0',
     status: 'idle',
     vanillaNotesClosed: [],
     callNotesClosed: []
@@ -350,12 +351,12 @@ export const bondsSlice = createSlice({
           state.callBondData[bondId].userData = { ...state.callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
         })
         state.vanillaNotesClosed = action.payload.closedNotes
-        state.userReward = callBondData.rewards
-        state.userDataLoaded = true
+        state.userRewardCall = callBondData.rewards
+        state.userCallDataLoaded = true
       }).addCase(fetchCallBondUserDataAsync.pending, state => {
         state.userDataLoading = true;
       }).addCase(fetchCallBondUserDataAsync.rejected, (state, { error }) => {
-        state.userDataLoaded = true;
+        state.userCallDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })

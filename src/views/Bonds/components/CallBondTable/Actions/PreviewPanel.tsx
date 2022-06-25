@@ -10,7 +10,7 @@ import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { priceBonding } from 'utils/bondUtils'
-import { Bond } from 'state/types'
+import { CallBond } from 'state/types'
 
 
 export const InputContainer = styled.div<{ isMobile: boolean }>`
@@ -99,7 +99,7 @@ const StyledInput = styled(Input)`
 
 interface PreviewPanelProps {
   reqPrice: number
-  thisBond: Bond
+  thisBond: CallBond
   isMobile: boolean
   chainId: number
   account: string

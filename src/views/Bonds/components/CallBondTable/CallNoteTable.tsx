@@ -294,7 +294,7 @@ function compareMaturities(a: CallNote, b: CallNote) {
     return 0;
 }
 
-export const NoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
+export const CallNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
 }) => {
 
     const { isMobile } = useMatchBreakpoints()

@@ -23,7 +23,7 @@ import {
 
 import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
-import { getBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
+import { getBondingDepositoryAddress, getCallBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
 import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
@@ -43,6 +43,7 @@ import WAVAX_ABI from '../config/abi/avax/wavax.json'
 import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
 
 import BOND_DEPO_AVAX from '../config/abi/avax/BondDepository.json'
+import CALL_BOND_DEPO_AVAX from '../config/abi/avax/CallBondDepository.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 import multiCallAbi_QKC from '../config/abi/qkc/Multicall.json'
@@ -222,6 +223,11 @@ export function useWeightedFormulaContract(chainId: number): Contract | null {
 export function useBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
   return useContract(chainId ? getBondingDepositoryAddress(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
 }
+
+export function useCallBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
+}
+
 
 export const useRequiemChef = (chainId, library) => {
   // const { library, chainId } = useActiveWeb3React("useMasterchef")

@@ -1,13 +1,13 @@
 import { useCallback } from 'react'
-import { claimReward } from 'utils/calls'
-import { useBondContract } from 'hooks/useContract'
+import { claimCallReward } from 'utils/calls'
+import { useCallBondContract } from 'hooks/useContract'
 import { BondConfig } from 'config/constants/types'
 
 const useClaimRewards = (chainId: number) => {
-  const bondContract = useBondContract(chainId)
+  const bondContract = useCallBondContract(chainId)
 
   const handleClaim = useCallback(async () => {
-    await claimReward(chainId, bondContract)
+    await claimCallReward(chainId, bondContract)
   }, [bondContract, chainId])
 
   return { onClaim: handleClaim }

@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
 import { ethers, Contract } from 'ethers'
 import { useCallWithGasPrice } from 'hooks/useCallWithGasPrice'
-import { getBondingDepositoryAddress } from 'utils/addressHelpers'
+import { getCallBondingDepositoryAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
 
-const useApproveBond = (chainId: number, lpContract: Contract, bond: BondConfig) => {
-  const bondContractAddress = getBondingDepositoryAddress(chainId)
+const useApproveBond = (chainId: number, lpContract: Contract) => {
+  const bondContractAddress = getCallBondingDepositoryAddress(chainId)
   const { callWithGasPrice } = useCallWithGasPrice()
   const handleApprove = useCallback(async () => {
     try {

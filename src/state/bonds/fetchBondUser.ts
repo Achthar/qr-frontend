@@ -193,23 +193,3 @@ export const fetchCallBondUserAllowancesAndBalances = async (chainId: number, ac
     balances
   }
 }
-
-
-
-export const fetchBondUserStakedBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
-  const masterChefAddress = 'getAddressForBond(chainId)'
-
-  const calls = bondsToFetch.map((bond) => {
-    return {
-      address: masterChefAddress,
-      name: 'userInfo',
-      params: [bond.bondId, account],
-    }
-  })
-
-  const rawStakedBalances = await multicall(chainId, masterchefABI, calls)
-  const parsedStakedBalances = rawStakedBalances.map((stakedBalance) => {
-    return new BigNumber(stakedBalance[0]._hex).toJSON()
-  })
-  return parsedStakedBalances
-}

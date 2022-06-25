@@ -5,7 +5,7 @@ import { ethers } from 'ethers'
 import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { fetchBondUserDataAsync } from 'state/bonds'
+import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
@@ -13,9 +13,9 @@ import { useAppDispatch } from 'state'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
-import { Bond } from 'state/types'
-import { useBondFromBondIds } from 'state/bonds/hooks'
-import { useRedeemNotes } from 'views/Bonds/hooks/useRedeemBond'
+import { CallBond } from 'state/types'
+import { useCallBondFromBondIds } from 'state/bonds/hooks'
+import { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { ActionContent } from './styles'
 
 
@@ -109,8 +109,7 @@ interface RedeemMultiProps {
   indexes: number[]
   bondIds: number[]
   reqPrice: number
-  thisBond: Bond
-  sendGREQ: boolean
+  thisBond: CallBond
   isMobile: boolean
   account: string
   chainId: number
@@ -121,7 +120,6 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   indexes,
   bondIds,
   thisBond,
-  sendGREQ,
   userDataReady,
   isMobile,
   reqPrice,
@@ -130,13 +128,13 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   hasPosition
 }) => {
 
-  const bonds = useBondFromBondIds(bondIds)
+  const bonds = useCallBondFromBondIds(bondIds)
   const { onRedeem } = useRedeemNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds }))
+      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds }))
     } catch (error) {
       console.log(error)
     }
