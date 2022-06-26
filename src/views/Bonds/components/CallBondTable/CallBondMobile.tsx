@@ -30,7 +30,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const BondMobile: React.FunctionComponent<CallBondProps> = ({ tokens, label, bondId, bondType }) => {
+const CallBondMobile: React.FunctionComponent<CallBondProps> = ({ tokens, label, bondId, bondType }) => {
 
   return (
     <Container>
@@ -39,4 +39,4 @@ const BondMobile: React.FunctionComponent<CallBondProps> = ({ tokens, label, bon
   )
 }
 
-export default BondMobile
+export default CallBondMobile

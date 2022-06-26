@@ -74,17 +74,26 @@ const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, token
       <TokenWrapper>
         <PoolLogo tokens={tokens.map(tok => deserializeToken(tok))} size={25} overlap='-3px' />
       </TokenWrapper>
-      <div style={{ marginLeft: 25 }}>
+      {!isMobile ? (<div style={{ marginLeft: 25 }}>
         {handleRenderBonding()}
         <Flex flexDirection="column" mr='3px'>
-          <Text marginLeft='-5px' bold fontSize={isMobile ? '0.6' : '1'}>{`${oracleData?.token}-Linked`}</Text>
+          <Text marginLeft='-5px' bold fontSize='1'>{`${oracleData?.token}-Linked`}</Text>
           <Flex flexDirection="row">
             <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
-            <Text marginLeft='1px' bold fontSize={isMobile ? '7px' : '10px'}>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+            <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
           </Flex>
           <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>
         </Flex>
-      </div>
+      </div>) :
+        (
+          <Flex flexDirection="column" mr='3px' ml='3px'>
+            <Text marginLeft='-5px' bold fontSize='12px'>{`${oracleData?.token}-Linked`}</Text>
+            <Flex flexDirection="row">
+              <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
+              <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+            </Flex>
+          </Flex>
+        )}
     </Container>
   )
 }

@@ -20,7 +20,7 @@ import Liquidity, { LiquidityProps } from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
-import BondMobile from './CallBondMobile'
+import CallBondMobile from './CallBondMobile'
 
 
 interface PurchasedProps {
@@ -248,7 +248,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
           <tr>
             <BondMobileCell>
               <CellLayout>
-                <BondMobile {...props.bond} />
+                <CallBond {...props.bond} />
               </CellLayout>
             </BondMobileCell>
             <BondMobileCell>
