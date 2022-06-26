@@ -16,19 +16,25 @@ import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
+import { OracleData, OracleState } from 'state/oracles/reducer'
 import { BondAssetType, BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './calcSingleBondDetails'
 import { setLpLink, setLpPrice } from './actions'
-import { fetchBondMeta, fetchBondUserDataAsync, fetchCallBondUserDataAsync } from '.'
-import { State, Bond, BondsState, CallBond } from '../types'
+import { fetchBondMeta, fetchBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
 import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
+import { State, Bond, BondsState, CallBond } from '../types'
+
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
+
 
 export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
   const dispatch = useAppDispatch()
-  const { slowRefresh } = useRefresh()
+  const { slowRefresh, fastRefresh } = useRefresh()
   const { account, library } = useActiveWeb3React()
-  const { metaLoaded, bondData, userDataLoaded, callBondData } = useBonds()
+  const { metaLoaded, bondData, callBondData } = useBonds()
   useEffect(() => {
     // const bondsToFetch = bondList(chainId)
 
@@ -68,14 +74,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
           return 0
         }
       )
-
-      // fetch user data if account provided
-      if (account) {
-        dispatch(fetchBondUserDataAsync({ chainId, account, bonds: bondsToFetch }))
-        dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: callBondsToFetch }))
-      }
     }
-
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -87,6 +86,35 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       account,
       metaLoaded
     ])
+
+  const { bondData: bonds, userDataLoaded, callBondData: callBonds, closedMarketsLoaded, vanillaNotesClosed, callNotesClosed } = useBonds()
+  useEffect(() => {
+    if (metaLoaded) {
+      // fetch user data if account provided
+      if (account) {
+        if (!userDataLoaded) {
+          dispatch(fetchBondUserDataAsync({ chainId, account, bonds: Object.values(bonds) }))
+          dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: Object.values(callBonds) }))
+        }
+
+        if (!closedMarketsLoaded && userDataLoaded && (callNotesClosed.length > 0 || vanillaNotesClosed.length > 0)) {
+          console.log("MARKETS", vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique), callNotesClosed.map(noC => noC.marketId).filter(onlyUnique), vanillaNotesClosed, callNotesClosed)
+          dispatch(fetchClosedBondsUserAsync({ chainId, bIds: vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique), bIdsC: callNotesClosed.map(noC => noC.marketId).filter(onlyUnique) }))
+        }
+      }
+    }
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      metaLoaded,
+      fastRefresh,
+      account,
+      bonds,
+      callBonds,
+      closedMarketsLoaded,
+      vanillaNotesClosed,
+      callNotesClosed
+    ])
 }
 
 /**
@@ -96,6 +124,16 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
 export const useBonds = (): BondsState => {
   const bonds = useSelector((state: State) => state.bonds)
   return bonds
+}
+
+export const useClosedVanillaMarkets = () => {
+  const bonds = useSelector((state: State) => state.bonds)
+  return bonds.vanillaMarketsClosed
+}
+
+export const useClosedCallMarkets = () => {
+  const bonds = useSelector((state: State) => state.bonds)
+  return bonds.callMarketsClosed
 }
 
 export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
@@ -195,9 +233,10 @@ export interface PricingInput {
 export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded, pairs, pairsLoaded }: PricingInput) => {
   const bonds = useBonds()
   const dispatch = useAppDispatch()
-  const data = bonds.bondData
   const metaLoaded = bonds.metaLoaded
 
+  /** VANILLA bonds start here */
+  const data = bonds.bondData
   useEffect(() => {
     if (!metaLoaded) return;
     const bondsWithIds = Object.values(data)
@@ -254,8 +293,8 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
 
-      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId }))
-      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId }))
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla }))
       // eslint-disable-next-line no-useless-return
       return;
     })
@@ -263,6 +302,86 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [data, metaLoaded, chainId, pairsLoaded, stableLoaded]
   )
+
+  /** CALL bonds start here */
+  const callData = bonds.callBondData
+
+  useEffect(() => {
+    if (!metaLoaded) return;
+    const bondsWithIds = Object.values(callData)
+    bondsWithIds.map(bondWithNoPrice => {
+      let price: ethers.BigNumber;
+      let link: string;
+      const bondType = bondWithNoPrice.assetType
+
+      if (!bondWithNoPrice.lpData) {
+        // eslint-disable-next-line no-useless-return
+        return;
+      }
+
+      // pair LP
+      if (bondType === BondAssetType.PairLP) {
+        const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
+
+        if (!pairsLoaded) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
+        link = `/${getChain(chainId)}/add/${pair.weight0}-${pair.token0.address}/${pair.weight1}-${pair.token1.address}`
+        price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
+      }
+      // stable pool LP
+      else if (bondType === BondAssetType.StableSwapLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = stablePools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!stableLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+        link = `/${getChain(chainId)}/add/stables`
+        price = stablePoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+      // weighted pool LP
+      else if (bondType === BondAssetType.WeightedPoolLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = weightedPools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!weightedLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+        link = `/${getChain(chainId)}/add/weighted`
+        price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
+      // eslint-disable-next-line no-useless-return
+      return;
+    })
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [callData, metaLoaded, chainId, pairsLoaded, stableLoaded]
+  )
+}
+
+export const useGetOracleData = (chainId: number, bond: CallBond, oracles: { [address: string]: OracleData }): OracleData => {
+  const addr = bond?.market?.underlying
+  if (!addr)
+    return null
+
+  if (!oracles)
+    return null
+
+  return oracles[addr]
 }
 
 // /!\ Deprecated , use the BUSD hook in /hooks

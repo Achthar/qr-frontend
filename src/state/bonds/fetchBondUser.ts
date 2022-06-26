@@ -105,6 +105,44 @@ export const fetchCallBondUserPendingPayoutData = async (chainId: number, accoun
   }
 }
 
+
+const marketABI = [
+  'function markets(uint256)',
+]
+
+
+export interface ClosedBonds {
+  closedVanillaMarkets: any[]
+  closedCallMarkets: any[]
+}
+
+export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bidsCall: number[]): Promise<ClosedBonds> => {
+
+  const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
+  const calls = bIds.map((bi) => {
+    return { address: bondDepositoryAddress, name: 'markets', params: [bi] }
+  })
+
+  const callBondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
+  const callsC = bidsCall.map((biC) => {
+    return { address: callBondDepositoryAddress, name: 'markets', params: [biC] }
+  })
+
+  let resultsVanilla = []
+  if (bIds.length > 0)
+    resultsVanilla = await multicall(chainId, bondReserveAVAX, calls)
+
+  let resultsCall = []
+
+  if (bidsCall.length > 0)
+    resultsCall = await multicall(chainId, callBondReserveAVAX, callsC)
+
+  return {
+    closedVanillaMarkets: resultsVanilla,
+    closedCallMarkets: resultsCall
+  }
+}
+
 export const fetchBondUserTokenBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
   const calls = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)

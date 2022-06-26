@@ -126,3 +126,14 @@ export function timeConverterNoMinutes(unixTimestamp) {
     const time = `${date} ${month} '${String(year).slice(-2)} ${formatDoubleDigit(hour)}h`;
     return time;
 }
+
+export function timeConverterNoYear(unixTimestamp) {
+    const a = new Date(unixTimestamp * 1000);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const time = `${date} ${month} ${formatDoubleDigit(hour)}:${formatDoubleDigit(min)}`;
+    return time;
+}

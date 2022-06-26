@@ -3,9 +3,8 @@
 import { useMemo } from 'react'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import {
-  getBep20Contract,
+  getERC20Contract,
   getCakeContract,
-  getIfoV2Contract,
   getMasterchefContract,
   getPointCenterIfoContract,
   getClaimRefundContract,
@@ -58,14 +57,9 @@ import { ChainId } from '../config/index'
  * Helper hooks to get specific contracts (by ABI)
  */
 
-export const useIfoV2Contract = (address: string) => {
-  const { library, chainId } = useActiveWeb3React("useIfoV2Contract")
-  return useMemo(() => getIfoV2Contract(chainId, address, library.getSigner()), [chainId, address, library])
-}
-
 export const useERC20 = (address: string) => {
   const { library, chainId } = useActiveWeb3React("useERC20")
-  return useMemo(() => getBep20Contract(chainId, address, library.getSigner()), [chainId, address, library])
+  return useMemo(() => getERC20Contract(chainId, address, library.getSigner()), [chainId, address, library])
 }
 
 /**

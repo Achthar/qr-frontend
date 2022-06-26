@@ -1,11 +1,17 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
+import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { bondConfig } from 'config/constants/bonds'
+import { getConfigForVanillaNote } from 'utils/bondUtils'
+import PoolLogo from 'components/Logo/PoolLogo'
+import { deserializeToken } from 'state/user/hooks/helpers'
+import { useClosedCallMarkets } from 'state/bonds/hooks'
 import GeneralRedemption from './Actions/GeneralRedemptionAction'
 import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
 
@@ -224,6 +230,8 @@ export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobi
 
 
 const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
+    const { chainId } = useNetworkState()
+    const closed = useClosedCallMarkets()
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
@@ -234,6 +242,10 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
     const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+
+
+    const cfg = useMemo(() => bondConfig(chainId), [chainId])
+    const config = getConfigForVanillaNote(chainId, note, closed, cfg)
 
     if (isMobile) {
         return (
@@ -256,6 +268,10 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     return (
         <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
+            <Flex flexDirection='column' width='35%'>
+                {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
+                <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
+            </Flex>
             <ContentRow>
                 <DescriptionCol>
                     <Text>Created:</Text>

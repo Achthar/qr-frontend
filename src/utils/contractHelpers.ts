@@ -67,10 +67,6 @@ import IERC20 from 'config/abi/avax/IERC20.json'
 
 import { ChainLinkOracleContract, FarmAuctionContract, PredictionsContract, StableSwapContract, StableLpContract } from './types'
 
-
-
-
-
 const getContract = (
   chainId: number,
   abi: any,
@@ -81,7 +77,7 @@ const getContract = (
   return new ethers.Contract(address, abi, signerOrProvider)
 }
 
-export const getBep20Contract = (
+export const getERC20Contract = (
   chainId: number,
   address: string,
   signer?: ethers.Signer | ethers.providers.Provider,
@@ -98,14 +94,6 @@ export const getErc721Contract = (
 
 export const getLpContract = (chainId: number, address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, lpTokenAbi, address, signer)
-}
-
-export const getIfoV2Contract = (
-  chainId: number,
-  address: string,
-  signer?: ethers.Signer | ethers.providers.Provider,
-) => {
-  return getContract(chainId, ifoV2Abi, address, signer)
 }
 
 export const getPointCenterIfoContract = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
@@ -197,7 +185,6 @@ export const getContractForCallBondDepo = (chainId: number, signer?: ethers.Sign
   const ABI = new Interface(callBondReserveAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
-
 
 export const getBondingDepositoryContract = (chainId: number, bondType:BondType, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, chainId === 43113 ? new Interface(bondReserveAVAX) : bondReserveAVAX, getBondingDepositoryAddress(chainId), signer)

@@ -11,6 +11,7 @@ import {
   fetchBondUserPendingPayoutData,
   fetchCallBondUserAllowancesAndBalances,
   fetchCallBondUserPendingPayoutData,
+  fetchUserClosedMarkets,
 } from './fetchBondUser'
 import { calcSingleBondDetails } from './calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
@@ -33,7 +34,10 @@ function initialState(): BondsState {
     userRewardCall: '0',
     status: 'idle',
     vanillaNotesClosed: [],
-    callNotesClosed: []
+    callNotesClosed: [],
+    vanillaMarketsClosed: [],
+    callMarketsClosed: [],
+    closedMarketsLoaded: false
   }
 }
 
@@ -247,6 +251,50 @@ export const fetchCallBondUserDataAsync = createAsyncThunk<{ closedNotes: CallUs
 )
 
 
+interface RawMarket {
+  asset: string
+  underlying?: string;
+  sold: string;
+  purchased: string;
+}
+
+
+export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawMarket[], callMarkets: RawMarket[] }, { chainId: number, bIds: number[]; bIdsC: number[] }>(
+  'bonds/fetchClosedBondsUserAsync',
+  async ({ chainId, bIds, bIdsC }) => {
+
+    const {
+      closedVanillaMarkets: _closedVanillaMarkets,
+      closedCallMarkets: _closedCallMarkets
+    } = await fetchUserClosedMarkets(chainId, bIds, bIdsC)
+
+    return {
+      vanillaMarkets: Object.assign({}, ..._closedVanillaMarkets.map((_, index) => {
+        return {
+          [bIds[index]]: {
+            asset: _closedVanillaMarkets[index].asset,
+            sold: _closedVanillaMarkets[index].sold.toString(),
+            purchased: _closedVanillaMarkets[index].purchased.toString()
+          }
+        }
+      })
+      ),
+      callMarkets: Object.assign({}, ..._closedCallMarkets.map((_, index) => {
+        return {
+          [bIdsC[index]]: {
+            asset: _closedCallMarkets[index].asset,
+            underlying: _closedCallMarkets[index].underlying,
+            sold: _closedCallMarkets[index].sold.toString(),
+            purchased: _closedCallMarkets[index].purchased.toString()
+          }
+        }
+      })
+      )
+    }
+  },
+)
+
+
 export const bondsSlice = createSlice({
   name: 'Bonds',
   initialState: initialState(), // TODO: make that more flexible
@@ -350,7 +398,7 @@ export const bondsSlice = createSlice({
         Object.keys(callBondData.bondUserData).forEach((bondId) => {
           state.callBondData[bondId].userData = { ...state.callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
         })
-        state.vanillaNotesClosed = action.payload.closedNotes
+        state.callNotesClosed = action.payload.closedNotes
         state.userRewardCall = callBondData.rewards
         state.userCallDataLoaded = true
       }).addCase(fetchCallBondUserDataAsync.pending, state => {
@@ -360,12 +408,36 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
+      // get Closed Markets
+      .addCase(fetchClosedBondsUserAsync.fulfilled, (state, action) => {
+        state.vanillaMarketsClosed = action.payload.vanillaMarkets
+        state.callMarketsClosed = action.payload.callMarkets
+        state.closedMarketsLoaded = true
+      })
+      // .addCase(fetchClosedBondsUserAsync.pending, state => {
+      // })
+      .addCase(fetchClosedBondsUserAsync.rejected, (state, { error }) => {
+        state.closedMarketsLoaded = true
+        console.log(error, state)
+        console.error(error.message);
+      })
       // setters for prices calculated with pools and links
       .addCase(setLpPrice, (state, action) => {
-        state.bondData[action.payload.bondId].purchasedInQuote = action.payload.price
+        if (action.payload.bondType === BondType.Vanilla) {
+          state.bondData[action.payload.bondId].purchasedInQuote = action.payload.price
+        }
+        if (action.payload.bondType === BondType.Call) {
+          state.callBondData[action.payload.bondId].purchasedInQuote = action.payload.price
+        }
       })
       .addCase(setLpLink, (state, action) => {
-        state.bondData[action.payload.bondId].lpLink = action.payload.link
+        if (action.payload.bondType === BondType.Vanilla) {
+          state.bondData[action.payload.bondId].lpLink = action.payload.link
+        }
+
+        if (action.payload.bondType === BondType.Call) {
+          state.callBondData[action.payload.bondId].lpLink = action.payload.link
+        }
       })
   },
 })

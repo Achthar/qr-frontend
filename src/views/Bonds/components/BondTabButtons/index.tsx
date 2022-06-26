@@ -37,10 +37,10 @@ const BondTabButtons: React.FC<BondTabButtonsProps> = ({ hasStakeInFinishedBonds
           height='30px'
           onClick={onLive}
           variant="primary"
-          disabled={!isLive}
+          disabled={!isLive || !hasStakeInFinishedBonds}
           style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '16px', borderTopRightRadius: '16px' }}
         >
-          Closed
+          {hasStakeInFinishedBonds ? 'Closed' : 'No Positions'}
         </Button>
       </NotificationDot>
       {/* </ButtonMenu> */}

@@ -1,14 +1,19 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
+import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallBond, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes } from 'utils/time'
+import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
+import { useOracleState } from 'state/oracles/hooks'
+import { useGetOracleData } from 'state/bonds/hooks'
+import { TokenImage } from 'components/TokenImage'
+import { ABREQ } from 'config/constants/tokens'
+import { calculateUserPay } from 'utils/bondUtils'
 import RedemptionAction from './Actions/RedemptionAction'
 
-interface NoteProps {
+interface CallNoteProps {
     isMobile: boolean
     userDataReady: boolean
     note: CallNote
@@ -195,20 +200,30 @@ export const CallNoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataRe
 
 
 
-const CallNoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
-
+const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
+    const chainId = bond?.tokens[0]?.chainId
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
-    console.log("NOTE WITH BID", bond.name, bond?.bondId, note)
+    const oracleState = useOracleState(chainId)
+
+    const oracleData = useGetOracleData(chainId, bond, oracleState.oracles)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
-    const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
-    const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+    const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
+    const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
 
+    const [moneynessPerc, optPayout] = useMemo(() => {
+        const { moneyness, pay } = calculateUserPay(note, bond, oracleData?.value)
+        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(pay.toString(), isMobile ? 3 : 5, 18)]
+
+    }, [note, bond, oracleData, isMobile])
+
+
+    console.log("OPT", note.noteIndex, bond.displayName, note.marketId)
     if (isMobile) {
         return (
             <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
@@ -234,20 +249,26 @@ const CallNoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady
                 <DescriptionCol>
                     <Text>Created:</Text>
                     <Text>Expiry:</Text>
+                    <Text>Claimable in:</Text>
                 </DescriptionCol>
                 <DescriptionCol>
                     <Text>{created}</Text>
                     <Text>{expiry}</Text>
+                    <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout in ABREQ:</Text>
-                    <Text>Time to Maturity:</Text>
+                    <Text>Moneyness:</Text>
+                    <Text>Option Payout:</Text>
+                    <Text>Notional Payout:</Text>
+
                 </DescriptionCol>
                 <DescriptionCol>
-                    <Text>{payout}</Text>
-                    <Text>{vestingTime()}</Text>
+                    <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
+
                 </DescriptionCol>
             </ContentRow>
             <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />

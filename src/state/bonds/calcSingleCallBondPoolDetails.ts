@@ -4,6 +4,7 @@ import { getContractForBondDepo, getContractForCallBondDepo, getContractForLpRes
 import { BigNumber } from 'ethers'
 import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
+import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import { ICalcCallBondDetailsAsyncThunk } from './types';
 import { CallBond } from '../types'
@@ -78,8 +79,11 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
         vesting: terms.vesting.toString(), // in blocks
         maxDebt: terms.maxDebt.toString(),
         conclusion: terms.conclusion.toString(),
+        thresholdPercentage: terms.thresholdPercentage.toString(),
+        maxPayoffPercentage: terms.maxPayoffPercentage.toString()
       },
       market: {
+        underlying: getAddress(market.underlying),
         capacity: market.capacity.toString(),
         capacityInQuote: Boolean(market.capacityInQuote.toString()),
         totalDebt: market.totalDebt.toString(),

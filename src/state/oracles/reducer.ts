@@ -79,7 +79,7 @@ export default createReducer<OracleState>(initialState, (builder) =>
     .addCase(fetchOracleDataFromBond.fulfilled, (state, action) => {
       const orcls = Object.keys(action.payload.oracles)
       for (let i = 0; i < orcls.length; i++) {
-        state.data[state.referenceChainId].oracles[orcls[i]] = { ...state.data[state.referenceChainId].oracles[orcls[i]], ...action.payload.oracles }
+        state.data[state.referenceChainId].oracles[orcls[i]] = { ...state.data[state.referenceChainId].oracles[orcls[i]], ...action.payload.oracles[orcls[i]] }
         state.data[state.referenceChainId].dataLoaded = true
       }
     })

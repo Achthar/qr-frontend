@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import { redeemCallNote, redeemCallPositions } from 'utils/calls'
-import { useBondContract } from 'hooks/useContract'
+import { useCallBondContract } from 'hooks/useContract'
 import { BondConfig } from 'config/constants/types'
 
 const useRedeemNote = (chainId: number, account: string, noteIndex:number) => {
-  const bondContract = useBondContract(chainId)
+  const bondContract = useCallBondContract(chainId)
 
   const handleRedeem = useCallback(async () => {
     await redeemCallNote(chainId, account, bondContract, noteIndex)
@@ -14,7 +14,7 @@ const useRedeemNote = (chainId: number, account: string, noteIndex:number) => {
 }
 
 export const useRedeemNotes = (chainId: number, account: string, noteIndexes: number[]) => {
-  const bondContract = useBondContract(chainId)
+  const bondContract = useCallBondContract(chainId)
 
   const handleRedeem = useCallback(async () => {
     await redeemCallPositions(chainId, account, bondContract, noteIndexes)

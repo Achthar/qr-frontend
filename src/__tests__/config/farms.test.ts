@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers'
 import farms from 'config/constants/farms'
 import { Farm } from 'state/types'
-import { getBep20Contract, getLpContract } from 'utils/contractHelpers'
+import { getERC20Contract, getLpContract } from 'utils/contractHelpers'
 
 // Test only against the last 10 farms, for performance concern
 const farmsToTest: [number, Farm][] = farms
@@ -37,8 +37,8 @@ describe('Config farms', () => {
   })
 
   it.each(farmsToTest)('Farm %d has non 0 tokens amount', async (pid, farm) => {
-    const tokenContract = getBep20Contract(farm.token.address[56])
-    const quoteTokenContract = getBep20Contract(farm.quoteToken.address[56])
+    const tokenContract = getERC20Contract(farm.token.address[56])
+    const quoteTokenContract = getERC20Contract(farm.quoteToken.address[56])
 
     const tokenAmount: BigNumber = await tokenContract.balanceOf(farm.lpAddresses[56])
     const quoteTokenAmount: BigNumber = await quoteTokenContract.balanceOf(farm.lpAddresses[56])

@@ -1,9 +1,11 @@
 import { AmplifiedWeightedPair, Token, TokenAmount } from "@requiemswap/sdk"
-import { SerializedToken } from "config/constants/types"
+import { BondConfig, SerializedToken } from "config/constants/types"
 import { BigNumber, ethers } from "ethers"
-import { Bond, CallBond, SerializedWeightedPair } from "state/types"
+import { Bond, CallBond, CallNote, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
 import { deserializeToken } from "state/user/hooks/helpers"
 
+const ONE18 = ethers.BigNumber.from('1000000000000000000')
+const ZERO = ethers.BigNumber.from('0')
 /**
  * Gets the quote token from bond
  */
@@ -42,4 +44,27 @@ export const deserializeWeightedPair = (serializedPair: SerializedWeightedPair):
 export const priceBonding = (amount: BigNumber, bond: Bond | CallBond): ethers.BigNumber => {
     if (!bond || !bond.market || !bond.purchasedInQuote) return ethers.BigNumber.from(0)
     return amount.mul(bond.purchasedInQuote).div(bond.market.purchased)
+}
+
+export const calculatePayoff = (
+    _initialPrice: ethers.BigNumber,
+    _priceNow: ethers.BigNumber,
+    _strike: ethers.BigNumber
+): ethers.BigNumber => {
+    const _kMinusS = ethers.BigNumber.from(_priceNow).mul(ONE18).sub((ONE18.add(_strike).mul(_initialPrice)));
+    return _kMinusS.div(_initialPrice);
+}
+
+export const calculateUserPay = (note: CallNote, bond: CallBond, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+    const strike = ethers.BigNumber.from(bond.bondTerms.thresholdPercentage)
+    const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
+    const moneyness = Number(ethers.utils.formatEther(payoff))
+    if (payoff.lt(0)) return { moneyness, pay: ZERO }
+
+    return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(bond.bondTerms.maxPayoffPercentage) : payoff).mul(note.payout).div(ONE18) };
+}
+
+export const getConfigForVanillaNote = (chainId: number, note: VanillaNote, markets: { [bid: number]: ClosedVanillaMarket }, bondCfgs: BondConfig[]) => {
+    if (Object.values(markets).length === 0) return null
+    return bondCfgs.find(cfg => ethers.utils.getAddress(cfg.reserveAddress[chainId]) === ethers.utils.getAddress(markets[note.marketId].asset))
 }

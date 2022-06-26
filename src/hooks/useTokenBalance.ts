@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useNetworkState } from 'state/globalNetwork/hooks'
-import { getBep20Contract, getCakeContract } from 'utils/contractHelpers'
+import { getERC20Contract } from 'utils/contractHelpers'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { simpleRpcProvider } from 'utils/providers'
 import useRefresh from './useRefresh'
@@ -30,7 +30,7 @@ const useTokenBalance = (tokenAddress: string) => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      const contract = getBep20Contract(chainId, tokenAddress)
+      const contract = getERC20Contract(chainId, tokenAddress)
       try {
         const res = await contract.balanceOf(account)
         setBalanceState({ balance: new BigNumber(res.toString()), fetchStatus: SUCCESS })
@@ -51,24 +51,6 @@ const useTokenBalance = (tokenAddress: string) => {
   return balanceState
 }
 
-export const useTotalSupply = () => {
-  const { slowRefresh } = useRefresh()
-  const { chainId } = useNetworkState()
-  const [totalSupply, setTotalSupply] = useState<BigNumber>()
-
-  useEffect(() => {
-    async function fetchTotalSupply() {
-      const cakeContract = getCakeContract(chainId)
-      const supply = await cakeContract.totalSupply()
-      setTotalSupply(new BigNumber(supply.toString()))
-    }
-
-    fetchTotalSupply()
-  }, [chainId, slowRefresh])
-
-  return totalSupply
-}
-
 export const useBurnedBalance = (tokenAddress: string) => {
   const { chainId } = useNetworkState()
   const [balance, setBalance] = useState(BIG_ZERO)
@@ -76,7 +58,7 @@ export const useBurnedBalance = (tokenAddress: string) => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      const contract = getBep20Contract(chainId, tokenAddress)
+      const contract = getERC20Contract(chainId, tokenAddress)
       const res = await contract.balanceOf('0x000000000000000000000000000000000000dEaD')
       setBalance(new BigNumber(res.toString()))
     }

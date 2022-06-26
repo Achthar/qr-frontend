@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
+import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { Bond, VanillaNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes } from 'utils/time'
+import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
+import { TokenImage } from 'components/TokenImage'
+import { ABREQ } from 'config/constants/tokens'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import RedemptionAction from './Actions/RedemptionAction'
 
 interface NoteProps {
@@ -196,18 +199,16 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataReady,
 
 
 const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
-
+    const { chainId } = useNetworkState()
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
-    console.log("NOTE WITH BID", bond.name, bond?.bondId, note)
-
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
-    const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
-    const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+    const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
+    const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
 
     if (isMobile) {
         return (
@@ -242,11 +243,11 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, bo
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout in ABREQ:</Text>
-                    <Text>Time to Maturity:</Text>
+                    <Text>Payout:</Text>
+                    <Text>Matures:</Text>
                 </DescriptionCol>
                 <DescriptionCol>
-                    <Text>{payout}</Text>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>

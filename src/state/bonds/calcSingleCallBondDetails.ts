@@ -11,16 +11,16 @@ import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
 import { BondAssetType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
-import { ICalcBondDetailsAsyncThunk } from './types';
+import { ICalcCallBondDetailsAsyncThunk } from './types';
 import { priceFromData } from './loadMarketPrice';
-import { BondsState, Bond } from '../types'
+import { BondsState, CallBond } from '../types'
 
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 
 export const calcCallSingleBondDetails = createAsyncThunk(
   "bonds/calcCallSingleBondDetails",
-  async ({ bond, provider, chainId }: ICalcBondDetailsAsyncThunk): Promise<Bond> => {
+  async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<CallBond> => {
 
     const bondContract = getContractForCallBondDepo(chainId, provider);
 
@@ -107,8 +107,11 @@ export const calcCallSingleBondDetails = createAsyncThunk(
         vesting: terms.vesting.toString(), // in blocks
         maxDebt: terms.maxDebt.toString(),
         conclusion: terms.conclusion.toString(),
+        thresholdPercentage: terms.thresholdPercentage.toString(),
+        maxPayoffPercentage: terms.maxPayoffPercentage.toString()
       },
       market: {
+        underlying: getAddress(market.underlying),
         capacity: market.capacity.toString(),
         capacityInQuote: Boolean(market.capacityInQuote.toString()),
         totalDebt: market.totalDebt.toString(),

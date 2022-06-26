@@ -96,17 +96,48 @@ export interface VanillaNote {
   noteIndex: number;
 }
 
-export interface CallNote {
-  payout: SerializedBigNumber;
-  created: number;
-  matured: number;
-  redeemed: SerializedBigNumber;
-  marketId: number;
-  noteIndex: number;
+export interface CallNote extends VanillaNote {
   cryptoIntitialPrice: SerializedBigNumber; // reference price at opening
 
 }
 
+export interface VanillaMarket {
+  capacity: SerializedBigNumber;
+  capacityInQuote: boolean;
+  totalDebt: SerializedBigNumber;
+  maxPayout: SerializedBigNumber;
+  sold: SerializedBigNumber;
+  purchased: SerializedBigNumber;
+}
+
+export interface CallMarket extends VanillaMarket {
+  underlying: string;
+}
+
+export interface ClosedVanillaMarket {
+  asset: string
+  sold: string;
+  purchased: string;
+}
+
+export interface ClosedCallMarket extends ClosedVanillaMarket {
+  underlying?: string;
+}
+
+
+
+export interface VanillaBondTerms {
+  controlVariable: SerializedBigNumber; // scaling variable for price
+  maxDebt: SerializedBigNumber;
+  conclusion: SerializedBigNumber;
+  vesting: SerializedBigNumber;
+  fixedTerm: boolean;
+}
+
+export interface CallBondTerms extends VanillaBondTerms {
+  thresholdPercentage: SerializedBigNumber;
+  maxPayoffPercentage: SerializedBigNumber;
+}
 
 export interface Bond extends BondConfig, IBondDetails {
   tokenAmount?: SerializedBigNumber
@@ -141,21 +172,8 @@ export interface Bond extends BondConfig, IBondDetails {
     // only relevant for pair
     priceInQuote: SerializedBigNumber
   },
-  bondTerms?: {
-    controlVariable: SerializedBigNumber; // scaling variable for price
-    maxDebt: SerializedBigNumber;
-    conclusion: SerializedBigNumber;
-    vesting: SerializedBigNumber;
-    fixedTerm: boolean;
-  }
-  market?: {
-    capacity: SerializedBigNumber;
-    capacityInQuote: boolean;
-    totalDebt: SerializedBigNumber;
-    maxPayout: SerializedBigNumber;
-    sold: SerializedBigNumber;
-    purchased: SerializedBigNumber;
-  }
+  bondTerms?: VanillaBondTerms
+  market?: VanillaMarket
   purchasedInQuote?: SerializedBigNumber
   lpLink?: string
 }
@@ -196,21 +214,8 @@ export interface CallBond extends BondConfig, IBondDetails {
     // only relevant for pair
     priceInQuote: SerializedBigNumber
   },
-  bondTerms?: {
-    controlVariable: SerializedBigNumber; // scaling variable for price
-    maxDebt: SerializedBigNumber;
-    conclusion: SerializedBigNumber;
-    vesting: SerializedBigNumber;
-    fixedTerm: boolean;
-  }
-  market?: {
-    capacity: SerializedBigNumber;
-    capacityInQuote: boolean;
-    totalDebt: SerializedBigNumber;
-    maxPayout: SerializedBigNumber;
-    sold: SerializedBigNumber;
-    purchased: SerializedBigNumber;
-  }
+  bondTerms?: CallBondTerms
+  market?: CallMarket
   purchasedInQuote?: SerializedBigNumber
   lpLink?: string
 }
@@ -235,6 +240,9 @@ export interface BondsState {
   userRewardCall: string
   vanillaNotesClosed: VanillaNote[]
   callNotesClosed: CallNote[]
+  vanillaMarketsClosed: { [bondId: number]: ClosedVanillaMarket }
+  callMarketsClosed: { [bondId: number]: ClosedCallMarket }
+  closedMarketsLoaded: boolean
 
 }
 

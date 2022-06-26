@@ -5,7 +5,7 @@ import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
-import { fetchBondUserDataAsync } from 'state/bonds'
+import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
@@ -68,7 +68,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchBondUserDataAsync({ chainId, account, bonds: [bond] }))
+      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
     } catch (error) {
       console.log(error)
     }
@@ -87,7 +87,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   }
 
 
-  if (note && note.matured >= now) {
+  if (note && note.matured > now) {
     return (
       <ButtonContainer>
         <ActionContent>

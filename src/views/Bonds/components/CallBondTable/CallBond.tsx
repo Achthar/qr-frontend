@@ -1,12 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useBondUser } from 'state/bonds/hooks'
+import { useBondUser, useCallBondFromBondId, useCallBondUser, useGetOracleData } from 'state/bonds/hooks'
 import { useTranslation } from 'contexts/Localization'
-import { Text, useMatchBreakpoints } from '@requiemswap/uikit'
+import { Flex, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
+import { useOracleState } from 'state/oracles/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { CurrencyLogo } from 'components/Logo'
+import Logo from 'components/Logo/Logo'
+import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
 
 export interface CallBondProps {
   label: string
@@ -34,8 +39,17 @@ const TokenWrapper = styled.div`
   }
 `
 
+
+const StyledLogo = styled(Logo) <{ size: string }>`
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
+`
+
+
 const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, tokens }) => {
-  const { stakedBalance } = useBondUser(bondId)
+  const { chainId } = useNetworkState()
+  const { stakedBalance } = useCallBondUser(bondId)
+  const bond = useCallBondFromBondId(bondId)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
   const { isDesktop, isMobile } = useMatchBreakpoints()
@@ -50,6 +64,9 @@ const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, token
 
     return null
   }
+  const oracleState = useOracleState(chainId)
+
+  const oracleData = useGetOracleData(chainId, bond, oracleState.oracles)
 
 
   return (
@@ -59,7 +76,14 @@ const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, token
       </TokenWrapper>
       <div style={{ marginLeft: 25 }}>
         {handleRenderBonding()}
-        <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>
+        <Flex flexDirection="column" mr='3px'>
+          <Text marginLeft='-5px' bold fontSize={isMobile ? '0.6' : '1'}>{`${oracleData?.token}-Linked`}</Text>
+          <Flex flexDirection="row">
+            <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
+            <Text marginLeft='1px' bold fontSize={isMobile ? '7px' : '10px'}>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+          </Flex>
+          <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>
+        </Flex>
       </div>
     </Container>
   )

@@ -1,11 +1,19 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { ChevronDownIcon, useMatchBreakpoints, Text } from '@requiemswap/uikit'
+import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { Bond, VanillaNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes } from 'utils/time'
+import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
+import { getConfigForVanillaNote } from 'utils/bondUtils'
+import { bondConfig } from 'config/constants/bonds'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { useClosedVanillaMarkets } from 'state/bonds/hooks'
+import PoolLogo from 'components/Logo/PoolLogo'
+import { deserializeToken } from 'state/user/hooks/helpers'
+import { TokenImage } from 'components/TokenImage'
+import { ABREQ } from 'config/constants/tokens'
 import GeneralRedemption from './Actions/GeneralRedemptionAction'
 import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
 
@@ -224,7 +232,8 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
 
 const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
-
+    const { chainId } = useNetworkState()
+    const closed = useClosedVanillaMarkets()
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
@@ -232,8 +241,12 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
     };
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
-    const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
-    const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+    const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
+    const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
+
+
+    const cfg = useMemo(() => bondConfig(chainId), [chainId])
+    const config = getConfigForVanillaNote(chainId, note, closed, cfg)
 
     if (isMobile) {
         return (
@@ -253,9 +266,12 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
         )
     }
 
-
     return (
         <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
+            <Flex flexDirection='column' width='35%'>
+                {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
+                <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
+            </Flex>
             <ContentRow>
                 <DescriptionCol>
                     <Text>Created:</Text>
@@ -268,11 +284,11 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout in ABREQ:</Text>
-                    <Text>Time to Maturity:</Text>
+                    <Text>Payout:</Text>
+                    <Text>Matures:</Text>
                 </DescriptionCol>
                 <DescriptionCol>
-                    <Text>{payout}</Text>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
                     <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
