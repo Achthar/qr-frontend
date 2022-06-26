@@ -222,22 +222,39 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     }, [note, bond, oracleData, isMobile])
 
-
-    console.log("OPT", note.noteIndex, bond.displayName, note.marketId)
     if (isMobile) {
         return (
             <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
-                <ContentRow>
-                    <DescriptionCol>
-                        <Text>Payout:</Text>
-                        <Text>End: </Text>
-                    </DescriptionCol>
-                    <DescriptionCol>
-                        <Text>{payout}</Text>
-                        <Text>{vestingTime()}</Text>
-                    </DescriptionCol>
-                </ContentRow>
-                <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+                <Flex flexDirection='column'>
+                    <Flex flexDirection='row' marginBottom='7px'>
+                        <ContentRow>
+                            <DescriptionCol>
+                                <Text>Payout:</Text>
+                                <Text>End: </Text>
+                            </DescriptionCol>
+                            <DescriptionCol>
+                                <Text>{payout}</Text>
+                                <Text>{vestingTime()}</Text>
+                            </DescriptionCol>
+                        </ContentRow>
+                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+                    </Flex>
+                    <Flex flexDirection='row' justifyContent='space-between' marginLeft='7px'>
+                        <DescriptionCol>
+                            <Text>Moneyness:</Text>
+                            <Text>Option Payout:</Text>
+                            <Text>Notional:</Text>
+
+                        </DescriptionCol>
+                        <DescriptionCol>
+                            <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
+                            <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
+                            <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
+
+                        </DescriptionCol>
+
+                    </Flex>
+                </Flex>
             </Container>
         )
     }

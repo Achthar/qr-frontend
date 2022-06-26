@@ -152,7 +152,7 @@ const HeaderContainer = styled.div`
 `
 
 const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
-  margin-top:0px;
+  margin-top:5px;
   width:100%;
   align-self: center;
   display: flex;

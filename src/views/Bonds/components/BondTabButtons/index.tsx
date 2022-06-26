@@ -22,18 +22,18 @@ const BondTabButtons: React.FC<BondTabButtonsProps> = ({ hasStakeInFinishedBonds
     <Wrapper>
       {/* <ButtonMenu activeIndex={activeIndex} scale="sm"> */}
       <Button
-        width="130px"
+        width="170px"
         height='30px'
         onClick={onLive}
         variant="primary"
         disabled={isLive}
         style={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px', marginLeft: '5px', marginRight: '3px', borderBottomRightRadius: '3px', borderTopRightRadius: '3px' }}
       >
-        Live
+        Live Markets
       </Button>
       <NotificationDot show={hasStakeInFinishedBonds}>
         <Button
-          width="130px"
+          width="170px"
           height='30px'
           onClick={onLive}
           variant="primary"

@@ -18,7 +18,8 @@ import { orderBy } from 'lodash'
 import isArchivedPid from 'utils/bondHelpers'
 import { blocksToDays, prettifySeconds } from 'config'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
-
+import chartIcon from 'assets/chartIcon.svg'
+import flatChartIcon from 'assets/flatChart.svg'
 import { useOracles } from 'state/oracles/hooks'
 import { latinise } from 'utils/latinise'
 import useRefresh from 'hooks/useRefresh'
@@ -106,10 +107,48 @@ const ViewControls = styled.div`
   }
 `
 
+const StyledIconAbs = styled.div<{ height?: number, width?: number }>`
+  margin-left:5px
+  position:relative;
+  display: flex;
+  justify-content: center;
+  fill: ${({ theme }) => theme.colors.primary};
+  filter: invert(98%) sepia(0%) saturate(270%) hue-rotate(198deg) brightness(88%) contrast(100%);
+  align-items: center;
+  border-radius: 100%;
+  img {
+    filter: grayscale(80%);
+  }
+  & > img,
+  span {
+    height: ${({ height }) => (height ? `${height}px` : '32px')};
+    width: ${({ width }) => (width ? `${width}px` : '32px')};
+  }
+  -webkit-transition: all 300ms ease;
+  -moz-transition: all 300ms ease;
+  -o-transition: all 300ms ease;
+`;
+
 const HeaderBox = styled(Box) <{ btl: string, btr: string, bbl: string, bbr: string, ml: string, mr: string, mb: string, mt: string, width: string, height: string }>`
   margin-top:3px;
   background:  #121212;
   border: 2px solid  ${({ theme }) => theme.colors.backgroundDisabled};
+  border-radius: ${({ btl }) => btl} ${({ btr }) => btr} ${({ bbr }) => bbr} ${({ bbl }) => bbl};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  margin-left: ${({ ml }) => ml};
+  margin-right: ${({ mr }) => mr};
+  margin-bottom: ${({ mb }) => mb};
+  margin-top: ${({ mt }) => mt};
+  display:flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const HeaderBoxBond = styled(Box) <{ btl: string, btr: string, bbl: string, bbr: string, ml: string, mr: string, mb: string, mt: string, width: string, height: string }>`
+  margin-top:3px;
+  background:rgba(10, 10, 10, 0.5);
+  border: 2px solid  rgba(30, 30, 30, 0.5);
   border-radius: ${({ btl }) => btl} ${({ btr }) => btr} ${({ bbr }) => bbr} ${({ bbl }) => bbl};
   width: ${({ width }) => width};
   height: ${({ height }) => height};
@@ -579,44 +618,40 @@ function Bonds({
       <>
         <Box>
           <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
-            <HeaderBox
-              btl='16px'
-              btr={isMobile ? '16px' : '3px'}
-              bbl={isMobile ? '3px' : '16px'}
-              bbr='3px'
-              width={isMobile ? '100%' : '50%'}
-              height='40px'
+            <HeaderBoxBond
+              btl='32px'
+              btr='32px'
+              bbl='32px'
+              bbr='32px'
+              width={isMobile ? '100%' : '100%'}
+              height={isMobile ? '120px' : '80px'}
               ml='1px'
               mr='2px'
-              mb='2px'
+              mb={isMobile ? '7px' : '2px'}
               mt='0px'
             >
-              <Flex flexDirection="column" justifyContent='center'>
+              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
                 <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='17px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='20px'>
+                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+                    Vanilla Bonding
+                  </Text>
+                  <StyledIconAbs height={40} width={80}>
+                    <img src={flatChartIcon} alt='' />
+                  </StyledIconAbs>
+                </Flex>
+                <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
                     Bond Tokens for fixed payoff
                   </Text>
                 </Flex>
               </Flex>
-            </HeaderBox>
-            <HeaderBox
-              btl='3px'
-              btr={isMobile ? '3px' : '16px'}
-              bbl={isMobile ? '16px' : '3px'}
-              bbr='16px'
-              width={isMobile ? '100%' : '50%'}
-              height='40px'
-              ml='1px'
-              mr='2px'
-              mb='2px'
-              mt={isMobile ? '5px' : '0px'}
-            >
-              <Flex flexDirection="column" justifyContent='center'>
-                <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-                  <BondTabButtons hasStakeInFinishedBonds={vanillaNotesClosed.length > 0} isLive={liveSelected} onLive={handleSelectMarkets} />
-                </Flex>
+            </HeaderBoxBond>
+
+            <Flex flexDirection="column" justifyContent='center' alignSelf='center' >
+              <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                <BondTabButtons hasStakeInFinishedBonds={vanillaNotesClosed.length > 0} isLive={liveSelected} onLive={handleSelectMarkets} />
               </Flex>
-            </HeaderBox>
+            </Flex>
           </Flex>
         </Box>
       </>
@@ -630,44 +665,40 @@ function Bonds({
       <>
         <Box>
           <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
-            <HeaderBox
-              btl='16px'
-              btr={isMobile ? '16px' : '3px'}
-              bbl={isMobile ? '3px' : '16px'}
-              bbr='3px'
-              width={isMobile ? '100%' : '50%'}
-              height='40px'
+            <HeaderBoxBond
+              btl='32px'
+              btr='32px'
+              bbl='32px'
+              bbr='32px'
+              width={isMobile ? '100%' : '100%'}
+              height={isMobile ? '120px' : '80px'}
               ml='1px'
               mr='2px'
-              mb='2px'
+              mb={isMobile ? '7px' : '2px'}
               mt='0px'
             >
-              <Flex flexDirection="column" justifyContent='center'>
+              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
+                <Flex flexDirection="row" justifyContent={isMobile ? 'center' : 'flex-start'}>
+                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+                    Linked Bonding
+                  </Text>
+                  <StyledIconAbs height={20} width={20}>
+                    <img src={chartIcon} alt='' />
+                  </StyledIconAbs>
+                </Flex>
                 <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='17px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='20px'>
-                    Bond Tokens for fixed payoff plus Call component
+                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
+                    Bond Tokens for fixed payoff and gain aditional payoff based on Linked Crypto
                   </Text>
                 </Flex>
               </Flex>
-            </HeaderBox>
-            <HeaderBox
-              btl='3px'
-              btr={isMobile ? '3px' : '16px'}
-              bbl={isMobile ? '16px' : '3px'}
-              bbr='16px'
-              width={isMobile ? '100%' : '50%'}
-              height='40px'
-              ml='1px'
-              mr='2px'
-              mb='2px'
-              mt={isMobile ? '5px' : '0px'}
-            >
-              <Flex flexDirection="column" justifyContent='center'>
-                <Flex flexDirection="row" alignItems='center' justifyContent='center'>
-                  <BondTabButtons hasStakeInFinishedBonds={callNotesClosed.length > 0} isLive={liveSelectedCall} onLive={handleSelectCallMarkets} />
-                </Flex>
+            </HeaderBoxBond>
+
+            <Flex flexDirection="column" justifyContent='center'>
+              <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                <BondTabButtons hasStakeInFinishedBonds={callNotesClosed.length > 0} isLive={liveSelectedCall} onLive={handleSelectCallMarkets} />
               </Flex>
-            </HeaderBox>
+            </Flex>
           </Flex>
         </Box>
       </>
