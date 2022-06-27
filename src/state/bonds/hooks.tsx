@@ -24,6 +24,7 @@ import { setLpLink, setLpPrice } from './actions'
 import { fetchBondMeta, fetchBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
 import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
 import { State, Bond, BondsState, CallBond } from '../types'
+import { calcSingleCallBondDetails } from './calcSingleCallBondDetails'
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -65,7 +66,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
         (bond) => {
           if (bond.bondType === BondType.Call) {
             if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
             if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
               dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
@@ -98,7 +99,6 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
         }
 
         if (!closedMarketsLoaded && userDataLoaded && (callNotesClosed.length > 0 || vanillaNotesClosed.length > 0)) {
-          console.log("MARKETS", vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique), callNotesClosed.map(noC => noC.marketId).filter(onlyUnique), vanillaNotesClosed, callNotesClosed)
           dispatch(fetchClosedBondsUserAsync({ chainId, bIds: vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique), bIdsC: callNotesClosed.map(noC => noC.marketId).filter(onlyUnique) }))
         }
       }
@@ -128,12 +128,12 @@ export const useBonds = (): BondsState => {
 
 export const useClosedVanillaMarkets = () => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bonds.vanillaMarketsClosed
+  return bonds.vanillaBondsClosed
 }
 
 export const useClosedCallMarkets = () => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bonds.callMarketsClosed
+  return bonds.callBondsClosed
 }
 
 export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
@@ -373,15 +373,14 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
   )
 }
 
-export const useGetOracleData = (chainId: number, bond: CallBond, oracles: { [address: string]: OracleData }): OracleData => {
-  const addr = bond?.market?.underlying
-  if (!addr)
+export const useGetOracleData = (chainId: number, address: string, oracles: { [address: string]: OracleData }): OracleData => {
+  if (!address)
     return null
 
   if (!oracles)
     return null
 
-  return oracles[addr]
+  return oracles[address]
 }
 
 // /!\ Deprecated , use the BUSD hook in /hooks

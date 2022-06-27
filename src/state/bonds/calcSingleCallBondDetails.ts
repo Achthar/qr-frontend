@@ -6,7 +6,7 @@ import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
-import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
+import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
 import { BondAssetType } from 'config/constants/types';
@@ -18,8 +18,8 @@ import { BondsState, CallBond } from '../types'
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 
-export const calcCallSingleBondDetails = createAsyncThunk(
-  "bonds/calcCallSingleBondDetails",
+export const calcSingleCallBondDetails = createAsyncThunk(
+  "bonds/calcSingleCallBondDetails",
   async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<CallBond> => {
 
     const bondContract = getContractForCallBondDepo(chainId, provider);

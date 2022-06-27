@@ -8,13 +8,17 @@ import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { bondConfig } from 'config/constants/bonds'
-import { getConfigForVanillaNote } from 'utils/bondUtils'
+import { calculateUserPay, calculateUserPayClosed, getConfigForVanillaNote } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { useClosedCallMarkets } from 'state/bonds/hooks'
+import { useClosedCallMarkets, useGetOracleData } from 'state/bonds/hooks'
+import { useOracleState } from 'state/oracles/hooks'
+import { TokenImage } from 'components/TokenImage'
+import { ABREQ } from 'config/constants/tokens'
+import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
+import Logo from 'components/Logo/Logo'
 import GeneralRedemption from './Actions/GeneralRedemptionAction'
 import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
-
 
 /**
  * Implementation for showing positions of users that are not assigned to live markets anymore
@@ -166,7 +170,10 @@ const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
     width: 12px;
   }` }
 `
-
+const StyledLogo = styled(Logo) <{ size: string }>`
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
+`
 
 
 export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
@@ -247,6 +254,17 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
     const cfg = useMemo(() => bondConfig(chainId), [chainId])
     const config = getConfigForVanillaNote(chainId, note, closed, cfg)
 
+
+    const oracleState = useOracleState(chainId)
+
+    const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
+
+    const [moneynessPerc, optPayout] = useMemo(() => {
+        const { moneyness, pay } = calculateUserPayClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
+        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(pay.toString(), isMobile ? 3 : 5, 18)]
+
+    }, [note, closed, oracleData, isMobile])
+
     if (isMobile) {
         return (
             <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
@@ -268,28 +286,40 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     return (
         <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
-            <Flex flexDirection='column' width='35%'>
+            <Flex flexDirection='column' width='35%' justifyContent='center'>
                 {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
                 <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
+                {/* <Flex flexDirection="column" mr='3px' ml='3px'> */}
+                <Text marginLeft='1px' bold fontSize='12px' textAlign='center'>{`${oracleData?.token}-Linked`}</Text>
+                <Flex flexDirection="row" alignSelf='center'>
+                    <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
+                    <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+                </Flex>
+                {/* </Flex> */}
             </Flex>
             <ContentRow>
                 <DescriptionCol>
                     <Text>Created:</Text>
                     <Text>Expiry:</Text>
+                    <Text>Claimable in:</Text>
                 </DescriptionCol>
                 <DescriptionCol>
                     <Text>{created}</Text>
                     <Text>{expiry}</Text>
+                    <Text>{vestingTime()}</Text>
                 </DescriptionCol>
             </ContentRow>
             <ContentRow>
                 <DescriptionCol>
-                    <Text>Payout in ABREQ:</Text>
-                    <Text>Time to Maturity:</Text>
+                    <Text>Moneyness:</Text>
+                    <Text>Option Payout:</Text>
+                    <Text>Notional Payout:</Text>
+
                 </DescriptionCol>
                 <DescriptionCol>
-                    <Text>{payout}</Text>
-                    <Text>{vestingTime()}</Text>
+                    <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
+                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
                 </DescriptionCol>
             </ContentRow>
             <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />

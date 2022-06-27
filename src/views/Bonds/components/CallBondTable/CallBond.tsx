@@ -66,7 +66,7 @@ const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, token
   }
   const oracleState = useOracleState(chainId)
 
-  const oracleData = useGetOracleData(chainId, bond, oracleState.oracles)
+  const oracleData = useGetOracleData(chainId, bond?.market?.underlying, oracleState.oracles)
 
 
   return (

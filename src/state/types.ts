@@ -125,6 +125,30 @@ export interface ClosedCallMarket extends ClosedVanillaMarket {
 }
 
 
+export interface ClosedVanillaTerms {
+  vesting: number; // length of time from deposit to maturity if fixed-term
+}
+
+export interface ClosedCallTerms extends ClosedVanillaTerms {
+  thresholdPercentage: SerializedBigNumber;
+  maxPayoffPercentage: SerializedBigNumber;
+  exerciseDuration: number;
+}
+
+
+export interface ClosedVanillaBond {
+  market: ClosedVanillaMarket
+  terms: ClosedVanillaTerms;
+  
+}
+
+export interface ClosedCallBond  {
+  market: ClosedCallMarket
+  terms: ClosedCallTerms;
+}
+
+
+
 
 export interface VanillaBondTerms {
   controlVariable: SerializedBigNumber; // scaling variable for price
@@ -240,8 +264,8 @@ export interface BondsState {
   userRewardCall: string
   vanillaNotesClosed: VanillaNote[]
   callNotesClosed: CallNote[]
-  vanillaMarketsClosed: { [bondId: number]: ClosedVanillaMarket }
-  callMarketsClosed: { [bondId: number]: ClosedCallMarket }
+  vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
+  callBondsClosed: { [bondId: number]: ClosedCallBond }
   closedMarketsLoaded: boolean
 
 }

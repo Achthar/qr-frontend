@@ -210,7 +210,7 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     const oracleState = useOracleState(chainId)
 
-    const oracleData = useGetOracleData(chainId, bond, oracleState.oracles)
+    const oracleData = useGetOracleData(chainId, bond?.market?.underlying, oracleState.oracles)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])

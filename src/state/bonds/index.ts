@@ -18,6 +18,7 @@ import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 import { setLpLink, setLpPrice } from './actions';
 import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails';
+import { calcSingleCallBondDetails } from './calcSingleCallBondDetails';
 
 function initialState(): BondsState {
   return {
@@ -35,8 +36,8 @@ function initialState(): BondsState {
     status: 'idle',
     vanillaNotesClosed: [],
     callNotesClosed: [],
-    vanillaMarketsClosed: [],
-    callMarketsClosed: [],
+    vanillaBondsClosed: [],
+    callBondsClosed: [],
     closedMarketsLoaded: false
   }
 }
@@ -258,23 +259,59 @@ interface RawMarket {
   purchased: string;
 }
 
+interface RawTerm {
+  vesting: number
+  thresholdPercentage?: string;
+  maxPayoffPercentage?: string;
+  exerciseDuration?: number;
+}
 
-export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawMarket[], callMarkets: RawMarket[] }, { chainId: number, bIds: number[]; bIdsC: number[] }>(
+interface RawBond {
+  market: RawMarket
+  terms: RawTerm
+}
+
+interface RawCallMarket extends RawMarket {
+  underlying: string;
+
+}
+
+interface RawCallTerm extends RawTerm {
+  thresholdPercentage: string;
+  maxPayoffPercentage: string;
+  exerciseDuration: number;
+}
+
+interface RawCallBond {
+  market: RawCallMarket
+  terms: RawCallTerm
+}
+
+
+
+export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawBond[], callMarkets: RawCallBond[] }, { chainId: number, bIds: number[]; bIdsC: number[] }>(
   'bonds/fetchClosedBondsUserAsync',
   async ({ chainId, bIds, bIdsC }) => {
 
     const {
       closedVanillaMarkets: _closedVanillaMarkets,
-      closedCallMarkets: _closedCallMarkets
+      closedCallMarkets: _closedCallMarkets,
+      closedVanillaTerms: _closedVanillaTerms,
+      closedCallTerms: _closedCallTerms,
     } = await fetchUserClosedMarkets(chainId, bIds, bIdsC)
 
     return {
       vanillaMarkets: Object.assign({}, ..._closedVanillaMarkets.map((_, index) => {
         return {
           [bIds[index]]: {
-            asset: _closedVanillaMarkets[index].asset,
-            sold: _closedVanillaMarkets[index].sold.toString(),
-            purchased: _closedVanillaMarkets[index].purchased.toString()
+            market: {
+              asset: _closedVanillaMarkets[index].asset,
+              sold: _closedVanillaMarkets[index].sold.toString(),
+              purchased: _closedVanillaMarkets[index].purchased.toString()
+            },
+            terms: {
+              vesting: Number(_closedVanillaTerms[index].vesting)
+            }
           }
         }
       })
@@ -282,10 +319,18 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawM
       callMarkets: Object.assign({}, ..._closedCallMarkets.map((_, index) => {
         return {
           [bIdsC[index]]: {
-            asset: _closedCallMarkets[index].asset,
-            underlying: _closedCallMarkets[index].underlying,
-            sold: _closedCallMarkets[index].sold.toString(),
-            purchased: _closedCallMarkets[index].purchased.toString()
+            market: {
+              asset: _closedCallMarkets[index].asset,
+              underlying: _closedCallMarkets[index].underlying,
+              sold: _closedCallMarkets[index].sold.toString(),
+              purchased: _closedCallMarkets[index].purchased.toString()
+            },
+            terms: {
+              vesting: Number(_closedCallTerms[index].vesting),
+              thresholdPercentage: _closedCallTerms[index].thresholdPercentage.toString(),
+              maxPayoffPercentage: _closedCallTerms[index].maxPayoffPercentage.toString(),
+              exerciseDuration: Number(_closedCallTerms[index].exerciseDuration)
+            }
           }
         }
       })
@@ -339,10 +384,24 @@ export const bondsSlice = createSlice({
       .addCase(calcSingleBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
         state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...action.payload };
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
       })
       .addCase(calcSingleBondDetails.rejected, (state, { error }) => {
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
+
+      .addCase(calcSingleCallBondDetails.pending, state => {
+        // state.userDataLoading = true;
+      })
+      .addCase(calcSingleCallBondDetails.fulfilled, (state, action) => {
+        const bond = action.payload
+        state.callBondData[bond.bondId] = { ...state.callBondData[bond.bondId], ...action.payload };
+        // state.userDataLoaded = true;
+      })
+      .addCase(calcSingleCallBondDetails.rejected, (state, { error }) => {
+        // state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })
@@ -354,10 +413,10 @@ export const bondsSlice = createSlice({
       .addCase(calcSingleBondStableLpDetails.fulfilled, (state, action) => {
         const bond = action.payload
         state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...action.payload };
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
       })
       .addCase(calcSingleBondStableLpDetails.rejected, (state, { error }) => {
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })
@@ -369,10 +428,10 @@ export const bondsSlice = createSlice({
       .addCase(calcSingleCallBondPoolDetails.fulfilled, (state, action) => {
         const bond = action.payload
         state.callBondData[bond.bondId] = { ...state.callBondData[bond.bondId], ...action.payload };
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
       })
       .addCase(calcSingleCallBondPoolDetails.rejected, (state, { error }) => {
-        state.userDataLoaded = true;
+        // state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })
@@ -410,8 +469,8 @@ export const bondsSlice = createSlice({
       })
       // get Closed Markets
       .addCase(fetchClosedBondsUserAsync.fulfilled, (state, action) => {
-        state.vanillaMarketsClosed = action.payload.vanillaMarkets
-        state.callMarketsClosed = action.payload.callMarkets
+        state.vanillaBondsClosed = action.payload.vanillaMarkets
+        state.callBondsClosed = action.payload.callMarkets
         state.closedMarketsLoaded = true
       })
       // .addCase(fetchClosedBondsUserAsync.pending, state => {

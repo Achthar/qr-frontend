@@ -55,6 +55,7 @@ export function pairValuation(
     _pairTotalSupply: BigNumber
 ): BigNumber {
     const totalValue = getTotalValue(_pair, _quote);
+    if (_pairTotalSupply.eq(0)) return BigNumber.from(0)
     return totalValue.mul(_amount).div(_pairTotalSupply);
 }
 

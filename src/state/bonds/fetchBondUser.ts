@@ -114,6 +114,8 @@ const marketABI = [
 export interface ClosedBonds {
   closedVanillaMarkets: any[]
   closedCallMarkets: any[]
+  closedVanillaTerms: any[]
+  closedCallTerms: any[]
 }
 
 export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bidsCall: number[]): Promise<ClosedBonds> => {
@@ -123,23 +125,32 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
     return { address: bondDepositoryAddress, name: 'markets', params: [bi] }
   })
 
+  const callsTerms = bIds.map((bi) => {
+    return { address: bondDepositoryAddress, name: 'terms', params: [bi] }
+  })
+
   const callBondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
   const callsC = bidsCall.map((biC) => {
     return { address: callBondDepositoryAddress, name: 'markets', params: [biC] }
   })
+  const callsCTerms = bidsCall.map((biC) => {
+    return { address: callBondDepositoryAddress, name: 'terms', params: [biC] }
+  })
 
   let resultsVanilla = []
   if (bIds.length > 0)
-    resultsVanilla = await multicall(chainId, bondReserveAVAX, calls)
+    resultsVanilla = await multicall(chainId, bondReserveAVAX, [...calls, ...callsTerms])
 
   let resultsCall = []
 
   if (bidsCall.length > 0)
-    resultsCall = await multicall(chainId, callBondReserveAVAX, callsC)
+    resultsCall = await multicall(chainId, callBondReserveAVAX, [...callsC, ...callsCTerms])
 
   return {
-    closedVanillaMarkets: resultsVanilla,
-    closedCallMarkets: resultsCall
+    closedVanillaMarkets: resultsVanilla.slice(0, calls.length),
+    closedCallMarkets: resultsCall.slice(0, callsC.length),
+    closedVanillaTerms: resultsVanilla.slice(calls.length, resultsVanilla.length),
+    closedCallTerms: resultsCall.slice(callsC.length, resultsCall.length),
   }
 }
 
