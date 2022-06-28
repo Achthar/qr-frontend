@@ -46,12 +46,14 @@ interface StackedActionProps extends CallableBondWithStakedValue {
   userDataReady: boolean
   reqPrice: BigNumber
   note: CallableNote
+  moneyness: number
 }
 
 const Redemption: React.FunctionComponent<StackedActionProps> = ({
   bondId,
   note,
   userDataReady,
+  moneyness
 }) => {
   const { t } = useTranslation()
   const { account, chainId } = useActiveWeb3React()
@@ -95,9 +97,9 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
             width="100%"
             onClick={handleRedemption}
             variant="secondary"
-            disabled
+            disabled={moneyness <= 0}
           >
-            Not matured
+            {moneyness <= 0 ? 'Not Callable' : 'Call Bond'}
           </Button>
         </ActionContent>
       </ButtonContainer>

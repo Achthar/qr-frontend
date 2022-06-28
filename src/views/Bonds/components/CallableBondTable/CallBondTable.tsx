@@ -76,19 +76,19 @@ const CallableBondTable: React.FC<ITableProps> = (props) => {
         <TableWrapper ref={tableWrapperEl}>
           <StyledTable>
             <TableBody>
-              {rows.map((row) => {
+              {rows.map((row, index) => {
 
-                return <Row {...row.original} userDataReady={userDataReady} key={`table-row-${row.id}`} />
+                return <Row {...row.original} userDataReady={userDataReady} key={`table-row-${row.id}`} isLast={(rows.length - 1 === index) || data.length > 4} />
               })}
             </TableBody>
           </StyledTable>
         </TableWrapper>
-        {data.length > 4 ? (<ScrollButtonContainer>
+        {data.length > 4 && (<ScrollButtonContainer>
           <Button variant="text" onClick={scrollToTop}>
             {t('To Top')}
             <ChevronUpIcon color="primary" />
           </Button>
-        </ScrollButtonContainer>):<ScrollButtonContainer/>}
+        </ScrollButtonContainer>)}
       </TableContainer>
     </Container>
   )

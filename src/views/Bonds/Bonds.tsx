@@ -779,7 +779,7 @@ function Bonds({
                 </Flex>
                 <Flex flexDirection="row" justifyContent='flex-start' >
                   <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
-                    Claim ABREQ early if Index crosses threshold.
+                    Claim ABREQ before vesting ends if Index crosses threshold.
                   </Text>
                 </Flex>
               </Flex>

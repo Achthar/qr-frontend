@@ -49,6 +49,7 @@ export interface RowProps {
 
 interface RowPropsWithLoading extends RowProps {
   userDataReady: boolean
+  isLast: boolean
 }
 
 const cells = {
@@ -84,9 +85,9 @@ const CellOuter = styled.div`
   }
 `
 
-const StyledTr = styled.tr`
+const StyledTr = styled.tr<{ isLast: boolean }>`
   cursor: pointer;
-  border-bottom: 2px solid ${({ theme }) => theme.colors.cardBorder};
+  ${({ isLast }) => !isLast ? `border-bottom: 2px solid #4a4a4a;` : ''}
 `
 
 const EarnedMobileCell = styled.td`
@@ -116,7 +117,9 @@ const BondMobileCell = styled.td`
 `
 
 const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
-  const { details, userDataReady } = props
+  const { details, userDataReady, isLast } = props
+
+
   const hasStakedAmount = !!useBondUser(details.bondId).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
@@ -147,7 +150,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const handleRenderRow = () => {
     if (!isMobile) {
       return (
-        <StyledTr onClick={toggleActionPanel}>
+        <StyledTr onClick={toggleActionPanel} isLast={isLast}>
           {Object.keys(props).map((key) => {
             const columnIndex = columnNames.indexOf(key)
             if (columnIndex === -1) {
@@ -243,7 +246,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
     }
 
     return (
-      <StyledTr onClick={toggleActionPanel}>
+      <StyledTr onClick={toggleActionPanel} isLast={isLast}>
         <Flex flexDirection="column" mb="8px">
           <tr>
             <BondMobileCell>

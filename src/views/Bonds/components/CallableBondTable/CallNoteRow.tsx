@@ -236,7 +236,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
                                 <Text>{vestingTime()}</Text>
                             </DescriptionCol>
                         </ContentRow>
-                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc}/>
                     </Flex>
                     <Flex flexDirection='row' justifyContent='space-between' marginLeft='7px'>
                         <DescriptionCol>
@@ -287,7 +287,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
 
                 </DescriptionCol>
             </ContentRow>
-            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc}/>
         </Container>
     )
 
