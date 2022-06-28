@@ -9,14 +9,14 @@ const ZERO = ethers.BigNumber.from('0')
 /**
  * Gets the quote token from bond
  */
-export const getQuoteToken = (bond: Bond): SerializedToken => {
+export const getQuoteToken = (bond: BondConfig): SerializedToken => {
     return bond.tokens[bond.quoteTokenIndex]
 }
 
 /**
  * Gets the first non-quote token from a bond
  */
-export const getNonQuoteToken = (bond: Bond): SerializedToken => {
+export const getNonQuoteToken = (bond: BondConfig): SerializedToken => {
     const index = bond.quoteTokenIndex === 0 ? 1 : 0
     return bond.tokens[index]
 }

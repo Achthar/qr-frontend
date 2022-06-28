@@ -18,13 +18,15 @@ import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
 import { OracleData, OracleState } from 'state/oracles/reducer'
 import { BondAssetType, BondType } from 'config/constants/types'
-import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails'
-import { calcSingleBondDetails } from './calcSingleBondDetails'
+import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails'
+import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails'
 import { setLpLink, setLpPrice } from './actions'
-import { fetchBondMeta, fetchBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
-import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails'
+import { fetchBondMeta, fetchBondUserDataAsync, fetchCallableBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
+import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDetails'
+import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails'
+import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails'
+import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails'
 import { State, Bond, BondsState, CallBond } from '../types'
-import { calcSingleCallBondDetails } from './calcSingleCallBondDetails'
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -35,7 +37,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
   const dispatch = useAppDispatch()
   const { slowRefresh, fastRefresh } = useRefresh()
   const { account, library } = useActiveWeb3React()
-  const { metaLoaded, bondData, callBondData } = useBonds()
+  const { metaLoaded, bondData, callBondData, callableBondData } = useBonds()
   useEffect(() => {
     // const bondsToFetch = bondList(chainId)
 
@@ -48,6 +50,8 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     } else {
       const bondsToFetch = Object.values(bondData)
       const callBondsToFetch = Object.values(callBondData)
+      const callableBondsToFetch = Object.values(callableBondData)
+
       bondsToFetch.map(
         (bond) => {
           if (bond.bondType === BondType.Vanilla) {
@@ -75,6 +79,20 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
           return 0
         }
       )
+
+      callableBondsToFetch.map(
+        (bond) => {
+          if (bond.bondType === BondType.Callable) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleCallableBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleCallableBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
+          }
+          return 0
+        }
+      )
     }
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,18 +106,24 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       metaLoaded
     ])
 
-  const { bondData: bonds, userDataLoaded, callBondData: callBonds, closedMarketsLoaded, vanillaNotesClosed, callNotesClosed } = useBonds()
+  const { bondData: bonds, userDataLoaded, callBondData: callBonds, callableBondData: callableBonds, closedMarketsLoaded, vanillaNotesClosed, callNotesClosed, callableNotesClosed } = useBonds()
   useEffect(() => {
     if (metaLoaded) {
       // fetch user data if account provided
       if (account) {
         if (!userDataLoaded) {
           dispatch(fetchBondUserDataAsync({ chainId, account, bonds: Object.values(bonds) }))
+          dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: Object.values(callableBonds) }))
           dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: Object.values(callBonds) }))
         }
 
-        if (!closedMarketsLoaded && userDataLoaded && (callNotesClosed.length > 0 || vanillaNotesClosed.length > 0)) {
-          dispatch(fetchClosedBondsUserAsync({ chainId, bIds: vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique), bIdsC: callNotesClosed.map(noC => noC.marketId).filter(onlyUnique) }))
+        if (!closedMarketsLoaded && userDataLoaded && (callNotesClosed.length > 0 || vanillaNotesClosed.length > 0 || callableNotesClosed.length > 0)) {
+          dispatch(fetchClosedBondsUserAsync({
+            chainId,
+            bIds: vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique),
+            bIdsC: callNotesClosed.map(noC => noC.marketId).filter(onlyUnique),
+            bIdsCallable: callableNotesClosed.map(noC => noC.marketId).filter(onlyUnique)
+          }))
         }
       }
     }

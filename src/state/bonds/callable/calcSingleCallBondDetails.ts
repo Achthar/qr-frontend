@@ -1,23 +1,28 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getContractForBondDepo, getContractForCallBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { deserializeToken } from 'state/user/hooks/helpers';
+import { getContractForCallableBondDepo, getContractForCallBondDepo } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
-import { bnParser } from 'utils/helper';
-import multicall from 'utils/multicall';
 import { getAddress } from 'ethers/lib/utils';
-import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
-import { ICalcCallBondDetailsAsyncThunk } from './types';
-import { CallBond } from '../types'
+import { addresses } from 'config/constants/contracts';
+import multicall from 'utils/multicall';
+import bondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
+import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
+import { BondAssetType } from 'config/constants/types';
+import { bnParser } from 'utils/helper';
+import { ICalcCallableBondDetailsAsyncThunk } from '../types';
+import { priceFromData } from '../loadMarketPrice';
+import { BondsState, CallableBond } from '../../types'
 
-const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 
-export const calcSingleCallBondPoolDetails = createAsyncThunk(
-  "bonds/calcSingleCallBondPoolDetails",
-  async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<CallBond> => {
+export const calcSingleCallableBondDetails = createAsyncThunk(
+  "bonds/calcSingleCallableBondDetails",
+  async ({ bond, provider, chainId }: ICalcCallableBondDetailsAsyncThunk): Promise<CallableBond> => {
 
-    const bondContract = getContractForCallBondDepo(chainId, provider);
+    const bondContract = getContractForCallableBondDepo(chainId, provider);
 
     // cals for general bond data
     const calls = [
@@ -47,17 +52,40 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
       },
     ]
 
-    console.log("CALL BOND", calls)
-
     const [market, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
-    const [reserves, supply] = [['0', '0'], '0']
+    // calls from pair used for pricing
+    const callsPair = [
+      // max payout
+      {
+        address: market.asset,
+        name: 'getReserves'
+      },
+      // debt ratio
+      {
+        address: market.asset,
+        name: 'totalSupply',
+      },
+      {
+        address: market.asset,
+        name: 'balanceOf',
+        params: [getAddress(addresses.treasury[chainId])]
+      },
+    ]
 
-    console.log("CALL BOND RES", market)
+    const [reserves, supply, purchasedQuery] = await multicall(chainId, weightedPairABI, callsPair)
 
     // calculate price
-    const price = '0'
+    const price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
+      deserializeToken(getNonQuoteToken(bond)),
+      deserializeToken(getQuoteToken(bond)),
+      BigNumber.from(bond.lpProperties.weightToken),
+      BigNumber.from(bond.lpProperties.weightQuoteToken),
+      reserves[0],
+      reserves[1],
+      BigNumber.from(bond.lpProperties.fee)
+    ) : '0'
 
     const marketPrice = BigNumber.from(price)
 

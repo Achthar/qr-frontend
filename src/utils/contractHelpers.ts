@@ -25,7 +25,8 @@ import {
   getRedRequiemStakingAddress,
   getRedRequiemAddress,
   getAssetBackedStakingAddress,
-  getCallBondingDepositoryAddress
+  getCallBondingDepositoryAddress,
+  getCallableBondingDepositoryAddress
 } from 'utils/addressHelpers'
 
 // ABI base
@@ -55,6 +56,7 @@ import weightedFactoryOASIS from 'config/abi/oasis/RequiemWeightedPairFactory.js
 
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import callBondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
+import callableBondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
 
 import redRequiem from 'config/abi/avax/RedRequiem.json'
 import redRequiemStaking from 'config/abi/avax/RedRequiemStaking.json'
@@ -183,6 +185,12 @@ export const getContractForBondDepo = (chainId: number, signer?: ethers.Signer |
 export const getContractForCallBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   const bondAddress = getCallBondingDepositoryAddress(chainId) || "";
   const ABI = new Interface(callBondReserveAVAX)
+  return new ethers.Contract(bondAddress, ABI, signer);
+}
+
+export const getContractForCallableBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getCallableBondingDepositoryAddress(chainId) || "";
+  const ABI = new Interface(callableBondReserveAVAX)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 

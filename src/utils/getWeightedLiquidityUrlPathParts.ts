@@ -10,7 +10,7 @@ const getWeightedLiquidityUrlPathParts = ({ chainId, quoteTokenAddress, tokenAdd
   const firstPart =
     !quoteTokenAddressString || quoteTokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : quoteTokenAddressString
   const secondPart = !tokenAddressString || tokenAddressString === wNetworkCCYAddressString ? NETWORK_CCY[chainId ?? process.env.REACT_APP_CHAIN_ID].symbol : tokenAddressString
-  return `${weightQuote}/${weightQuote}-${firstPart}/${weightToken}-${secondPart}/${fee}`
+  return `${weightQuote}-${firstPart}/${weightToken}-${secondPart}/${fee}`
 }
 
 export default getWeightedLiquidityUrlPathParts

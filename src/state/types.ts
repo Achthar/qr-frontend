@@ -101,6 +101,18 @@ export interface CallNote extends VanillaNote {
 
 }
 
+
+export interface CallableNote {
+  payout: SerializedBigNumber;
+  created: number;
+  matured: number;
+  exercised: SerializedBigNumber;
+  marketId: number;
+  noteIndex: number;
+  cryptoIntitialPrice: SerializedBigNumber; // reference price at opening
+
+}
+
 export interface VanillaMarket {
   capacity: SerializedBigNumber;
   capacityInQuote: boolean;
@@ -132,7 +144,7 @@ export interface ClosedVanillaTerms {
 export interface ClosedCallTerms extends ClosedVanillaTerms {
   thresholdPercentage: SerializedBigNumber;
   maxPayoffPercentage: SerializedBigNumber;
-  exerciseDuration: number;
+  exerciseDuration?: number;
 }
 
 
@@ -146,8 +158,6 @@ export interface ClosedCallBond  {
   market: ClosedCallMarket
   terms: ClosedCallTerms;
 }
-
-
 
 
 export interface VanillaBondTerms {
@@ -244,11 +254,55 @@ export interface CallBond extends BondConfig, IBondDetails {
   lpLink?: string
 }
 
+
+
+export interface CallableBond extends BondConfig, IBondDetails {
+  currentUnderlyingPrice?: SerializedBigNumber;
+  underlyingDecimals?: number;
+  tokenAmount?: SerializedBigNumber
+  quoteTokenAmountMc?: SerializedBigNumber
+  tokenAmountTotal?: SerializedBigNumber
+  quoteTokenAmountTotal?: SerializedBigNumber
+  lpTotalInQuoteToken?: SerializedBigNumber
+  lpTotalSupply?: SerializedBigNumber
+  tokenPriceVsQuote?: SerializedBigNumber
+  poolWeight?: SerializedBigNumber,
+  price?: SerializedBigNumber,
+  userData?: {
+    allowance: string
+    tokenBalance: string
+    stakedBalance: string
+    earnings: string
+    pendingPayout: string
+    interestDue: string
+    balance: string
+    bondMaturationBlock: number
+    notes: CallableNote[]
+  },
+  lpData?: {
+    lpTotalSupply: SerializedBigNumber
+    // relevant data for pairs
+    reserve0?: SerializedBigNumber
+    reserve1?: SerializedBigNumber
+    vReserve0?: SerializedBigNumber
+    vReserve1?: SerializedBigNumber
+    // data for general pools (stable / weighted)
+    reserves?: SerializedBigNumber[]
+    // only relevant for pair
+    priceInQuote: SerializedBigNumber
+  },
+  bondTerms?: CallBondTerms
+  market?: CallMarket
+  purchasedInQuote?: SerializedBigNumber
+  lpLink?: string
+}
+
 export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   userDataLoading: boolean
   userCallDataLoaded: boolean
+  userCallableDataLoaded: boolean
   userCallDataLoading: boolean
   publicDataLoading: boolean
   status?: string
@@ -260,12 +314,18 @@ export interface BondsState {
   callBondData: {
     [bondId: number]: CallBond
   },
+  callableBondData: {
+    [bondId: number]: CallableBond
+  },
   userReward: string
   userRewardCall: string
+  userRewardCallable: string
   vanillaNotesClosed: VanillaNote[]
   callNotesClosed: CallNote[]
+  callableNotesClosed: CallableNote[]
   vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
   callBondsClosed: { [bondId: number]: ClosedCallBond }
+  callableBondsClosed: { [bondId: number]: ClosedCallBond }
   closedMarketsLoaded: boolean
 
 }

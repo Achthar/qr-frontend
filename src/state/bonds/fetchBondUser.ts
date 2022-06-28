@@ -2,10 +2,11 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getAddress, getBondingDepositoryAddress, getCallBondingDepositoryAddress, getMasterChefAddress } from 'utils/addressHelpers'
+import { getAddress, getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress, getMasterChefAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import callBondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
+import callableBondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
 
 // simple allowance fetch
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
@@ -105,21 +106,55 @@ export const fetchCallBondUserPendingPayoutData = async (chainId: number, accoun
   }
 }
 
+// payout and interest fetch for call bond
+export const fetchCallableBondUserPendingPayoutData = async (chainId: number, account: string): Promise<CallBondUserData> => {
 
-const marketABI = [
-  'function markets(uint256)',
-]
+  const bondDepositoryAddress = getCallableBondingDepositoryAddress(chainId)
 
+  const callInfoIndexes = [{ address: bondDepositoryAddress, name: 'indexesFor', params: [account] }]
+
+  // fetch indexres
+  const indexes = await multicall(chainId, callableBondReserveAVAX, callInfoIndexes)
+  const cleanIndexes = indexes[0][0].map(_index => Number(_index.toString()))
+
+  const callsInfo = cleanIndexes.map((index) => {
+    return { address: bondDepositoryAddress, name: 'userTerms', params: [account, index] }
+  })
+
+  const results = await multicall(chainId, callableBondReserveAVAX, [...callsInfo, { address: bondDepositoryAddress, name: 'rewards', params: [account] }])
+
+  const notes = results.slice(0, results.length - 1)
+
+  return {
+    notes: notes.map((note, index) => {
+      return {
+        payout: note.payout.toString(),
+        created: Number(note.created),
+        matured: Number(note.matured),
+        exercised: Number(note.exercised.toString()),
+        marketId: Number(note.marketID),
+        noteIndex: cleanIndexes[index],
+        cryptoIntitialPrice: note.cryptoIntitialPrice.toString()
+
+      }
+    }
+    ),
+    reward: results[results.length - 1].toString()
+  }
+}
 
 export interface ClosedBonds {
   closedVanillaMarkets: any[]
   closedCallMarkets: any[]
   closedVanillaTerms: any[]
   closedCallTerms: any[]
+  closedCallableMarkets: any[]
+  closedCallableTerms: any[]
 }
 
-export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bidsCall: number[]): Promise<ClosedBonds> => {
+export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bidsCall: number[], bidsCallable: number[]): Promise<ClosedBonds> => {
 
+  // vanilla
   const bondDepositoryAddress = getBondingDepositoryAddress(chainId)
   const calls = bIds.map((bi) => {
     return { address: bondDepositoryAddress, name: 'markets', params: [bi] }
@@ -129,6 +164,7 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
     return { address: bondDepositoryAddress, name: 'terms', params: [bi] }
   })
 
+  // call
   const callBondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
   const callsC = bidsCall.map((biC) => {
     return { address: callBondDepositoryAddress, name: 'markets', params: [biC] }
@@ -136,6 +172,16 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
   const callsCTerms = bidsCall.map((biC) => {
     return { address: callBondDepositoryAddress, name: 'terms', params: [biC] }
   })
+
+  // callable
+  const callableBondDepositoryAddress = getCallableBondingDepositoryAddress(chainId)
+  const callsCallable = bidsCall.map((biC) => {
+    return { address: callableBondDepositoryAddress, name: 'markets', params: [biC] }
+  })
+  const callsCallableTerms = bidsCall.map((biC) => {
+    return { address: callableBondDepositoryAddress, name: 'terms', params: [biC] }
+  })
+
 
   let resultsVanilla = []
   if (bIds.length > 0)
@@ -146,11 +192,19 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
   if (bidsCall.length > 0)
     resultsCall = await multicall(chainId, callBondReserveAVAX, [...callsC, ...callsCTerms])
 
+  let resultsCallable = []
+
+  if (bidsCallable.length > 0)
+    resultsCallable = await multicall(chainId, callableBondReserveAVAX, [...callsCallable, ...callsCallableTerms])
+
+
   return {
     closedVanillaMarkets: resultsVanilla.slice(0, calls.length),
     closedCallMarkets: resultsCall.slice(0, callsC.length),
     closedVanillaTerms: resultsVanilla.slice(calls.length, resultsVanilla.length),
     closedCallTerms: resultsCall.slice(callsC.length, resultsCall.length),
+    closedCallableMarkets: resultsCallable.slice(0, callsCallable.length),
+    closedCallableTerms: resultsCallable.slice(callsCallable.length, resultsCallable.length),
   }
 }
 
@@ -214,6 +268,41 @@ export const fetchBondUserAllowancesAndBalances = async (chainId: number, accoun
 export const fetchCallBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
 
   const bondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
+
+  const callsAllowance = bondsToFetch.map((bond) => {
+    const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    return { address: lpContractAddress, name: 'allowance', params: [account, bondDepositoryAddress] }
+  })
+
+  const callsBalances = bondsToFetch.map((bond) => {
+    const lpContractAddress = getAddress(chainId, bond.reserveAddress)
+    return {
+      address: lpContractAddress,
+      name: 'balanceOf',
+      params: [account],
+    }
+  })
+
+  const rawData = await multicall(chainId, erc20ABI, [...callsAllowance, ...callsBalances])
+  const parsedAllowance = rawData.slice(0, bondsToFetch.length).map((allowance) => {
+    return new BigNumber(allowance).toJSON()
+  })
+
+  const balances = rawData.slice(bondsToFetch.length, rawData.length).map((balance) => {
+    return new BigNumber(balance).toJSON()
+  })
+  return {
+    allowances: parsedAllowance,
+    balances
+  }
+}
+
+
+
+// simple allowance fetch together with balances in multicall
+export const fetchCallableBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
+
+  const bondDepositoryAddress = getCallableBondingDepositoryAddress(chainId)
 
   const callsAllowance = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)

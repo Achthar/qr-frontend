@@ -214,7 +214,8 @@ export enum BondAssetType {
 export enum BondType {
   Vanilla,
   Call,
-  Digital
+  Digital,
+  Callable
 }
 
 export interface Available {
@@ -231,7 +232,7 @@ export interface BondConfig {
   // the following two will be assigned initially
   assetType?: BondAssetType;
   bondType?: BondType;
-  
+
   reserveAddress?: Address;
   bondToken: string;
   payoutToken: string;

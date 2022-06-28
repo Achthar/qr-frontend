@@ -3,41 +3,50 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import isArchivedBondId from 'utils/bondHelpers'
 import { BondConfig, BondType } from 'config/constants/types'
 import multicall from 'utils/multicall';
-import { getBondingDepositoryAddress, getCallBondingDepositoryAddress } from 'utils/addressHelpers';
+import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress } from 'utils/addressHelpers';
 import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/BondDataProvider.json'
 import {
   fetchBondUserAllowancesAndBalances,
   fetchBondUserPendingPayoutData,
+  fetchCallableBondUserAllowancesAndBalances,
+  fetchCallableBondUserPendingPayoutData,
   fetchCallBondUserAllowancesAndBalances,
   fetchCallBondUserPendingPayoutData,
   fetchUserClosedMarkets,
 } from './fetchBondUser'
-import { calcSingleBondDetails } from './calcSingleBondDetails';
-import { calcSingleBondStableLpDetails } from './calcSingleBondStableLpDetails';
+import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails';
+import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 import { setLpLink, setLpPrice } from './actions';
-import { calcSingleCallBondPoolDetails } from './calcSingleCallBondPoolDetails';
-import { calcSingleCallBondDetails } from './calcSingleCallBondDetails';
+import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDetails';
+import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails';
+import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails';
+import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails';
 
 function initialState(): BondsState {
   return {
     bondData: {},
     callBondData: {},
+    callableBondData: {},
     loadArchivedBondsData: false,
     userDataLoaded: false,
     userCallDataLoading: false,
     userCallDataLoaded: false,
+    userCallableDataLoaded: false,
     metaLoaded: false,
     userDataLoading: false,
     publicDataLoading: false,
     userReward: '0',
     userRewardCall: '0',
+    userRewardCallable: '0',
     status: 'idle',
     vanillaNotesClosed: [],
     callNotesClosed: [],
+    callableNotesClosed: [],
     vanillaBondsClosed: [],
     callBondsClosed: [],
+    callableBondsClosed: [],
     closedMarketsLoaded: false
   }
 }
@@ -51,6 +60,15 @@ interface UserTerms {
   noteIndex: number
 }
 
+interface CallableUserTerms {
+  payout: string
+  created: number
+  matured: number
+  exercised: string
+  marketId: number
+  noteIndex: number
+  cryptoIntitialPrice: string
+}
 
 
 interface BondUserDataResponse {
@@ -94,12 +112,13 @@ interface CallBondUserDataResponse {
 
 
 
-export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[], callBondConfigWithIds: BondConfig[] }, { chainId: number, bondMeta: BondConfig[] }>(
+export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[], callBondConfigWithIds: BondConfig[], callableBondConfigWithIds: BondConfig[] }, { chainId: number, bondMeta: BondConfig[] }>(
   'bonds/fetchBondMeta',
   async ({ chainId, bondMeta }) => {
     const addresses = bondMeta.map(cfg => getAddress(cfg.reserveAddress[chainId]))
     const depoAddress = getBondingDepositoryAddress(chainId)
     const callDepoAddress = getCallBondingDepositoryAddress(chainId)
+    const callableDepoAddress = getCallableBondingDepositoryAddress(chainId)
     // fetch all bond data for provided assets addresses
     const calls = addresses.map(_address => {
       return {
@@ -117,16 +136,27 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
       }
     })
 
-    const bondIds = await multicall(chainId, bondReserveAVAX, [...calls, ...callBondCalls])
+    const callableBondCalls = addresses.map(_address => {
+      return {
+        address: callableDepoAddress,
+        name: 'liveMarketsFor',
+        params: [_address]
+      }
+    })
+
+    const bondIds = await multicall(chainId, bondReserveAVAX, [...calls, ...callBondCalls, ...callableBondCalls])
 
     const bondCfgs = []
     const callBondCfgs = []
+    const callableBondCfgs = []
 
     for (let j = 0; j < addresses.length; j++) {
       // vanillas
       const availableIds = bondIds[j][0].map(id => Number(id.toString()))
       // call bonds
       const availableCallBondIds = bondIds[addresses.length + j][0].map(id => Number(id.toString()))
+      // callable bonds
+      const availableCallableBondIds = bondIds[2 * addresses.length + j][0].map(id => Number(id.toString()))
 
       const address = addresses[j]
       const bondData = bondMeta.find(
@@ -148,14 +178,19 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
         _callBondToAdd.bondType = BondType.Call
         callBondCfgs.push(_callBondToAdd)
       }
-
+      for (let k = 0; k < availableCallableBondIds.length; k++) {
+        const _callableBondToAdd = { ...bondData }
+        _callableBondToAdd.bondId = availableCallableBondIds[k]
+        _callableBondToAdd.bondType = BondType.Callable
+        callableBondCfgs.push(_callableBondToAdd)
+      }
     }
 
     return {
       bondConfigWithIds: bondCfgs,
-      callBondConfigWithIds: callBondCfgs
+      callBondConfigWithIds: callBondCfgs,
+      callableBondConfigWithIds: callableBondCfgs
     }
-
   },
 )
 
@@ -252,6 +287,55 @@ export const fetchCallBondUserDataAsync = createAsyncThunk<{ closedNotes: CallUs
 )
 
 
+
+export const fetchCallableBondUserDataAsync = createAsyncThunk<{ closedNotes: CallableUserTerms[], dataAssignedToBonds: { rewards: string, bondUserData: { [bondId: number]: CallBondUserDataResponse } } }, { chainId: number, account: string; bonds: BondConfig[] }>(
+  'bonds/fetchCallableBondUserDataAsync',
+  async ({ chainId, account, bonds }) => {
+
+    const {
+      allowances: userBondAllowances,
+      balances: userBondTokenBalances
+    } = await fetchCallableBondUserAllowancesAndBalances(chainId, account, bonds)
+
+    let notesFinal = []
+    const {
+      notes,
+      reward
+    } = await fetchCallableBondUserPendingPayoutData(chainId, account)
+    notesFinal = notes
+
+    const interestDue = notesFinal.map((info) => {
+      return info.payout.toString();
+    })
+
+    const bondIds: number[] = bonds.map(b => b.bondId)
+
+    return {
+      dataAssignedToBonds: {
+        rewards: reward,
+        bondUserData: Object.assign({}, ...userBondAllowances.map((_, index) => {
+          return {
+            [bondIds[index]]: {
+              bondId: bondIds[index],
+              allowance: userBondAllowances[index],
+              tokenBalance: userBondTokenBalances[index],
+              stakedBalance: 0, // userStakedBalances[index],
+              earnings: reward, //  userBondEarnings[index],
+              notes: notesFinal.filter(note => note.marketId === bondIds[index]),
+              interestDue: interestDue[index],
+              balance: userBondTokenBalances[index]
+            }
+          }
+        })
+        )
+      },
+      closedNotes: notesFinal.filter((n) => !bondIds.includes(n.marketId))
+    }
+  },
+)
+
+
+
 interface RawMarket {
   asset: string
   underlying?: string;
@@ -289,16 +373,18 @@ interface RawCallBond {
 
 
 
-export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawBond[], callMarkets: RawCallBond[] }, { chainId: number, bIds: number[]; bIdsC: number[] }>(
+export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawBond[], callMarkets: RawCallBond[], callableMarkets: RawCallBond[] }, { chainId: number, bIds: number[]; bIdsC: number[], bIdsCallable: number[] }>(
   'bonds/fetchClosedBondsUserAsync',
-  async ({ chainId, bIds, bIdsC }) => {
+  async ({ chainId, bIds, bIdsC, bIdsCallable }) => {
 
     const {
       closedVanillaMarkets: _closedVanillaMarkets,
       closedCallMarkets: _closedCallMarkets,
       closedVanillaTerms: _closedVanillaTerms,
       closedCallTerms: _closedCallTerms,
-    } = await fetchUserClosedMarkets(chainId, bIds, bIdsC)
+      closedCallableMarkets: _closedCallableMarkets,
+      closedCallableTerms: _closedCallableTerms,
+    } = await fetchUserClosedMarkets(chainId, bIds, bIdsC, bIdsCallable)
 
     return {
       vanillaMarkets: Object.assign({}, ..._closedVanillaMarkets.map((_, index) => {
@@ -334,6 +420,25 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
           }
         }
       })
+      ),
+      callableMarkets: Object.assign({}, ..._closedCallableMarkets.map((_, index) => {
+        return {
+          [bIdsCallable[index]]: {
+            market: {
+              asset: _closedCallableMarkets[index].asset,
+              underlying: _closedCallableMarkets[index].underlying,
+              sold: _closedCallableMarkets[index].sold.toString(),
+              purchased: _closedCallableMarkets[index].purchased.toString()
+            },
+            terms: {
+              vesting: Number(_closedCallableTerms[index].vesting),
+              thresholdPercentage: _closedCallableTerms[index].thresholdPercentage.toString(),
+              maxPayoffPercentage: _closedCallableTerms[index].maxPayoffPercentage.toString(),
+              exerciseDuration: Number(_closedCallableTerms[index].exerciseDuration)
+            }
+          }
+        }
+      })
       )
     }
   },
@@ -360,16 +465,26 @@ export const bondsSlice = createSlice({
         // state.metaLoaded = false;
       })
       .addCase(fetchBondMeta.fulfilled, (state, action) => {
-        const { bondConfigWithIds, callBondConfigWithIds } = action.payload
+        const { bondConfigWithIds, callBondConfigWithIds, callableBondConfigWithIds } = action.payload
+
+        // vanilla
         for (let i = 0; i < bondConfigWithIds.length; i++) {
           const bond = bondConfigWithIds[i]
           state.bondData[bond.bondId] = { ...state.bondData[bond.bondId], ...bond };
         }
 
+        // call
         for (let i = 0; i < callBondConfigWithIds.length; i++) {
           const bond = callBondConfigWithIds[i]
           state.callBondData[bond.bondId] = { ...state.callBondData[bond.bondId], ...bond };
         }
+
+        // callables
+        for (let i = 0; i < callableBondConfigWithIds.length; i++) {
+          const bond = callableBondConfigWithIds[i]
+          state.callableBondData[bond.bondId] = { ...state.callableBondData[bond.bondId], ...bond };
+        }
+
         state.metaLoaded = true;
       })
       .addCase(fetchBondMeta.rejected, (state, { error }) => {
@@ -377,7 +492,8 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
-      // public detail fetch
+      // public datafetch pair
+      // VANILLA
       .addCase(calcSingleBondDetails.pending, state => {
         state.userDataLoading = true;
       })
@@ -391,7 +507,7 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
-
+      // CALL
       .addCase(calcSingleCallBondDetails.pending, state => {
         // state.userDataLoading = true;
       })
@@ -401,6 +517,20 @@ export const bondsSlice = createSlice({
         // state.userDataLoaded = true;
       })
       .addCase(calcSingleCallBondDetails.rejected, (state, { error }) => {
+        // state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
+      // CALL
+      .addCase(calcSingleCallableBondDetails.pending, state => {
+        // state.userDataLoading = true;
+      })
+      .addCase(calcSingleCallableBondDetails.fulfilled, (state, action) => {
+        const bond = action.payload
+        state.callableBondData[bond.bondId] = { ...state.callableBondData[bond.bondId], ...action.payload };
+        // state.userDataLoaded = true;
+      })
+      .addCase(calcSingleCallableBondDetails.rejected, (state, { error }) => {
         // state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
@@ -431,6 +561,21 @@ export const bondsSlice = createSlice({
         // state.userDataLoaded = true;
       })
       .addCase(calcSingleCallBondPoolDetails.rejected, (state, { error }) => {
+        // state.userDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
+      // Callable Bond
+      // detail fetch for stable pool (and currently weighted pool)
+      .addCase(calcSingleCallableBondPoolDetails.pending, state => {
+        // state.userDataLoaded = false;
+      })
+      .addCase(calcSingleCallableBondPoolDetails.fulfilled, (state, action) => {
+        const bond = action.payload
+        state.callableBondData[bond.bondId] = { ...state.callableBondData[bond.bondId], ...action.payload };
+        // state.userDataLoaded = true;
+      })
+      .addCase(calcSingleCallableBondPoolDetails.rejected, (state, { error }) => {
         // state.userDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
@@ -467,10 +612,27 @@ export const bondsSlice = createSlice({
         console.log(error, state)
         console.error(error.message);
       })
+      // Update callable bonds with user data
+      .addCase(fetchCallableBondUserDataAsync.fulfilled, (state, action) => {
+        const callableBondData = action.payload.dataAssignedToBonds
+        Object.keys(callableBondData.bondUserData).forEach((bondId) => {
+          state.callableBondData[bondId].userData = { ...state.callableBondData[bondId].userData, ...callableBondData.bondUserData[bondId] }
+        })
+        state.callableNotesClosed = action.payload.closedNotes
+        state.userRewardCallable = callableBondData.rewards
+        state.userCallableDataLoaded = true
+      }).addCase(fetchCallableBondUserDataAsync.pending, state => {
+        state.userDataLoading = true;
+      }).addCase(fetchCallableBondUserDataAsync.rejected, (state, { error }) => {
+        state.userCallableDataLoaded = true;
+        console.log(error, state)
+        console.error(error.message);
+      })
       // get Closed Markets
       .addCase(fetchClosedBondsUserAsync.fulfilled, (state, action) => {
         state.vanillaBondsClosed = action.payload.vanillaMarkets
         state.callBondsClosed = action.payload.callMarkets
+        state.callableBondsClosed = action.payload.callableMarkets
         state.closedMarketsLoaded = true
       })
       // .addCase(fetchClosedBondsUserAsync.pending, state => {

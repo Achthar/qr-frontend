@@ -115,6 +115,9 @@ export const addresses = {
   callBondDepository: {
     43113: "0x37bb1Aa8A339B65aeD51B6354a2518011F668A9B"
   },
+  callableBondDepository: {
+    43113: "0x207233D56A8a34ddada188c38e4827bD2Fd75ef4"
+  },
   staking: {
     43113: '0x8B047E942DA91c98221E2Ca9aa81864966E208A7'
   },
