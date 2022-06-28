@@ -43,6 +43,7 @@ import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
 
 import BOND_DEPO_AVAX from '../config/abi/avax/BondDepository.json'
 import CALL_BOND_DEPO_AVAX from '../config/abi/avax/CallBondDepository.json'
+import CALLABLE_BOND_DEPO_AVAX from '../config/abi/avax/CallableBondDepository.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
 import multiCallAbi_QKC from '../config/abi/qkc/Multicall.json'
@@ -219,9 +220,12 @@ export function useBondContract(chainId: number, withSignerIfPossible?: boolean)
 }
 
 export function useCallBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
+  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(CALL_BOND_DEPO_AVAX), withSignerIfPossible)
 }
 
+export function useCallableBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(CALLABLE_BOND_DEPO_AVAX), withSignerIfPossible)
+}
 
 export const useRequiemChef = (chainId, library) => {
   // const { library, chainId } = useActiveWeb3React("useMasterchef")

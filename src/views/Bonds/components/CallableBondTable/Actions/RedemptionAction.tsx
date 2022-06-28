@@ -1,16 +1,19 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
-import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
-
+import { Button, Skeleton } from '@requiemswap/uikit'
+import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-
+import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
+import { fetchCallBondUserDataAsync } from 'state/bonds'
+import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
-
-import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { VanillaNote } from 'state/types'
+import { ethers } from 'ethers'
+import { useAppDispatch } from 'state'
+import useRedeemNote from 'views/Bonds/hooks/callBond/useRedeemBond'
+import { CallableNote, VanillaNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
+
 
 const IconButtonWrapper = styled.div`
   display: flex;
@@ -39,28 +42,33 @@ export const ButtonContainer = styled.div`
 `
 
 
-interface StackedActionProps {
+interface StackedActionProps extends CallableBondWithStakedValue {
   userDataReady: boolean
-  notes: VanillaNote[]
+  reqPrice: BigNumber
+  note: CallableNote
 }
 
-const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
-  notes,
+const Redemption: React.FunctionComponent<StackedActionProps> = ({
+  bondId,
+  note,
   userDataReady,
 }) => {
-
+  const { t } = useTranslation()
   const { account, chainId } = useActiveWeb3React()
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const finalNotes = notes.filter(no => no.matured <= now).map(x => x.noteIndex)
+  const bond = useBondFromBondId(bondId)
 
-  const { onRedeem } = useRedeemNotes(chainId, account, finalNotes)
+  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
 
+
+  const dispatch = useAppDispatch()
 
   const handleRedemption = async () => {
     try {
       await onRedeem()
+      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
     } catch (error) {
       console.log(error)
     }
@@ -79,7 +87,7 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
   }
 
 
-  if (finalNotes && finalNotes.length === 0) {
+  if (note && note.matured > now) {
     return (
       <ButtonContainer>
         <ActionContent>
@@ -89,14 +97,31 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
             variant="secondary"
             disabled
           >
-            None matured
+            Not matured
           </Button>
         </ActionContent>
       </ButtonContainer>
     )
   }
 
-  if (finalNotes && finalNotes.length > 0) {
+  if (note) {
+    if (ethers.BigNumber.from(note.payout).gt(0)) {
+      return (
+        <ButtonContainer>
+          <ActionContent>
+            <Button
+              width="100%"
+              onClick={handleRedemption}
+              variant="secondary"
+            >
+              Redeem
+            </Button>
+          </ActionContent>
+        </ButtonContainer>
+      )
+    }
+
+
     return (
       <ButtonContainer>
         <ActionContent>
@@ -104,8 +129,9 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
             width="100%"
             onClick={handleRedemption}
             variant="secondary"
+            disabled
           >
-            Redeem matured
+            {t('Redeem')}
           </Button>
         </ActionContent>
       </ButtonContainer>
@@ -127,4 +153,4 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
   )
 }
 
-export default GeneralRedemptionMulti
+export default Redemption

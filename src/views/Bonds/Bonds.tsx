@@ -33,10 +33,13 @@ import Claim from './components/BondTable/Actions/ClaimAction'
 import { BondWithStakedValue, DesktopColumnSchema, DesktopColumnSchemaCall } from './components/types'
 import Table from './components/BondTable/BondTable'
 import CallTable from './components/CallBondTable/CallBondTable'
+import CallableTable from './components/CallableBondTable/CallBondTable'
 import BondTabButtons from './components/BondTabButtons'
 import { NoteTable } from './components/BondTable/NoteTable'
 import { CallRowProps } from './components/CallBondTable/CallRow'
 import { CallNoteTable } from './components/CallBondTable/CallNoteTable'
+import { CallableRowProps } from './components/CallableBondTable/CallRow'
+import { CallableNoteTable } from './components/CallableBondTable/CallNoteTable'
 
 
 
@@ -182,7 +185,7 @@ function Bonds({
 
   const { isMobile } = useMatchBreakpoints()
   const { pathname } = useLocation()
-  const { bondData: bondsLP, userDataLoaded, userReward, vanillaNotesClosed, callNotesClosed, userCallDataLoaded } = useBonds()
+  const { bondData: bondsLP, userDataLoaded, userReward, vanillaNotesClosed, callNotesClosed, userCallDataLoaded, userCallableDataLoaded, callableNotesClosed } = useBonds()
 
   const [query, setQuery] = useState('')
 
@@ -193,6 +196,12 @@ function Bonds({
   const [liveSelectedCall, setLiveCall] = useState(true)
 
   const handleSelectCallMarkets = () => setLiveCall(!liveSelectedCall)
+
+
+  const [liveSelectedCallable, setLiveCallable] = useState(true)
+
+  const handleSelectCallableMarkets = () => setLiveCall(!liveSelectedCallable)
+
 
 
   const { account, chainId } = useActiveWeb3React()
@@ -321,7 +330,7 @@ function Bonds({
   ]) // end chosenBondsMemoized
 
 
-  const { bondData, callBondData } = useBonds()
+  const { bondData, callBondData, callableBondData } = useBonds()
 
   chosenBondsLength.current = chosenBondsMemoized.length
 
@@ -413,6 +422,42 @@ function Bonds({
     const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
     const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
     const row: CallRowProps = {
+      bond: {
+        label: bond.name,
+        bondId: bond.bondId,
+        bondType: bond.assetType,
+        tokens: bond.tokens
+      },
+      discount: (reqPrice - bond.bondPrice) / reqPrice,
+      details: bond,
+      // price: bond.bondPrice,
+      term: blocksToDays(bond.vestingTerm ?? 0, chainId),
+      roi: {
+        value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
+        bondId: 1,
+        lpLabel: 'string',
+        reqtPrice: new BigNumber(reqPrice),
+        originalValue: 3
+
+      },
+      purchased: {
+        purchasedUnits,
+        purchasedInQuote,
+      },
+      reqPrice: Number(reqPrice),
+      price: {
+        reqPrice,
+        price: bond.bondPrice,
+      }
+    }
+
+    return row
+  })
+
+  const callableRowData = Object.values(callableBondData).map((bond) => {
+    const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
+    const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
+    const row: CallableRowProps = {
       bond: {
         label: bond.name,
         bondId: bond.bondId,
@@ -706,6 +751,52 @@ function Bonds({
   }
 
 
+  const renderGeneralCallableHeader = (): JSX.Element => {
+    return (
+      <>
+        <Box>
+          <Flex flexDirection={isMobile ? "column" : 'row'} width='100%' marginTop='10px' marginRight='2px'>
+            <HeaderBoxBond
+              btl='32px'
+              btr='32px'
+              bbl='32px'
+              bbr='32px'
+              width={isMobile ? '100%' : '100%'}
+              height={isMobile ? '120px' : '80px'}
+              ml='1px'
+              mr='2px'
+              mb={isMobile ? '7px' : '2px'}
+              mt='0px'
+            >
+              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
+                <Flex flexDirection="row" justifyContent={isMobile ? 'center' : 'flex-start'}>
+                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+                    Callable Bonding
+                  </Text>
+                  <StyledIconAbs height={20} width={20}>
+                    <img src={chartIcon} alt='' />
+                  </StyledIconAbs>
+                </Flex>
+                <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
+                    Claim ABREQ early if Index crosses threshold.
+                  </Text>
+                </Flex>
+              </Flex>
+            </HeaderBoxBond>
+
+            <Flex flexDirection="column" justifyContent='center'>
+              <Flex flexDirection="row" alignItems='center' justifyContent='center'>
+                <BondTabButtons hasStakeInFinishedBonds={callableNotesClosed.length > 0} isLive={liveSelectedCallable} onLive={handleSelectCallableMarkets} />
+              </Flex>
+            </Flex>
+          </Flex>
+        </Box>
+      </>
+    )
+  }
+
+
   const renderContent = (): JSX.Element => {
     const columnSchema = DesktopColumnSchema
 
@@ -749,6 +840,28 @@ function Bonds({
     return <CallTable data={callRowData} columns={columns} userDataReady={userDataReady} />
   }
 
+  const renderCallableContent = (): JSX.Element => {
+    const columnSchema = DesktopColumnSchemaCall
+
+    const columns = columnSchema.map((column) => ({
+      id: column.id,
+      name: column.name,
+      label: column.label,
+      sort: (a: RowType<CallableRowProps>, b: RowType<CallableRowProps>) => {
+        switch (column.name) {
+          case 'bond':
+            return b.id - a.id
+          default:
+            return 1
+        }
+      },
+      sortable: column.sortable,
+    }))
+
+    return <CallableTable data={callableRowData} columns={columns} userDataReady={userDataReady} />
+  }
+
+
 
   const handleSortOptionChange = (option: OptionProps): void => {
     setSortOption(option.value)
@@ -765,6 +878,11 @@ function Bonds({
         {renderGeneralCallHeader()}
         {liveSelectedCall ? renderCallContent() : (
           <CallNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} />
+        )}
+
+        {renderGeneralCallableHeader()}
+        {liveSelectedCallable ? renderCallableContent() : (
+          <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} />
         )}
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

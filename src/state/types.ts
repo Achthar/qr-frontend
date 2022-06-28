@@ -159,7 +159,6 @@ export interface ClosedCallBond  {
   terms: ClosedCallTerms;
 }
 
-
 export interface VanillaBondTerms {
   controlVariable: SerializedBigNumber; // scaling variable for price
   maxDebt: SerializedBigNumber;

@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import { useTable, Button, ChevronUpIcon, ColumnType } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 
-import Row, { CallRowProps } from './CallRow'
+import Row, { CallableRowProps } from './CallRow'
 
 export interface ITableProps {
-  data: CallRowProps[]
-  columns: ColumnType<CallRowProps>[]
+  data: CallableRowProps[]
+  columns: ColumnType<CallableRowProps>[]
   userDataReady: boolean
   sortColumn?: string
 }
@@ -57,7 +57,7 @@ const ScrollButtonContainer = styled.div`
   padding-bottom: 5px;
 `
 
-const BondTable: React.FC<ITableProps> = (props) => {
+const CallableBondTable: React.FC<ITableProps> = (props) => {
   const tableWrapperEl = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const { data, columns, userDataReady } = props
@@ -94,4 +94,4 @@ const BondTable: React.FC<ITableProps> = (props) => {
   )
 }
 
-export default BondTable
+export default CallableBondTable

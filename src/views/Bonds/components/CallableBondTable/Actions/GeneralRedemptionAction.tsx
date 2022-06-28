@@ -1,15 +1,17 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
-
+import { useLocation } from 'react-router-dom'
+import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import Balance from 'components/Balance'
+
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 import { useTranslation } from 'contexts/Localization'
 
-import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { VanillaNote } from 'state/types'
+import { ethers } from 'ethers'
+import useRedeemNote from 'views/Bonds/hooks/useRedeemBond'
+import { CallableNote, CallNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
@@ -41,21 +43,22 @@ export const ButtonContainer = styled.div`
 
 interface StackedActionProps {
   userDataReady: boolean
-  notes: VanillaNote[]
+  reqPrice: BigNumber
+  note: CallableNote
 }
 
-const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
-  notes,
+const GeneralRedemption: React.FunctionComponent<StackedActionProps> = ({
+  note,
   userDataReady,
 }) => {
-
+  const { t } = useTranslation()
   const { account, chainId } = useActiveWeb3React()
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const finalNotes = notes.filter(no => no.matured <= now).map(x => x.noteIndex)
 
-  const { onRedeem } = useRedeemNotes(chainId, account, finalNotes)
+
+  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
 
 
   const handleRedemption = async () => {
@@ -79,7 +82,7 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
   }
 
 
-  if (finalNotes && finalNotes.length === 0) {
+  if (note && note.matured >= now) {
     return (
       <ButtonContainer>
         <ActionContent>
@@ -89,14 +92,31 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
             variant="secondary"
             disabled
           >
-            None matured
+            Not matured
           </Button>
         </ActionContent>
       </ButtonContainer>
     )
   }
 
-  if (finalNotes && finalNotes.length > 0) {
+  if (note) {
+    if (ethers.BigNumber.from(note.payout).gt(0)) {
+      return (
+        <ButtonContainer>
+          <ActionContent>
+            <Button
+              width="100%"
+              onClick={handleRedemption}
+              variant="secondary"
+            >
+              Redeem
+            </Button>
+          </ActionContent>
+        </ButtonContainer>
+      )
+    }
+
+
     return (
       <ButtonContainer>
         <ActionContent>
@@ -104,8 +124,9 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
             width="100%"
             onClick={handleRedemption}
             variant="secondary"
+            disabled
           >
-            Redeem matured
+            {t('Redeem')}
           </Button>
         </ActionContent>
       </ButtonContainer>
@@ -127,4 +148,4 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
   )
 }
 
-export default GeneralRedemptionMulti
+export default GeneralRedemption

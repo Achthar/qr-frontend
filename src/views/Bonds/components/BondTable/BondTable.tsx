@@ -83,12 +83,12 @@ const BondTable: React.FC<ITableProps> = (props) => {
             </TableBody>
           </StyledTable>
         </TableWrapper>
-        <ScrollButtonContainer>
+        {data.length > 4 ? (<ScrollButtonContainer>
           <Button variant="text" onClick={scrollToTop}>
             {t('To Top')}
             <ChevronUpIcon color="primary" />
           </Button>
-        </ScrollButtonContainer>
+        </ScrollButtonContainer>) : <ScrollButtonContainer />}
       </TableContainer>
     </Container>
   )

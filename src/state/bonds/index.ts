@@ -650,6 +650,9 @@ export const bondsSlice = createSlice({
         if (action.payload.bondType === BondType.Call) {
           state.callBondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
+        if (action.payload.bondType === BondType.Callable) {
+          state.callableBondData[action.payload.bondId].purchasedInQuote = action.payload.price
+        }
       })
       .addCase(setLpLink, (state, action) => {
         if (action.payload.bondType === BondType.Vanilla) {
@@ -658,6 +661,10 @@ export const bondsSlice = createSlice({
 
         if (action.payload.bondType === BondType.Call) {
           state.callBondData[action.payload.bondId].lpLink = action.payload.link
+        }
+
+        if (action.payload.bondType === BondType.Callable) {
+          state.callableBondData[action.payload.bondId].lpLink = action.payload.link
         }
       })
   },

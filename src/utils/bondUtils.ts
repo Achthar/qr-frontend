@@ -1,7 +1,7 @@
 import { AmplifiedWeightedPair, Token, TokenAmount } from "@requiemswap/sdk"
 import { BondConfig, SerializedToken } from "config/constants/types"
 import { BigNumber, ethers } from "ethers"
-import { Bond, CallBond, CallNote, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
+import { Bond, CallableBond, CallableNote, CallBond, CallNote, ClosedCallBond, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
 import { deserializeToken } from "state/user/hooks/helpers"
 
 const ONE18 = ethers.BigNumber.from('1000000000000000000')
@@ -41,7 +41,7 @@ export const deserializeWeightedPair = (serializedPair: SerializedWeightedPair):
 /**
  * Price an input amount with bond - assumes that bond has all data loaded
  */
-export const priceBonding = (amount: BigNumber, bond: Bond | CallBond): ethers.BigNumber => {
+export const priceBonding = (amount: BigNumber, bond: Bond | CallBond | CallableBond): ethers.BigNumber => {
     if (!bond || !bond.market || !bond.purchasedInQuote) return ethers.BigNumber.from(0)
     return amount.mul(bond.purchasedInQuote).div(bond.market.purchased)
 }
@@ -55,7 +55,7 @@ export const calculatePayoff = (
     return _kMinusS.div(_initialPrice);
 }
 
-export const calculateUserPay = (note: CallNote, bond: CallBond, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+export const calculateUserPay = (note: CallNote | CallableNote, bond: CallBond | CallableBond, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
     const strike = ethers.BigNumber.from(bond.bondTerms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
     const moneyness = Number(ethers.utils.formatEther(payoff))
@@ -64,7 +64,7 @@ export const calculateUserPay = (note: CallNote, bond: CallBond, _priceNow: stri
     return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(bond.bondTerms.maxPayoffPercentage) : payoff).mul(note.payout).div(ONE18) };
 }
 
-export const calculateUserPayClosed = (note: CallNote, terms: ClosedCallTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: ClosedCallTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
     if (!terms) return { moneyness: 0, pay: ZERO }
 
     const strike = ethers.BigNumber.from(terms.thresholdPercentage)
@@ -76,7 +76,7 @@ export const calculateUserPayClosed = (note: CallNote, terms: ClosedCallTerms, _
 }
 
 
-export const getConfigForVanillaNote = (chainId: number, note: VanillaNote, bonds: { [bid: number]: ClosedVanillaBond }, bondCfgs: BondConfig[]) => {
+export const getConfigForVanillaNote = (chainId: number, note: VanillaNote | CallableNote | CallNote, bonds: { [bid: number]: ClosedVanillaBond }, bondCfgs: BondConfig[]) => {
     if (Object.values(bonds).length === 0) return null
     return bondCfgs.find(cfg => ethers.utils.getAddress(cfg.reserveAddress[chainId]) === ethers.utils.getAddress(bonds[note.marketId]?.market?.asset))
 }

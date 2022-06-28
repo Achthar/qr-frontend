@@ -26,7 +26,7 @@ import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDeta
 import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails'
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails'
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails'
-import { State, Bond, BondsState, CallBond } from '../types'
+import { State, Bond, BondsState, CallBond, CallableBond } from '../types'
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -191,6 +191,17 @@ export const useCallBondFromBondIds = (bondIds: number[]): CallBond[] => {
   return bondIds.map(bId => bond[bId])
 }
 
+export const useCallableBondFromBondId = (bondId): CallableBond => {
+
+  const bond = useSelector((state: State) => state.bonds.callableBondData[bondId])
+  return bond
+}
+
+export const useCallableBondFromBondIds = (bondIds: number[]): CallableBond[] => {
+
+  const bond = useSelector((state: State) => state.bonds.callableBondData)
+  return bondIds.map(bId => bond[bId])
+}
 
 
 /**
@@ -217,10 +228,33 @@ export const useBondUser = (bondId) => {
 }
 
 /**
- *  Returns bond user data for id
+ *  Returns call bond user data for id
  */
 export const useCallBondUser = (bondId) => {
   const bond = useCallBondFromBondId(bondId)
+  if (bond) {
+    return {
+      allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
+      tokenBalance: bond.userData ? new BigNumber(bond.userData.tokenBalance) : BIG_ZERO,
+      stakedBalance: bond.userData ? new BigNumber(bond.userData.stakedBalance) : BIG_ZERO,
+      earnings: bond.userData ? new BigNumber(bond.userData.earnings) : BIG_ZERO,
+      notes: bond?.userData?.notes
+    }
+  }
+
+  return {
+    allowance: BIG_ZERO,
+    tokenBalance: BIG_ZERO,
+    stakedBalance: BIG_ZERO,
+    earnings: BIG_ZERO,
+  }
+}
+
+/**
+ *  Returns bond user data for id
+ */
+ export const useCallableBondUser = (bondId) => {
+  const bond = useCallableBondFromBondId(bondId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
@@ -388,6 +422,76 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
 
       dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
       dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
+      // eslint-disable-next-line no-useless-return
+      return;
+    })
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [callData, metaLoaded, chainId, pairsLoaded, stableLoaded]
+  )
+
+
+  /** CALL bonds start here */
+  const callableData = bonds.callableBondData
+
+  useEffect(() => {
+    if (!metaLoaded) return;
+    const bondsWithIds = Object.values(callableData)
+    bondsWithIds.map(bondWithNoPrice => {
+      let price: ethers.BigNumber;
+      let link: string;
+      const bondType = bondWithNoPrice.assetType
+
+      if (!bondWithNoPrice.lpData) {
+        // eslint-disable-next-line no-useless-return
+        return;
+      }
+
+      // pair LP
+      if (bondType === BondAssetType.PairLP) {
+        const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
+
+        if (!pairsLoaded) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
+        link = `/${getChain(chainId)}/add/${pair.weight0}-${pair.token0.address}/${pair.weight1}-${pair.token1.address}`
+        price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
+      }
+      // stable pool LP
+      else if (bondType === BondAssetType.StableSwapLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = stablePools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!stableLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+        link = `/${getChain(chainId)}/add/stables`
+        price = stablePoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+      // weighted pool LP
+      else if (bondType === BondAssetType.WeightedPoolLP) {
+        const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
+        const pool = weightedPools.find(p =>
+          ethers.utils.getAddress(p.liquidityToken.address) === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId])
+        )
+
+        if (!weightedLoaded || !pool || pool?.lpTotalSupply.eq(0)) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+        link = `/${getChain(chainId)}/add/weighted`
+        price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
+      }
+
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Callable }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Callable }))
       // eslint-disable-next-line no-useless-return
       return;
     })

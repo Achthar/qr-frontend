@@ -8,8 +8,8 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 import { useTranslation } from 'contexts/Localization'
 
-import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { VanillaNote } from 'state/types'
+import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/useRedeemBond'
+import { CallableNote, VanillaNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
@@ -41,7 +41,7 @@ export const ButtonContainer = styled.div`
 
 interface StackedActionProps {
   userDataReady: boolean
-  notes: VanillaNote[]
+  notes: CallableNote[]
 }
 
 const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({

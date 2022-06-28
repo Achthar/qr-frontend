@@ -10,7 +10,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useTranslation } from 'contexts/Localization'
 
 import { ethers } from 'ethers'
-import useRedeemNote from 'views/Bonds/hooks/useRedeemBond'
+import useRedeemNote from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { CallNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
