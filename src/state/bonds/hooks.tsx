@@ -160,6 +160,13 @@ export const useClosedCallMarkets = () => {
   return bonds.callBondsClosed
 }
 
+
+export const useClosedCallableMarkets = () => {
+  const bonds = useSelector((state: State) => state.bonds)
+  return bonds.callableBondsClosed
+}
+
+
 export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
   const bonds = useSelector((state: State) => state.bonds)
   return bondIds.map(id => bonds.bondData[id].reserveAddress[chainId])

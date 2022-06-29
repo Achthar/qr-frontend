@@ -200,8 +200,8 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
 
   return {
     closedVanillaMarkets: resultsVanilla.slice(0, calls.length),
-    closedCallMarkets: resultsCall.slice(0, callsC.length),
     closedVanillaTerms: resultsVanilla.slice(calls.length, resultsVanilla.length),
+    closedCallMarkets: resultsCall.slice(0, callsC.length),
     closedCallTerms: resultsCall.slice(callsC.length, resultsCall.length),
     closedCallableMarkets: resultsCallable.slice(0, callsCallable.length),
     closedCallableTerms: resultsCallable.slice(callsCallable.length, resultsCallable.length),

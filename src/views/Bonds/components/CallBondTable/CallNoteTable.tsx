@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes } from 'utils/time'
+import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import { useNetworkState } from 'state/globalNetwork/hooks'
@@ -247,8 +247,8 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
     };
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
-    const created = useMemo(() => { return timeConverterNoMinutes(Number(note.created)) }, [note.created])
-    const expiry = useMemo(() => { return timeConverterNoMinutes(Number(note.matured)) }, [note.matured])
+    const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
+    const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
 
 
     const cfg = useMemo(() => bondConfig(chainId), [chainId])

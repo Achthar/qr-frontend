@@ -11,7 +11,7 @@ import { bondConfig } from 'config/constants/bonds'
 import { calculateUserPay, calculateUserPayClosed, getConfigForVanillaNote } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { useClosedCallMarkets, useGetOracleData } from 'state/bonds/hooks'
+import { useClosedCallableMarkets, useGetOracleData } from 'state/bonds/hooks'
 import { useOracleState } from 'state/oracles/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
@@ -238,7 +238,7 @@ export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobi
 
 const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
     const { chainId } = useNetworkState()
-    const closed = useClosedCallMarkets()
+    const closed = useClosedCallableMarkets()
 
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {

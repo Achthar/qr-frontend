@@ -10,7 +10,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useTranslation } from 'contexts/Localization'
 
 import { ethers } from 'ethers'
-import useRedeemNote from 'views/Bonds/hooks/useRedeemBond'
+import useRedeemCallableNote from 'views/Bonds/hooks/callableBond/useRedeemBond'
 import { CallableNote, CallNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
@@ -56,10 +56,7 @@ const GeneralRedemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-
-
-  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
-
+  const { onRedeem } = useRedeemCallableNote(chainId, account, note.noteIndex)
 
   const handleRedemption = async () => {
     try {

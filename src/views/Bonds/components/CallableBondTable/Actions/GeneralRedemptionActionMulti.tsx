@@ -6,11 +6,10 @@ import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
-import { useTranslation } from 'contexts/Localization'
 
-import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/useRedeemBond'
-import { CallableNote, VanillaNote } from 'state/types'
-import { ActionTitles, ActionContent } from './styles'
+import useRedeemCallableNote, { useRedeemCallableNotes } from 'views/Bonds/hooks/callableBond/useRedeemBond'
+import { CallableNote } from 'state/types'
+import { ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
   display: flex;
@@ -55,7 +54,7 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
 
   const finalNotes = notes.filter(no => no.matured <= now).map(x => x.noteIndex)
 
-  const { onRedeem } = useRedeemNotes(chainId, account, finalNotes)
+  const { onRedeem } = useRedeemCallableNotes(chainId, account, finalNotes)
 
 
   const handleRedemption = async () => {

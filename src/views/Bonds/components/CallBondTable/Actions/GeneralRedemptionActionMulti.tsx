@@ -8,8 +8,8 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 
 import { useTranslation } from 'contexts/Localization'
 
-import useRedeemNote, { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { VanillaNote } from 'state/types'
+import useRedeemCallNote, { useRedeemCallNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
+import { CallNote, VanillaNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
@@ -41,7 +41,7 @@ export const ButtonContainer = styled.div`
 
 interface StackedActionProps {
   userDataReady: boolean
-  notes: VanillaNote[]
+  notes: CallNote[]
 }
 
 const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
@@ -55,11 +55,12 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
 
   const finalNotes = notes.filter(no => no.matured <= now).map(x => x.noteIndex)
 
-  const { onRedeem } = useRedeemNotes(chainId, account, finalNotes)
+  const { onRedeem } = useRedeemCallNotes(chainId, account, finalNotes)
 
 
   const handleRedemption = async () => {
     try {
+      console.log("ERRORXD", finalNotes)
       await onRedeem()
     } catch (error) {
       console.log(error)

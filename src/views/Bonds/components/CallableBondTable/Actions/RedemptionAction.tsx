@@ -10,7 +10,7 @@ import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
-import useRedeemNote from 'views/Bonds/hooks/callBond/useRedeemBond'
+import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { CallableNote, VanillaNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
@@ -62,7 +62,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const bond = useBondFromBondId(bondId)
 
-  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
+  const { onRedeem } = useRedeemCallNote(chainId, account, note.noteIndex)
 
 
   const dispatch = useAppDispatch()

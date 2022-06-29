@@ -200,7 +200,7 @@ function Bonds({
 
   const [liveSelectedCallable, setLiveCallable] = useState(true)
 
-  const handleSelectCallableMarkets = () => setLiveCall(!liveSelectedCallable)
+  const handleSelectCallableMarkets = () => setLiveCallable(!liveSelectedCallable)
 
 
 

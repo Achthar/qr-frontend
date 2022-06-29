@@ -10,8 +10,8 @@ import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
-import useRedeemNote from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { VanillaNote } from 'state/types'
+import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
+import { CallNote, VanillaNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
 
@@ -45,7 +45,7 @@ export const ButtonContainer = styled.div`
 interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
   reqPrice: BigNumber
-  note: VanillaNote
+  note: CallNote
 }
 
 const Redemption: React.FunctionComponent<StackedActionProps> = ({
@@ -60,7 +60,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const bond = useBondFromBondId(bondId)
 
-  const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
+  const { onRedeem } = useRedeemCallNote(chainId, account, note.noteIndex)
 
 
   const dispatch = useAppDispatch()

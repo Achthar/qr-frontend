@@ -5,7 +5,7 @@ import { ethers } from 'ethers'
 import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { fetchCallBondUserDataAsync } from 'state/bonds'
+import { fetchCallableBondUserDataAsync } from 'state/bonds'
 import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
@@ -14,8 +14,8 @@ import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
 import { CallableBond, CallBond } from 'state/types'
-import { useCallBondFromBondIds } from 'state/bonds/hooks'
-import { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
+import { useCallableBondFromBondIds } from 'state/bonds/hooks'
+import { useRedeemCallableNotes } from 'views/Bonds/hooks/callableBond/useRedeemBond'
 import { ActionContent } from './styles'
 
 
@@ -128,13 +128,13 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   hasPosition
 }) => {
 
-  const bonds = useCallBondFromBondIds(bondIds)
-  const { onRedeem } = useRedeemNotes(chainId, account, indexes)
+  const bonds = useCallableBondFromBondIds(bondIds)
+  const { onRedeem } = useRedeemCallableNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds }))
+      dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds }))
     } catch (error) {
       console.log(error)
     }

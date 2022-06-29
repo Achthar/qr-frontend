@@ -379,11 +379,13 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
 
     const {
       closedVanillaMarkets: _closedVanillaMarkets,
-      closedCallMarkets: _closedCallMarkets,
       closedVanillaTerms: _closedVanillaTerms,
+
+      closedCallMarkets: _closedCallMarkets,
       closedCallTerms: _closedCallTerms,
-      closedCallableMarkets: _closedCallableMarkets,
+
       closedCallableTerms: _closedCallableTerms,
+      closedCallableMarkets: _closedCallableMarkets,
     } = await fetchUserClosedMarkets(chainId, bIds, bIdsC, bIdsCallable)
 
     return {
@@ -635,8 +637,9 @@ export const bondsSlice = createSlice({
         state.callableBondsClosed = action.payload.callableMarkets
         state.closedMarketsLoaded = true
       })
-      // .addCase(fetchClosedBondsUserAsync.pending, state => {
-      // })
+      .addCase(fetchClosedBondsUserAsync.pending, state => {
+        // 
+      })
       .addCase(fetchClosedBondsUserAsync.rejected, (state, { error }) => {
         state.closedMarketsLoaded = true
         console.log(error, state)

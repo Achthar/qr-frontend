@@ -15,7 +15,7 @@ import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
 import { CallBond } from 'state/types'
 import { useCallBondFromBondIds } from 'state/bonds/hooks'
-import { useRedeemNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
+import { useRedeemCallNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { ActionContent } from './styles'
 
 
@@ -129,7 +129,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
 }) => {
 
   const bonds = useCallBondFromBondIds(bondIds)
-  const { onRedeem } = useRedeemNotes(chainId, account, indexes)
+  const { onRedeem } = useRedeemCallNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {
     try {

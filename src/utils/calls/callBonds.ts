@@ -22,6 +22,7 @@ export const redeemCallNote = async (chainId, account, bondDepositoryContract, n
 
 export const redeemCallPositions = async (chainId, account, bondDepositoryContract, noteIndexes) => {
   const gasPrice = getGasPrice(chainId)
+  
   const tx = await bondDepositoryContract.redeem(
     account, // user
     noteIndexes, // indexes
