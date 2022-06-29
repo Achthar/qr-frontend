@@ -44,7 +44,7 @@ const RoiButton: React.FC<RoiButtonProps> = ({
   return (
     <RoiLabelContainer alignItems="center" onClick={() => { return null }}>
       <Text fontSize={isMobile ? '13px' : '15px'}>
-        {displayRoi}%
+        {Number(displayRoi) > 0 ? `${displayRoi}%` : '-'}
       </Text>
       {variant === 'text-and-button' && (
         <IconButton variant="text" scale="sm" ml="4px">

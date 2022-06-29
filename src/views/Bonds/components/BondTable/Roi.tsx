@@ -92,7 +92,7 @@ const Roi: React.FC<RoiProps> = ({
     </Container>
   ) : (
     <Container>
-      <RoiWrapper>{originalValue}%</RoiWrapper>
+      <RoiWrapper>{originalValue>0? `${originalValue}%` :'-'}</RoiWrapper>
     </Container>
   )
 }

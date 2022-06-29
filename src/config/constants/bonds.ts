@@ -21,9 +21,9 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       tokens: [serializedTokens.wavax, serializedTokens.usdc],
       quoteTokenIndex: 1,
       lpProperties: {
-        weightToken: 70,
-        weightQuoteToken: 30,
-        fee: 50
+        weightToken: 50,
+        weightQuoteToken: 50,
+        fee: 10
       }
     },
     {
@@ -78,8 +78,8 @@ export const bondConfig = (chainId: number): BondConfig[] => {
         43113: "0xa9767ba217ac2543799409e5b4970b7cb3df3ed5"
       },
       lpProperties: {
-        weightToken: 80,
-        weightQuoteToken: 20,
+        weightToken: 60,
+        weightQuoteToken: 40,
         fee: 25
       }
     },

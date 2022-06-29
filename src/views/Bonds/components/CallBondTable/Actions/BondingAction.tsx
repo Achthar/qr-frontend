@@ -16,7 +16,6 @@ import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import useDepositBond from 'views/Bonds/hooks/callBond/useDepositBond'
-import BondingModal from '../../BondingModal'
 import useApproveBond from '../../../hooks/callBond/useApproveBond'
 import { ActionTitles, ActionContent } from './styles'
 import CallBondingModal from '../CallBondingModal'
@@ -54,7 +53,7 @@ interface StackedActionProps extends BondWithStakedValue {
   isMobile: boolean
   userDataReady: boolean
   lpLabel?: string
-  displayApr?: string
+  strike?: string
   reqPrice?: number
   otr?: boolean
 
@@ -68,7 +67,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   lpLabel,
   reserveAddress,
   userDataReady,
-  displayApr,
+  strike,
   reqPrice,
   otr = false
 }) => {

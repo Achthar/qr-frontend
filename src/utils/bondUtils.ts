@@ -61,7 +61,7 @@ export const calculateUserPay = (note: CallNote | CallableNote, bond: CallBond |
     const moneyness = Number(ethers.utils.formatEther(payoff))
     if (payoff.lt(0)) return { moneyness, pay: ZERO }
 
-    return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(bond.bondTerms.maxPayoffPercentage) : payoff).mul(note.payout).div(ONE18) };
+    return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(bond.bondTerms.payoffPercentage) : payoff).mul(note.payout).div(ONE18) };
 }
 
 export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: ClosedCallTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {

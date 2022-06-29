@@ -123,6 +123,104 @@ export const DesktopColumnSchemaCall: ColumnsDefTypes[] = [
     sortable: true,
     label: '',
   },
+  {
+    id: 4,
+    name: 'discount',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 5,
+    name: 'term',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 6,
+    name: 'price',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 7,
+    name: 'purchased',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 8,
+    name: 'strike',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 9,
+    name: 'payout',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 10,
+    name: 'details',
+    sortable: true,
+    label: '',
+  },
+]
+
+export const MobileColumnSchemaCall: ColumnsDefTypes[] = [
+  {
+    id: 1,
+    name: 'bond',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 4,
+    name: 'discount',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 5,
+    name: 'term',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 6,
+    name: 'price',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 7,
+    name: 'purchased',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 8,
+    name: 'strike',
+    sortable: true,
+    label: '',
+  },
+  {
+    id: 9,
+    name: 'details',
+    sortable: true,
+    label: '',
+  },
+]
+
+
+
+export const DesktopColumnSchemaCallable: ColumnsDefTypes[] = [
+  {
+    id: 1,
+    name: 'bond',
+    sortable: true,
+    label: '',
+  },
   // {
   //   id: 3,
   //   name: 'multiplier',
@@ -155,7 +253,7 @@ export const DesktopColumnSchemaCall: ColumnsDefTypes[] = [
   },
   {
     id: 8,
-    name: 'roi',
+    name: 'strike',
     sortable: true,
     label: '',
   },
@@ -167,6 +265,8 @@ export const DesktopColumnSchemaCall: ColumnsDefTypes[] = [
   },
 
 ]
+
+
 
 
 

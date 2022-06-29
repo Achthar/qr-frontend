@@ -147,6 +147,11 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
 
   const loading = useMemo(() => !(props?.price?.price === 0 || props?.discount > -100), [props.price, props.discount])
 
+  const disc = useMemo(() => {
+    return props.discount > 0 ? Math.round(props.discount * 10000) / 100 : -Math.round((1 / (1 - props.discount) - 1) * 10000) / 100
+  }, [props.discount])
+
+
   const handleRenderRow = () => {
     if (!isMobile) {
       return (
@@ -172,9 +177,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                 return (
                   <td key={key}>
                     <CellInner>
-                      <CellLayout label='Discount'>
+                      <CellLayout label={props.discount > 0 ? 'Discount' : 'Premium'}>
                         {!loading ? (<Text>
-                          {`${Math.round(props.discount * 10000) / 100}%`}
+                          {`${disc}%`}
                         </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
@@ -272,9 +277,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                 </CellLayout>
               </TermMobileCell>
               <DiscountMobileCell>
-                <CellLayout label={t('Discount')}>
+                <CellLayout label={props.discount > 0 ? 'Discount' : 'Premium'}>
                   {!loading ? (<Text fontSize='13px'>
-                    {`${Math.round(props.discount * 10000) / 100}%`}
+                    {`${disc}%`}
                   </Text>) : <CircleLoader />}
                 </CellLayout>
               </DiscountMobileCell>

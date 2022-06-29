@@ -16,7 +16,7 @@ import { PreviewPanel } from './PreviewPanel'
 
 
 export interface CallableActionPanelProps {
-  roi: RoiProps
+  strike: string
   details: CallableBondWithStakedValue
   userDataReady: boolean
   expanded: boolean
@@ -197,7 +197,7 @@ const Line = styled.hr`
 
 const ActionPanel: React.FunctionComponent<CallableActionPanelProps> = ({
   details,
-  roi,
+  strike,
   userDataReady,
   expanded,
   price
@@ -232,7 +232,7 @@ const ActionPanel: React.FunctionComponent<CallableActionPanelProps> = ({
         </StakeContainer>
         {!isMobile && userDataReady && details?.userData?.notes && (
           <GeneralActionContainer>
-            {isApproved && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />)}
+            {isApproved && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} isMobile={isMobile} reqPrice={price.reqPrice} />)}
             <RedemptionMulti
               isMobile={false}
               thisBond={bond}
@@ -251,7 +251,7 @@ const ActionPanel: React.FunctionComponent<CallableActionPanelProps> = ({
             <GeneralActionContainerMobile>
               {account ? (
                 <>
-                  <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} />
+                  <BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} isMobile={isMobile} reqPrice={price.reqPrice} />
                   <RedemptionMulti
                     isMobile={isMobile}
                     bondIds={[bond.bondId]}
@@ -299,7 +299,7 @@ const ActionPanel: React.FunctionComponent<CallableActionPanelProps> = ({
               chainId={chainId}
               account={account}
             />
-            {account && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} displayApr={roi.value} isMobile={isMobile} reqPrice={price.reqPrice} otr />)}
+            {account && (<BondingAction {...bond} userDataReady={userDataReady} lpLabel={lpLabel} isMobile={isMobile} reqPrice={price.reqPrice} otr />)}
           </ActionContainerNoBond>
         ))}
       </NoteContainer>

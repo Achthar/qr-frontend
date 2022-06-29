@@ -113,7 +113,7 @@ export const addresses = {
     43113: '0x2479902372c1cd91e2d9d3c1ebed0940167efca2'
   },
   callBondDepository: {
-    43113: "0x37bb1Aa8A339B65aeD51B6354a2518011F668A9B"
+    43113: "0xfBE3B3E624a00f9f7BB6bb13b3757848088a583F"
   },
   callableBondDepository: {
     43113: "0xb7879d3bbE48838a0436AE9CE75bEE1F6eb7282E"

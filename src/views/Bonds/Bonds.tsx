@@ -30,7 +30,7 @@ import Loading from 'components/Loading'
 import { priceAssetBackedRequiem } from 'utils/poolPricer'
 import { RowProps } from './components/BondTable/Row'
 import Claim from './components/BondTable/Actions/ClaimAction'
-import { BondWithStakedValue, DesktopColumnSchema, DesktopColumnSchemaCall } from './components/types'
+import { BondWithStakedValue, DesktopColumnSchema, DesktopColumnSchemaCall, DesktopColumnSchemaCallable } from './components/types'
 import Table from './components/BondTable/BondTable'
 import CallTable from './components/CallBondTable/CallBondTable'
 import CallableTable from './components/CallableBondTable/CallBondTable'
@@ -394,7 +394,6 @@ function Bonds({
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
-      // price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
       roi: {
         value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
@@ -430,16 +429,9 @@ function Bonds({
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
-      // price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
-      roi: {
-        value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
-        bondId: 1,
-        lpLabel: 'string',
-        reqtPrice: new BigNumber(reqPrice),
-        originalValue: 3
-
-      },
+      strike: bond.bondTerms?.thresholdPercentage,
+      payout: bond.bondTerms?.payoffPercentage,
       purchased: {
         purchasedUnits,
         purchasedInQuote,
@@ -466,16 +458,8 @@ function Bonds({
       },
       discount: (reqPrice - bond.bondPrice) / reqPrice,
       details: bond,
-      // price: bond.bondPrice,
       term: blocksToDays(bond.vestingTerm ?? 0, chainId),
-      roi: {
-        value: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100).toLocaleString(),
-        bondId: 1,
-        lpLabel: 'string',
-        reqtPrice: new BigNumber(reqPrice),
-        originalValue: 3
-
-      },
+      strike: bond.bondTerms?.thresholdPercentage,
       purchased: {
         purchasedUnits,
         purchasedInQuote,
@@ -675,19 +659,19 @@ function Bonds({
               mb={isMobile ? '7px' : '2px'}
               mt='0px'
             >
-              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
-                <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+              <Flex flexDirection="row" width='90%'>
+                <StyledIconAbs height={80} width={80}>
+                  <img src={flatChartIcon} alt='' />
+                </StyledIconAbs>
+                <Flex flexDirection="column" width='100%' marginLeft='3px'>
+                  <Text fontSize='20px' textAlign={isMobile ? 'left' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
                     Vanilla Bonding
                   </Text>
-                  <StyledIconAbs height={40} width={80}>
-                    <img src={flatChartIcon} alt='' />
-                  </StyledIconAbs>
-                </Flex>
-                <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
-                    Bond Tokens for fixed payoff
-                  </Text>
+                  <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='14px' textAlign={isMobile ? 'left' : 'left'} marginLeft='5px' marginRight='2px'>
+                      Bond stable LP Tokens for fixed payoff
+                    </Text>
+                  </Flex>
                 </Flex>
               </Flex>
             </HeaderBoxBond>
@@ -722,19 +706,21 @@ function Bonds({
               mb={isMobile ? '7px' : '2px'}
               mt='0px'
             >
-              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
-                <Flex flexDirection="row" justifyContent={isMobile ? 'center' : 'flex-start'}>
-                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
-                    Linked Bonding
+              <Flex flexDirection="row" width='90%'>
+                <StyledIconAbs height={40} width={40}>
+                  <img src={chartIcon} alt='' />
+                </StyledIconAbs>
+
+                <Flex flexDirection="column" width='100%' marginLeft='5px'>
+                  <Text fontSize='20px' textAlign={isMobile ? 'left' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+                    Digital Crypto Bonding
                   </Text>
-                  <StyledIconAbs height={20} width={20}>
-                    <img src={chartIcon} alt='' />
-                  </StyledIconAbs>
-                </Flex>
-                <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
-                    Bond Tokens for fixed payoff and gain aditional payoff based on Linked Crypto
-                  </Text>
+
+                  <Flex flexDirection="row" justifyContent='flex-start' >
+                    <Text fontSize='14px' textAlign={isMobile ? 'left' : 'left'} marginLeft='5px' marginRight='2px'>
+                      Bond Tokens for fixed payoff and gain aditional coupon payoff based on the underlying Crypto Index
+                    </Text>
+                  </Flex>
                 </Flex>
               </Flex>
             </HeaderBoxBond>
@@ -768,19 +754,21 @@ function Bonds({
               mb={isMobile ? '7px' : '2px'}
               mt='0px'
             >
-              <Flex flexDirection="column" justifyContent='left' alignSelf={isMobile ? 'center' : 'left'}>
-                <Flex flexDirection="row" justifyContent={isMobile ? 'center' : 'flex-start'}>
-                  <Text fontSize='20px' textAlign={isMobile ? 'center' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+              <Flex flexDirection="row" width='90%'>
+                <StyledIconAbs height={40} width={40}>
+                  <img src={chartIcon} alt='' />
+                </StyledIconAbs>
+
+                <Flex flexDirection="column" width='100%' marginLeft='5px'>
+                <Text fontSize='20px' textAlign={isMobile ? 'left' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
                     Callable Bonding
                   </Text>
-                  <StyledIconAbs height={20} width={20}>
-                    <img src={chartIcon} alt='' />
-                  </StyledIconAbs>
-                </Flex>
-                <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='14px' textAlign={isMobile ? 'center' : 'right'} marginLeft='5px' marginRight='20px'>
-                    Claim ABREQ before vesting ends if Index crosses threshold.
-                  </Text>
+
+                  <Flex flexDirection="row" justifyContent='flex-start' >
+                  <Text fontSize='14px' textAlign={isMobile ? 'left' : 'right'} marginLeft='5px' marginRight='2px'>
+                      Claim ABREQ before vesting ends if Index crosses threshold.
+                    </Text>
+                  </Flex>
                 </Flex>
               </Flex>
             </HeaderBoxBond>
@@ -841,7 +829,7 @@ function Bonds({
   }
 
   const renderCallableContent = (): JSX.Element => {
-    const columnSchema = DesktopColumnSchemaCall
+    const columnSchema = DesktopColumnSchemaCallable
 
     const columns = columnSchema.map((column) => ({
       id: column.id,

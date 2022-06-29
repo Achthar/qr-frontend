@@ -169,7 +169,7 @@ export interface VanillaBondTerms {
 
 export interface CallBondTerms extends VanillaBondTerms {
   thresholdPercentage: SerializedBigNumber;
-  maxPayoffPercentage: SerializedBigNumber;
+  payoffPercentage: SerializedBigNumber;
 }
 
 export interface Bond extends BondConfig, IBondDetails {

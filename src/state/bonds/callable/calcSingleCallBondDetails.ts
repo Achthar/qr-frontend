@@ -108,7 +108,7 @@ export const calcSingleCallableBondDetails = createAsyncThunk(
         maxDebt: terms.maxDebt.toString(),
         conclusion: terms.conclusion.toString(),
         thresholdPercentage: terms.thresholdPercentage.toString(),
-        maxPayoffPercentage: terms.maxPayoffPercentage.toString()
+        payoffPercentage: terms.maxPayoffPercentage.toString()
       },
       market: {
         underlying: getAddress(market.underlying),

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
+import { CallableBondWithStakedValue, DesktopColumnSchemaCallable } from 'views/Bonds/components/types'
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
@@ -10,6 +10,7 @@ import { useCallableBondFromBondId, useBondUser, useCallBondUser, useCallableBon
 import { useBlock } from 'state/block/hooks'
 import { prettifySeconds, secondsUntilBlock } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
+import { ethers } from 'ethers'
 import Roi, { RoiProps } from './Roi'
 import Apr, { AprProps } from './Apr'
 import CallableBond, { CallableBondProps } from './CallBond'
@@ -40,7 +41,7 @@ export interface CallableRowProps {
   details: CallableBondWithStakedValue
   discount: number
   price: PriceProps
-  roi: RoiProps
+  strike: string
   purchased: PurchasedProps
   term: number
   reqPrice: number
@@ -136,12 +137,16 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { isDesktop, isMobile } = useMatchBreakpoints()
 
   const isSmallerScreen = !isDesktop
-  const tableSchema = isSmallerScreen ? MobileColumnSchema : DesktopColumnSchema
+  const tableSchema = isSmallerScreen ? MobileColumnSchema : DesktopColumnSchemaCallable
   const columnNames = tableSchema.map((column) => column.name)
 
   const vesting = () => {
     return prettifySeconds(Number(bond?.bondTerms?.vesting) ?? 0, isMobile ? 'day' : 'hour');
   };
+
+  const disc = useMemo(() => {
+    return props.discount > 0 ? Math.round(props.discount * 10000) / 100 : -Math.round((1 / (1 - props.discount) - 1) * 10000) / 100
+  }, [props.discount])
 
   const loading = useMemo(() => !(props?.price?.price === 0 || props?.discount > -100), [props.price, props.discount])
 
@@ -170,9 +175,9 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                 return (
                   <td key={key}>
                     <CellInner>
-                      <CellLayout label='Discount'>
+                      <CellLayout label={props.discount > 0 ? 'Discount' : 'Premium'}>
                         {!loading ? (<Text>
-                          {`${Math.round(props.discount * 10000) / 100}%`}
+                          {`${disc}%`}
                         </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
@@ -214,14 +219,14 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                     </CellInner>
                   </td>
                 )
-              case 'roi':
+              case 'strike':
                 return (
                   <td key={key}>
                     <CellInner>
-                      <CellLayout label={t('ROI')}>
+                      <CellLayout label={t('Strike')}>
                         {!loading ? (
                           <Text>
-                            <Roi {...props.roi} hideButton />
+                            {Math.round(Number(ethers.utils.formatEther(props.strike)) * 10000) / 100}%
                           </Text>) : <CircleLoader />}
                       </CellLayout>
                     </CellInner>
@@ -270,15 +275,17 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                 </CellLayout>
               </TermMobileCell>
               <DiscountMobileCell>
-                <CellLayout label={t('Discount')}>
+                <CellLayout label={props.discount > 0 ? 'Discount' : 'Premium'}>
                   {!loading ? (<Text fontSize='13px'>
-                    {`${Math.round(props.discount * 10000) / 100}%`}
+                    {`${disc}%`}
                   </Text>) : <CircleLoader />}
                 </CellLayout>
               </DiscountMobileCell>
               <AprMobileCell>
-                <CellLayout label={t('ROI')}>
-                  {!loading ? (<Roi {...props.roi} hideButton isMobile />) : <CircleLoader />}
+                <CellLayout label={t('Strike')}>
+                  {!loading ? (<Text fontSize='13px'>
+                    {Math.round(Number(ethers.utils.formatEther(props.strike)) * 10000) / 100}%
+                  </Text>) : <CircleLoader />}
                 </CellLayout>
               </AprMobileCell>
 
