@@ -49,7 +49,7 @@ const farms = (chainId: number): SerializedFarmConfig[] => {
     {
       pid: 1,
       poolAddress: '0x2d5d1137d5e57975a3d7e265c6d8ebbadcd506ec',
-      lpSymbol: 'REQ-3-CLASSIC',
+      lpSymbol: 'REQ-3-CLASSIC DEP',
       lpAddresses: {
         97: '',
         56: '',

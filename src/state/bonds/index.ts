@@ -347,6 +347,7 @@ interface RawTerm {
   vesting: number
   thresholdPercentage?: string;
   maxPayoffPercentage?: string;
+  payoffPercentage?: string;
   exerciseDuration?: number;
 }
 
@@ -362,18 +363,30 @@ interface RawCallMarket extends RawMarket {
 
 interface RawCallTerm extends RawTerm {
   thresholdPercentage: string;
+  payoffPercentage: string;
+  exerciseDuration: number;
+}
+
+interface RawCallableTerm extends RawTerm {
+  thresholdPercentage: string;
   maxPayoffPercentage: string;
   exerciseDuration: number;
 }
+
 
 interface RawCallBond {
   market: RawCallMarket
   terms: RawCallTerm
 }
 
+interface RawCallableBond {
+  market: RawCallMarket
+  terms: RawCallableTerm
+}
 
 
-export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawBond[], callMarkets: RawCallBond[], callableMarkets: RawCallBond[] }, { chainId: number, bIds: number[]; bIdsC: number[], bIdsCallable: number[] }>(
+
+export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawBond[], callMarkets: RawCallBond[], callableMarkets: RawCallableBond[] }, { chainId: number, bIds: number[]; bIdsC: number[], bIdsCallable: number[] }>(
   'bonds/fetchClosedBondsUserAsync',
   async ({ chainId, bIds, bIdsC, bIdsCallable }) => {
 
@@ -387,7 +400,7 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
       closedCallableTerms: _closedCallableTerms,
       closedCallableMarkets: _closedCallableMarkets,
     } = await fetchUserClosedMarkets(chainId, bIds, bIdsC, bIdsCallable)
-
+    
     return {
       vanillaMarkets: Object.assign({}, ..._closedVanillaMarkets.map((_, index) => {
         return {
@@ -416,7 +429,7 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
             terms: {
               vesting: Number(_closedCallTerms[index].vesting),
               thresholdPercentage: _closedCallTerms[index].thresholdPercentage.toString(),
-              maxPayoffPercentage: _closedCallTerms[index].maxPayoffPercentage.toString(),
+              payoffPercentage: _closedCallTerms[index].payoffPercentage.toString(),
               exerciseDuration: Number(_closedCallTerms[index].exerciseDuration)
             }
           }

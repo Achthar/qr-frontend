@@ -13,7 +13,7 @@ import CircleLoader from 'components/Loader/CircleLoader'
 import { ethers } from 'ethers'
 import Roi, { RoiProps } from './Roi'
 import Apr, { AprProps } from './Apr'
-import CallableBond, { CallableBondProps } from './CallBond'
+import CallableBond, { CallableBondProps } from './CallableBond'
 import Earned, { EarnedProps } from './Earned'
 import Details from './Details'
 import Multiplier, { MultiplierProps } from './Multiplier'
@@ -21,7 +21,7 @@ import Liquidity, { LiquidityProps } from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
 import { DesktopColumnSchema, MobileColumnSchema } from '../types'
-import CallBondMobile from './CallBondMobile'
+import CallBondMobile from './CallableBondMobile'
 
 
 interface PurchasedProps {

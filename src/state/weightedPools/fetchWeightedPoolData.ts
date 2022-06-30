@@ -31,7 +31,7 @@ export const fetchWeightedPoolData = createAsyncThunk(
       pool = weightedSwapInitialData[chainId][pool.key]
     }
     const poolAddress = getAddress(pool.address)
-    
+
     // // cals for general pool data
     const calls = [
       // token multipliers
@@ -86,7 +86,7 @@ export const fetchWeightedPoolData = createAsyncThunk(
       },
       swapStorage: {
         tokenMultipliers: multipliers[0].map(multiplier => multiplier.toString()),
-        normalizedTokenWeights: tokenWeights[0].map(w=>w.toString()),
+        normalizedTokenWeights: tokenWeights[0].map(w => w.toString()),
         lpAddress: swapStorage.lpToken,
         fee: swapStorage.fee.toString(),
         adminFee: swapStorage.adminFee.toString(),

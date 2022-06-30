@@ -11,7 +11,7 @@ import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
 import BondingAction from './BondingAction'
 import RedemptionMulti from './RedemptionActionMulti'
 import Roi, { RoiProps } from '../Roi'
-import CallNoteRow, { CallableNoteHeaderRow } from '../CallNoteRow'
+import CallNoteRow, { CallableNoteHeaderRow } from '../CallableNoteRow'
 import { PreviewPanel } from './PreviewPanel'
 
 

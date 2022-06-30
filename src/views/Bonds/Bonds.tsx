@@ -33,13 +33,13 @@ import Claim from './components/BondTable/Actions/ClaimAction'
 import { BondWithStakedValue, DesktopColumnSchema, DesktopColumnSchemaCall, DesktopColumnSchemaCallable } from './components/types'
 import Table from './components/BondTable/BondTable'
 import CallTable from './components/CallBondTable/CallBondTable'
-import CallableTable from './components/CallableBondTable/CallBondTable'
+import CallableTable from './components/CallableBondTable/CallableBondTable'
 import BondTabButtons from './components/BondTabButtons'
 import { NoteTable } from './components/BondTable/NoteTable'
 import { CallRowProps } from './components/CallBondTable/CallRow'
 import { CallNoteTable } from './components/CallBondTable/CallNoteTable'
-import { CallableRowProps } from './components/CallableBondTable/CallRow'
-import { CallableNoteTable } from './components/CallableBondTable/CallNoteTable'
+import { CallableRowProps } from './components/CallableBondTable/CallableRow'
+import { CallableNoteTable } from './components/CallableBondTable/CallableNoteTable'
 
 
 

@@ -10,27 +10,26 @@ export const weightedSwapInitialData: { [chainId: number]: any[] } = {
         {
             key: 0,
             name: 'req3Classic',
-            address: '0x2d5D1137D5e57975A3D7e265C6d8ebBaDcd506EC',
+            address: '0x33eae5C8D1c634387de8BDB7db1251Ae1B2497A9',
             tokens: [
+                serializeToken(WETH[43113]),
                 serializeToken(WBTC[43113]),
-                serializeToken(USDT[43113]),
-                serializeToken(WETH[43113])
+                serializeToken(USDT[43113])
             ],
             balances: ['1', '1', '1'],
-            lpAddress: '0xa9767ba217ac2543799409e5b4970b7cb3df3ed5',
+            lpAddress: '0xa63a39F656E0890857987Dfc0AEB90654Bc231B1',
             lpToken: {
                 chainId: 43113,
                 decimals: 18,
-                address: '0xa9767ba217ac2543799409e5b4970b7cb3df3ed5',
+                address: '0xa63a39F656E0890857987Dfc0AEB90654Bc231B1',
                 symbol: 'req4USD'
             },
             swapStorage: {
-                tokenMultipliers: ['10000000000', '1000000000000', '1' ],
+                tokenMultipliers: ['1', '10000000000', '1000000000000',],
                 normalizedWeights: ['333333333333333333', '333333333333333333', '333333333333333334'],
-                lpToken: '0xa9767ba217ac2543799409e5b4970b7cb3df3ed5',
-                fee: BigNumber.from('0x0f4240').toString(),
-                adminFee: BigNumber.from('0x012a05f200').toString(),
-                defaultWithdrawFee: BigNumber.from('0x02faf080').toString(),
+                lpToken: '0xa63a39F656E0890857987Dfc0AEB90654Bc231B1',
+                fee: '1500000000000000',
+                adminFee: '200000000000000000'
             }
         },
     ],

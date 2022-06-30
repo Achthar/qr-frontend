@@ -128,7 +128,7 @@ export const GREQ: { [chainId: number]: Token } = {
 export const WEIGHTED_POOL_LP: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(
     ChainId.AVAX_TESTNET,
-    '0x147F7feF8C1c46B7Fc9eE790eE95A041F255F022',
+    '0xa63a39F656E0890857987Dfc0AEB90654Bc231B1',
     18,
     'Requiem Weighted LP',
     'RWLP',

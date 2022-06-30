@@ -290,7 +290,7 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     const [moneynessPerc, optPayout] = useMemo(() => {
         const { moneyness, pay } = calculateUserPayClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
-        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(moneyness > 0 ? closed[note?.marketId]?.terms.maxPayoffPercentage : '0', isMobile ? 3 : 5, 18)]
+        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(moneyness > 0 ? closed[note?.marketId]?.terms.payoffPercentage : '0', isMobile ? 3 : 5, 18)]
 
     }, [note, closed, oracleData, isMobile])
 

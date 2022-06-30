@@ -71,11 +71,25 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       payoutToken: "abREQ",
       assetType: BondAssetType.WeightedPoolLP,
       displayUnits: '4',
+      tokens: [serializedTokens.weth, serializedTokens.wbtc, serializedTokens.usdt],
+      quoteTokenIndex: 2,
+      reserveAddress: {
+        43114: "0xa63a39F656E0890857987Dfc0AEB90654Bc231B1",
+        43113: "0xa63a39F656E0890857987Dfc0AEB90654Bc231B1"
+      },
+    },
+    {
+      name: "REQ3 Classic Deprecated",
+      displayName: "wETH/wBTC/USDT 3-Pool LP",
+      bondToken: "Stable Swap LP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.WeightedPoolLP,
+      displayUnits: '4',
       tokens: [serializedTokens.wbtc, serializedTokens.weth, serializedTokens.usdt],
       quoteTokenIndex: 2,
       reserveAddress: {
-        43114: "0xa9767ba217ac2543799409e5b4970b7cb3df3ed5",
-        43113: "0xa9767ba217ac2543799409e5b4970b7cb3df3ed5"
+        43114: "0xA9767BA217AC2543799409E5B4970B7cb3dF3Ed5",
+        43113: "0xA9767BA217AC2543799409E5B4970B7cb3dF3Ed5"
       },
       lpProperties: {
         weightToken: 60,

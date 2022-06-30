@@ -1,7 +1,7 @@
 import { AmplifiedWeightedPair, Token, TokenAmount } from "@requiemswap/sdk"
 import { BondConfig, SerializedToken } from "config/constants/types"
 import { BigNumber, ethers } from "ethers"
-import { Bond, CallableBond, CallableNote, CallBond, CallNote, ClosedCallBond, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
+import { Bond, CallableBond, CallableNote, CallBond, CallNote, ClosedCallableTerms, ClosedCallBond, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
 import { deserializeToken } from "state/user/hooks/helpers"
 
 const ONE18 = ethers.BigNumber.from('1000000000000000000')
@@ -64,19 +64,20 @@ export const calculateUserPay = (note: CallNote | CallableNote, bond: CallBond |
     return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(bond.bondTerms.payoffPercentage) : payoff).mul(note.payout).div(ONE18) };
 }
 
-export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: ClosedCallTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
-    if (!terms) return { moneyness: 0, pay: ZERO }
+export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: ClosedCallTerms | ClosedCallableTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+    if (!terms || !note) return { moneyness: 0, pay: ZERO }
 
     const strike = ethers.BigNumber.from(terms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
     const moneyness = Number(ethers.utils.formatEther(payoff))
     if (payoff.lt(0)) return { moneyness, pay: ZERO }
 
-    return { moneyness, pay: (payoff.gt(strike) ? ethers.BigNumber.from(terms.maxPayoffPercentage) : payoff).mul(note.payout).div(ONE18) };
+    const perc = ethers.BigNumber.from('ClosedCallTerms' in terms ? (terms as ClosedCallTerms).payoffPercentage : (terms as ClosedCallableTerms).maxPayoffPercentage)
+    return { moneyness, pay: (payoff.gt(strike) ? perc : payoff).mul(note.payout).div(ONE18) };
 }
 
 
 export const getConfigForVanillaNote = (chainId: number, note: VanillaNote | CallableNote | CallNote, bonds: { [bid: number]: ClosedVanillaBond }, bondCfgs: BondConfig[]) => {
-    if (Object.values(bonds).length === 0) return null
+    if (Object.values(bonds).length === 0 || !note) return null
     return bondCfgs.find(cfg => ethers.utils.getAddress(cfg.reserveAddress[chainId]) === ethers.utils.getAddress(bonds[note.marketId]?.market?.asset))
 }

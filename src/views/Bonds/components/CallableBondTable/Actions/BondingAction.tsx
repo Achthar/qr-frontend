@@ -18,7 +18,7 @@ import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathP
 import useDepositBond from 'views/Bonds/hooks/callableBond/useDepositBond'
 import useApproveBond from '../../../hooks/callBond/useApproveBond'
 import { ActionTitles, ActionContent } from './styles'
-import CallBondingModal from '../CallBondingModal'
+import CallBondingModal from '../CallableBondingModal'
 
 
 export const BondActionContainer = styled.div<{ isMobile: boolean }>`

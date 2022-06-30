@@ -143,9 +143,16 @@ export interface ClosedVanillaTerms {
 
 export interface ClosedCallTerms extends ClosedVanillaTerms {
   thresholdPercentage: SerializedBigNumber;
+  payoffPercentage: SerializedBigNumber;
+  exerciseDuration?: number;
+}
+
+export interface ClosedCallableTerms extends ClosedVanillaTerms {
+  thresholdPercentage: SerializedBigNumber;
   maxPayoffPercentage: SerializedBigNumber;
   exerciseDuration?: number;
 }
+
 
 
 export interface ClosedVanillaBond {
@@ -158,6 +165,12 @@ export interface ClosedCallBond  {
   market: ClosedCallMarket
   terms: ClosedCallTerms;
 }
+
+export interface ClosedCallableBond  {
+  market: ClosedCallMarket
+  terms: ClosedCallableTerms;
+}
+
 
 export interface VanillaBondTerms {
   controlVariable: SerializedBigNumber; // scaling variable for price
@@ -324,7 +337,7 @@ export interface BondsState {
   callableNotesClosed: CallableNote[]
   vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
   callBondsClosed: { [bondId: number]: ClosedCallBond }
-  callableBondsClosed: { [bondId: number]: ClosedCallBond }
+  callableBondsClosed: { [bondId: number]: ClosedCallableBond }
   closedMarketsLoaded: boolean
 
 }
