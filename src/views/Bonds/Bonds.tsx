@@ -164,6 +164,19 @@ const HeaderBoxBond = styled(Box) <{ btl: string, btr: string, bbl: string, bbr:
   align-items: center;
 `
 
+const ExpandingContainer = styled.div<{ expanded: boolean }>`
+  transition:all 1s ease;
+  pointer-events: none;
+  z-index: 1;
+  position: relative;
+  align: center;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: ${({ expanded }) => (!expanded ? '0%' : '100%')};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
+`
+
 const Line = styled.hr`
   height: 2px;
   border:  none;
@@ -668,7 +681,7 @@ function Bonds({
                     Vanilla Bonding
                   </Text>
                   <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='14px' textAlign={isMobile ? 'left' : 'left'} marginLeft='5px' marginRight='2px'>
+                    <Text fontSize='14px' textAlign={isMobile ? 'left' : 'left'} marginLeft='5px' marginRight='2px'>
                       Bond stable LP Tokens for fixed payoff
                     </Text>
                   </Flex>
@@ -760,12 +773,12 @@ function Bonds({
                 </StyledIconAbs>
 
                 <Flex flexDirection="column" width='100%' marginLeft='5px'>
-                <Text fontSize='20px' textAlign={isMobile ? 'left' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
+                  <Text fontSize='20px' textAlign={isMobile ? 'left' : 'left'} bold marginLeft='5px' marginTop='2px' marginRight='5px'>
                     Callable Bonding
                   </Text>
 
                   <Flex flexDirection="row" justifyContent='flex-start' >
-                  <Text fontSize='14px' textAlign={isMobile ? 'left' : 'right'} marginLeft='5px' marginRight='2px'>
+                    <Text fontSize='14px' textAlign={isMobile ? 'left' : 'right'} marginLeft='5px' marginRight='2px'>
                       Claim ABREQ before vesting ends if Index crosses threshold.
                     </Text>
                   </Flex>
@@ -860,18 +873,18 @@ function Bonds({
       <Page>
         {renderHeader()}
         {renderGeneralHeader()}
-        {liveSelected ? renderContent() : (
-          <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} />
-        )}
+        {liveSelected && renderContent()}
+        <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} expanded={!liveSelected} />
+
         {renderGeneralCallHeader()}
-        {liveSelectedCall ? renderCallContent() : (
-          <CallNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} />
-        )}
+        {liveSelectedCall && renderCallContent()}
+        <CallNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />
+
 
         {renderGeneralCallableHeader()}
-        {liveSelectedCallable ? renderCallableContent() : (
-          <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} />
-        )}
+        {liveSelectedCallable && renderCallableContent()}
+        <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCallable} />
+
         {account && !userDataLoaded && (
           <Flex justifyContent="center">
             <Loading />

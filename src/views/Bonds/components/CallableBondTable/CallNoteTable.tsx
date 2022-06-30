@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallableNote, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
@@ -153,13 +153,40 @@ const HeaderContainer = styled.div`
   }
 `
 
-const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
+const expandAnimation = keyframes`
+  from {
+    max-height: 0px;
+  }
+  to {
+    max-height: 500px;
+  }
+`
+
+const collapseAnimation = keyframes`
+  from {
+    max-height: 500px;
+  }
+  to {
+    max-height: 0px;
+  }
+`
+
+const GeneralNoteContainer = styled.div<{ isMobile: boolean, expanded: boolean }>`
   margin-top:5px;
+  position:relative;
+  animation: ${({ expanded }) =>
+        expanded
+            ? css`
+          ${expandAnimation} 300ms linear forwards
+        `
+            : css`
+          ${collapseAnimation} 300ms linear forwards
+        `};
   width:100%;
   align-self: center;
   display: flex;
+  height: 100%;
   flex-direction: column;
-  padding: 2px;
   ${({ isMobile }) => isMobile ? `
   overflow-y: auto;
   ::-webkit-scrollbar {
@@ -170,6 +197,8 @@ const GeneralNoteContainer = styled.div<{ isMobile: boolean }>`
     width: 12px;
   }` }
 `
+
+
 const StyledLogo = styled(Logo) <{ size: string }>`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
@@ -340,14 +369,18 @@ function compareMaturities(a: CallableNote, b: CallableNote) {
     return 0;
 }
 
-export const CallableNoteTable: React.FunctionComponent<{ notes: CallableNote[], reqPrice: number, userDataReady: boolean }> = ({ notes, reqPrice, userDataReady
+export const CallableNoteTable: React.FunctionComponent<{ notes: CallableNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
+    notes,
+    reqPrice,
+    userDataReady,
+    expanded
 }) => {
 
     const { isMobile } = useMatchBreakpoints()
     let orderedNotes = useMemo(() => notes.slice(), [notes])
     orderedNotes = useMemo(() => { return orderedNotes.sort((a, b) => a.matured - b.matured) }, [orderedNotes])
     return (
-        <GeneralNoteContainer isMobile={isMobile}>
+        <GeneralNoteContainer isMobile={isMobile} expanded={expanded}>
             {notes.length > 0 && (
                 <CallNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
             )}
