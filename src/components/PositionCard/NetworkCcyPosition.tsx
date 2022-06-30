@@ -48,7 +48,6 @@ function formatAmount(currencyAmount?: CurrencyAmount) {
 }
 
 export default function CurrencyPositionCard({ chainId, currencyAmount, gap, padding, showSymbol, ...props }: CurrencyPositionCardProps,) {
-  console.log("NWRK", currencyAmount)
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
       <AutoColumn gap={gap} style={{ padding }}>

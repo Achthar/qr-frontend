@@ -41,7 +41,6 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
   "weightedPairs/fetchWeightedPairMetaData",
   async ({ chainId, tokenPairs }: MetaRequestData): Promise<WeightedPairMetaResponse> => {
     // const tokenPairs = cleanTokenPairs(tokenPairs, getAllTokenPairs(chainId))
-    console.log("WP: INPUT Meta", tokenPairs,)
     // // cals for existing pool addresses
     const calls = tokenPairs.map(pair => {
       return {
@@ -55,7 +54,6 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
 
     const existingPairs = rawMetaData.map((entry, index) => entry._tokenPairs.length > 0 ? index : -1).filter((index) => index > -1)
 
-    console.log("WP: RAWMETA", rawMetaData, existingPairs)
     return {
       metaData: Object.assign(
         {}, ...existingPairs.map(

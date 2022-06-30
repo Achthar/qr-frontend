@@ -60,7 +60,7 @@ export function useTokenBalancesWithLoadingIndicator(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens],
   )
-  console.log("useTokenBalancesWithLoadingIndicator")
+
   const validatedTokenAddresses = useMemo(() => validatedTokens.map((vt) => vt.address), [validatedTokens])
 
   const balances = useMultipleContractSingleData(tokens?.[0]?.chainId ?? 43113, validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [

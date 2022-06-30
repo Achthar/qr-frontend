@@ -14,20 +14,19 @@ const supportedChains = [43113]
  * Provides a web3 provider with or without user's signer
  * Recreate web3 instance only if the provider change
  */
-const useActiveWeb3React = (id?: string): Web3ReactContextInterface<Web3Provider> => {
+const useActiveWeb3React = (): Web3ReactContextInterface<Web3Provider> => {
   const { library, chainId: chainIdWeb3, ...web3React } = useWeb3React()
 
   useChainIdHandling(chainIdWeb3, web3React.account)
   const { chainId } = useNetworkState()
 
   const refEth = useRef(library)
-  console.log(id)
-  const [provider, setprovider] = useState(library || simpleRpcProvider(chainId, `useActiveWeb3React ${id}`))
+
+  const [provider, setprovider] = useState(library || simpleRpcProvider(chainId))
 
   useEffect(() => {
     if (library !== refEth.current) {
-      console.log("library !== refEth.current")
-      setprovider(library || simpleRpcProvider(chainId, `useActiveWeb3React`))
+      setprovider(library || simpleRpcProvider(chainId))
       refEth.current = library
     }
   },

@@ -13,7 +13,7 @@ import { ChainId } from '../config/index'
 
 function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Promise<TokenList> {
   // const { library } = useWeb3Provider()
-  const { chainId, library } = useActiveWeb3React("useFetchListCallback")
+  const { chainId, library } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
 
   const ensResolver = useCallback(

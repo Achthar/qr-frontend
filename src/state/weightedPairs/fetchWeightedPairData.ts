@@ -334,9 +334,9 @@ export const refreshWeightedPairReserves = createAsyncThunk(
 export const fetchWeightedPairReserves = createAsyncThunk(
   "weightedPairs/fetchWeightedPairSupplyBalancesAndAllowance",
   async ({ chainId, pairMetaData: pairData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: SerializedWeightedPair[] }> => {
-    console.log("WP: INPUT DATA", pairData)
+
     const dataPoints = Object.keys(pairData).map(key => pairData[key].length)
-    console.log("WP: DP", dataPoints)
+
     // // cals for existing pool addresses
     let pairAddresses = []
     let tokenAAddresses = []
@@ -363,7 +363,6 @@ export const fetchWeightedPairReserves = createAsyncThunk(
     const rawData = await multicall(chainId, weightedPairABI, [...callsReserves, ...callsSupply])
 
 
-    console.log("WP: RAWMETA DATA", rawData, Object.keys(pairData).map((k, i) => { return indexAt(dataPoints, i) }))
     return Object.assign(
       {}, ...Object.keys(pairData).map(
         (key, index) => {

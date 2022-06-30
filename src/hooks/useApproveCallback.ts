@@ -150,9 +150,9 @@ export function useApproveCallbackWithAllowance(
 
   const { callWithGasPrice } = useCallWithGasPrice()
   const token = amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined
-  console.log("ALLOW", currentAllowance)
+
   const pendingApproval = useHasPendingApproval(chainId, token?.address, spender)
-  useEffect(() => { console.log("HPA", pendingApproval, currentAllowance?.toString(), amountToApprove && BigNumber.from(currentAllowance).lt(amountToApprove?.toBigNumber())) }, [pendingApproval, amountToApprove, currentAllowance])
+  
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
     if (!amountToApprove || !spender) return ApprovalState.UNKNOWN

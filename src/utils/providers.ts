@@ -3,10 +3,10 @@ import getRpcUrl from 'utils/getRpcUrl'
 
 // const RPC_URL = getRpcUrl()
 
-export const simpleRpcProvider = (chainId, seed?: any) => {
+export const simpleRpcProvider = (chainId) => {
   const RPC_URL = getRpcUrl(chainId ?? 43113)
   // console.log(new ethers.providers.JsonRpcProvider(RPC_URL))
-  console.log("request", seed)
+
   return new ethers.providers.JsonRpcProvider(RPC_URL)
   // return {
   //   _isProvider: true, _events: Array(0), _emitted: { block: -2 }, formatter: null, anyNetwork: false,

@@ -45,7 +45,7 @@ export default function AddLiquidityToPool({
   },
   history,
 }: RouteComponentProps<{ chain: string }>) {
-  const { account, chainId, library } = useActiveWeb3React("AL")
+  const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
 

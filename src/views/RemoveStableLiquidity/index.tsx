@@ -77,7 +77,7 @@ export default function RemoveStableLiquidity({
     params: { chain },
   },
 }: RouteComponentProps<{ chain: string }>) {
-  const { account, chainId, library } = useActiveWeb3React("RemoveStableLiquidity")
+  const { account, chainId, library } = useActiveWeb3React()
 
   const { t } = useTranslation()
   const gasPrice = useGasPrice(chainId)
