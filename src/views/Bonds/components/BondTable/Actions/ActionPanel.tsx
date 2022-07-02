@@ -228,7 +228,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
   const lpAddress = getAddress(chainId, bond.reserveAddress)
   const explorer = getNetworkExplorerLink(lpAddress, 'address')
 
-  const [sendGREQ, setSendGREQ] = useState(true)
   const now = Math.floor((new Date()).getTime() / 1000);
 
   const isApproved = useMemo(() => {
@@ -255,7 +254,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
               bondIds={[bond.bondId]}
               userDataReady={userDataReady}
               indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
-              sendGREQ={sendGREQ}
               reqPrice={price.reqPrice}
               chainId={chainId}
               account={account}
@@ -275,7 +273,6 @@ const ActionPanel: React.FunctionComponent<ActionPanelProps> = ({
                     thisBond={bond}
                     userDataReady={userDataReady}
                     indexes={bond?.userData?.notes.filter(y => y.matured <= now).map(x => x.noteIndex) ?? []}
-                    sendGREQ={sendGREQ}
                     reqPrice={price.reqPrice}
                     chainId={chainId}
                     account={account}

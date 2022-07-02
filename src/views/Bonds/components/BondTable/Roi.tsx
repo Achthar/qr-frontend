@@ -70,29 +70,10 @@ const Roi: React.FC<RoiProps> = ({
 
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
 
-  return originalValue !== 0 ? (
+  return (
+
     <Container>
-      {originalValue ? (
-        <RoiButton
-          isMobile={isMobile}
-          variant={hideButton ? 'text' : 'text-and-button'}
-          bondId={bondId}
-          lpSymbol={lpSymbol}
-          lpLabel={lpLabel}
-          reqtPrice={reqtPrice}
-          roi={originalValue}
-          displayRoi={value}
-          addLiquidityUrl={addLiquidityUrl}
-        />
-      ) : (
-        <RoiWrapper>
-          <Skeleton width={60} />
-        </RoiWrapper>
-      )}
-    </Container>
-  ) : (
-    <Container>
-      <RoiWrapper>{originalValue>0? `${originalValue}%` :'-'}</RoiWrapper>
+      <RoiWrapper>{originalValue > 0 ? `${originalValue}%` : '-'}</RoiWrapper>
     </Container>
   )
 }

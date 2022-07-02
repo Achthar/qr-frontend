@@ -176,7 +176,7 @@ export default function FullWeightedPositionCard({ weightedPair, ...props }: Wei
         weightedPair.getLiquidityValue(weightedPair.token1, totalPoolTokens, userPoolBalance, false),
       ]
       : [undefined, undefined]
-  console.log("WP CXD", token0Deposited, token1Deposited)
+
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
       <Flex justifyContent="space-between" role="button" onClick={() => setShowMore(!showMore)} p="16px">

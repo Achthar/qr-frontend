@@ -12,6 +12,15 @@ interface SerializedTokenList {
   [symbol: string]: SerializedToken
 }
 
+export const LINK = {
+  [ChainId.AVAX_TESTNET]: new Token(
+    ChainId.AVAX_TESTNET,
+    '0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846',
+    18,
+    'LINK',
+    'ChainLink Token'
+  )
+}
 
 export const WETH = {
   [ChainId.BSC_MAINNET]: new Token(
@@ -531,6 +540,11 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     address: { 43113: '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289' },
     decimals: 8,
     symbol: 'WBTC',
+  },
+  'link': {
+    address: { 43113: '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B' },
+    decimals: 18,
+    symbol: 'LINK'
   }
 }
 

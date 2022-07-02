@@ -35,8 +35,6 @@ export const fetchGovernanceData = createAsyncThunk(
 
     const redRequiemAddress = getRedRequiemAddress(chainId)
     const redRequiemStakingAddress = getRedRequiemStakingAddress(chainId)
-
-    console.log("RED REQ CALLS inp", account, redRequiemAddress, redRequiemStakingAddress)
     // calls for general bond data
     const calls = [
       // locked data user
@@ -65,12 +63,9 @@ export const fetchGovernanceData = createAsyncThunk(
       },
     ]
 
-    console.log("RED REQ CALLS", calls)
-
     const [locks, balance, allowance, staked] =
       await multicall(chainId, redRequiemAvax, calls)
 
-    console.log("Red req", locks)
 
     return {
       locks: Object.assign(

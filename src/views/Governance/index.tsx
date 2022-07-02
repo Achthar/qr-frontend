@@ -159,9 +159,7 @@ export default function Governance({
 
   const [parsedAmounts, parsedMultiplier] = useMemo(() => {
     const input = BigNumber.from(tryParseTokenAmount(inputValue, tokenA)?.raw.toString() ?? 0)
-    console.log("VOTE inpt", action, now, input, lock, selectedMaturity)
     const { voting, multiplier } = get_amount_and_multiplier(action, now, input, selectedMaturity, lock, locks)
-    console.log("VOTE output", voting?.toString(), multiplier?.toString())
     return [
       {
         [Field.CURRENCY_A]: tryParseTokenAmount(inputValue, tokenA),

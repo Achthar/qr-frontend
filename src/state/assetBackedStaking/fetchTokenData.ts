@@ -91,7 +91,6 @@ export const fetchTokenData = createAsyncThunk(
     const [INDEX, supply, balanceS, balanceG, supplyGREQ, supplyABREQ] =
       await multicall(chainId, abReqStaking, calls)
 
-    console.log("REQ", INDEX, supply, balanceG, supplyGREQ)
     return {
       INDEX: INDEX[0].toString(),
       totalSupplySReq: supply[0].toString(),

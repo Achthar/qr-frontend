@@ -202,10 +202,6 @@ function Farms({
     (farmsToDisplay: DeserializedFarm[]): FarmWithStakedValue[] => {
       let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
 
-        // if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
-        //   console.log("FARMLIQ D TT", farm.tokens)
-        //   return farm
-        // }
         const totalLiquidity = farm.quoteTokenPriceBusd === '0' ? farm.lpTotalInQuoteToken : new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
 
         const { reqtRewardsApr, lpRewardsApr } = isActive

@@ -111,9 +111,7 @@ export function calculatePoolPrice(trade?: Swap, poolDict?: PoolDictionary): Pri
   const pools = trade.route.swapData
   const path = trade.route.path
   let price = pools[0].poolPrice(poolDict)
-  console.log("PRICE1", path, pools)
   for (let i = 1; i < pools.length; i++) {
-    console.log("PRICE2", i)
     price = pools[i].poolPrice(poolDict)
   }
   return price

@@ -4,14 +4,15 @@ import { Button, Skeleton } from '@requiemswap/uikit'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
-import { fetchCallBondUserDataAsync } from 'state/bonds'
+import { useCallableBondFromBondId, useCallableBondUser } from 'state/bonds/hooks'
+import { fetchCallableBondUserDataAsync, fetchCallBondUserDataAsync } from 'state/bonds'
 import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { CallableNote, VanillaNote } from 'state/types'
+import useRedeemCallableNote from 'views/Bonds/hooks/callableBond/useRedeemBond'
 import { ActionTitles, ActionContent } from './styles'
 
 
@@ -60,9 +61,9 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const bond = useBondFromBondId(bondId)
+  const bond = useCallableBondFromBondId(bondId)
 
-  const { onRedeem } = useRedeemCallNote(chainId, account, note.noteIndex)
+  const { onRedeem } = useRedeemCallableNote(chainId, account, note.noteIndex)
 
 
   const dispatch = useAppDispatch()
@@ -70,7 +71,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
   const handleRedemption = async () => {
     try {
       await onRedeem()
-      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
+      dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: [bond] }))
     } catch (error) {
       console.log(error)
     }

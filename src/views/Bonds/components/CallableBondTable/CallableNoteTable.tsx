@@ -281,7 +281,6 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
 
 
   const cfg = useMemo(() => bondConfig(chainId), [chainId])
-  console.log("NOTE", note, closed, cfg)
 
   const config = useMemo(() => {
     try {

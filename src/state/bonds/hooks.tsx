@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { bondConfig } from 'config/constants/bonds'
-import { AmplifiedWeightedPair, Price, StablePool, TokenAmount, WeightedPool } from '@requiemswap/sdk'
+import { AmplifiedWeightedPair, Price, StablePool, TokenAmount, WeightedPool, ZERO } from '@requiemswap/sdk'
 import { pairValuation } from 'utils/pricers/weightedPairPricer'
 import { stablePoolValuation } from 'utils/pricers/stablePoolPricer'
 import { weightedPoolValuation } from 'utils/pricers/weightedPoolPricer'
@@ -260,7 +260,7 @@ export const useCallBondUser = (bondId) => {
 /**
  *  Returns bond user data for id
  */
- export const useCallableBondUser = (bondId) => {
+export const useCallableBondUser = (bondId) => {
   const bond = useCallableBondFromBondId(bondId)
   if (bond) {
     return {
@@ -321,13 +321,14 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
 
-        if (!pairsLoaded) {
+        if (!pairsLoaded || !pair) {
           // eslint-disable-next-line no-useless-return
           return;
         }
 
         link = `/${getChain(chainId)}/add/${pair.weight0}-${pair.token0.address}/${pair.weight1}-${pair.token1.address}`
         price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
+
       }
       // stable pool LP
       else if (bondType === BondAssetType.StableSwapLP) {
@@ -390,13 +391,14 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
 
-        if (!pairsLoaded) {
+        if (!pairsLoaded || !pair) {
           // eslint-disable-next-line no-useless-return
           return;
         }
 
         link = `/${getChain(chainId)}/add/${pair.weight0}-${pair.token0.address}/${pair.weight1}-${pair.token1.address}`
         price = pairValuation(pair, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, supply)
+
       }
       // stable pool LP
       else if (bondType === BondAssetType.StableSwapLP) {
@@ -460,7 +462,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
 
-        if (!pairsLoaded) {
+        if (!pairsLoaded || !pair) {
           // eslint-disable-next-line no-useless-return
           return;
         }

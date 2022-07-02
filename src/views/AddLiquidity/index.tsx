@@ -130,7 +130,6 @@ export default function AddLiquidity({
   } = useGetWeightedPairsState(chainId, account, tokens.token0 && tokens.token1 ? [tokens] : [], slowRefresh, fastRefresh)
 
 
-  // console.log("WPA", weightedPair?.liquidityToken, weightedPairState, "ERROR", error)
   // use balances from the balance state instead of manually loading them
   const {
     networkCcyBalance: networkCcyBalanceString,
@@ -299,6 +298,7 @@ export default function AddLiquidity({
           deadline?.toHexString() ?? '999999999999999'
         ]
         value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
+
       } else {
         estimate = pairManager.estimateGas.addLiquidity
         method = pairManager.addLiquidity
@@ -328,6 +328,7 @@ export default function AddLiquidity({
           (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
           weights[tokenBIsETH ? WeightedField.WEIGHT_B : WeightedField.WEIGHT_A], // weight Token A
           _fee, // _fee
+          amp ?? '10000', // amplification
           account
         ]
         value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())

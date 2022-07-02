@@ -89,7 +89,6 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
   const [open, setOpen] = useState(false)
   const chain = getChain(chainId)
 
-  console.log("NAV Open", open)
   return (
     <StyledNavContainer>
       <StyledNavItem onClick={handleClick}>

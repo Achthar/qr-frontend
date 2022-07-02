@@ -110,7 +110,6 @@ interface RedeemMultiProps {
   bondIds: number[]
   reqPrice: number
   thisBond: Bond
-  sendGREQ: boolean
   isMobile: boolean
   account: string
   chainId: number
@@ -121,7 +120,6 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   indexes,
   bondIds,
   thisBond,
-  sendGREQ,
   userDataReady,
   isMobile,
   reqPrice,

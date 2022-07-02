@@ -5,8 +5,8 @@ import { useLocation } from 'react-router-dom'
 import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useCallBondFromBondId, useBondUser, useCallBondUser, useCallableBondUser, useCallableBondFromBondId } from 'state/bonds/hooks'
-import { fetchCallableBondUserDataAsync, fetchCallBondUserDataAsync } from 'state/bonds'
+import { useCallableBondUser, useCallableBondFromBondId } from 'state/bonds/hooks'
+import { fetchCallableBondUserDataAsync } from 'state/bonds'
 import { CallableBondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { useERC20 } from 'hooks/useContract'
@@ -16,7 +16,7 @@ import { useAppDispatch } from 'state'
 import { getAddress } from 'utils/addressHelpers'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
 import useDepositBond from 'views/Bonds/hooks/callableBond/useDepositBond'
-import useApproveBond from '../../../hooks/callBond/useApproveBond'
+import useApproveBond from '../../../hooks/callableBond/useApproveBond'
 import { ActionTitles, ActionContent } from './styles'
 import CallBondingModal from '../CallableBondingModal'
 
@@ -133,7 +133,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
     try {
       setRequestedApproval(true)
       await onApprove()
-      dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: [bond] }))
+      dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: [bond] }))
 
       setRequestedApproval(false)
     } catch (e) {

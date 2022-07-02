@@ -17,7 +17,7 @@ const BondTabButtons: React.FC<BondTabButtonsProps> = ({ hasStakeInFinishedBonds
   } else {
     activeIndex = 1
   }
-  console.log("ISLIVE", isLive)
+
   return (
     <Wrapper>
       {/* <ButtonMenu activeIndex={activeIndex} scale="sm"> */}

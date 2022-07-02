@@ -12,12 +12,9 @@ import StablesRouter from 'config/abi/avax/StableSwap.json'
 import RedRequiem from 'config/abi/avax/BloodRedRequiem.json'
 import Aggregator from 'config/abi/avax/RequiemAggregator.json'
 import { Percent, Token, CurrencyAmount, Currency, NETWORK_CCY, STABLE_POOL_ADDRESS, StablePool, WeightedPool } from '@requiemswap/sdk'
-import { ROUTER_ADDRESS, AGGREGATOR_ADDRESS, REQUIEMQROUTER_ADDRESS, REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from '../config/constants'
+import { SWAP_ROUTER } from '../config/constants'
 import { BASE_EXPLORER_URLS, ChainId } from '../config'
 import { TokenAddressMap } from '../state/lists/hooks'
-import RequiemQPairManager from '../config/abi/avax/RequiemQPairManager.json'
-import RequiemQPairManagerOasis from '../config/abi/oasis/RequiemQPairManager.json'
-import RequiemQRouter from '../config/abi/avax/RequiemQRouter.json'
 import SwapRouter from '../config/abi/avax/SwapRouter.json'
 import WeightedPoolABI from '../config/abi/avax/WeightedPool.json'
 import { getRedRequiemAddress } from './addressHelpers'
@@ -104,8 +101,8 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
 
 // account is optional
 export function getRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = IRequiemRouter02AVAX
-  return getContract(ROUTER_ADDRESS[chainId], ABI, library, account)
+  const ABI = SwapRouter
+  return getContract(SWAP_ROUTER[chainId], ABI, library, account)
 }
 
 // account is optional
@@ -114,43 +111,28 @@ export function getPairManagerContract(chainId: number, library: Web3Provider, a
   return getContract(SWAP_ROUTER[chainId], ABI, library, account)
 }
 
-export function getQRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = RequiemQRouter
-  return getContract(REQUIEMQROUTER_ADDRESS[chainId], ABI, library, account)
-}
-
 export function getSwapRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = SwapRouter
   return getContract(SWAP_ROUTER[chainId], ABI, library, account)
 }
 
-
-export function getAggregatorContract(chainId: number, library: Web3Provider, account?: string): Contract {
-  const ABI = Aggregator
-  return getContract(AGGREGATOR_ADDRESS[chainId ?? 43113], ABI, library, account)
-}
-
 export function getStableRouterContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = StablesRouter
-  console.log("getStableRouterContract")
   return getContract(STABLE_POOL_ADDRESS[chainId], ABI, library, account)
 }
 
 export function getStableSwapContract(pool: StablePool, library: Web3Provider, account?: string): Contract {
   const ABI = StablesRouter
-  console.log("getStableSwapContract")
   return getContract(pool.address, ABI, library, account)
 }
 
 export function getWeightedPoolContract(pool: WeightedPool, library: Web3Provider, account?: string): Contract {
   const ABI = WeightedPoolABI
-  console.log("getWeightedPoolContract")
   return getContract(pool.address, ABI, library, account)
 }
 
 export function getRedRequiemContract(chainId: number, library: Web3Provider, account?: string): Contract {
   const ABI = RedRequiem
-  console.log("getRRContract")
   return getContract(getRedRequiemAddress(chainId), ABI, library, account)
 }
 

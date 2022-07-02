@@ -32,8 +32,7 @@ function StablePoolPriceBar({
         amnt?.raw ?? '0',
         amounts?.[index]?.raw ?? '1'))
   }, [amounts, formattedStablesAmounts])
-  console.log("STABLE!", formattedStablesAmounts, formattedStablesAmounts?.map(x => x?.toSignificant(18)),
-    amounts, amounts?.map(x => x?.toSignificant(18)), percentages?.map(x => x.toSignificant(5)))
+
   return (
     <AutoColumn gap="md">
       <AutoRow justify="space-around" gap="4px">

@@ -75,7 +75,6 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
     // return prettyVestingPeriod(chainId, currentBlock, Number(bond.userData.notes.matured));
     return prettifySeconds(maturity - now, "day");
   };
-  console.log("VESTING", currentBlock, vestingTime(), bond.userData.notes[noteIndex].matured)
 
   const vestingPeriod = () => {
     const vestingTerm = parseInt(bond.bondTerms.vesting);

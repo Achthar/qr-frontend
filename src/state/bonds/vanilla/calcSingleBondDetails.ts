@@ -76,7 +76,7 @@ export const calcSingleBondDetails = createAsyncThunk(
     ]
 
     const [reserves, supply, purchasedQuery] = await multicall(chainId, weightedPairABI, callsPair)
-    console.log("BOND reserves", reserves)
+
     // calculate price
     const price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
       deserializeToken(getNonQuoteToken(bond)),

@@ -216,7 +216,6 @@ export default function GovernanceAssetBackedRequiem({
 
   const { epoch, stakeData, generalDataLoaded, userData, userDataLoaded } = useAssetBackedStakingInfo(chainId, account)
 
-  console.log("staking", epoch, stakeData, userData)
   const parsedAmounts = useMemo(() => {
     if (isStake) {
       return {
@@ -226,7 +225,6 @@ export default function GovernanceAssetBackedRequiem({
     }
 
     const index = Number(formatSerializedBigNumber(stakeData.index, 18, 18))
-    console.log("staking calc", index, Number(inputValue) / index)
     if (action === Action.wrap) {
       return {
         // staked REQ
@@ -289,7 +287,6 @@ export default function GovernanceAssetBackedRequiem({
 
     // we have to differentiate between addLiquidity and createPair (which also does directly add liquidity)
     if (action === Action.stake) {
-      console.log("staking HERE")
       await onStake(parsedAmountA.toBigNumber().toHexString())
     } else if (action === Action.unstake) {
       await onUnstake(parsedAmountA.toBigNumber().toHexString())

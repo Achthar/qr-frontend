@@ -413,7 +413,7 @@ function Bonds({
         bondId: 1,
         lpLabel: 'string',
         reqtPrice: new BigNumber(reqPrice),
-        originalValue: 3
+        originalValue: (Math.round((1.0 / (1.0 - (reqPrice - bond.bondPrice) / reqPrice) - 1) * (31556926 / bond.vestingTerm) * 10000) / 100)
 
       },
       purchased: {

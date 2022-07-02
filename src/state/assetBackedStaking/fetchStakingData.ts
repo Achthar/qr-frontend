@@ -61,8 +61,6 @@ export const fetchStakingData = createAsyncThunk(
       },
     ]
 
-    console.log("RED REQ CALLS", calls)
-
     const [epoch, index, secondsToNextEpoch] =
       await multicall(chainId, abReqStaking, calls)
 

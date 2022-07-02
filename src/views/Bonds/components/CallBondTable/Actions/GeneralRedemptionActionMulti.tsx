@@ -60,7 +60,6 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
 
   const handleRedemption = async () => {
     try {
-      console.log("ERRORXD", finalNotes)
       await onRedeem()
     } catch (error) {
       console.log(error)

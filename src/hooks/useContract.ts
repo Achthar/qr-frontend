@@ -24,7 +24,7 @@ import {
 
 import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
-import { getBondingDepositoryAddress, getCallBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
+import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
 import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
@@ -225,7 +225,7 @@ export function useCallBondContract(chainId: number, withSignerIfPossible?: bool
 }
 
 export function useCallableBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(CALLABLE_BOND_DEPO_AVAX), withSignerIfPossible)
+  return useContract(chainId ? getCallableBondingDepositoryAddress(chainId) : undefined, new Interface(CALLABLE_BOND_DEPO_AVAX), withSignerIfPossible)
 }
 
 export const useRequiemChef = (chainId, library) => {

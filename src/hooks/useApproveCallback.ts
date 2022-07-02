@@ -4,7 +4,7 @@ import { TokenAmount, CurrencyAmount, NETWORK_CCY, Swap, Token, ZERO } from '@re
 import { useCallback, useEffect, useMemo } from 'react'
 import { BigNumber, ethers } from 'ethers'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { ROUTER_ADDRESS, REQUIEMQROUTER_ADDRESS, SWAPROUTER_ADDRESS, SWAP_ROUTER } from '../config/constants'
+import { SWAP_ROUTER } from '../config/constants'
 import useTokenAllowance, { useTokenAllowances } from './useTokenAllowance'
 import { Field } from '../state/swapV3/actions'
 import ERC20_ABI from '../config/abi/erc20.json'

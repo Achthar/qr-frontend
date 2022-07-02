@@ -79,5 +79,9 @@ export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: Clo
 
 export const getConfigForVanillaNote = (chainId: number, note: VanillaNote | CallableNote | CallNote, bonds: { [bid: number]: ClosedVanillaBond }, bondCfgs: BondConfig[]) => {
     if (Object.values(bonds).length === 0 || !note) return null
-    return bondCfgs.find(cfg => ethers.utils.getAddress(cfg.reserveAddress[chainId]) === ethers.utils.getAddress(bonds[note.marketId]?.market?.asset))
+    try {
+        return bondCfgs.find(cfg => ethers.utils.getAddress(cfg.reserveAddress[chainId]) === ethers.utils.getAddress(bonds[note.marketId]?.market?.asset))
+    } catch {
+        return null
+    }
 }

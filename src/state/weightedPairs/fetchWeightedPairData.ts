@@ -283,9 +283,7 @@ export const fetchWeightedPairUserData = createAsyncThunk(
 export const refreshWeightedPairReserves = createAsyncThunk(
   "weightedPairs/refreshWeightedPairReserves",
   async ({ chainId, pairMetaData: pairData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: SerializedWeightedPair[] }> => {
-    console.log("WPRS: INPUT DATA", pairData)
     const dataPoints = Object.keys(pairData).map(key => pairData[key].length)
-    console.log("WPRS: DP", dataPoints)
     // // cals for existing pool addresses
     let pairAddresses = []
     let tokenAAddresses = []
@@ -303,7 +301,6 @@ export const refreshWeightedPairReserves = createAsyncThunk(
 
     const rawData = await multicall(chainId, weightedPairABI, calls)
 
-    console.log("WPRS: RAWMETA DATA", rawData, Object.keys(pairData).map((k, i) => { return indexAt(dataPoints, i) }))
     return Object.assign(
       {}, ...Object.keys(pairData).map(
         (key, index) => {

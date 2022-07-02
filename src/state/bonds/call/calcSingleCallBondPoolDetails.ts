@@ -47,14 +47,10 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
       },
     ]
 
-    console.log("CALL BOND", calls)
-
     const [market, debtRatio, terms, bondPrice] =
       await multicall(chainId, bondReserveAVAX, calls)
 
     const [reserves, supply] = [['0', '0'], '0']
-
-    console.log("CALL BOND RES", market)
 
     // calculate price
     const price = '0'

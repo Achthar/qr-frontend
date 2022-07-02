@@ -26,7 +26,6 @@ export const stablePoolSlice = createSlice({
   }, // TODO: make that more flexible
   reducers: {       // 0) chainmId change - new init
     // resetWeightedPairChainId: (state, action) => {
-    //   console.log("WP SC", state, initialState(action.payload.newChainId), action.payload.newChainId)
     //   state = initialState(action.payload.newChainId);
     // }
   }

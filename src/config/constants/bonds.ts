@@ -8,7 +8,7 @@ export const bondConfig = (chainId: number): BondConfig[] => {
   const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
   return [
     {
-      name: "50/50 wAVAX-USDC",
+      name: "50/50 wAVAX-USDC Deprecated",
       displayName: "50% AREQ - 50% USDC",
       bondToken: "DAI abREQ LP",
       payoutToken: "abREQ",
@@ -17,6 +17,25 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       reserveAddress: {
         43114: "0x344aF4Fd88199F5167332ffe2438ABeC13d6061B",
         43113: "0x344aF4Fd88199F5167332ffe2438ABeC13d6061B"
+      },
+      tokens: [serializedTokens.wavax, serializedTokens.usdc],
+      quoteTokenIndex: 1,
+      lpProperties: {
+        weightToken: 50,
+        weightQuoteToken: 50,
+        fee: 10
+      }
+    },
+    {
+      name: "50/50 wAVAX-USDC",
+      displayName: "50% AREQ - 50% USDC",
+      bondToken: "DAI abREQ LP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.PairLP,
+      displayUnits: '4',
+      reserveAddress: {
+        43114: "0xa89488b2Edb65e6F5600a57774371F5D4e6eD1eD",
+        43113: "0xa89488b2Edb65e6F5600a57774371F5D4e6eD1eD"
       },
       tokens: [serializedTokens.wavax, serializedTokens.usdc],
       quoteTokenIndex: 1,
@@ -46,7 +65,7 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       }
     },
     {
-      name: "ABREQ/DAI LP",
+      name: "ABREQ/DAI LP Deprecated",
       displayName: "60-ABREQ/40-DAI LP",
       bondToken: "RLP",
       payoutToken: "abREQ",
@@ -57,6 +76,25 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       reserveAddress: {
         43114: "0x51991dfd191D15d7055c45f4DB849Fea0e8004CD",
         43113: "0x51991dfd191D15d7055c45f4DB849Fea0e8004CD"
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
+        fee: 25
+      }
+    },
+    {
+      name: "ABREQ/DAI LP",
+      displayName: "60-ABREQ/40-DAI LP",
+      bondToken: "RLP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.PairLP,
+      displayUnits: '4',
+      tokens: [serializedTokens.dai, serializedTokens.abreq],
+      quoteTokenIndex: 0,
+      reserveAddress: {
+        43114: "0x273C1825E3aEf331F2C490d5B70103Ec2A2e9283",
+        43113: "0x273C1825E3aEf331F2C490d5B70103Ec2A2e9283"
       },
       lpProperties: {
         weightToken: 80,

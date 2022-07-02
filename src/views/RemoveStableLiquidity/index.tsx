@@ -213,8 +213,6 @@ export default function RemoveStableLiquidity({
     stablePool?.address,
   )
 
-  console.log("STABLELP", parsedAmounts[StablesField.LIQUIDITY])
-
   const symbolText = useMemo(() => parsedOutputTokenAmounts && parsedOutputTokenAmounts?.map(x => x.token.symbol).join('-'), [parsedOutputTokenAmounts])
   const summaryText = useMemo(() => parsedOutputTokenAmounts?.length > 0 ? `Remove [${parsedOutputTokenAmounts?.map(x => x.toSignificant(8)).join(',')}] ${symbolText} for ${parsedAmounts[StablesField.LIQUIDITY]?.toSignificant(6)} LP Tokens` : '',
     [parsedOutputTokenAmounts, symbolText, parsedAmounts]
