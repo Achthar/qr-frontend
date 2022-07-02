@@ -3,7 +3,7 @@ import { redeemCallNote, redeemCallPositions } from 'utils/calls'
 import { useCallBondContract } from 'hooks/useContract'
 import { BondConfig } from 'config/constants/types'
 
-const useRedeemCallNote = (chainId: number, account: string, noteIndex:number) => {
+const useRedeemCallNote = (chainId: number, account: string, noteIndex: number) => {
   const bondContract = useCallBondContract(chainId)
 
   const handleRedeem = useCallback(async () => {

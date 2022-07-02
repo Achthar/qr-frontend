@@ -4,15 +4,13 @@ import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Headi
 import { useLocation } from 'react-router-dom'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-
 import { useTranslation } from 'contexts/Localization'
-
 import { ethers } from 'ethers'
 import useRedeemCallableNote from 'views/Bonds/hooks/callableBond/useRedeemBond'
 import { CallableNote, CallNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
+
 
 const IconButtonWrapper = styled.div`
   display: flex;

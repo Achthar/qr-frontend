@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import { ethers } from 'ethers'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallBond, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
@@ -202,10 +203,10 @@ export const CallNoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataRe
 
 const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
     const chainId = bond?.tokens[0]?.chainId
-    const now = Math.round((new Date()).getTime() / 1000);
+    const now = Math.floor(Date.now() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)
-        return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
+        return (maturity >= now) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
     const oracleState = useOracleState(chainId)
@@ -218,9 +219,11 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
     const [moneynessPerc, optPayout] = useMemo(() => {
         const { moneyness, pay } = calculateUserPay(note, bond, oracleData?.value)
-        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(moneyness > 0 ? bond?.bondTerms?.payoffPercentage : '0', isMobile ? 3 : 5, 18)]
+        const payoff = moneyness > 0 ? Number(ethers.utils.formatEther(bond?.bondTerms?.payoffPercentage)) * Number(payout) : 0
+        const factor = isMobile ? 1000 : 100
+        return [Math.round(moneyness * 10000) / 100, String(Math.round(payoff * factor) / factor)]
 
-    }, [note, bond, oracleData, isMobile])
+    }, [note, bond, oracleData, isMobile, payout])
 
     if (isMobile) {
         return (

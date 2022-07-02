@@ -22,12 +22,6 @@ export const useWeightedPoolReferenceChain = () => {
   return useSelector((state: State) => state.weightedPools.referenceChain)
 }
 
-export const useBondFromBondId = (bondId): Bond => {
-
-  const bond = useSelector((state: State) => state.bonds.bondData[bondId])
-  return bond
-}
-
 export const useWeightedPoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.weightedPools)
   const pools = poolState.poolData[chainId].pools

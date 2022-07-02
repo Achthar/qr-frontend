@@ -56,10 +56,7 @@ const GeneralRedemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-
-
   const { onRedeem } = useRedeemCallNote(chainId, account, note.noteIndex)
-
 
   const handleRedemption = async () => {
     try {

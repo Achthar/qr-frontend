@@ -4,7 +4,7 @@ import { Button, Skeleton } from '@requiemswap/uikit'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
+import { useBondFromBondId, useBondUser, useCallBondFromBondId } from 'state/bonds/hooks'
 import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
@@ -58,7 +58,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const bond = useBondFromBondId(bondId)
+  const bond = useCallBondFromBondId(bondId)
 
   const { onRedeem } = useRedeemCallNote(chainId, account, note.noteIndex)
 

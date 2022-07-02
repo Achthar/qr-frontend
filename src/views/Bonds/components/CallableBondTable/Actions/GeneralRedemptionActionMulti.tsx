@@ -1,15 +1,14 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
-
+import { useAppDispatch } from 'state'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Balance from 'components/Balance'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-
-
 import useRedeemCallableNote, { useRedeemCallableNotes } from 'views/Bonds/hooks/callableBond/useRedeemBond'
 import { CallableNote } from 'state/types'
 import { ActionContent } from './styles'
+
 
 const IconButtonWrapper = styled.div`
   display: flex;
@@ -55,7 +54,6 @@ const GeneralRedemptionMulti: React.FunctionComponent<StackedActionProps> = ({
   const finalNotes = notes.filter(no => no.matured <= now).map(x => x.noteIndex)
 
   const { onRedeem } = useRedeemCallableNotes(chainId, account, finalNotes)
-
 
   const handleRedemption = async () => {
     try {

@@ -400,7 +400,7 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
       closedCallableTerms: _closedCallableTerms,
       closedCallableMarkets: _closedCallableMarkets,
     } = await fetchUserClosedMarkets(chainId, bIds, bIdsC, bIdsCallable)
-    
+
     return {
       vanillaMarkets: Object.assign({}, ..._closedVanillaMarkets.map((_, index) => {
         return {
@@ -645,9 +645,15 @@ export const bondsSlice = createSlice({
       })
       // get Closed Markets
       .addCase(fetchClosedBondsUserAsync.fulfilled, (state, action) => {
-        state.vanillaBondsClosed = action.payload.vanillaMarkets
-        state.callBondsClosed = action.payload.callMarkets
-        state.callableBondsClosed = action.payload.callableMarkets
+        if (action.meta.arg.bIds.length > 0) {
+          state.vanillaBondsClosed = action.payload.vanillaMarkets
+        }
+        if (action.meta.arg.bIdsC.length > 0) {
+          state.callBondsClosed = action.payload.callMarkets
+        }
+        if (action.meta.arg.bIdsCallable.length > 0) {
+          state.callableBondsClosed = action.payload.callableMarkets
+        }
         state.closedMarketsLoaded = true
       })
       .addCase(fetchClosedBondsUserAsync.pending, state => {

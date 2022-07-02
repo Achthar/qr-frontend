@@ -781,6 +781,7 @@ export interface Proposal {
   id: string
   snapshot: string
   space: Space
+  votes: number
   start: number
   state: ProposalState
   title: string
@@ -797,9 +798,7 @@ export interface Vote {
   choice: number
   metadata?: {
     votingPower: string
-    verificationHash: string
   }
-  _inValid?: boolean
 }
 
 export enum VotingStateLoadingStatus {

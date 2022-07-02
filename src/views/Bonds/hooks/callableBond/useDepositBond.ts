@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import {  startCallBonding } from 'utils/calls'
+import {  startCallableBonding } from 'utils/calls'
 import { getContractForCallableBondDepo } from 'utils/contractHelpers'
 import { BondConfig } from 'config/constants/types'
 
@@ -8,7 +8,7 @@ const useDepositBond = (chainId: number, account: string, library: any, bond: Bo
 
   const handleBonding = useCallback(
     async (amount: string, maxPrice: string) => {
-      const txHash = await startCallBonding(chainId, account, bondDepositoryContract, bond.bondId, amount, maxPrice)
+      const txHash = await startCallableBonding(chainId, account, bondDepositoryContract, bond.bondId, amount, maxPrice)
       console.info(txHash)
     },
     [bondDepositoryContract, bond.bondId, account, chainId],
