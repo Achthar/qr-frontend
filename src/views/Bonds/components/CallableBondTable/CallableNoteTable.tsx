@@ -3,12 +3,12 @@ import styled, { css, keyframes } from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallableNote, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
+import { timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { bondConfig } from 'config/constants/bonds'
-import { calculateUserPay, calculateUserPayClosed, getConfigForVanillaNote } from 'utils/bondUtils'
+import { calculateUserPayCallableClosed, getConfigForVanillaNote } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { useClosedCallableMarkets, useGetOracleData } from 'state/bonds/hooks'
@@ -297,7 +297,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
   const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
 
   const [moneynessPerc, optPayout] = useMemo(() => {
-    const { moneyness, pay } = calculateUserPayClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
+    const { moneyness, pay } = calculateUserPayCallableClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
     return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(pay.toString(), isMobile ? 3 : 5, 18)]
 
   }, [note, closed, oracleData, isMobile])

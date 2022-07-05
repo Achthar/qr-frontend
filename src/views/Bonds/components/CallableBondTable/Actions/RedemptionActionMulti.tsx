@@ -150,7 +150,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
     let returnVal = ethers.BigNumber.from(0)
     let inpUSD = ethers.BigNumber.from(0)
     const formattedInput = new BigNumber(val).multipliedBy(new BigNumber('10').pow(18)).toString()
-    if (!thisBond?.userData) return [Number(ethers.utils.formatEther(returnVal)), Number(ethers.utils.formatEther(inpUSD))]
+    if (!thisBond?.userData || !val) return [Number(ethers.utils.formatEther(returnVal)), Number(ethers.utils.formatEther(inpUSD))]
     try {
       returnVal = priceBonding(
         ethers.BigNumber.from(val === '' ? 0 : formattedInput),

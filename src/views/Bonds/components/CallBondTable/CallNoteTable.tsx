@@ -3,12 +3,12 @@ import styled, { css, keyframes } from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
+import { timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { bondConfig } from 'config/constants/bonds'
-import { calculateUserPay, calculateUserPayClosed, getConfigForVanillaNote } from 'utils/bondUtils'
+import { calculateUserPayCallClosed, getConfigForVanillaNote } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { useClosedCallMarkets, useGetOracleData } from 'state/bonds/hooks'
@@ -30,19 +30,19 @@ import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
  */
 
 interface CallNoteProps {
-    isMobile: boolean
-    userDataReady: boolean
-    note: CallNote
-    reqPrice: number
-    isFirst: boolean
-    isLast: boolean
+  isMobile: boolean
+  userDataReady: boolean
+  note: CallNote
+  reqPrice: number
+  isFirst: boolean
+  isLast: boolean
 }
 
 interface CallNoteHeaderProps {
-    userDataReady: boolean
-    isMobile: boolean
-    notes: CallNote[]
-    reqPrice: number
+  userDataReady: boolean
+  isMobile: boolean
+  notes: CallNote[]
+  reqPrice: number
 }
 
 
@@ -175,11 +175,11 @@ const GeneralNoteContainer = styled.div<{ isMobile: boolean, expanded: boolean }
   margin-top:5px;
   position:relative;
   animation: ${({ expanded }) =>
-        expanded
-            ? css`
+    expanded
+      ? css`
           ${expandAnimation} 300ms linear forwards
         `
-            : css`
+      : css`
           ${collapseAnimation} 300ms linear forwards
         `};
   width:100%;
@@ -198,67 +198,67 @@ const GeneralNoteContainer = styled.div<{ isMobile: boolean, expanded: boolean }
   }` }
 `
 
-    
+
 const StyledLogo = styled(Logo) <{ size: string }>`
-width: ${ ({ size }) => size };
-height: ${ ({ size }) => size };
+width: ${({ size }) => size};
+height: ${({ size }) => size};
 `
 
 
 export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
 
 
-    const [totalPayout, avgVesting] = useMemo(() => {
-        const now = Math.round((new Date()).getTime() / 1000);
-        const payouts = notes.map((note) => Number(formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18)))
-        const vestingTimes = notes.map(note => Number(note.matured) - now)
-        let sumPa = 0
-        let sumMulti = 0
-        for (let i = 0; i < notes.length; i++) {
-            const payout = payouts[i]
-            sumPa += payout
-            sumMulti += payout * vestingTimes[i]
+  const [totalPayout, avgVesting] = useMemo(() => {
+    const now = Math.round((new Date()).getTime() / 1000);
+    const payouts = notes.map((note) => Number(formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18)))
+    const vestingTimes = notes.map(note => Number(note.matured) - now)
+    let sumPa = 0
+    let sumMulti = 0
+    for (let i = 0; i < notes.length; i++) {
+      const payout = payouts[i]
+      sumPa += payout
+      sumMulti += payout * vestingTimes[i]
 
-        }
-        return [sumPa, sumMulti / sumPa]
-
-    }, [notes, isMobile])
-
-
-    if (isMobile) {
-        return (
-            <HeaderContainer>
-                <ContentRow>
-                    <DescriptionCol>
-                        <Text>Total Payout</Text>
-                        <Text>{(totalPayout * reqPrice).toLocaleString()}$</Text>
-                    </DescriptionCol>
-                    <DescriptionCol>
-                        <Text>Average Maturity</Text>
-                        <Text>{prettifySeconds(avgVesting, 'day')}</Text>
-                    </DescriptionCol>
-                </ContentRow>
-            </HeaderContainer>
-        )
     }
+    return [sumPa, sumMulti / sumPa]
+
+  }, [notes, isMobile])
 
 
+  if (isMobile) {
     return (
-        <HeaderContainer>
-            <DescriptionColHeader>
-                <Text>Total Payout</Text>
-                <Text>Average Maturity</Text>
-
-            </DescriptionColHeader>
-            <DescriptionCol>
-                <Text>{totalPayout.toLocaleString()} ABREQ / {(Math.round(totalPayout * reqPrice * 100) / 100).toLocaleString()}$</Text>
-                <Text>{prettifySeconds(avgVesting, 'd')}</Text>
-            </DescriptionCol>
-            <DescriptionCol>
-                <GeneralRedemptionMulti notes={notes} userDataReady />
-            </DescriptionCol>
-        </HeaderContainer>
+      <HeaderContainer>
+        <ContentRow>
+          <DescriptionCol>
+            <Text>Total Payout</Text>
+            <Text>{(totalPayout * reqPrice).toLocaleString()}$</Text>
+          </DescriptionCol>
+          <DescriptionCol>
+            <Text>Average Maturity</Text>
+            <Text>{prettifySeconds(avgVesting, 'day')}</Text>
+          </DescriptionCol>
+        </ContentRow>
+      </HeaderContainer>
     )
+  }
+
+
+  return (
+    <HeaderContainer>
+      <DescriptionColHeader>
+        <Text>Total Payout</Text>
+        <Text>Average Maturity</Text>
+
+      </DescriptionColHeader>
+      <DescriptionCol>
+        <Text>{totalPayout.toLocaleString()} ABREQ / {(Math.round(totalPayout * reqPrice * 100) / 100).toLocaleString()}$</Text>
+        <Text>{prettifySeconds(avgVesting, 'd')}</Text>
+      </DescriptionCol>
+      <DescriptionCol>
+        <GeneralRedemptionMulti notes={notes} userDataReady />
+      </DescriptionCol>
+    </HeaderContainer>
+  )
 
 }
 
@@ -266,131 +266,131 @@ export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobi
 
 
 const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
-    const { chainId } = useNetworkState()
-    const closed = useClosedCallMarkets()
+  const { chainId } = useNetworkState()
+  const closed = useClosedCallMarkets()
 
-    const now = Math.round((new Date()).getTime() / 1000);
-    const vestingTime = () => {
-        const maturity = Number(note.matured)
-        return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
-    };
+  const now = Math.round((new Date()).getTime() / 1000);
+  const vestingTime = () => {
+    const maturity = Number(note.matured)
+    return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
+  };
 
-    const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
-    const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
-    const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
-
-
-    const cfg = useMemo(() => bondConfig(chainId), [chainId])
-    const config = getConfigForVanillaNote(chainId, note, closed, cfg)
+  const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
+  const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
+  const expiry = useMemo(() => { return timeConverterNoYear(Number(note.matured)) }, [note.matured])
 
 
-    const oracleState = useOracleState(chainId)
-
-    const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
-
-    const [moneynessPerc, optPayout] = useMemo(() => {
-        const { moneyness, pay } = calculateUserPayClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
-        return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(moneyness > 0 ? closed[note?.marketId]?.terms.payoffPercentage : '0', isMobile ? 3 : 5, 18)]
-
-    }, [note, closed, oracleData, isMobile])
-
-    if (isMobile) {
-        return (
-            <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
-                <ContentRow>
-                    <DescriptionCol>
-                        <Text>Payout:</Text>
-                        <Text>End: </Text>
-                    </DescriptionCol>
-                    <DescriptionCol>
-                        <Text>{payout}</Text>
-                        <Text>{vestingTime()}</Text>
-                    </DescriptionCol>
-                </ContentRow>
-                <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
-            </Container>
-        )
-    }
+  const cfg = useMemo(() => bondConfig(chainId), [chainId])
+  const config = getConfigForVanillaNote(chainId, note, closed, cfg)
 
 
+  const oracleState = useOracleState(chainId)
+
+  const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
+
+  const [moneynessPerc, optPayout] = useMemo(() => {
+    const { moneyness, pay } = calculateUserPayCallClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
+    return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(moneyness > 0 ? closed[note?.marketId]?.terms.payoffPercentage : '0', isMobile ? 3 : 5, 18)]
+
+  }, [note, closed, oracleData, isMobile])
+
+  if (isMobile) {
     return (
-        <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
-            <Flex flexDirection='column' width='35%' justifyContent='center'>
-                {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
-                <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
-                {/* <Flex flexDirection="column" mr='3px' ml='3px'> */}
-                <Text marginLeft='1px' bold fontSize='12px' textAlign='center'>{`${ oracleData?.token } -Linked`}</Text>
-                <Flex flexDirection="row" alignSelf='center'>
-                    <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${ oracleData?.token ?? 'token' } logo`} />
-                    <Text marginLeft='1px' bold fontSize='10px'>{`${ oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString() } `}</Text>
-                </Flex>
-                {/* </Flex> */}
-            </Flex>
-            <ContentRow>
-                <DescriptionCol>
-                    <Text>Created:</Text>
-                    <Text>Expiry:</Text>
-                    <Text>Claimable in:</Text>
-                </DescriptionCol>
-                <DescriptionCol>
-                    <Text>{created}</Text>
-                    <Text>{expiry}</Text>
-                    <Text>{vestingTime()}</Text>
-                </DescriptionCol>
-            </ContentRow>
-            <ContentRow>
-                <DescriptionCol>
-                    <Text>Moneyness:</Text>
-                    <Text>Option Payout:</Text>
-                    <Text>Notional Payout:</Text>
-
-                </DescriptionCol>
-                <DescriptionCol>
-                    <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
-                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
-                    <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
-                </DescriptionCol>
-            </ContentRow>
-            <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
-        </Container>
+      <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
+        <ContentRow>
+          <DescriptionCol>
+            <Text>Payout:</Text>
+            <Text>End: </Text>
+          </DescriptionCol>
+          <DescriptionCol>
+            <Text>{payout}</Text>
+            <Text>{vestingTime()}</Text>
+          </DescriptionCol>
+        </ContentRow>
+        <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+      </Container>
     )
+  }
+
+
+  return (
+    <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
+      <Flex flexDirection='column' width='35%' justifyContent='center'>
+        {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
+        <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
+        {/* <Flex flexDirection="column" mr='3px' ml='3px'> */}
+        <Text marginLeft='1px' bold fontSize='12px' textAlign='center'>{`${oracleData?.token} -Linked`}</Text>
+        <Flex flexDirection="row" alignSelf='center'>
+          <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
+          <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()} `}</Text>
+        </Flex>
+        {/* </Flex> */}
+      </Flex>
+      <ContentRow>
+        <DescriptionCol>
+          <Text>Created:</Text>
+          <Text>Expiry:</Text>
+          <Text>Claimable in:</Text>
+        </DescriptionCol>
+        <DescriptionCol>
+          <Text>{created}</Text>
+          <Text>{expiry}</Text>
+          <Text>{vestingTime()}</Text>
+        </DescriptionCol>
+      </ContentRow>
+      <ContentRow>
+        <DescriptionCol>
+          <Text>Moneyness:</Text>
+          <Text>Option Payout:</Text>
+          <Text>Notional Payout:</Text>
+
+        </DescriptionCol>
+        <DescriptionCol>
+          <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
+          <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
+          <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
+        </DescriptionCol>
+      </ContentRow>
+      <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />
+    </Container>
+  )
 
 }
 
 
 
 function compareMaturities(a: CallNote, b: CallNote) {
-    if (a.matured < b.matured) {
-        return -1;
-    }
-    if (a.matured > b.matured) {
-        return 1;
-    }
-    return 0;
+  if (a.matured < b.matured) {
+    return -1;
+  }
+  if (a.matured > b.matured) {
+    return 1;
+  }
+  return 0;
 }
 
 export const CallNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
-    notes, reqPrice, userDataReady, expanded
+  notes, reqPrice, userDataReady, expanded
 }) => {
 
-    const { isMobile } = useMatchBreakpoints()
-    let orderedNotes = useMemo(() => notes.slice(), [notes])
-    orderedNotes = useMemo(() => { return orderedNotes.sort((a, b) => a.matured - b.matured) }, [orderedNotes])
-    return (
-        <GeneralNoteContainer isMobile={isMobile} expanded={expanded}>
-            {notes.length > 0 && (
-                <CallNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
-            )}
-            {orderedNotes.map((
-                note, index) => {
-                const isLast = index === notes.length - 1
-                return (
-                    <CallNoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
-                )
-            }
-            )}
+  const { isMobile } = useMatchBreakpoints()
+  let orderedNotes = useMemo(() => notes.slice(), [notes])
+  orderedNotes = useMemo(() => { return orderedNotes.sort((a, b) => a.matured - b.matured) }, [orderedNotes])
+  return (
+    <GeneralNoteContainer isMobile={isMobile} expanded={expanded}>
+      {notes.length > 0 && (
+        <CallNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
+      )}
+      {orderedNotes.map((
+        note, index) => {
+        const isLast = index === notes.length - 1
+        return (
+          <CallNoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
+        )
+      }
+      )}
 
-        </GeneralNoteContainer>
-    )
+    </GeneralNoteContainer>
+  )
 }
 

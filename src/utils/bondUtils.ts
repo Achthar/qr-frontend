@@ -76,6 +76,31 @@ export const calculateUserPayClosed = (note: CallNote | CallableNote, terms: Clo
     return { moneyness, pay: (payoff.gt(strike) ? perc : payoff).mul(note.payout).div(ONE18) };
 }
 
+export const calculateUserPayCallClosed = (note: CallNote, terms: ClosedCallTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+    if (!terms || !note) return { moneyness: 0, pay: ZERO }
+
+    const strike = ethers.BigNumber.from(terms.thresholdPercentage)
+    const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
+    const moneyness = Number(ethers.utils.formatEther(payoff))
+    if (payoff.lte(0) || !terms.payoffPercentage) return { moneyness, pay: ZERO }
+
+    const perc = ethers.BigNumber.from(terms.payoffPercentage)
+    return { moneyness, pay: payoff.gt(strike) ? perc.mul(note.payout).div(ONE18) : ZERO };
+}
+
+export const calculateUserPayCallableClosed = (note: CallableNote, terms: ClosedCallableTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+    if (!terms || !note) return { moneyness: 0, pay: ZERO }
+
+    const strike = ethers.BigNumber.from(terms.thresholdPercentage)
+    const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
+    const moneyness = Number(ethers.utils.formatEther(payoff))
+    if (payoff.lte(0) || !terms.maxPayoffPercentage) return { moneyness, pay: ZERO }
+
+    const perc = ethers.BigNumber.from(terms.maxPayoffPercentage)
+    return { moneyness, pay: (payoff.gte(perc) ? perc : payoff).mul(note.payout).div(ONE18) };
+}
+
+
 
 export const getConfigForVanillaNote = (chainId: number, note: VanillaNote | CallableNote | CallNote, bonds: { [bid: number]: ClosedVanillaBond }, bondCfgs: BondConfig[]) => {
     if (Object.values(bonds).length === 0 || !note) return null
