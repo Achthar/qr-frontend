@@ -37,8 +37,8 @@ export const ExternalLinks = {
   discord: 'https://discord.gg/HuekxzYj3p',
   medium: 'https://medium.com/@requiem-finance',
   telegram: 'https://t.me/+Lbc1zHODTQw3YWM6',
-  buyShareHref:
-    'https://requiem.finance/avax-test/exchange',
+  buyShareHref: 'https://requiem.finance/avax-test/exchange',
+  governance: 'https://governance.requiem.finance'
 };
 
 interface LogoProps {
@@ -121,10 +121,20 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
           Bonds
         </StyledNavLink>
       </StyledNavItem>
-      <StyledNavItemDynamic open={open}>
-        {/* <StyledNavLink to={`/${chain}/governance`}> */}
+      <StyledNavItem onClick={handleClick}>
+        <StyledLinkHref
+          href={ExternalLinks.governance}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src={iconGovernment} alt='' />
+          Governance
+          <i className="fas fa-external-link" />
+        </StyledLinkHref>
+      </StyledNavItem>
 
-        <StyledNavText onClick={() => { setOpen(!open) }}>
+      {/* <StyledNavItemDynamic open={open}> */}
+      {/* <StyledNavText onClick={() => { setOpen(!open) }}>
           <div onClick={() => { setOpen(!open) }} role="button" onKeyPress={() => { return null }}
             tabIndex={0}>
             <ImageGov src={iconGovernment} alt='' open={open} />
@@ -138,10 +148,8 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
           <StyledNavLink to={`/${chain}/governance-ab`}>
             Asset-Backed Requiem
           </StyledNavLink>
-        </Collapsible>
-        {/* </StyledNavLink> */}
-      </StyledNavItemDynamic>
-
+        </Collapsible> */}
+      {/* </StyledNavItemDynamic> */}
       <StyledNavItem onClick={handleClick}>
         <StyledLinkHref
           href={ExternalLinks.documentations}
