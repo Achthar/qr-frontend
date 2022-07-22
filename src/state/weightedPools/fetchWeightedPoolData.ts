@@ -50,22 +50,28 @@ export const fetchWeightedPoolData = createAsyncThunk(
         name: 'getTokenWeights',
         params: []
       },
-    ]
-
-    const [multipliers, swapStorage, tokenBalances, tokenWeights] =
-      await multicall(chainId, chainId === 43113 ? weightedPoolAVAX : weightedPoolROSE, calls)
-
-
-    // calls from pair used for pricing
-    const callsLp = [
-      // total supply of LP token
       {
-        address: swapStorage.lpAddress ?? pool.lpAddress,
+        address: getAddress(pool.lpAddress),
         name: 'totalSupply',
       },
     ]
 
-    const [supply] = await multicall(chainId, erc20, callsLp)
+    const [multipliers, swapStorage, tokenBalances, tokenWeights, supply] =
+      await multicall(chainId, chainId === 43113 ? [...weightedPoolAVAX, ...erc20] : [...weightedPoolROSE, ...erc20], calls)
+
+
+    let supplyValidated;
+    const match = getAddress(swapStorage.lpToken) === getAddress(pool.lpAddress)
+    if (!match) {
+      [supplyValidated] = await multicall(chainId, erc20, [
+        // total supply of LP token
+        {
+          address: swapStorage.lpAddress,
+          name: 'totalSupply',
+        },
+      ])
+    }
+
 
     return {
       ...pool,
@@ -84,7 +90,7 @@ export const fetchWeightedPoolData = createAsyncThunk(
         adminFee: swapStorage.adminFee.toString(),
 
       },
-      lpTotalSupply: supply[0].toString(),
+      lpTotalSupply: match ? supply[0].toString() : supplyValidated[0].toString(),
     }
   }
 );

@@ -60,22 +60,30 @@ export const fetchStablePoolData = createAsyncThunk(
         name: 'getA',
         params: []
       },
-    ]
-
-    const [multipliers, swapStorage, tokenBalances, A] =
-      await multicall(chainId, stableSwapAVAX, calls)
-
-
-    // calls from pair used for pricing
-    const callsLp = [
-      // total supply of LP token
       {
-        address: swapStorage.lpAddress ?? pool.lpAddress,
+        address: getAddress(pool.lpAddress),
         name: 'totalSupply',
+        params: []
       },
     ]
 
-    const [supply] = await multicall(chainId, erc20, callsLp)
+    const [multipliers, swapStorage, tokenBalances, A, supply] = await multicall(
+      chainId,
+      [...stableSwapAVAX, ...erc20],
+      calls
+    )
+
+    let supplyValidated;
+    const match = getAddress(swapStorage.lpToken) === getAddress(pool.lpAddress)
+    if (!match) {
+      [supplyValidated] = await multicall(chainId, erc20, [
+        // total supply of LP token
+        {
+          address: swapStorage.lpAddress,
+          name: 'totalSupply',
+        },
+      ])
+    }
 
     return {
       ...pool,
@@ -97,7 +105,7 @@ export const fetchStablePoolData = createAsyncThunk(
         futureATime: swapStorage.futureATime.toString(),
         defaultWithdrawFee: swapStorage.defaultWithdrawFee.toString(),
       },
-      lpTotalSupply: supply[0].toString(),
+      lpTotalSupply: match ? supply[0].toString() : supplyValidated[0].toString(),
       A: A.toString()
     }
   }

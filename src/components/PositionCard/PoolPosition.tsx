@@ -186,7 +186,12 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
 
   const amountsDeposited = useMemo(() => { return amountsDepositedRaw.map((amount, index) => new TokenAmount(tokens[index], amount ?? '0')) }, [amountsDepositedRaw, tokens])
 
-  const tokenText = pool?.tokens.map((t, i) => pool instanceof WeightedPool && pool?.swapStorage?.normalizedWeights?.[i] && `${Math.round(bnParser(pool?.swapStorage?.normalizedWeights[i], ONE) * 10000) / 100}%-${t.symbol}`).join('-')
+  const isWeighted = useMemo(() => pool instanceof WeightedPool, [pool])
+
+  const tokenText = pool?.tokens.map((t, i) => `${isWeighted ?
+    (pool as WeightedPool)?.swapStorage?.normalizedWeights?.[i]
+    && Math.round(bnParser((pool as WeightedPool)?.swapStorage.normalizedWeights[i], ONE) * 10000) / 100 : ''}${isWeighted ? '%-' : ''
+    }${t.symbol}`).join('-')
 
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>
@@ -198,7 +203,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
             </AutoColumn>
             <Column>
               <Text bold ml="8px">
-                {!tokens ? <Dots>Loading</Dots> : `${pool.name} ${countName[pool.tokens.length]} ${pool instanceof StablePool ? 'Stable' : 'Weighted'} Pool`}
+                {!tokens ? <Dots>Loading</Dots> : `${pool.name} ${countName[pool.tokens.length]} ${!isWeighted ? 'Stable' : 'Weighted'} Pool`}
               </Text>
               <Text ml="8px" fontSize='10px'>
                 {!tokens ? <Dots>Loading</Dots> : `${tokenText}`}
@@ -217,7 +222,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
           <AutoColumn gap="8px" style={{ padding: '16px' }}>
             <RowFixed>
               <Text color="primary" ml="5px" bold textAlign='center'>
-                {`Pooled ${pool instanceof StablePool ? 'Stablecoins' : ' Tokens'}`}
+                {`Pooled ${!isWeighted ? 'Stablecoins' : ' Tokens'}`}
               </Text>
             </RowFixed>
             {amountsDeposited && amountsDeposited?.map(amnt => {
@@ -254,7 +259,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
               <Flex flexDirection="column">
                 <Button
                   as={Link}
-                  to={`/${chain}/remove/${pool instanceof StablePool ? 'stables' : 'weighted'}`}
+                  to={`/${chain}/remove/${!isWeighted ? 'stables' : 'weighted'}`}
                   variant="primary"
                   width="100%"
                   mb="8px"
@@ -263,7 +268,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
                 </Button>
                 <Button
                   as={Link}
-                  to={`/${chain}/add/${pool instanceof StablePool ? 'stables' : 'weighted'}`}
+                  to={`/${chain}/add/${!isWeighted ? 'stables' : 'weighted'}`}
                   variant="text"
                   startIcon={<AddIcon color="primary" />}
                   width="100%"
