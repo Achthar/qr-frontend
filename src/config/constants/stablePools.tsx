@@ -1,7 +1,7 @@
 import { ChainId, STABLECOINS } from '@requiemswap/sdk'
 import { BigNumber } from 'ethers'
 import { serializeToken } from 'state/user/hooks/helpers'
-import { STABLES } from './tokens'
+import { BUSD, STABLES, USDC, USDT } from './tokens'
 
 // we hard code this data as it only changes if
 // the admin changes it manually via the contract itself
@@ -41,24 +41,24 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
     42261: [
         {
             key: 0,
-            address: '0x2a90276992ddC21C3585FE50f5B43D0Cf62aDe03',
+            address: '0x90B7174ee0680d339dc4becfEDdfA19F40Af20B8',
+            name: 'req3USD',
             tokens: [
-                serializeToken(STABLES[42261][0]),
-                serializeToken(STABLES[42261][1]),
-                serializeToken(STABLES[42261][2]),
-                serializeToken(STABLES[42261][3])
+                serializeToken(USDC[42261]),
+                serializeToken(USDT[42261]),
+                serializeToken(BUSD[42261])
             ],
-            balances: ['1', '1', '1', '1'],
-            lpAddress: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04',
+            balances: ['1', '1', '1'],
+            lpAddress: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
             lpToken: {
                 chainId: 42261,
                 decimals: 18,
-                address: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04',
-                symbol: 'req4USD'
+                address: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
+                symbol: 'req3USD'
             },
             swapStorage: {
-                tokenMultipliers: ['1000000000000', '1000000000000', '1', '1'],
-                lpToken: '0x9364E91ca784ca51f88dE2a76a35Ba2665bdad04',
+                tokenMultipliers: ['1000000000000', '1000000000000', '1'],
+                lpToken: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
                 initialA: BigNumber.from('0xea60').toString(),

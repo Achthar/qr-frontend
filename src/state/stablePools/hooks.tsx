@@ -24,6 +24,7 @@ export const useStablePoolReferenceChain = () => {
 export const useStablePoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.stablePools)
   const pools = poolState.poolData[chainId].pools
+  if (!pools[id]) return null
   const lpToken = deserializeToken(pools[id]?.lpToken)// fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
@@ -33,26 +34,26 @@ export const useDeserializedStablePools = (chainId: number): StablePool[] => {
   const { pools, publicDataLoaded: dataLoaded } = poolState.poolData[chainId]
   const currentBlock = useSelector((state: State) => state.block.currentBlock)
 
-  if (!dataLoaded)
+  if (!dataLoaded || pools.length === 0 || poolState.referenceChain !== chainId)
     return []
 
   return pools.map(pool => {
     const poolS = new StablePool(
       pool.tokens.map(t => deserializeToken(t)),
       pool.balances.map(balance => BigNumber.from(balance ?? '0')),
-      BigNumber.from(pool.A),
+      BigNumber.from(pool?.A ?? '0'),
       new StableSwapStorage(
-        pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
-        BigNumber.from(pool.swapStorage.fee),
-        BigNumber.from(pool.swapStorage.adminFee),
-        BigNumber.from(pool.swapStorage.initialA),
-        BigNumber.from(pool.swapStorage.futureA),
-        BigNumber.from(pool.swapStorage.initialATime),
-        BigNumber.from(pool.swapStorage.futureATime),
+        pool?.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
+        BigNumber.from(pool?.swapStorage.fee ?? '0'),
+        BigNumber.from(pool?.swapStorage.adminFee ?? '0'),
+        BigNumber.from(pool?.swapStorage.initialA ?? '0'),
+        BigNumber.from(pool?.swapStorage.futureA ?? '0'),
+        BigNumber.from(pool?.swapStorage.initialATime ?? '0'),
+        BigNumber.from(pool?.swapStorage.futureATime ?? '0'),
         pool.swapStorage.lpAddress
       ),
       currentBlock,
-      BigNumber.from(pool.lpTotalSupply),
+      BigNumber.from(pool?.lpTotalSupply ?? '0'),
       BigNumber.from(pool?.userData?.userWithdarawFee ?? 0),
       pool.address,
       pool.lpAddress

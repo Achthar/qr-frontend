@@ -32,7 +32,7 @@ import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
 import { useTranslation } from 'contexts/Localization'
 import UnsupportedCurrencyFooter from 'components/UnsupportedCurrencyFooter'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { REQUIEM_PAIR_MANAGER, SWAP_ROUTER } from 'config/constants'
+import { SWAP_ROUTER } from 'config/constants'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
@@ -354,7 +354,7 @@ export default function AddLiquidity({
         method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
-          gasPrice,
+          // gasPrice,
         }).then((response) => {
           setAttemptingTxn(false)
 

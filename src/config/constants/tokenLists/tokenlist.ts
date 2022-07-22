@@ -412,17 +412,17 @@ export const tokenList = {
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/wROSE.png"
             },
             {
-                "name": "Requiem Token",
-                "symbol": "REQT",
-                "address": "0xB6bcC8b771ef17b50e6B7Cc53F18dB81498691DB",
+                "name": "Asset-Backed Requiem",
+                "symbol": "abREQ",
+                "address": "0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/REQT.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ABREQ.png"
             },
             {
                 "name": "Tether USD",
                 "symbol": "USDT",
-                "address": "0xfA0D8065755Fb3b6520149e86Ac5A3Dc3ee5Dc92",
+                "address": "0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107",
                 "chainId": 42261,
                 "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
@@ -430,31 +430,23 @@ export const tokenList = {
             {
                 "name": "Dai Stablecoin",
                 "symbol": "DAI",
-                "address": "0xf10Bd0dA1f0e69c3334D7F8116C9082746EBC1B4",
+                "address": "0xBe06eF2E4a0891CA2761012523af75769bDB2668",
                 "chainId": 42261,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
             },
             {
-                "name": "USD coin",
+                "name": "USD Coin",
                 "symbol": "USDC",
-                "address": "0x9aEeeD65aE87e3b28793aefAeED59c3f10ef956b",
+                "address": "0x2AD57C6d4144e218c02760640685cdF6CB58669E",
                 "chainId": 42261,
                 "decimals": 6,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
             },
             {
-                "name": "True USD",
-                "symbol": "TUSD",
-                "address": "0x4e8848da06E40E866b82f6b52417494936c9509b",
-                "chainId": 42261,
-                "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TUSD.png"
-            },
-            {
                 "name": "Wrapped Bitcoin",
                 "symbol": "WBTC",
-                "address": "0xE88Cae7399bd545b9eD47aba7ec158e29e480EDb",
+                "address": "0xB5421Ef8e226D9Dd8C210B62a2d919DF6Bf5Af53",
                 "chainId": 42261,
                 "decimals": 8,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
@@ -462,10 +454,26 @@ export const tokenList = {
             {
                 "name": "Wrapped Ethereum",
                 "symbol": "WETH",
-                "address": "0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b",
+                "address": "0xe3B60b4b30AB59c749f4f7edb859F7E8b735CC40",
                 "chainId": 42261,
                 "decimals": 18,
                 "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+            },
+            {
+                "name": "WBNB Multichain Token",
+                "symbol": "WBNB",
+                "address": "0xC05E74836C708E4dB327218Be3B22453f21156AF",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png"
+            },
+            {
+                "name": "Binance-Peg USD Token",
+                "symbol": "BUSD",
+                "address": "0x8391032ef5654B796A7719D106ee74c2e48e03aa",
+                "chainId": 42261,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BUSD.png"
             },
         ]
     },

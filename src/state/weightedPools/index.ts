@@ -7,13 +7,13 @@ import { fetchPoolUserAllowancesAndBalances } from './fetchWeightedPoolUserData'
 import { changeChainIdWeighted } from './actions';
 
 
-function baseStablePool(chainId: number) {
+function baseWeightedPool(chainId: number) {
   return weightedSwapInitialData[chainId]
 }
 
 function initialState(chainId: number) {
   return {
-    pools: baseStablePool(chainId),
+    pools: baseWeightedPool(chainId),
     publicDataLoaded: false,
     userDataLoaded: false
   }
@@ -90,7 +90,9 @@ export const weightedPoolSlice = createSlice({
         })
         state.poolData[state.referenceChain].userDataLoaded = true
       }).addCase(changeChainIdWeighted, (state, action) => {
-        state.referenceChain = action.payload.newChainId
+        const newId = action.payload.newChainId
+        state.referenceChain = newId
+        state.poolData[action.payload.newChainId] = initialState(newId)
 
       })
   },

@@ -7,7 +7,7 @@ import { changeChainIdStables } from "state/stablePools/actions";
 import { changeChainId } from "state/user/actions";
 import { changeChainIdWeighted } from "state/weightedPairs/actions";
 
-const supportedChains = [43113]
+const supportedChains = [43113, 42261]
 
 // sets the chainId if provided by web3
 export function useChainIdHandling(chainIdWeb3: number, account: string) {

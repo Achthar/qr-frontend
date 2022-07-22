@@ -22,7 +22,6 @@ export function useTokenAllowances(chainId: number, tokens?: Token[], owner?: st
 
   const inputs = useMemo(() => [owner, spender], [owner, spender])
   const addresses = tokens?.map(t => t?.address)
-  console.log("MCPARAMS", addresses?.length > 0 ? addresses : [undefined], addresses?.length > 0 ? addresses.map((_) => { return inputs }) : [undefined, undefined])
   const allowances = useMultipleContractSingleData(
     chainId,
     addresses?.length > 0 ? addresses : [undefined], new ethers.utils.Interface(ERC20_ABI),

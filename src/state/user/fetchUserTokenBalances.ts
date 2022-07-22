@@ -2,20 +2,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import erc20Abi from 'config/abi/erc20.json'
 import multicall from 'utils/multicall';
-import { STABLECOINS, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
-import { WETH, REQT, WBTC, GREQ, ABREQ, SREQ, LINK } from 'config/constants/tokens';
+import { WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk';
+import { WETH, REQT, WBTC, GREQ, ABREQ, SREQ, LINK, STABLES, WBNB } from 'config/constants/tokens';
 import { SerializedToken } from 'config/constants/types';
 import { SWAP_ROUTER } from 'config/constants';
 import { UserProps } from './types';
 
 
 export function getMainTokens(chainId: number): Token[] {
-    return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], SREQ[chainId], GREQ[chainId], REQT[chainId], WBTC[chainId], WETH[chainId], LINK[chainId]] :
-        [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
+    return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], GREQ[chainId], WBTC[chainId], WETH[chainId], LINK[chainId]] :
+        [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]]
 }
 
 export function getStables(chainId: number): Token[] {
-    return STABLECOINS[chainId]
+    return STABLES[chainId]
 }
 
 export interface UserTokenDataResponse {
@@ -28,7 +28,7 @@ export const fetchUserTokenData = createAsyncThunk(
     "user/fetchUserTokenData",
     async ({ chainId, account, additionalTokens }: UserProps): Promise<{ data: { [address: string]: UserTokenDataResponse }, chainId: number }> => {
 
-        const allTokensAddresses = additionalTokens ? [
+        const allTokensAddresses = additionalTokens.length > 0 ? [
             ...getMainTokens(chainId).map(token => token.address),
             ...getStables(chainId).map(token => token.address),
             ...additionalTokens.map(token => token.address)

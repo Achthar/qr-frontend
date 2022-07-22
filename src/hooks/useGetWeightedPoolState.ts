@@ -79,7 +79,7 @@ export function useGetWeightedPoolState(
 
 
     const userBalances = useMemo(() =>
-        getAmountsForSerializedTokens(pools?.[0].tokens, allBalances),
+        getAmountsForSerializedTokens(pools?.[0]?.tokens, allBalances),
         [pools, allBalances]
     )
 

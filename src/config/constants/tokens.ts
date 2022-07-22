@@ -46,7 +46,7 @@ export const WETH = {
   ),
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b',
+    '0xe3B60b4b30AB59c749f4f7edb859F7E8b735CC40',
     18,
     'WETH',
     'Wrapped ETH',
@@ -112,6 +112,13 @@ export const ABREQ: { [chainId: number]: Token } = {
     'abREQ',
     'Asset-Backed Requiem Token',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D',
+    18,
+    'abREQ',
+    'Asset-Backed Requiem Token',
+  )
 }
 
 export const SREQ: { [chainId: number]: Token } = {
@@ -142,6 +149,13 @@ export const WEIGHTED_POOL_LP: { [chainId: number]: Token } = {
     'Requiem Weighted LP',
     'RWLP',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(
+    ChainId.OASIS_TESTNET,
+    '0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098',
+    18,
+    'Requiem Weighted LP',
+    'RWLP',
+  )
 }
 
 export const RREQT: { [chainId: number]: Token } = {
@@ -213,6 +227,12 @@ export const BUSD: { [chainId: number]: Token } = {
     'BUSD',
     'Binance USD',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET,
+    '0x8391032ef5654B796A7719D106ee74c2e48e03aa',
+    18,
+    'BUSD',
+    'Binance USD',
+  )
 }
 
 export const WBNB: { [chainId: number]: Token } = {
@@ -230,6 +250,12 @@ export const WBNB: { [chainId: number]: Token } = {
     'WBNB',
     'Wrapped BNB',
   ),
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET,
+    '0xC05E74836C708E4dB327218Be3B22453f21156AF',
+    18,
+    'BNB',
+    'Binance Coin Multichain'
+  )
 }
 export const DAI: { [chainId: number]: Token } = {
   [ChainId.BSC_MAINNET]: new Token(
@@ -269,7 +295,7 @@ export const DAI: { [chainId: number]: Token } = {
   ),
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0xf10Bd0dA1f0e69c3334D7F8116C9082746EBC1B4',
+    '0xBe06eF2E4a0891CA2761012523af75769bDB2668',
     18,
     'DAI',
     'Dai Stablecoin',
@@ -283,7 +309,7 @@ export const USDT: { [chainId: number]: Token } = {
   [ChainId.AVAX_TESTNET]: new Token(ChainId.AVAX_TESTNET, '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e', 6, 'USDT', 'Tether USD'),
   [ChainId.AVAX_MAINNET]: new Token(ChainId.AVAX_MAINNET, '0xde3A24028580884448a5397872046a019649b084', 6, 'USDT', 'Tether USD'),
   [ChainId.QUARKCHAIN_DEV_S0]: new Token(ChainId.QUARKCHAIN_DEV_S0, '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7', 6, 'USDT', 'Tether USD'),
-  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, '0xfA0D8065755Fb3b6520149e86Ac5A3Dc3ee5Dc92', 6, 'USDT', 'Tether USD'),
+  [ChainId.OASIS_TESTNET]: new Token(ChainId.OASIS_TESTNET, '0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107', 6, 'USDT', 'Tether USD'),
 }
 export const BTCB = new Token(ChainId.BSC_MAINNET, '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', 18, 'BTCB', 'Binance BTC')
 
@@ -298,7 +324,7 @@ export const WBTC: { [chainId: number]: Token } = {
   ),
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0xE88Cae7399bd545b9eD47aba7ec158e29e480EDb',
+    '0xB5421Ef8e226D9Dd8C210B62a2d919DF6Bf5Af53',
     8,
     'WBTC',
     'Wrapped BTC',
@@ -367,7 +393,7 @@ export const USDC: { [chainId: number]: Token } = {
   ),
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
-    '0x9aEeeD65aE87e3b28793aefAeED59c3f10ef956b',
+    '0x2AD57C6d4144e218c02760640685cdF6CB58669E',
     6,
     'USDC',
     'USD Coin',
@@ -409,7 +435,7 @@ export const STABLES = {
       USDC[ChainId.OASIS_TESTNET],
       USDT[ChainId.OASIS_TESTNET],
       DAI[ChainId.OASIS_TESTNET],
-      TUSD[ChainId.OASIS_TESTNET]
+      BUSD[ChainId.OASIS_TESTNET]
     ],
 }
 
@@ -424,8 +450,7 @@ export const STABLES_DICT = {
   [ChainId.OASIS_TESTNET]: {
     [USDT[ChainId.OASIS_TESTNET].address]: USDT[ChainId.OASIS_TESTNET],
     [USDC[ChainId.OASIS_TESTNET].address]: USDC[ChainId.OASIS_TESTNET],
-    [DAI[ChainId.OASIS_TESTNET].address]: DAI[ChainId.OASIS_TESTNET],
-    [TUSD[ChainId.OASIS_TESTNET].address]: TUSD[ChainId.OASIS_TESTNET]
+    [DAI[ChainId.OASIS_TESTNET].address]: DAI[ChainId.OASIS_TESTNET]
 
   }
 }
@@ -473,6 +498,7 @@ const tokens: { [tokenId: string]: TokenEntry } = {
       43113: '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
       43114: '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
       110001: '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
+      42261: '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B'
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',
@@ -499,7 +525,8 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     symbol: 'USDT',
     address: {
       43113: '0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e',
-      110001: '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7'
+      110001: '0x1a69a6e206c680A8559c59b951527437CBCe6Ed7',
+      42261: '0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107'
     },
     decimals: 6,
     projectLink: ''
@@ -508,7 +535,8 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     symbol: 'DAI',
     address: {
       43113: '0xaea51e4fee50a980928b4353e852797b54deacd8',
-      110001: '0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542'
+      110001: '0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542',
+      42261: '0xBe06eF2E4a0891CA2761012523af75769bDB2668'
     },
     decimals: 18,
     projectLink: ''
@@ -517,7 +545,8 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     symbol: 'USDC',
     address: {
       43113: '0xca9ec7085ed564154a9233e1e7d8fef460438eea',
-      110001: '0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268'
+      110001: '0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268',
+      42261: '0x2AD57C6d4144e218c02760640685cdF6CB58669E'
     },
     decimals: 6,
     projectLink: ''
@@ -531,13 +560,27 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     decimals: 18,
     projectLink: ''
   },
+  'busd': {
+    symbol: 'BUSD',
+    address: {
+      42261: '0x8391032ef5654B796A7719D106ee74c2e48e03aa',
+    },
+    decimals: 18,
+    projectLink: ''
+  },
   'weth': {
-    address: { 43113: '0x70dC2c5F81BC18e115759398aF197e99f228f713' },
+    address: {
+      43113: '0x70dC2c5F81BC18e115759398aF197e99f228f713',
+      42261: '0xe3B60b4b30AB59c749f4f7edb859F7E8b735CC40'
+    },
     decimals: 18,
     symbol: 'WETH'
   },
   'wbtc': {
-    address: { 43113: '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289' },
+    address: {
+      43113: '0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289',
+      42261: '0xB5421Ef8e226D9Dd8C210B62a2d919DF6Bf5Af53'
+    },
     decimals: 8,
     symbol: 'WBTC',
   },
@@ -545,7 +588,14 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     address: { 43113: '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B' },
     decimals: 18,
     symbol: 'LINK'
-  }
+  },
+  'wbnb': {
+    address: {
+      42261: '0xC05E74836C708E4dB327218Be3B22453f21156AF'
+    },
+    decimals: 18,
+    symbol: 'WBNB',
+  },
 }
 
 // const tokenList = (): TokenList => {

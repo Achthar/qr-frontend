@@ -8,8 +8,6 @@ import { useWeb3React } from '@web3-react/core'
 import { Web3ReactContextInterface } from '@web3-react/core/dist/types'
 import { useChainIdHandling } from './useChainIdHandle'
 
-const supportedChains = [43113]
-
 /**
  * Provides a web3 provider with or without user's signer
  * Recreate web3 instance only if the provider change

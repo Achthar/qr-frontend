@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
-import { REQT, DAI } from 'config/constants/tokens'
+import { REQT, DAI, ABREQ } from 'config/constants/tokens'
 import { AmplifiedWeightedPair, TokenAmount } from '@requiemswap/sdk'
 import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Box } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
@@ -22,7 +22,6 @@ import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import { useStablePoolLpBalance } from 'state/stablePools/hooks'
 import { useWeightedPoolLpBalance } from 'state/weightedPools/hooks'
 import FullWeightedPositionCardExtended from '../../components/PositionCard/WeightedPairPositionExtended'
-import FullStablesPositionCard from '../../components/PositionCard/StablesPosition'
 import Dots from '../../components/Loader/Dots'
 import { AppHeader, AppBody } from '../../components/App'
 import Page from '../Page'
@@ -214,7 +213,7 @@ export default function PoolList({
           <Row width='100%' height='50px' marginTop='10px'>
             <Button
               as={Link}
-              to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+              to={`/${getChain(chainId)}/add/80-${ABREQ[chainId].address}/20-${DAI[chainId].address}`}
               variant="secondary"
               width="33%"
               height='70px'

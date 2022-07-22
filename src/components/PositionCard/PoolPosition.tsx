@@ -178,15 +178,15 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
     if (!(pool &&
       totalPoolTokens &&
       userLpPoolBalance && totalPoolTokens.gte(userLpPoolBalance.raw)))
-      return [undefined, undefined, undefined, undefined]
+      return tokens.map((tk) => { return null })
     return pool.calculateRemoveLiquidity(userLpPoolBalance.raw)
   },
-    [pool, totalPoolTokens, userLpPoolBalance]
+    [pool, totalPoolTokens, userLpPoolBalance, tokens]
   )
 
-  const amountsDeposited = useMemo(() => { return amountsDepositedRaw.map((amount, index) => new TokenAmount(tokens[index], amount)) }, [amountsDepositedRaw, tokens])
+  const amountsDeposited = useMemo(() => { return amountsDepositedRaw.map((amount, index) => new TokenAmount(tokens[index], amount ?? '0')) }, [amountsDepositedRaw, tokens])
 
-  const tokenText = pool?.tokens.map((t, i) => `${pool instanceof WeightedPool ? Math.round(bnParser(pool?.swapStorage.normalizedWeights[i], ONE) * 10000) / 100 : ''}${pool instanceof WeightedPool ? '%-' : ''}${t.symbol}`).join('-')
+  const tokenText = pool?.tokens.map((t, i) => pool instanceof WeightedPool && pool?.swapStorage?.normalizedWeights?.[i] && `${Math.round(bnParser(pool?.swapStorage?.normalizedWeights[i], ONE) * 10000) / 100}%-${t.symbol}`).join('-')
 
   return (
     <Card style={{ borderRadius: '12px' }} {...props}>

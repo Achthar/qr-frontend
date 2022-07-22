@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS, PINNED_WEIGHTED_PAIRS } from 'config/constants'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useAllTokens } from 'hooks/Tokens'
-import { ABREQ, GREQ, REQT, SREQ, WBTC, WETH } from 'config/constants/tokens'
+import { ABREQ, DAI, GREQ, REQT, SREQ, USDC, USDT, WBNB, WBTC, WETH } from 'config/constants/tokens'
 import { SerializedToken, TokenPair } from 'config/constants/types'
 import { SerializedWeightedPair, State, WeightedPairMetaData } from 'state/types'
 import { getAddress } from 'ethers/lib/utils'
@@ -392,20 +392,25 @@ export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][]
 
 
 export function getMainTokens(chainId: number): Token[] {
-  return [WRAPPED_NETWORK_TOKENS[chainId], REQT[chainId], WBTC[chainId], WETH[chainId]]
+  return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]] : [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]]
+}
+
+export function geAdditionalTokens(chainId: number): Token[] {
+  return chainId === 43113 ? [] : [WBNB[chainId]]
 }
 
 export function getStables(chainId: number): Token[] {
-  return STABLECOINS[chainId]
+  return chainId === 43113 ? STABLECOINS[chainId] : [USDC[chainId], USDT[chainId], DAI[chainId]]
 }
 
 export function getTokenAmounts(chainId: number, balances: { [address: string]: string }) {
   return [...[
     WRAPPED_NETWORK_TOKENS[chainId],
-    REQT[chainId],
+    ABREQ[chainId],
   ],
   ...[WBTC[chainId], WETH[chainId]],
-  ...STABLECOINS[chainId]
+  ...getStables(chainId),
+  ...geAdditionalTokens(chainId)
   ].map(token => new TokenAmount(token, balances[getAddress(token.address)] ?? '0'))
 
 }
@@ -420,7 +425,7 @@ export function getStableAmounts(chainId: number, balances: {
   if (!balances)
     return []
 
-  return STABLECOINS[chainId ?? 43113].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+  return getStables(chainId).map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
 
 }
 
@@ -466,17 +471,26 @@ export function getMainAmounts(chainId: number, balances: {
     return [
       WRAPPED_NETWORK_TOKENS[chainId],
       ABREQ[chainId],
-      REQT[chainId],
       WBTC[chainId],
       WETH[chainId]
+    ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+    
+  if (chainId === 42261)
+    return [
+      WRAPPED_NETWORK_TOKENS[chainId],
+      ABREQ[chainId],
+      WBTC[chainId],
+      WETH[chainId],
+      WBNB[chainId]
     ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
 
   return [
     WRAPPED_NETWORK_TOKENS[chainId],
-    REQT[chainId],
+    ABREQ[chainId],
     WBTC[chainId],
     WETH[chainId]
   ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+
 
 }
 
@@ -485,7 +499,7 @@ export function useGetRequiemAmount(chainId: number) {
   const balState = useUserBalances(chainId)
 
   return {
-    balance: new TokenAmount(REQT[chainId], balState?.balances[REQT[chainId].address].balance ?? '0'),
+    balance: new TokenAmount(ABREQ[chainId], balState?.balances[ABREQ[chainId].address].balance ?? '0'),
     isLoading: balState.isLoadingTokens
   }
 

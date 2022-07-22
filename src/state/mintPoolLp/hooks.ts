@@ -72,7 +72,7 @@ export function useDerivedMintPoolInfo(
 
   const chainId = stablePool?.chainId ?? 43113
 
-  const totalSupply = !publicDataLoaded ? BigNumber.from(0) : stablePool.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
+  const totalSupply = !publicDataLoaded ? BigNumber.from(0) : stablePool?.lpTotalSupply //   useTotalSupply(stablePool?.liquidityToken)
 
 
   const stablesCurrencyBalances: TokenAmount[] = stablePool?.getTokenAmounts()
@@ -86,9 +86,15 @@ export function useDerivedMintPoolInfo(
   const stablesLiquidityMinted = useMemo(() => {
 
     if (stablePool && totalSupply) {
-      return stablePool.getLiquidityAmount( // BigNumber.from(0)
-        parsedInputAmounts.map(pa => pa?.raw ?? ZERO),
-        true)
+      try {
+        return stablePool.getLiquidityAmount( // BigNumber.from(0)
+          parsedInputAmounts.map(pa => pa?.raw ?? ZERO),
+          true)
+      }
+      catch (err) {
+        console.log(err)
+        return BigNumber.from(0)
+      }
     }
     return undefined
   }, [parsedInputAmounts, stablePool, totalSupply])
@@ -125,7 +131,7 @@ export function useDerivedMintPoolInfo(
   return {
     orderedUserBalances: orderedStableCcyUserBalances,
     parsedInputAmounts: parsedInputAmounts,
-    poolLiquidityMinted: !publicDataLoaded ? null : new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt()),
+    poolLiquidityMinted: !publicDataLoaded ? null : (stablePool?.liquidityToken && new TokenAmount(stablePool.liquidityToken, stablesLiquidityMinted === undefined ? ZERO : stablesLiquidityMinted.toBigInt())),
     poolTokenPercentage: stablesPoolTokenPercentage,
     poolError,
   }

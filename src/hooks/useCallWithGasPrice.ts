@@ -28,12 +28,12 @@ export function useCallWithGasPrice() {
 
       const tx = await contractMethod(
         ...methodArgs,
-        hasManualGasPriceOverride ? { ...overrides } : { ...overrides, gasPrice },
+        // hasManualGasPriceOverride ? { ...overrides } : { ...overrides, gasPrice },
       )
 
       return tx
     },
-    [gasPrice],
+    [],
   )
 
   return { callWithGasPrice }

@@ -2,10 +2,9 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { BigNumber } from 'ethers'
 import { WeightedPool, WeightedSwapStorage, Token, TokenAmount } from '@requiemswap/sdk'
-import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { WEIGHTED_POOL_LP } from 'config/constants/tokens'
-import { State, Bond, BondsState, WeightedPoolsState, WeightedPoolData } from '../types'
+import { State, WeightedPoolData } from '../types'
 
 
 
@@ -25,6 +24,7 @@ export const useWeightedPoolReferenceChain = () => {
 export const useWeightedPoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.weightedPools)
   const pools = poolState.poolData[chainId].pools
+  if (!pools[id]) return null
   const lpToken = pools[id]?.lpToken ? deserializeToken(pools[id]?.lpToken) : WEIGHTED_POOL_LP[chainId] // fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
@@ -33,21 +33,21 @@ export const useDeserializedWeightedPools = (chainId: number): WeightedPool[] =>
   const poolState = useSelector((state: State) => state.weightedPools)
   const { pools, publicDataLoaded: dataLoaded } = poolState.poolData[chainId]
 
-  if (!dataLoaded)
+  if (!dataLoaded || poolState.referenceChain !== chainId)
     return []
 
   return pools.map(pool => {
     const poolW = new WeightedPool(
-      pool.address,
-      pool.tokens.map(t => deserializeToken(t)),
-      pool.balances.map(balance => BigNumber.from(balance ?? '0')),
+      pool?.address,
+      pool?.tokens.map(t => deserializeToken(t)),
+      pool?.balances.map(balance => BigNumber.from(balance ?? '0')),
       new WeightedSwapStorage(
-        pool.swapStorage.tokenMultipliers.map(m => BigNumber.from(m)),
-        pool.swapStorage.normalizedTokenWeights.map(m => BigNumber.from(m)),
-        BigNumber.from(pool.swapStorage.fee),
-        BigNumber.from(pool.swapStorage.adminFee),
+        pool?.swapStorage?.tokenMultipliers.map(m => BigNumber.from(m)),
+        pool?.swapStorage?.normalizedTokenWeights?.map(m => BigNumber.from(m)),
+        BigNumber.from(pool?.swapStorage.fee ?? '0'),
+        BigNumber.from(pool?.swapStorage.adminFee ?? '0'),
       ),
-      BigNumber.from(pool.lpTotalSupply),
+      BigNumber.from(pool?.lpTotalSupply ?? '0'),
       pool.lpAddress
     )
     poolW.name = pool.name

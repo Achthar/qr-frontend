@@ -1,7 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { SerializedToken } from 'config/constants/types'
-import { Token, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import { STABLES, REQT, STABLES_DICT, WETH, WBTC } from 'config/constants/tokens'
+import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { STABLES, WETH, WBTC, ABREQ, USDC, USDT, DAI, BUSD, WBNB } from 'config/constants/tokens'
 import {
   addSerializedPair,
   addSerializedWeightedPair,
@@ -31,15 +30,7 @@ import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../confi
 import { updateVersion } from '../global/actions'
 import { FarmStakedOnly, UserState } from './types'
 
-const initialChainId = 43113
-
 const currentTimestamp = () => new Date().getTime()
-
-const initialTokenList: Token[] = [
-  ...[WRAPPED_NETWORK_TOKENS[initialChainId],
-  REQT[initialChainId]],
-  ...STABLES[initialChainId]
-]
 
 const initialData = {
   balance: '0',
@@ -47,16 +38,20 @@ const initialData = {
   allowancePairManager: '0'
 }
 
+const getAdditionalTokens = (chainId: number) => { return chainId === 43113 ? [] : [WBNB[chainId]] }
+
+const getStables = (chainId: number) => { return chainId === 43113 ? STABLES[chainId] : [USDC[chainId], USDT[chainId], BUSD[chainId]] }
+
 const initialBalances = (chainId: number) => {
   return {
-    [WRAPPED_NETWORK_TOKENS[chainId].address]: initialData,
-    [REQT[chainId].address]: initialData,
-    [WETH[chainId].address]: initialData,
-    [WBTC[chainId].address]: initialData,
-    [STABLES[chainId][0].address]: initialData,
-    [STABLES[chainId][1].address]: initialData,
-    [STABLES[chainId][2].address]: initialData,
-    [STABLES[chainId][3].address]: initialData,
+    ...{
+      [WRAPPED_NETWORK_TOKENS[chainId].address]: initialData,
+      [ABREQ[chainId].address]: initialData,
+      [WETH[chainId].address]: initialData,
+      [WBTC[chainId].address]: initialData,
+    },
+    ...Object.assign({}, ...getStables(chainId).map(x => { return { [x.address]: initialData } })),
+    ...Object.assign({}, ...getAdditionalTokens(chainId).map(x => { return { [x.address]: initialData } }))
   }
 }
 
@@ -202,7 +197,7 @@ export default createReducer<UserState>(initialState, (builder) =>
     .addCase(fetchUserTokenData.fulfilled, (state, action) => {
       const chainId = action.payload.chainId
       state.referenceChainId = chainId
-      
+
       if (!state.userBalances[chainId])
         state.userBalances[chainId] = {}
 

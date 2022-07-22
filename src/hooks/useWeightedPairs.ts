@@ -7,9 +7,9 @@ import { pack, keccak256 } from '@ethersproject/solidity'
 import { FACTORY_ADDRESS } from 'config/constants'
 import { Interface } from '@ethersproject/abi'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
-import { DAI, REQT } from 'config/constants/tokens'
+import { ABREQ, DAI, REQT } from 'config/constants/tokens'
 import { useMultipleContractSingleData, useSingleContractMultipleData } from 'state/multicall/hooks'
-import { useWeightedFactoryContract, useWeightedFormulaContract } from './useContract'
+import { useWeightedFactoryContract } from './useContract'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 // import { getWeightedPairFactory } from '../utils/contractHelpers'
 
@@ -139,7 +139,7 @@ export function useGetWeightedPairs(currencies: [Currency | undefined, Currency 
     chainId,
     factoryContract,
     'getPairs',
-    tokens.map(tokenPair => [tokenPair[0]?.address ?? REQT[chainId].address, tokenPair[1]?.address ?? DAI[chainId].address]),
+    tokens.map(tokenPair => [tokenPair[0]?.address ?? ABREQ[chainId].address, tokenPair[1]?.address ?? DAI[chainId].address]),
     // useBlock
   )
 

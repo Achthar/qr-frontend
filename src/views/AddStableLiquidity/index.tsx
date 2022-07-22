@@ -160,7 +160,7 @@ export default function AddStableLiquidity({
         method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
-          gasPrice,
+          // gasPrice,
         }).then((response) => {
           setAttemptingTxn(false)
 

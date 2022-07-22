@@ -6,7 +6,7 @@ import multicall from 'utils/multicall';
 import formulaABI from 'config/abi/avax/RequiemFormula.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { BigNumber } from 'ethers';
-import { REQUIEM_WEIGHTED_FORMULA_ADDRESS, FACTORY_ADDRESS, PAIR_FORMULA, SWAP_ROUTER } from 'config/constants';
+import { FACTORY_ADDRESS, PAIR_FORMULA, SWAP_ROUTER } from 'config/constants';
 import { Fraction } from '@requiemswap/sdk';
 import { SerializedWeightedPair, WeightedPairMetaData } from '../types'
 
@@ -344,14 +344,14 @@ export const fetchWeightedPairReserves = createAsyncThunk(
     }
     const callsReserves = pairAddresses.map((address, index) => {
       return {
-        address: getAddress(REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId]),
+        address: getAddress(PAIR_FORMULA[chainId]),
         name: 'getReserves'
       }
     })
 
     const callsSupply = pairAddresses.map((address, index) => {
       return {
-        address: getAddress(REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId]),
+        address: getAddress(PAIR_FORMULA[chainId]),
         name: 'totalSupply',
       }
     })

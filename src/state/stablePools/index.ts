@@ -33,6 +33,7 @@ interface PoolUserDataResponse {
 export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataResponse[], { chainId: number, account: string; pools: PoolConfig[] }>(
   'stablePools/fetchStablePoolsUserDataAsync',
   async ({ chainId, account, pools }) => {
+    if (pools.length === 0) return []
 
     const {
       allowances,
@@ -90,7 +91,9 @@ export const stablePoolSlice = createSlice({
         })
         state.poolData[state.referenceChain].userDataLoaded = true
       }).addCase(changeChainIdStables, (state, action) => {
-        state.referenceChain = action.payload.newChainId
+        const newId = action.payload.newChainId
+        state.referenceChain = newId
+        state.poolData[action.payload.newChainId] = initialState(newId)
 
       })
   },

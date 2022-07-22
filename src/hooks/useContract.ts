@@ -26,7 +26,6 @@ import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
 import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
-import { REQUIEM_WEIGHTED_FORMULA_ADDRESS } from 'config/constants'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
 import { WRAPPED_NETWORK_TOKENS, WEIGHTED_FACTORY_ADDRESS } from '@requiemswap/sdk'
@@ -210,11 +209,6 @@ export function useStableLPContract(stableLpAddress?: string, withSignerIfPossib
 export function useWeightedFactoryContract(chainId: number): Contract | null {
   return useContract(chainId ? WEIGHTED_FACTORY_ADDRESS[chainId] : undefined, new Interface(weightedFactoryABI), false)
 }
-
-export function useWeightedFormulaContract(chainId: number): Contract | null {
-  return useContract(chainId ? REQUIEM_WEIGHTED_FORMULA_ADDRESS[chainId] : undefined, new Interface(WEIGHTED_FORMULA_ABI), false)
-}
-
 
 export function useBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
   return useContract(chainId ? getBondingDepositoryAddress(chainId) : undefined, new Interface(BOND_DEPO_AVAX), withSignerIfPossible)
