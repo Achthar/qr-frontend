@@ -88,15 +88,15 @@ export const getAddressForWeightedPairFactory = (chainId: number) => {
 }
 
 export const getBondingDepositoryAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.bondDepository)
+  return addresses.bondDepository[chainId] ? getAddress(chainId, addresses.bondDepository) : undefined
 }
 
 export const getCallBondingDepositoryAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.callBondDepository)
+  return addresses.callBondDepository[chainId] ? getAddress(chainId, addresses.callBondDepository) : undefined
 }
 
 export const getCallableBondingDepositoryAddress = (chainId: number) => {
-  return getAddress(chainId, addresses.callableBondDepository)
+  return addresses.callableBondDepository[chainId] ? getAddress(chainId, addresses.callableBondDepository) : undefined
 }
 
 export const getAssetBackedStakingAddress = (chainId: number) => {

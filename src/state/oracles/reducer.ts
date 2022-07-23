@@ -35,7 +35,16 @@ const initialState = {
         }
       })
       )
-    }
+    },
+    42261: {
+      dataLoaded: false,
+      oracles: Object.assign({}, ...Object.keys(oracleConfig[42261]).map(k => {
+        return {
+          [getAddress(k)]: oracleConfig[42261][k]
+        }
+      })
+      )
+    },
   }
 }
 

@@ -6,7 +6,7 @@ import { BondConfig, BondAssetType } from './types'
 export const bondConfig = (chainId: number): BondConfig[] => {
   const serializedTokens = serializeTokens(chainId ?? 43113)
   const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
-  return [
+  return chainId === 43113 ? [
     {
       name: "50/50 wAVAX-USDC Deprecated",
       displayName: "50% AREQ - 50% USDC",
@@ -132,6 +132,25 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       lpProperties: {
         weightToken: 60,
         weightQuoteToken: 40,
+        fee: 25
+      }
+    },
+  ] : [
+    {
+      name: "req3USD LP",
+      displayName: "3-USD Stable Pool LP",
+      bondToken: "Stable Swap LP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.StableSwapLP,
+      displayUnits: '4',
+      tokens: [serializedTokens.usdc, serializedTokens.usdt, serializedTokens.busd],
+      quoteTokenIndex: 0,
+      reserveAddress: {
+        42261: "0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22",
+      },
+      lpProperties: {
+        weightToken: 80,
+        weightQuoteToken: 20,
         fee: 25
       }
     },

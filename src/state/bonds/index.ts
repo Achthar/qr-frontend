@@ -128,21 +128,21 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
       }
     })
 
-    const callBondCalls = addresses.map(_address => {
+    const callBondCalls = callDepoAddress ? addresses.map(_address => {
       return {
         address: callDepoAddress,
         name: 'liveMarketsFor',
         params: [_address]
       }
-    })
+    }) : []
 
-    const callableBondCalls = addresses.map(_address => {
+    const callableBondCalls = callableDepoAddress ? addresses.map(_address => {
       return {
         address: callableDepoAddress,
         name: 'liveMarketsFor',
         params: [_address]
       }
-    })
+    }) : []
 
     const bondIds = await multicall(chainId, bondReserveAVAX, [...calls, ...callBondCalls, ...callableBondCalls])
 
@@ -154,9 +154,9 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
       // vanillas
       const availableIds = bondIds[j][0].map(id => Number(id.toString()))
       // call bonds
-      const availableCallBondIds = bondIds[addresses.length + j][0].map(id => Number(id.toString()))
+      const availableCallBondIds = callDepoAddress ? bondIds[addresses.length + j][0].map(id => Number(id.toString())) : []
       // callable bonds
-      const availableCallableBondIds = bondIds[2 * addresses.length + j][0].map(id => Number(id.toString()))
+      const availableCallableBondIds = callableDepoAddress ? bondIds[2 * addresses.length + j][0].map(id => Number(id.toString())) : []
 
       const address = addresses[j]
       const bondData = bondMeta.find(

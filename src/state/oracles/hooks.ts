@@ -11,7 +11,7 @@ const bondOracles = oracleConfig
 
 export function useOracleState(chainId: number) {
     const state = useSelector<AppState, AppState['oracles']>((_state) => _state.oracles)
-    return state.data[chainId]
+    return state.data?.[chainId]
 }
 
 export function useOracles(
