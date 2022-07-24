@@ -58,7 +58,7 @@ const Redemption: React.FunctionComponent<StackedActionProps> = ({
 
   const now = Math.floor((new Date()).getTime() / 1000);
 
-  const bond = useBondFromBondId(bondId)
+  const bond = useBondFromBondId(bondId, chainId)
 
   const { onRedeem } = useRedeemNote(chainId, account, note.noteIndex)
 

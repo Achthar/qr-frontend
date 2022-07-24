@@ -1,17 +1,16 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import React, { useCallback, useMemo, useState } from 'react'
-import styled from 'styled-components'
-import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@requiemswap/uikit'
-import { ModalActions, ModalInput } from 'components/Modal'
+import { Flex, Text, Button, Modal, LinkExternal} from '@requiemswap/uikit'
+import { ModalActions } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { useBondFromBondId } from 'state/bonds/hooks'
-import { TokenAmount } from '@requiemswap/sdk'
 import { prettifySeconds} from 'config'
 import { bnParser } from 'utils/helper'
 import { useBlock } from 'state/block/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 
 interface ClaimModalProps {
@@ -39,20 +38,12 @@ const ClaimModal: React.FC<ClaimModalProps> = ({
   addLiquidityUrl,
   reqtPrice,
 }) => {
-  const bond = useBondFromBondId(bondId)
+  const {chainId} = useNetworkState()
+  const bond = useBondFromBondId(bondId, chainId)
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
   const { t } = useTranslation()
-  const fullBalance = useMemo(() => {
-    return getFullDisplayBalance(max)
-  }, [max])
-
-  const lpTokensToStake = new BigNumber(val)
-
-
-  const { currentBlock } = useBlock()
-  const now = Math.round((new Date()).getTime() / 1000);
 
   const vestingPeriod = () => {
     const vestingTerm = parseInt(bond.bondTerms.vesting);
@@ -60,12 +51,10 @@ const ClaimModal: React.FC<ClaimModalProps> = ({
     return prettifySeconds(vestingTerm, "");
   };
 
-  const handleSelectMax = useCallback(() => {
-    setVal(fullBalance)
-  }, [fullBalance, setVal])
+
 
   return (
-    <Modal title={t('Redeem Bond')} onDismiss={onDismiss}>
+    <Modal title='Redeem Bond' onDismiss={onDismiss}>
 
 
       <Flex mt="24px" alignItems="center" justifyContent="space-between">

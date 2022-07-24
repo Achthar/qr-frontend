@@ -95,6 +95,7 @@ export const calcSingleBondDetails = createAsyncThunk(
     return {
       ...bond,
       bondDiscount,
+      publicLoaded: true,
       debtRatio: debtRatio[0].toString(),
       lpData: {
         lpTotalSupply: supply?.[0]?.toString(),

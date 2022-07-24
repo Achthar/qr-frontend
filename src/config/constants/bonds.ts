@@ -5,7 +5,7 @@ import { BondConfig, BondAssetType } from './types'
 
 export const bondConfig = (chainId: number): BondConfig[] => {
   const serializedTokens = serializeTokens(chainId ?? 43113)
-  const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
+  // const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
   return chainId === 43113 ? [
     {
       name: "50/50 wAVAX-USDC Deprecated",
@@ -151,6 +151,24 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       lpProperties: {
         weightToken: 80,
         weightQuoteToken: 20,
+        fee: 25
+      }
+    },
+    {
+      name: "REQ3 Classic Oasis Network",
+      displayName: "wETH/wBTC/USDT 3-Pool LP",
+      bondToken: "Stable Swap LP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.WeightedPoolLP,
+      displayUnits: '4',
+      tokens: [serializedTokens.weth, serializedTokens.wbtc, serializedTokens.usdc],
+      quoteTokenIndex: 2,
+      reserveAddress: {
+        42261: "0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098",
+      },
+      lpProperties: {
+        weightToken: 60,
+        weightQuoteToken: 40,
         fee: 25
       }
     },

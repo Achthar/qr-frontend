@@ -5,6 +5,7 @@ import { Flex, IconButton, useModal, CalculateIcon } from '@requiemswap/uikit'
 import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { useTranslation } from 'contexts/Localization'
 import { useBondUser } from 'state/bonds/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 const ApyLabelContainer = styled(Flex)`
   cursor: pointer;
@@ -39,7 +40,8 @@ const ApyButton: React.FC<ApyButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const lpPrice = new BigNumber(0)
-  const { tokenBalance, stakedBalance } = useBondUser(bondId)
+  const { chainId } = useNetworkState()
+  const { tokenBalance, stakedBalance } = useBondUser(bondId, chainId)
   const [onPresentApyModal] = useModal(
     <RoiCalculatorModal
       linkLabel={t('Get %symbol%', { symbol: lpLabel })}

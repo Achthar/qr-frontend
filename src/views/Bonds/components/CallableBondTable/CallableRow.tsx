@@ -6,22 +6,18 @@ import { CallableBondWithStakedValue, DesktopColumnSchemaCallable } from 'views/
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
-import { useCallableBondFromBondId, useBondUser, useCallBondUser, useCallableBondUser } from 'state/bonds/hooks'
-import { useBlock } from 'state/block/hooks'
-import { prettifySeconds, secondsUntilBlock } from 'config'
+import { useCallableBondFromBondId, useCallableBondUser } from 'state/bonds/hooks'
+import { prettifySeconds } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
 import { ethers } from 'ethers'
-import Roi, { RoiProps } from './Roi'
-import Apr, { AprProps } from './Apr'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import Roi from './Roi'
 import CallableBond, { CallableBondProps } from './CallableBond'
-import Earned, { EarnedProps } from './Earned'
 import Details from './Details'
-import Multiplier, { MultiplierProps } from './Multiplier'
-import Liquidity, { LiquidityProps } from './Liquidity'
+import Liquidity from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
-import { DesktopColumnSchema, MobileColumnSchema } from '../types'
-import CallBondMobile from './CallableBondMobile'
+import { MobileColumnSchema } from '../types'
 
 
 interface PurchasedProps {
@@ -119,12 +115,14 @@ const BondMobileCell = styled.td`
 
 const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { details, userDataReady, isLast } = props
-  const hasStakedAmount = !!useCallableBondUser(details.bondId).stakedBalance.toNumber()
+  const { chainId } = useNetworkState()
+
+  const hasStakedAmount = !!useCallableBondUser(details.bondId, chainId).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
   const { t } = useTranslation()
 
-  const bond = useCallableBondFromBondId(details.bondId)
+  const bond = useCallableBondFromBondId(details.bondId, chainId)
 
   const toggleActionPanel = () => {
     setActionPanelExpanded(!actionPanelExpanded)

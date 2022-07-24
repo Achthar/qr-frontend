@@ -6,20 +6,18 @@ import { CallBondWithStakedValue, DesktopColumnSchemaCall } from 'views/Bonds/co
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
-import { useCallBondFromBondId, useBondUser, useCallBondUser } from 'state/bonds/hooks'
-import { useBlock } from 'state/block/hooks'
-import { prettifySeconds, secondsUntilBlock } from 'config'
+import { useCallBondFromBondId, useCallBondUser } from 'state/bonds/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
+import { prettifySeconds } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
 import { ethers } from 'ethers'
-import Liquidity, { LiquidityProps } from './Liquidity'
+import Liquidity from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
-import Roi, { RoiProps } from './Roi'
-import Apr, { AprProps } from './Apr'
+import Roi from './Roi'
 import CallBond, { CallBondProps } from './CallBond'
-import Earned, { EarnedProps } from './Earned'
 import Details from './Details'
-import { DesktopColumnSchema, MobileColumnSchema } from '../types'
+import { MobileColumnSchema } from '../types'
 
 
 interface PurchasedProps {
@@ -119,12 +117,13 @@ const BondMobileCell = styled.td`
 
 const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { details, userDataReady, isLast } = props
-  const hasStakedAmount = !!useCallBondUser(details.bondId).stakedBalance.toNumber()
+  const { chainId } = useNetworkState()
+  const hasStakedAmount = !!useCallBondUser(details.bondId, chainId).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
   const { t } = useTranslation()
 
-  const bond = useCallBondFromBondId(details.bondId)
+  const bond = useCallBondFromBondId(details.bondId, chainId)
 
   const toggleActionPanel = () => {
     setActionPanelExpanded(!actionPanelExpanded)

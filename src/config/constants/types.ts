@@ -224,6 +224,8 @@ export interface Available {
 }
 
 export interface BondConfig {
+  publicLoaded?: boolean;
+  userLoaded?: boolean;
   bondId?: number;
   name: string;
   displayName: string;

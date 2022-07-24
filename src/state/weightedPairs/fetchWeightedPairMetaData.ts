@@ -42,7 +42,7 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
   async ({ chainId, tokenPairs }: MetaRequestData): Promise<WeightedPairMetaResponse> => {
     // const tokenPairs = cleanTokenPairs(tokenPairs, getAllTokenPairs(chainId))
     // // cals for existing pool addresses
-    const calls = tokenPairs.map(pair => {
+    const calls = tokenPairs?.map(pair => {
       return {
         address: getAddress(FACTORY_ADDRESS[chainId]),
         name: 'getPairs',
@@ -50,13 +50,15 @@ export const fetchWeightedPairMetaData = createAsyncThunk(
       }
     })
 
-    const rawMetaData = await multicall(chainId, pairFactoryABI, calls)
-
-    const existingPairs = rawMetaData.map((entry, index) => entry._tokenPairs.length > 0 ? index : -1).filter((index) => index > -1)
+    let rawMetaData: any[] = []
+    if (calls) {
+      rawMetaData = await multicall(chainId, pairFactoryABI, calls)
+    }
+    const existingPairs = rawMetaData.length > 0 ? rawMetaData?.map((entry, index) => entry._tokenPairs.length > 0 ? index : -1).filter((index) => index > -1) : []
 
     return {
       metaData: Object.assign(
-        {}, ...existingPairs.map(
+        {}, ...existingPairs?.map(
           (index) =>
           (
             {

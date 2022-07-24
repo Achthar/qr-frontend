@@ -8,6 +8,7 @@ import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
 import { useBondFromBondId, useBondUser } from 'state/bonds/hooks'
 import { useBlock } from 'state/block/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 import { prettifySeconds, secondsUntilBlock } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
 import Roi, { RoiProps } from './Roi'
@@ -119,13 +120,13 @@ const BondMobileCell = styled.td`
 const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { details, userDataReady, isLast } = props
 
-
-  const hasStakedAmount = !!useBondUser(details.bondId).stakedBalance.toNumber()
+  const { chainId } = useNetworkState()
+  const hasStakedAmount = !!useBondUser(details.bondId, chainId).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
   const { t } = useTranslation()
 
-  const bond = useBondFromBondId(details.bondId)
+  const bond = useBondFromBondId(details.bondId, chainId)
 
   const toggleActionPanel = () => {
     setActionPanelExpanded(!actionPanelExpanded)

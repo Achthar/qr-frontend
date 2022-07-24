@@ -1,8 +1,6 @@
 import React from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints } from '@requiemswap/uikit'
-import { useTranslation } from 'contexts/Localization'
-import InfoIcon from 'assets/info.svg'
 import Book from 'assets/infoBook.svg'
 import Loupe from 'assets/loupeWide.svg'
 
@@ -94,7 +92,6 @@ const StyledIconAbs = styled.div<{ height?: number, width?: number, isActive: bo
 `;
 
 const Details: React.FC<DetailsProps> = ({ actionPanelToggled }) => {
-  const { t } = useTranslation()
   const { isDesktop } = useMatchBreakpoints()
 
   return (

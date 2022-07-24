@@ -195,10 +195,35 @@ function Bonds({
   },
 }: RouteComponentProps<{ chain: string }>) {
 
+  const { account, chainId } = useActiveWeb3React()
+
+
+  useEffect(() => {
+    const _chain = getChain(chainId ?? 43113)
+    if (chain !== _chain) {
+      history.push(`/${_chain}/bonds`)
+    }
+
+  },
+    [chain, chainId, history],
+  )
+
+
 
   const { isMobile } = useMatchBreakpoints()
   const { pathname } = useLocation()
-  const { bondData: bondsLP, userDataLoaded, userReward, vanillaNotesClosed, callNotesClosed, userCallDataLoaded, userCallableDataLoaded, callableNotesClosed } = useBonds()
+  const { bonds, userDataLoaded, userReward, userCallDataLoaded, userCallableDataLoaded, closedNotes } = useBonds(chainId)
+
+  const [bondsLP, vanillaNotesClosed, callNotesClosed, callableNotesClosed] = useMemo(() => {
+    return [
+      bonds[chainId].bondData,
+      closedNotes[chainId].vanillaNotesClosed,
+      closedNotes[chainId].callNotesClosed,
+      closedNotes[chainId].callableNotesClosed
+    ]
+  },
+    [closedNotes, chainId, bonds]
+  )
 
   const [query, setQuery] = useState('')
 
@@ -216,8 +241,6 @@ function Bonds({
   const handleSelectCallableMarkets = () => setLiveCallable(!liveSelectedCallable)
 
 
-
-  const { account, chainId } = useActiveWeb3React()
 
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
@@ -300,20 +323,20 @@ function Bonds({
   const chosenBondsMemoized = useMemo(() => {
     let chosenBonds = []
 
-    const sortBonds = (bonds: BondWithStakedValue[]): BondWithStakedValue[] => {
+    const sortBonds = (_bonds: BondWithStakedValue[]): BondWithStakedValue[] => {
       switch (sortOption) {
         case 'apr':
-          return orderBy(bonds, (bond: BondWithStakedValue) => bond.apr + bond.lpRewardsApr, 'desc')
+          return orderBy(_bonds, (bond: BondWithStakedValue) => bond.apr + bond.lpRewardsApr, 'desc')
         case 'earned':
           return orderBy(
-            bonds,
+            _bonds,
             (bond: BondWithStakedValue) => (bond.userData ? Number(bond.userData.earnings) : 0),
             'desc',
           )
         case 'liquidity':
-          return orderBy(bonds, (bond: BondWithStakedValue) => Number(bond.liquidity), 'desc')
+          return orderBy(_bonds, (bond: BondWithStakedValue) => Number(bond.liquidity), 'desc')
         default:
-          return bonds
+          return _bonds
       }
     }
 
@@ -343,17 +366,20 @@ function Bonds({
   ]) // end chosenBondsMemoized
 
 
-  const { bondData, callBondData, callableBondData } = useBonds()
+  const bondState = useBonds(chainId)
+
+  const allBonds = useMemo(() => bondState.bonds[chainId], [bondState.bonds, chainId])
+
+  const [bondData, callBondData, callableBondData] = useMemo(() => [
+    allBonds.bondData,
+    allBonds.callBondData,
+    allBonds.callableBondData
+  ],
+    [
+      allBonds
+    ])
 
   chosenBondsLength.current = chosenBondsMemoized.length
-
-  useEffect(() => {
-    const _chain = chain ?? getChain(chainId)
-    history.push(`/${_chain}/bonds`)
-
-  },
-    [chainId, chain, history],
-  )
 
   const {
     stablePools,
@@ -877,12 +903,12 @@ function Bonds({
         <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} expanded={!liveSelected} />
 
         {renderGeneralCallHeader()}
-        {liveSelectedCall && renderCallContent()}
+        {liveSelectedCall && Object.values(callableBondData).length > 0 && renderCallContent()}
         <CallNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />
 
 
         {renderGeneralCallableHeader()}
-        {liveSelectedCallable && renderCallableContent()}
+        {liveSelectedCallable && Object.values(callableBondData).length > 0 && renderCallableContent()}
         <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCallable} />
 
         {account && !userDataLoaded && (

@@ -30,7 +30,7 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   const { account, chainId } = useActiveWeb3React()
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-  const bonds = useCallBondFromBondIds(bondIds)
+  const bonds = useCallBondFromBondIds(bondIds, chainId)
   const { onClaim } = useClaimRewards(chainId)
 
 

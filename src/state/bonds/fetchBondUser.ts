@@ -184,17 +184,17 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
 
 
   let resultsVanilla = []
-  if (bIds.length > 0)
+  if (bondDepositoryAddress && bIds.length > 0)
     resultsVanilla = await multicall(chainId, bondReserveAVAX, [...calls, ...callsTerms])
 
   let resultsCall = []
 
-  if (bidsCall.length > 0)
+  if (callBondDepositoryAddress && bidsCall.length > 0)
     resultsCall = await multicall(chainId, callBondReserveAVAX, [...callsC, ...callsCTerms])
 
   let resultsCallable = []
 
-  if (bidsCallable.length > 0)
+  if (callableBondDepositoryAddress && bidsCallable.length > 0)
     resultsCallable = await multicall(chainId, callableBondReserveAVAX, [...callsCallable, ...callsCallableTerms])
 
 

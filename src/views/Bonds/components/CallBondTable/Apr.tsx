@@ -59,7 +59,7 @@ const Apr: React.FC<AprProps> = ({
   hideButton = false,
 }) => {
   const { chainId } = useNetworkState()
-  const bond = useBondFromBondId(bondId)
+  const bond = useBondFromBondId(bondId, chainId)
   const liquidityUrlPathParts = getWeightedLiquidityUrlPathParts({
     chainId,
     quoteTokenAddress: getQuoteToken(bond)?.address,

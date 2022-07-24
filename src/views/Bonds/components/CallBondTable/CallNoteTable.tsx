@@ -267,7 +267,7 @@ export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobi
 
 const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
   const { chainId } = useNetworkState()
-  const closed = useClosedCallMarkets()
+  const closed = useClosedCallMarkets(chainId)
 
   const now = Math.round((new Date()).getTime() / 1000);
   const vestingTime = () => {

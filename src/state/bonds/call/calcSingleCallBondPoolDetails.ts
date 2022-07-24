@@ -61,6 +61,7 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
 
     return {
       ...bond,
+      publicLoaded: true,
       bondDiscount,
       debtRatio: debtRatio[0].toString(),
       lpData: {

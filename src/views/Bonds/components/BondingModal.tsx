@@ -54,7 +54,7 @@ const BondingModal: React.FC<BondingModalProps> = (
     reqPrice
   }
 ) => {
-  const bond = useBondFromBondId(bondId)
+  const bond = useBondFromBondId(bondId, chainId)
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)

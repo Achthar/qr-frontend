@@ -274,7 +274,7 @@ export const NoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, isMobile, reqP
 
 const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
     const { chainId } = useNetworkState()
-    const closed = useClosedVanillaMarkets()
+    const closed = useClosedVanillaMarkets(chainId)
     const now = Math.round((new Date()).getTime() / 1000);
     const vestingTime = () => {
         const maturity = Number(note.matured)

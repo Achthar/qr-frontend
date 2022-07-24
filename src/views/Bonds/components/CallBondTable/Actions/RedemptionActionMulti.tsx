@@ -3,8 +3,6 @@ import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
-import ConnectWalletButton from 'components/ConnectWalletButton'
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
@@ -128,7 +126,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   hasPosition
 }) => {
 
-  const bonds = useCallBondFromBondIds(bondIds)
+  const bonds = useCallBondFromBondIds(bondIds, chainId)
   const { onRedeem } = useRedeemCallNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {

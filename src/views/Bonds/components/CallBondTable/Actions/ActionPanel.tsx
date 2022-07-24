@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { useTranslation } from 'contexts/Localization'
 import { LinkExternal, Text, useMatchBreakpoints } from '@requiemswap/uikit'
@@ -10,7 +10,6 @@ import { ethers } from 'ethers';
 import { CallBondWithStakedValue } from 'views/Bonds/components/types'
 import BondingAction from './BondingAction'
 import RedemptionMulti from './RedemptionActionMulti'
-import Roi, { RoiProps } from '../Roi'
 import CallNoteRow, { CallNoteHeaderRow } from '../CallNoteRow'
 import { PreviewPanel } from './PreviewPanel'
 

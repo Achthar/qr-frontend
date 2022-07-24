@@ -7,6 +7,7 @@ import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
+import bondReserveOasis from 'config/abi/oasis/CallableBondDepo.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
 import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
 import { BondAssetType } from 'config/constants/types';
@@ -53,7 +54,7 @@ export const calcSingleCallableBondDetails = createAsyncThunk(
     ]
 
     const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, bondReserveAVAX, calls)
+      await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
 
     // calls from pair used for pricing
     const callsPair = [
@@ -94,6 +95,7 @@ export const calcSingleCallableBondDetails = createAsyncThunk(
     return {
       ...bond,
       bondDiscount,
+      publicLoaded: true,
       debtRatio: debtRatio[0].toString(),
       lpData: {
         lpTotalSupply: supply?.[0]?.toString(),
@@ -111,7 +113,8 @@ export const calcSingleCallableBondDetails = createAsyncThunk(
         payoffPercentage: terms.maxPayoffPercentage.toString()
       },
       market: {
-        underlying: getAddress(market.underlying),
+        underlying: chainId === 43113 ? getAddress(market.underlying) : market.underlying,
+        quote: chainId === 43113 ? "" : market?.quote ?? "USD",
         capacity: market.capacity.toString(),
         capacityInQuote: Boolean(market.capacityInQuote.toString()),
         totalDebt: market.totalDebt.toString(),

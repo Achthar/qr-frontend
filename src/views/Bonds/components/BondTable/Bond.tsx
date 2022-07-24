@@ -7,6 +7,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 export interface BondProps {
   label: string
@@ -35,7 +36,8 @@ const TokenWrapper = styled.div`
 `
 
 const Bond: React.FunctionComponent<BondProps> = ({ label, bondId, tokens }) => {
-  const { stakedBalance } = useBondUser(bondId)
+  const { chainId } = useNetworkState()
+  const { stakedBalance } = useBondUser(bondId, chainId)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
   const { isDesktop, isMobile } = useMatchBreakpoints()

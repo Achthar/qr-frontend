@@ -128,7 +128,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   hasPosition
 }) => {
 
-  const bonds = useCallableBondFromBondIds(bondIds)
+  const bonds = useCallableBondFromBondIds(bondIds, chainId)
   const { onRedeem } = useRedeemCallableNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {

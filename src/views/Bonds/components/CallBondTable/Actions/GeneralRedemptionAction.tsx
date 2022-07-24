@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
-import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading } from '@requiemswap/uikit'
-import { useLocation } from 'react-router-dom'
+import { Button, Skeleton } from '@requiemswap/uikit'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 
@@ -12,7 +11,7 @@ import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { CallNote } from 'state/types'
-import { ActionTitles, ActionContent } from './styles'
+import { ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
   display: flex;

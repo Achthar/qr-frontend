@@ -20,13 +20,13 @@ import { OracleData, OracleState } from 'state/oracles/reducer'
 import { BondAssetType, BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails'
-import { setLpLink, setLpPrice } from './actions'
+import { changeChainIdBonds, setLpLink, setLpPrice } from './actions'
 import { fetchBondMeta, fetchBondUserDataAsync, fetchCallableBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
 import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDetails'
 import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails'
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails'
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails'
-import { State, Bond, BondsState, CallBond, CallableBond } from '../types'
+import { State, Bond, CallBond, CallableBond, BondsState } from '../types'
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -37,60 +37,78 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
   const dispatch = useAppDispatch()
   const { slowRefresh, fastRefresh } = useRefresh()
   const { account, library } = useActiveWeb3React()
-  const { metaLoaded, bondData, callBondData, callableBondData } = useBonds()
+  const { metaLoaded, bonds, referenceChainId } = useBonds(chainId)
+
   useEffect(() => {
-    // const bondsToFetch = bondList(chainId)
+    // set new chainId if changed - resets state, too
+    if (referenceChainId !== chainId) {
+      dispatch(changeChainIdBonds({ newChainId: chainId }))
+    }
+  },
+    [chainId, referenceChainId, dispatch]
+  )
 
-
-    // const bondIds = bondsToFetch.map((bondToFetch) => bondToFetch.bondId)
+  useEffect(() => {
 
     if (!metaLoaded) {
       const bondMeta = bondConfig(chainId)
       dispatch(fetchBondMeta({ chainId, bondMeta }))
     } else {
-      const bondsToFetch = Object.values(bondData)
-      const callBondsToFetch = Object.values(callBondData)
-      const callableBondsToFetch = Object.values(callableBondData)
-
+      const bondsToFetch = Object.values(bonds[chainId].bondData)
+      const callBondsToFetch = Object.values(bonds[chainId].callBondData)
+      const callableBondsToFetch = Object.values(bonds[chainId].callableBondData)
+      
       bondsToFetch.map(
         (bond) => {
-          if (bond.bondType === BondType.Vanilla) {
-            if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          if (!bond.publicLoaded) {
+            if (bond.bondType === BondType.Vanilla) {
+              if (bond.assetType === BondAssetType.PairLP) {
+                dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
+              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+                dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
             }
-            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-              dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-            }
+            return 0
           }
           return 0
+
         }
       )
 
       callBondsToFetch.map(
         (bond) => {
-          if (bond.bondType === BondType.Call) {
-            if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          if (!bond.publicLoaded) {
+            if (bond.bondType === BondType.Call) {
+              if (bond.assetType === BondAssetType.PairLP) {
+                dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
+              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+                dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
             }
-            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-            }
+            return 0
           }
           return 0
+
         }
       )
 
       callableBondsToFetch.map(
         (bond) => {
-          if (bond.bondType === BondType.Callable) {
-            if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleCallableBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+          if (!bond.publicLoaded) {
+            if (bond.bondType === BondType.Callable) {
+              if (bond.assetType === BondAssetType.PairLP) {
+                dispatch(calcSingleCallableBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
+              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+                dispatch(calcSingleCallableBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              }
             }
-            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-              dispatch(calcSingleCallableBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-            }
+            return 0
           }
           return 0
+
         }
       )
     }
@@ -106,23 +124,35 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       metaLoaded
     ])
 
-  const { bondData: bonds, userDataLoaded, callBondData: callBonds, callableBondData: callableBonds, closedMarketsLoaded, vanillaNotesClosed, callNotesClosed, callableNotesClosed } = useBonds()
+  const {
+    bonds: bondsAfter,
+    userDataLoaded,
+    userCallDataLoaded,
+    userCallableDataLoaded,
+    closedMarketsLoaded,
+    closedNotes
+  } = useBonds(chainId)
+
   useEffect(() => {
     if (metaLoaded) {
       // fetch user data if account provided
       if (account) {
         if (!userDataLoaded) {
-          dispatch(fetchBondUserDataAsync({ chainId, account, bonds: Object.values(bonds) }))
-          dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: Object.values(callableBonds) }))
-          dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: Object.values(callBonds) }))
+          dispatch(fetchBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].bondData) }))
+        }
+        if (!userCallDataLoaded) {
+          dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].callBondData) }))
+        }
+        if (!userCallableDataLoaded) {
+          dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].callableBondData) }))
         }
 
-        if (!closedMarketsLoaded && userDataLoaded && (callNotesClosed.length > 0 || vanillaNotesClosed.length > 0 || callableNotesClosed.length > 0)) {
+        if (!closedMarketsLoaded && userDataLoaded && (closedNotes[chainId].callNotesClosed.length > 0 || closedNotes[chainId].vanillaNotesClosed.length > 0 || closedNotes[chainId].callableNotesClosed.length > 0)) {
           dispatch(fetchClosedBondsUserAsync({
             chainId,
-            bIds: vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique),
-            bIdsC: callNotesClosed.map(noC => noC.marketId).filter(onlyUnique),
-            bIdsCallable: callableNotesClosed.map(noC => noC.marketId).filter(onlyUnique)
+            bIds: closedNotes[chainId].vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique),
+            bIdsC: closedNotes[chainId].callNotesClosed.map(noC => noC.marketId).filter(onlyUnique),
+            bIdsCallable: closedNotes[chainId].callableNotesClosed.map(noC => noC.marketId).filter(onlyUnique)
           }))
         }
       }
@@ -134,79 +164,76 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
       fastRefresh,
       account,
       bonds,
-      callBonds,
-      closedMarketsLoaded,
-      vanillaNotesClosed,
-      callNotesClosed
+      closedMarketsLoaded
     ])
 }
 
 /**
- * Fetches the "core" bond data used globally
+ * Fetches the "core" bond data used globally for specific chainId
  */
 
-export const useBonds = (): BondsState => {
+export const useBonds = (chainId: number): BondsState => {
   const bonds = useSelector((state: State) => state.bonds)
   return bonds
 }
 
-export const useClosedVanillaMarkets = () => {
+export const useClosedVanillaMarkets = (chainId: number) => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bonds.vanillaBondsClosed
+  return bonds.bondsClosed[chainId].vanillaBondsClosed
 }
 
-export const useClosedCallMarkets = () => {
+export const useClosedCallMarkets = (chainId: number) => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bonds.callBondsClosed
+  return bonds.bondsClosed[chainId].callBondsClosed
 }
 
 
-export const useClosedCallableMarkets = () => {
+export const useClosedCallableMarkets = (chainId: number) => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bonds.callableBondsClosed
+  return bonds.bondsClosed[chainId].callableBondsClosed
 }
 
 
 export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
   const bonds = useSelector((state: State) => state.bonds)
-  return bondIds.map(id => bonds.bondData[id].reserveAddress[chainId])
+  return bondIds.map(id => bonds.bonds[chainId].bondData[id].reserveAddress[chainId])
 
 }
 
-export const useBondFromBondId = (bondId): Bond => {
+export const useBondFromBondId = (bondId: number, chainId: number): Bond => {
 
-  const bond = useSelector((state: State) => state.bonds.bondData[bondId])
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].bondData[bondId])
   return bond
 }
 
-export const useBondFromBondIds = (bondIds: number[]): Bond[] => {
+export const useBondFromBondIds = (bondIds: number[], chainId: number): Bond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.bondData)
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].bondData)
   return bondIds.map(bId => bond[bId])
 }
 
 
-export const useCallBondFromBondId = (bondId): CallBond => {
+export const useCallBondFromBondId = (bondId: number, chainId: number): CallBond => {
 
-  const bond = useSelector((state: State) => state.bonds.callBondData[bondId])
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData[bondId])
   return bond
 }
 
-export const useCallBondFromBondIds = (bondIds: number[]): CallBond[] => {
+export const useCallBondFromBondIds = (bondIds: number[], chainId: number): CallBond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.callBondData)
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData)
   return bondIds.map(bId => bond[bId])
 }
 
-export const useCallableBondFromBondId = (bondId): CallableBond => {
+export const useCallableBondFromBondId = (bondId: number, chainId: number): CallableBond => {
 
-  const bond = useSelector((state: State) => state.bonds.callableBondData[bondId])
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callableBondData[bondId])
   return bond
 }
 
-export const useCallableBondFromBondIds = (bondIds: number[]): CallableBond[] => {
+export const useCallableBondFromBondIds = (bondIds: number[], chainId: number): CallableBond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.callableBondData)
+  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callableBondData)
   return bondIds.map(bId => bond[bId])
 }
 
@@ -214,8 +241,8 @@ export const useCallableBondFromBondIds = (bondIds: number[]): CallableBond[] =>
 /**
  *  Returns bond user data for id
  */
-export const useBondUser = (bondId) => {
-  const bond = useBondFromBondId(bondId)
+export const useBondUser = (bondId: number, chainId: number) => {
+  const bond = useBondFromBondId(bondId, chainId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
@@ -237,8 +264,8 @@ export const useBondUser = (bondId) => {
 /**
  *  Returns call bond user data for id
  */
-export const useCallBondUser = (bondId) => {
-  const bond = useCallBondFromBondId(bondId)
+export const useCallBondUser = (bondId: number, chainId: number) => {
+  const bond = useCallBondFromBondId(bondId, chainId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
@@ -260,8 +287,8 @@ export const useCallBondUser = (bondId) => {
 /**
  *  Returns bond user data for id
  */
-export const useCallableBondUser = (bondId) => {
-  const bond = useCallableBondFromBondId(bondId)
+export const useCallableBondUser = (bondId: number, chainId: number) => {
+  const bond = useCallableBondFromBondId(bondId, chainId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,
@@ -296,14 +323,15 @@ export interface PricingInput {
  *  Prices all bonds using the trading state (pairs and pools)
  */
 export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded, pairs, pairsLoaded }: PricingInput) => {
-  const bonds = useBonds()
+  const bonds = useBonds(chainId)
+
   const dispatch = useAppDispatch()
   const metaLoaded = bonds.metaLoaded
 
   /** VANILLA bonds start here */
-  const data = bonds.bondData
+  const data = bonds.bonds[chainId].bondData
   useEffect(() => {
-    if (!metaLoaded) return;
+    if (!metaLoaded || chainId !== bonds.referenceChainId) return;
     const bondsWithIds = Object.values(data)
     bondsWithIds.map(bondWithNoPrice => {
       let price: ethers.BigNumber;
@@ -370,7 +398,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
   )
 
   /** CALL bonds start here */
-  const callData = bonds.callBondData
+  const callData = bonds.bonds[chainId].callBondData
 
   useEffect(() => {
     if (!metaLoaded) return;
@@ -441,7 +469,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
 
 
   /** CALL bonds start here */
-  const callableData = bonds.callableBondData
+  const callableData = bonds.bonds[chainId].callableBondData
 
   useEffect(() => {
     if (!metaLoaded) return;
@@ -522,20 +550,20 @@ export const useGetOracleData = (chainId: number, address: string, oracles: { [a
 
 // /!\ Deprecated , use the BUSD hook in /hooks
 
-export const usePriceNetworkCCYUsd = (): BigNumber => {
-  const bnbUsdBond = useBondFromBondId(1)
+export const usePriceNetworkCCYUsd = (chainId: number): BigNumber => {
+  const bnbUsdBond = useBondFromBondId(1, chainId)
   return new BigNumber(3243) // new BigNumber(bnbUsdBond.quoteToken.busdPrice)
 }
 
 
-export const usePriceNetworkDollar = (): BigNumber => {
-  const networkDollarBond = useBondFromBondId(1)
+export const usePriceNetworkDollar = (chainId: number): BigNumber => {
+  const networkDollarBond = useBondFromBondId(1, chainId)
   return new BigNumber(806) // new BigNumber(networkDollarBond.quoteToken.busdPrice)
 }
 
 
-export const usePriceRequiemDollar = (): BigNumber => {
-  const requiemDollarBond = useBondFromBondId(251)
+export const usePriceRequiemDollar = (chainId: number): BigNumber => {
+  const requiemDollarBond = useBondFromBondId(251, chainId)
 
   const requiemPriceDollarAsString = '1.321' // requiemDollarBond.token.busdPrice
 

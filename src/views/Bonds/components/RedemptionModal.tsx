@@ -2,32 +2,18 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { Flex, Text, Button, Modal, LinkExternal, CalculateIcon, IconButton } from '@requiemswap/uikit'
-import { ModalActions, ModalInput } from 'components/Modal'
-import RoiCalculatorModal from 'components/RoiCalculatorModal'
+import { Flex, Text, Button, Modal, LinkExternal } from '@requiemswap/uikit'
+import { ModalActions } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { getInterestBreakdown } from 'utils/compoundApyHelpers'
 import { useBondFromBondId } from 'state/bonds/hooks'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { TokenAmount } from '@requiemswap/sdk'
-import { blocksToDays, prettifySeconds, prettyVestingPeriod, secondsUntilBlock } from 'config'
+import { prettifySeconds } from 'config'
 import { bnParser } from 'utils/helper'
-import { useBlockNumber } from 'state/application/hooks'
 import { useBlock } from 'state/block/hooks'
-
-const AnnualRoiContainer = styled(Flex)`
-  cursor: pointer;
-`
-
-const AnnualRoiDisplay = styled(Text)`
-  width: 72px;
-  max-width: 72px;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-`
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 interface RedemptionModalProps {
   bondId: number
@@ -56,7 +42,8 @@ const RedemptionModal: React.FC<RedemptionModalProps> = ({
   addLiquidityUrl,
   reqtPrice,
 }) => {
-  const bond = useBondFromBondId(bondId)
+  const { chainId } = useNetworkState()
+  const bond = useBondFromBondId(bondId, chainId)
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)

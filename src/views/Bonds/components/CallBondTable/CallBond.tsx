@@ -48,8 +48,8 @@ const StyledLogo = styled(Logo) <{ size: string }>`
 
 const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, tokens }) => {
   const { chainId } = useNetworkState()
-  const { stakedBalance } = useCallBondUser(bondId)
-  const bond = useCallBondFromBondId(bondId)
+  const { stakedBalance } = useCallBondUser(bondId, chainId)
+  const bond = useCallBondFromBondId(bondId, chainId)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
   const { isDesktop, isMobile } = useMatchBreakpoints()

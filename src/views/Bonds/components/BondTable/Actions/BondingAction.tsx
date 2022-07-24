@@ -78,8 +78,8 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId)
-  const bond = useBondFromBondId(bondId)
+  const { allowance, tokenBalance, stakedBalance } = useBondUser(bondId, chainId)
+  const bond = useBondFromBondId(bondId, chainId)
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const location = useLocation()
 

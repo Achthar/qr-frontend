@@ -1,15 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useBondUser, useCallableBondUser, useCallableBondFromBondId, useCallBondUser, useGetOracleData } from 'state/bonds/hooks'
-import { useTranslation } from 'contexts/Localization'
+import { useCallableBondUser, useCallableBondFromBondId, useGetOracleData } from 'state/bonds/hooks'
 import { Flex, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import { getBalanceNumber } from 'utils/formatBalance'
 import { BondAssetType, SerializedToken } from 'config/constants/types'
-import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
+import { deserializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { useOracleState } from 'state/oracles/hooks'
 import { useNetworkState } from 'state/globalNetwork/hooks'
-import { CurrencyLogo } from 'components/Logo'
 import Logo from 'components/Logo/Logo'
 import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
 
@@ -48,16 +46,15 @@ const StyledLogo = styled(Logo) <{ size: string }>`
 
 const CallableBond: React.FunctionComponent<CallableBondProps> = ({ label, bondId, tokens }) => {
   const { chainId } = useNetworkState()
-  const { stakedBalance } = useCallableBondUser(bondId)
-  const bond = useCallableBondFromBondId(bondId)
-  const { t } = useTranslation()
+  const { stakedBalance } = useCallableBondUser(bondId, chainId)
+  const bond = useCallableBondFromBondId(bondId, chainId)
   const rawStakedBalance = getBalanceNumber(stakedBalance)
   const { isDesktop, isMobile } = useMatchBreakpoints()
   const handleRenderBonding = (): JSX.Element => {
     if (rawStakedBalance) {
       return (
         <Text color="secondary" fontSize="12px" bold textTransform="uppercase">
-          {t('Bonding')}
+          Bonding
         </Text>
       )
     }

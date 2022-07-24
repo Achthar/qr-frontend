@@ -124,6 +124,7 @@ export interface VanillaMarket {
 
 export interface CallMarket extends VanillaMarket {
   underlying: string;
+  quote?: string
 }
 
 export interface ClosedVanillaMarket {
@@ -134,6 +135,7 @@ export interface ClosedVanillaMarket {
 
 export interface ClosedCallMarket extends ClosedVanillaMarket {
   underlying?: string;
+  quote?: string;
 }
 
 
@@ -158,15 +160,15 @@ export interface ClosedCallableTerms extends ClosedVanillaTerms {
 export interface ClosedVanillaBond {
   market: ClosedVanillaMarket
   terms: ClosedVanillaTerms;
-  
+
 }
 
-export interface ClosedCallBond  {
+export interface ClosedCallBond {
   market: ClosedCallMarket
   terms: ClosedCallTerms;
 }
 
-export interface ClosedCallableBond  {
+export interface ClosedCallableBond {
   market: ClosedCallMarket
   terms: ClosedCallableTerms;
 }
@@ -310,6 +312,7 @@ export interface CallableBond extends BondConfig, IBondDetails {
 }
 
 export interface BondsState {
+  referenceChainId: number
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   userDataLoading: boolean
@@ -320,24 +323,36 @@ export interface BondsState {
   status?: string
   liveMarkets?: number[]
   metaLoaded: boolean
-  bondData: {
-    [bondId: number]: Bond
-  },
-  callBondData: {
-    [bondId: number]: CallBond
-  },
-  callableBondData: {
-    [bondId: number]: CallableBond
-  },
+  bonds: {
+    [chainId: number]: {
+      bondData: {
+        [bondId: number]: Bond
+      },
+      callBondData: {
+        [bondId: number]: CallBond
+      },
+      callableBondData: {
+        [bondId: number]: CallableBond
+      }
+    }
+  }
   userReward: string
   userRewardCall: string
   userRewardCallable: string
-  vanillaNotesClosed: VanillaNote[]
-  callNotesClosed: CallNote[]
-  callableNotesClosed: CallableNote[]
-  vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
-  callBondsClosed: { [bondId: number]: ClosedCallBond }
-  callableBondsClosed: { [bondId: number]: ClosedCallableBond }
+  closedNotes: {
+    [chainId: number]: {
+      vanillaNotesClosed: VanillaNote[]
+      callNotesClosed: CallNote[]
+      callableNotesClosed: CallableNote[]
+    }
+  }
+  bondsClosed: {
+    [chainId: number]: {
+      vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
+      callBondsClosed: { [bondId: number]: ClosedCallBond }
+      callableBondsClosed: { [bondId: number]: ClosedCallableBond }
+    }
+  }
   closedMarketsLoaded: boolean
 
 }

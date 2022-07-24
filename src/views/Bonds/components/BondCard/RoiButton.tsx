@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
-import { Flex, IconButton, useModal, CalculateIcon, Text } from '@requiemswap/uikit'
-import BondRoiCalculatorModal from 'components/RoiCalculatorModal/BondRoiCalculator'
+import { Flex, IconButton, CalculateIcon, Text } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { useBondUser } from 'state/bonds/hooks'
+import { useNetworkState } from 'state/globalNetwork/hooks'
 
 const RoiLabelContainer = styled(Flex)`
   cursor: pointer;
@@ -37,9 +37,9 @@ const RoiButton: React.FC<RoiButtonProps> = ({
   addLiquidityUrl,
   isMobile = false
 }) => {
-  const { t } = useTranslation()
+  const { chainId } = useNetworkState()
   const lpPrice = new BigNumber(1) // useLpTokenPrice(lpSymbol)
-  const { tokenBalance, stakedBalance } = useBondUser(bondId)
+  const { tokenBalance, stakedBalance } = useBondUser(bondId, chainId)
 
   return (
     <RoiLabelContainer alignItems="center" onClick={() => { return null }}>

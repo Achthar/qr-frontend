@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
-import { Button, useModal, IconButton, AddIcon, MinusIcon, Skeleton, Text, Heading, useTooltip, HelpIcon, Flex } from '@requiemswap/uikit'
+import { Button, useModal, Skeleton, Text, useTooltip, HelpIcon, Flex } from '@requiemswap/uikit'
 import { useLocation } from 'react-router-dom'
 import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useCallBondFromBondId, useBondUser, useCallBondUser } from 'state/bonds/hooks'
+import { useCallBondFromBondId, useCallBondUser } from 'state/bonds/hooks'
 import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
@@ -74,8 +74,8 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { allowance, tokenBalance, stakedBalance } = useCallBondUser(bondId)
-  const bond = useCallBondFromBondId(bondId)
+  const { allowance, tokenBalance, stakedBalance } = useCallBondUser(bondId,chainId)
+  const bond = useCallBondFromBondId(bondId,chainId)
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const location = useLocation()
 

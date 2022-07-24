@@ -184,7 +184,6 @@ export default function GovernanceAssetBackedRequiem({
 
   const { balances, isLoading } = useGetRequiemAmounts(chainId)
 
-  console.log("STAKING BALS", balances, tokenA.address, tokenB.address)
   // value for currency input panel
   const [inputValue, onCurrencyInput] = useState('0')
 

@@ -58,6 +58,8 @@ import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import callBondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import callableBondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
 
+import callableBondReserveOasis from 'config/abi/oasis/CallableBondDepo.json'
+
 import redRequiem from 'config/abi/avax/RedRequiem.json'
 import redRequiemStaking from 'config/abi/avax/RedRequiemStaking.json'
 // ABI polygon
@@ -190,11 +192,11 @@ export const getContractForCallBondDepo = (chainId: number, signer?: ethers.Sign
 
 export const getContractForCallableBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
   const bondAddress = getCallableBondingDepositoryAddress(chainId) || "";
-  const ABI = new Interface(callableBondReserveAVAX)
+  const ABI = new Interface(chainId === 43113 ? callableBondReserveAVAX : callableBondReserveOasis)
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 
-export const getBondingDepositoryContract = (chainId: number, bondType:BondType, signer?: ethers.Signer | ethers.providers.Provider) => {
+export const getBondingDepositoryContract = (chainId: number, bondType: BondType, signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(chainId, chainId === 43113 ? new Interface(bondReserveAVAX) : bondReserveAVAX, getBondingDepositoryAddress(chainId), signer)
 }
 
