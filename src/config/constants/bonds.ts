@@ -4,9 +4,9 @@ import { serializeTokens } from './tokens'
 import { BondConfig, BondAssetType } from './types'
 
 export const bondConfig = (chainId: number): BondConfig[] => {
-  const serializedTokens = serializeTokens(chainId ?? 43113)
+  const serializedTokens = serializeTokens(chainId)
   // const serializedNetworkCcy = serializeToken(WRAPPED_NETWORK_TOKENS[chainId ?? 43113])
-  return chainId === 43113 ? [
+  if (chainId === 43113) return [
     {
       name: "50/50 wAVAX-USDC Deprecated",
       displayName: "50% AREQ - 50% USDC",
@@ -135,7 +135,9 @@ export const bondConfig = (chainId: number): BondConfig[] => {
         fee: 25
       }
     },
-  ] : [
+  ]
+
+  return [
     {
       name: "req3USD LP",
       displayName: "3-USD Stable Pool LP",

@@ -7,7 +7,7 @@ import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
-import { useOracleState } from 'state/oracles/hooks'
+import { useGetOracle, useOracleState } from 'state/oracles/hooks'
 import { useGetOracleData } from 'state/bonds/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
@@ -209,9 +209,7 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
         return (maturity >= now) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
-    const oracleState = useOracleState(chainId)
-
-    const oracleData = useGetOracleData(chainId, bond?.market?.underlying, oracleState.oracles)
+    const oracleData = useGetOracle(chainId, bond?.market?.underlying, bond?.market?.quote)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])

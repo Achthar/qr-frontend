@@ -48,8 +48,7 @@ export const calcSingleCallableBondPoolDetails = createAsyncThunk(
       },
     ]
 
-    const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
+    const [market, debtRatio, terms, bondPrice] = await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
 
     const [reserves, supply] = [['0', '0'], '0']
 

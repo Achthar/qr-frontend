@@ -33,12 +33,11 @@ function onlyUnique(value, index, self) {
 }
 
 
-export const usePollBondsWithUserData = (chainId: number, includeArchive = false) => {
+export const usePollBondsWithUserData = (chainId: number) => {
   const dispatch = useAppDispatch()
   const { slowRefresh, fastRefresh } = useRefresh()
   const { account, library } = useActiveWeb3React()
-  const { metaLoaded, bonds, referenceChainId } = useBonds(chainId)
-
+  const { referenceChainId } = useBonds()
   useEffect(() => {
     // set new chainId if changed - resets state, too
     if (referenceChainId !== chainId) {
@@ -48,66 +47,75 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     [chainId, referenceChainId, dispatch]
   )
 
-  useEffect(() => {
+  const { metaLoaded } = useBonds()
 
+  useEffect(() => {
     if (!metaLoaded) {
       const bondMeta = bondConfig(chainId)
       dispatch(fetchBondMeta({ chainId, bondMeta }))
-    } else {
+    }
+  },
+    [metaLoaded, chainId, dispatch]
+  )
+
+  const { bonds } = useBonds()
+
+  useEffect(() => {
+    if (metaLoaded) {
       const bondsToFetch = Object.values(bonds[chainId].bondData)
       const callBondsToFetch = Object.values(bonds[chainId].callBondData)
       const callableBondsToFetch = Object.values(bonds[chainId].callableBondData)
-      
+
       bondsToFetch.map(
         (bond) => {
-          if (!bond.publicLoaded) {
-            if (bond.bondType === BondType.Vanilla) {
-              if (bond.assetType === BondAssetType.PairLP) {
-                dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
-              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-                dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
+          // if (!bond.publicLoaded) {
+          if (bond.bondType === BondType.Vanilla) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
-            return 0
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleBondStableLpDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
           }
           return 0
+          // }
+          // return 0
 
         }
       )
 
       callBondsToFetch.map(
         (bond) => {
-          if (!bond.publicLoaded) {
-            if (bond.bondType === BondType.Call) {
-              if (bond.assetType === BondAssetType.PairLP) {
-                dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
-              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-                dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
+          // if (!bond.publicLoaded) {
+          if (bond.bondType === BondType.Call) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
-            return 0
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
           }
           return 0
+          // }
+          // return 0
 
         }
       )
 
       callableBondsToFetch.map(
         (bond) => {
-          if (!bond.publicLoaded) {
-            if (bond.bondType === BondType.Callable) {
-              if (bond.assetType === BondAssetType.PairLP) {
-                dispatch(calcSingleCallableBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
-              if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-                dispatch(calcSingleCallableBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
-              }
+          // if (!bond.publicLoaded) {
+          if (bond.bondType === BondType.Callable) {
+            if (bond.assetType === BondAssetType.PairLP) {
+              dispatch(calcSingleCallableBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
-            return 0
+            if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
+              dispatch(calcSingleCallableBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+            }
           }
           return 0
+          // }
+          // return 0
 
         }
       )
@@ -116,10 +124,9 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       chainId,
-      includeArchive,
       dispatch,
       library,
-      slowRefresh,
+      fastRefresh,
       account,
       metaLoaded
     ])
@@ -131,20 +138,26 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
     userCallableDataLoaded,
     closedMarketsLoaded,
     closedNotes
-  } = useBonds(chainId)
+  } = useBonds()
 
   useEffect(() => {
     if (metaLoaded) {
       // fetch user data if account provided
       if (account) {
-        if (!userDataLoaded) {
-          dispatch(fetchBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].bondData) }))
+
+        const vanillas = Object.values(bondsAfter[chainId].bondData)
+        if (!userDataLoaded && vanillas.length > 0) {
+          dispatch(fetchBondUserDataAsync({ chainId, account, bonds: vanillas }))
         }
-        if (!userCallDataLoaded) {
-          dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].callBondData) }))
+
+        const digitals = Object.values(bondsAfter[chainId].callBondData)
+        if (!userCallDataLoaded && digitals.length > 0) {
+          dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: digitals }))
         }
-        if (!userCallableDataLoaded) {
-          dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: Object.values(bondsAfter[chainId].callableBondData) }))
+
+        const callables = Object.values(bondsAfter[chainId].callableBondData)
+        if (!userCallableDataLoaded && callables.length > 0) {
+          dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: callables }))
         }
 
         if (!closedMarketsLoaded && userDataLoaded && (closedNotes[chainId].callNotesClosed.length > 0 || closedNotes[chainId].vanillaNotesClosed.length > 0 || closedNotes[chainId].callableNotesClosed.length > 0)) {
@@ -172,7 +185,7 @@ export const usePollBondsWithUserData = (chainId: number, includeArchive = false
  * Fetches the "core" bond data used globally for specific chainId
  */
 
-export const useBonds = (chainId: number): BondsState => {
+export const useBonds = (): BondsState => {
   const bonds = useSelector((state: State) => state.bonds)
   return bonds
 }
@@ -323,7 +336,7 @@ export interface PricingInput {
  *  Prices all bonds using the trading state (pairs and pools)
  */
 export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePools, stableLoaded, pairs, pairsLoaded }: PricingInput) => {
-  const bonds = useBonds(chainId)
+  const bonds = useBonds()
 
   const dispatch = useAppDispatch()
   const metaLoaded = bonds.metaLoaded
@@ -387,8 +400,8 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
 
-      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla }))
-      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla }))
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla, chainId }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Vanilla, chainId }))
       // eslint-disable-next-line no-useless-return
       return;
     })
@@ -457,8 +470,8 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
 
-      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
-      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Call }))
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Call, chainId }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Call, chainId }))
       // eslint-disable-next-line no-useless-return
       return;
     })
@@ -527,8 +540,8 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
         price = weightedPoolValuation(pool, deserializeToken(bondWithNoPrice.tokens[bondWithNoPrice.quoteTokenIndex]), amount, pool?.lpTotalSupply)
       }
 
-      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Callable }))
-      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Callable }))
+      dispatch(setLpPrice({ price: price?.toString() ?? '1', bondId: bondWithNoPrice.bondId, bondType: BondType.Callable, chainId }))
+      dispatch(setLpLink({ link, bondId: bondWithNoPrice.bondId, bondType: BondType.Callable, chainId }))
       // eslint-disable-next-line no-useless-return
       return;
     })

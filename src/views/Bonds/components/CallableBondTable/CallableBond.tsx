@@ -6,7 +6,7 @@ import { getBalanceNumber } from 'utils/formatBalance'
 import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
-import { useOracleState } from 'state/oracles/hooks'
+import { useGetOracle, useOracleState } from 'state/oracles/hooks'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import Logo from 'components/Logo/Logo'
 import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
@@ -61,11 +61,8 @@ const CallableBond: React.FunctionComponent<CallableBondProps> = ({ label, bondI
 
     return null
   }
-  const oracleState = useOracleState(chainId)
 
-  const oracleData = useGetOracleData(chainId, bond?.market?.underlying, oracleState.oracles)
-
-
+  const oracleData = useGetOracle(chainId, bond?.market?.underlying, bond?.market?.quote)
   return (
     <Container>
       <TokenWrapper>

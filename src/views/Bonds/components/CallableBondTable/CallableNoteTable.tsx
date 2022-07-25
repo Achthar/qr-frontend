@@ -12,7 +12,7 @@ import { calculateUserPayCallableClosed, getConfigForVanillaNote } from 'utils/b
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { useClosedCallableMarkets, useGetOracleData } from 'state/bonds/hooks'
-import { useOracleState } from 'state/oracles/hooks'
+import { useGetOracle, useOracleState } from 'state/oracles/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
@@ -291,10 +291,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
     }
   }, [chainId, note, closed, cfg])
 
-
-  const oracleState = useOracleState(chainId)
-
-  const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
+  const oracleData = useGetOracle(chainId, closed[note?.marketId]?.market?.underlying, closed[note?.marketId]?.market?.quote)
 
   const [moneynessPerc, optPayout] = useMemo(() => {
     const { moneyness, pay } = calculateUserPayCallableClosed(note, closed[note?.marketId]?.terms, oracleData?.value)

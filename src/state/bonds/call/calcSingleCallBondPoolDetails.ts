@@ -6,6 +6,7 @@ import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
 import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
+import bondReserveOasis from 'config/abi/oasis/DigitalCallBondDepo.json'
 import { ICalcCallBondDetailsAsyncThunk } from '../types';
 import { CallBond } from '../../types'
 
@@ -48,7 +49,7 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
     ]
 
     const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, bondReserveAVAX, calls)
+      await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
 
     const [reserves, supply] = [['0', '0'], '0']
 
@@ -80,7 +81,8 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
         payoffPercentage: terms.payoffPercentage.toString()
       },
       market: {
-        underlying: getAddress(market.underlying),
+        underlying: chainId === 43113 ? getAddress(market.underlying) : market.underlying,
+        quote: chainId === 43113 ? "" : market?.quote ?? "USD",
         capacity: market.capacity.toString(),
         capacityInQuote: Boolean(market.capacityInQuote.toString()),
         totalDebt: market.totalDebt.toString(),

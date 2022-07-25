@@ -1,5 +1,5 @@
 import { PoolType, STABLECOINS, StablePool, TokenAmount } from '@requiemswap/sdk'
-import { ABREQ, DAI, REQT } from 'config/constants/tokens'
+import { ABREQ, DAI, REQT, USDC } from 'config/constants/tokens'
 import { PoolClass } from 'config/constants/types'
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils'
@@ -66,13 +66,15 @@ export const priceRequiem = (chainId: number, allPairs: { [key: string]: { [weig
 
 
 export const priceAssetBackedRequiem = (chainId: number, allPairs: { [key: string]: { [weight0fee: string]: SerializedWeightedPair } }): number => {
-    const quoteIs0 = DAI[chainId].address.toLowerCase() < ABREQ[chainId].address.toLowerCase()
-    const key = quoteIs0 ? `${DAI[chainId].address}-${ABREQ[chainId].address}` : `${ABREQ[chainId].address}-${DAI[chainId].address}`
+    const quote = chainId === 43113 ? DAI[chainId] : USDC[chainId]
+    const quoteIs0 = quote.address.toLowerCase() < ABREQ[chainId].address.toLowerCase()
+    const key = quoteIs0 ? `${quote.address}-${ABREQ[chainId].address}` : `${ABREQ[chainId].address}-${quote.address}`
     if (!allPairs || !allPairs[key])
         return 0
     const relevantPairs = Object.values(allPairs[key])
     const [prices, totalVal] = quoteIs0 ? [relevantPairs.map(pair => pair.value0 * pair.price0), relevantPairs.map(pair => pair.value0).reduce((a, b) => a + b, 0)] :
         [relevantPairs.map(pair => pair.value1 * pair.price1), relevantPairs.map(pair => pair.value1).reduce((a, b) => a + b, 0)]
+
     return prices.reduce((a, b) => a + b, 0) / totalVal
 }
 

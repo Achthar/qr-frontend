@@ -199,7 +199,7 @@ function Bonds({
 
 
   useEffect(() => {
-    const _chain = getChain(chainId ?? 43113)
+    const _chain = getChain(chainId)
     if (chain !== _chain) {
       history.push(`/${_chain}/bonds`)
     }
@@ -212,7 +212,14 @@ function Bonds({
 
   const { isMobile } = useMatchBreakpoints()
   const { pathname } = useLocation()
-  const { bonds, userDataLoaded, userReward, userCallDataLoaded, userCallableDataLoaded, closedNotes } = useBonds(chainId)
+
+  const isArchived = pathname.includes('archived')
+  const isInactive = pathname.includes('history')
+  const isActive = !isInactive && !isArchived
+
+  usePollBondsWithUserData(chainId)
+
+  const { bonds, userDataLoaded, userReward, userCallDataLoaded, userCallableDataLoaded, closedNotes } = useBonds()
 
   const [bondsLP, vanillaNotesClosed, callNotesClosed, callableNotesClosed] = useMemo(() => {
     return [
@@ -245,9 +252,7 @@ function Bonds({
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
 
-  const isArchived = pathname.includes('archived')
-  const isInactive = pathname.includes('history')
-  const isActive = !isInactive && !isArchived
+
 
   const { slowRefresh, fastRefresh } = useRefresh()
 
@@ -265,9 +270,9 @@ function Bonds({
     [pairs, chainId]
   )
 
-  const { dataLoaded, oracles } = useOracles(chainId)
+  const { oracles } = useOracles(chainId)
 
-  usePollBondsWithUserData(chainId, isArchived)
+
 
   // Users with no wallet connected should see 0 as Earned amount
   // Connected users should see loading indicator until first userData has loaded
@@ -366,7 +371,7 @@ function Bonds({
   ]) // end chosenBondsMemoized
 
 
-  const bondState = useBonds(chainId)
+  const bondState = useBonds()
 
   const allBonds = useMemo(() => bondState.bonds[chainId], [bondState.bonds, chainId])
 

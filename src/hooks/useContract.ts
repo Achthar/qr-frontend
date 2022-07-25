@@ -44,6 +44,7 @@ import WEIGHTED_FORMULA_ABI from '../config/abi/avax/RequiemFormula.json'
 
 import BOND_DEPO_AVAX from '../config/abi/avax/BondDepository.json'
 import CALL_BOND_DEPO_AVAX from '../config/abi/avax/CallBondDepository.json'
+import CALL_BOND_DEPO_OASIS from '../config/abi/oasis/DigitalCallBondDepo.json'
 import CALLABLE_BOND_DEPO_AVAX from '../config/abi/avax/CallableBondDepository.json'
 import multiCallAbi from '../config/abi/Multicall.json'
 import multiCallAbi_AVAX from '../config/abi/avax/Multicall.json'
@@ -215,7 +216,7 @@ export function useBondContract(chainId: number, withSignerIfPossible?: boolean)
 }
 
 export function useCallBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(CALL_BOND_DEPO_AVAX), withSignerIfPossible)
+  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(chainId === 43113 ? CALL_BOND_DEPO_AVAX : CALL_BOND_DEPO_OASIS), withSignerIfPossible)
 }
 
 export function useCallableBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {

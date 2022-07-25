@@ -24,9 +24,9 @@ import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails';
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails';
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails';
 
-function initialState(): BondsState {
+function initialState(chainId: number): BondsState {
   return {
-    referenceChainId: 43113,
+    referenceChainId: chainId,
     bonds: {
       43113: {
         bondData: {},
@@ -499,7 +499,7 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
 
 export const bondsSlice = createSlice({
   name: 'Bonds',
-  initialState: initialState(), // TODO: make that more flexible
+  initialState: initialState(43113), // TODO: make that more flexible
   reducers: {
     setLoadArchivedBondsData: (state, action) => {
       const loadArchivedBondsData = action.payload
@@ -521,19 +521,19 @@ export const bondsSlice = createSlice({
         // vanilla
         for (let i = 0; i < bondConfigWithIds.length; i++) {
           const bond = bondConfigWithIds[i]
-          state.bonds[state.referenceChainId].bondData[bond.bondId] = { ...state.bonds[state.referenceChainId].bondData[bond.bondId], ...bond };
+          state.bonds[action.meta.arg.chainId].bondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].bondData[bond.bondId], ...bond };
         }
 
         // call
         for (let i = 0; i < callBondConfigWithIds.length; i++) {
           const bond = callBondConfigWithIds[i]
-          state.bonds[state.referenceChainId].callBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callBondData[bond.bondId], ...bond };
+          state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...bond };
         }
 
         // callables
         for (let i = 0; i < callableBondConfigWithIds.length; i++) {
           const bond = callableBondConfigWithIds[i]
-          state.bonds[state.referenceChainId].callableBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callableBondData[bond.bondId], ...bond };
+          state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId], ...bond };
         }
 
         state.metaLoaded = true;
@@ -550,7 +550,7 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].bondData[bond.bondId] = { ...state.bonds[state.referenceChainId].bondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].bondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].bondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleBondDetails.rejected, (state, { error }) => {
         console.log(error, state)
@@ -562,7 +562,7 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].callBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallBondDetails.rejected, (state, { error }) => {
         console.log(error, state)
@@ -574,7 +574,7 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallableBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].callableBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callableBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallableBondDetails.rejected, (state, { error }) => {
         console.log(error, state)
@@ -587,10 +587,11 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleBondStableLpDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].bondData[bond.bondId] = { ...state.bonds[state.referenceChainId].bondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].bondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].bondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleBondStableLpDetails.rejected, (state, action) => {
-        state.bonds[state.referenceChainId].bondData[action.meta.arg.bond.bondId].publicLoaded = true
+        if (state.bonds[action.meta.arg.chainId].bondData[action.meta.arg.bond.bondId]?.publicLoaded)
+          state.bonds[action.meta.arg.chainId].bondData[action.meta.arg.bond.bondId].publicLoaded = true
         console.log(action.error, state)
         console.error(action.error.message);
       })
@@ -601,10 +602,11 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallBondPoolDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].callBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallBondPoolDetails.rejected, (state, action) => {
-        state.bonds[state.referenceChainId].callBondData[action.meta.arg.bond.bondId].publicLoaded = true
+        if (state.bonds[action.meta.arg.chainId].callBondData[action.meta.arg.bond.bondId]?.publicLoaded)
+          state.bonds[action.meta.arg.chainId].callBondData[action.meta.arg.bond.bondId].publicLoaded = true
         console.log(action.error, state)
         console.error(action.error.message)
       })
@@ -615,10 +617,11 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallableBondPoolDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[state.referenceChainId].callableBondData[bond.bondId] = { ...state.bonds[state.referenceChainId].callableBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callableBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallableBondPoolDetails.rejected, (state, action) => {
-        state.bonds[state.referenceChainId].callableBondData[action.meta.arg.bond.bondId].publicLoaded = true
+        if (state.bonds[action.meta.arg.chainId].callableBondData[action.meta.arg.bond.bondId]?.publicLoaded)
+          state.bonds[action.meta.arg.chainId].callableBondData[action.meta.arg.bond.bondId].publicLoaded = true
         console.log(action.error, state)
         console.error(action.error.message)
       })
@@ -626,9 +629,9 @@ export const bondsSlice = createSlice({
       .addCase(fetchBondUserDataAsync.fulfilled, (state, action) => {
         const bondData = action.payload.dataAssignedToBonds
         Object.keys(bondData.bondUserData).forEach((bondId) => {
-          state.bonds[state.referenceChainId].bondData[bondId].userData = { ...state.bonds[state.referenceChainId].bondData[bondId].userData, ...bondData.bondUserData[bondId] }
+          state.bonds[action.meta.arg.chainId].bondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].bondData[bondId].userData, ...bondData.bondUserData[bondId] }
         })
-        state.closedNotes[state.referenceChainId].vanillaNotesClosed = action.payload.closedNotes
+        state.closedNotes[action.meta.arg.chainId].vanillaNotesClosed = action.payload.closedNotes
         state.userReward = bondData.rewards
         state.userDataLoaded = true
       }).addCase(fetchBondUserDataAsync.pending, state => {
@@ -642,9 +645,9 @@ export const bondsSlice = createSlice({
       .addCase(fetchCallBondUserDataAsync.fulfilled, (state, action) => {
         const callBondData = action.payload.dataAssignedToBonds
         Object.keys(callBondData.bondUserData).forEach((bondId) => {
-          state.bonds[state.referenceChainId].callBondData[bondId].userData = { ...state.bonds[state.referenceChainId].callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
+          state.bonds[action.meta.arg.chainId].callBondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
         })
-        state.closedNotes[state.referenceChainId].callNotesClosed = action.payload.closedNotes
+        state.closedNotes[action.meta.arg.chainId].callNotesClosed = action.payload.closedNotes
         state.userRewardCall = callBondData.rewards
         state.userCallDataLoaded = true
       }).addCase(fetchCallBondUserDataAsync.pending, state => {
@@ -658,9 +661,9 @@ export const bondsSlice = createSlice({
       .addCase(fetchCallableBondUserDataAsync.fulfilled, (state, action) => {
         const callableBondData = action.payload.dataAssignedToBonds
         Object.keys(callableBondData.bondUserData).forEach((bondId) => {
-          state.bonds[state.referenceChainId].callableBondData[bondId].userData = { ...state.bonds[state.referenceChainId].callableBondData[bondId].userData, ...callableBondData.bondUserData[bondId] }
+          state.bonds[action.meta.arg.chainId].callableBondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].callableBondData[bondId].userData, ...callableBondData.bondUserData[bondId] }
         })
-        state.closedNotes[state.referenceChainId].callableNotesClosed = action.payload.closedNotes
+        state.closedNotes[action.meta.arg.chainId].callableNotesClosed = action.payload.closedNotes
         state.userRewardCallable = callableBondData.rewards
         state.userCallableDataLoaded = true
       }).addCase(fetchCallableBondUserDataAsync.pending, state => {
@@ -673,13 +676,13 @@ export const bondsSlice = createSlice({
       // get Closed Markets
       .addCase(fetchClosedBondsUserAsync.fulfilled, (state, action) => {
         if (action.meta.arg.bIds.length > 0) {
-          state.bondsClosed[state.referenceChainId].vanillaBondsClosed = action.payload.vanillaMarkets
+          state.bondsClosed[action.meta.arg.chainId].vanillaBondsClosed = action.payload.vanillaMarkets
         }
         if (action.meta.arg.bIdsC.length > 0) {
-          state.bondsClosed[state.referenceChainId].callBondsClosed = action.payload.callMarkets
+          state.bondsClosed[action.meta.arg.chainId].callBondsClosed = action.payload.callMarkets
         }
         if (action.meta.arg.bIdsCallable.length > 0) {
-          state.bondsClosed[state.referenceChainId].callableBondsClosed = action.payload.callableMarkets
+          state.bondsClosed[action.meta.arg.chainId].callableBondsClosed = action.payload.callableMarkets
         }
         state.closedMarketsLoaded = true
       })
@@ -694,38 +697,29 @@ export const bondsSlice = createSlice({
       // setters for prices calculated with pools and links
       .addCase(setLpPrice, (state, action) => {
         if (action.payload.bondType === BondType.Vanilla) {
-          state.bonds[state.referenceChainId].bondData[action.payload.bondId].purchasedInQuote = action.payload.price
+          state.bonds[action.payload.chainId].bondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
         if (action.payload.bondType === BondType.Call) {
-          state.bonds[state.referenceChainId].callBondData[action.payload.bondId].purchasedInQuote = action.payload.price
+          state.bonds[action.payload.chainId].callBondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
         if (action.payload.bondType === BondType.Callable) {
-          state.bonds[state.referenceChainId].callableBondData[action.payload.bondId].purchasedInQuote = action.payload.price
+          state.bonds[action.payload.chainId].callableBondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
       })
       .addCase(setLpLink, (state, action) => {
         if (action.payload.bondType === BondType.Vanilla) {
-          state.bonds[state.referenceChainId].bondData[action.payload.bondId].lpLink = action.payload.link
+          state.bonds[action.payload.chainId].bondData[action.payload.bondId].lpLink = action.payload.link
         }
 
         if (action.payload.bondType === BondType.Call) {
-          state.bonds[state.referenceChainId].callBondData[action.payload.bondId].lpLink = action.payload.link
+          state.bonds[action.payload.chainId].callBondData[action.payload.bondId].lpLink = action.payload.link
         }
 
         if (action.payload.bondType === BondType.Callable) {
-          state.bonds[state.referenceChainId].callableBondData[action.payload.bondId].lpLink = action.payload.link
+          state.bonds[action.payload.chainId].callableBondData[action.payload.bondId].lpLink = action.payload.link
         }
       }).addCase(changeChainIdBonds, (state, action) => {
-        const newId = action.payload.newChainId
-        state.referenceChainId = newId
-        state.loadArchivedBondsData = false
-        state.userDataLoaded = false
-        state.userCallDataLoading = false
-        state.userCallDataLoaded = false
-        state.userCallableDataLoaded = false
-        state.metaLoaded = false
-        state.userDataLoading = false
-        state.publicDataLoading = false
+        state = initialState(action.payload.newChainId)
       })
   },
 })

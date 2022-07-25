@@ -46,8 +46,7 @@ export const calcSingleBondStableLpDetails = createAsyncThunk(
       }
     ]
 
-    const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, bondReserveAVAX, calls)
+    const [market, debtRatio, terms, bondPrice] = await multicall(chainId, bondReserveAVAX, calls)
 
     // calls from pair used for pricing
     // const callsPair = [

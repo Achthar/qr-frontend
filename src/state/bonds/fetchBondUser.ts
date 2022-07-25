@@ -7,6 +7,8 @@ import { BondConfig } from 'config/constants/types'
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import callBondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import callableBondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
+import callBondReserveOASIS from 'config/abi/oasis/DigitalCallBondDepo.json'
+import callableBondReserveOASIS from 'config/abi/oasis/CallableBondDepo.json'
 
 // simple allowance fetch
 export const fetchBondUserAllowances = async (chainId: number, account: string, bondsToFetch: BondConfig[]) => {
@@ -190,12 +192,12 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
   let resultsCall = []
 
   if (callBondDepositoryAddress && bidsCall.length > 0)
-    resultsCall = await multicall(chainId, callBondReserveAVAX, [...callsC, ...callsCTerms])
+    resultsCall = await multicall(chainId, chainId === 43113 ? callBondReserveAVAX : callBondReserveOASIS, [...callsC, ...callsCTerms])
 
   let resultsCallable = []
 
   if (callableBondDepositoryAddress && bidsCallable.length > 0)
-    resultsCallable = await multicall(chainId, callableBondReserveAVAX, [...callsCallable, ...callsCallableTerms])
+    resultsCallable = await multicall(chainId, chainId === 43113 ? callableBondReserveAVAX : callableBondReserveOASIS, [...callsCallable, ...callsCallableTerms])
 
 
   return {

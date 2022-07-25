@@ -6,7 +6,7 @@ import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
-import { useOracleState } from 'state/oracles/hooks'
+import { useGetOracle, useOracleState } from 'state/oracles/hooks'
 import { useGetOracleData } from 'state/bonds/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
@@ -207,9 +207,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
         return (maturity - now > 0) ? prettifySeconds(maturity - now, "day") : 'Matured';
     };
 
-    const oracleState = useOracleState(chainId)
-
-    const oracleData = useGetOracleData(chainId, bond?.market?.underlying, oracleState.oracles)
+    const oracleData = useGetOracle(chainId, bond?.market?.underlying, bond?.market?.quote)
 
     const payout = useMemo(() => { return formatSerializedBigNumber(note.payout, isMobile ? 3 : 5, 18) }, [note.payout, isMobile])
     const created = useMemo(() => { return timeConverterNoYear(Number(note.created)) }, [note.created])
@@ -236,7 +234,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
                                 <Text>{vestingTime()}</Text>
                             </DescriptionCol>
                         </ContentRow>
-                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc}/>
+                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc} />
                     </Flex>
                     <Flex flexDirection='row' justifyContent='space-between' marginLeft='7px'>
                         <DescriptionCol>
@@ -287,7 +285,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
 
                 </DescriptionCol>
             </ContentRow>
-            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc}/>
+            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc} />
         </Container>
     )
 
