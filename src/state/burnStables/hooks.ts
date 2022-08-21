@@ -138,7 +138,7 @@ export function useDerivedBurnStablesInfo(
     if (stablePool) {
       liquidityAmount = stablePool.getLiquidityAmount(
         independentAmounts?.map(a => a.raw),
-        false // false for withdrawl
+        false // false for withdrawal
       )
       percentToRemove = liquidityAmount.gte(totalSupply) ? new Percent('100', '100') : new Percent(liquidityAmount.toBigInt(), totalSupply.toBigInt())
 
@@ -200,7 +200,7 @@ export function useDerivedBurnStablesInfo(
     totalSupply &&
     userLiquidity && tokens && finalSingleAmounts &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => stablePool?.getLiquidityValue(0, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
+    totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => stablePool?.getLiquidityValue(i, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
 
   return {
     parsedAmounts,

@@ -217,7 +217,7 @@ export function useDerivedBurnPoolLpInfo(
       userLiquidity  && finalSingleAmounts) {
       // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
       try {
-        vals = totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => weightedPool?.getLiquidityValue(0, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
+        vals = totalSupply.gte(userLiquidity.toBigNumber()) && poolTokens?.map((_, i) => weightedPool?.getLiquidityValue(i, finalSingleAmounts?.map((amnt) => amnt.toBigNumber())))
       } catch {
         return vals
       }

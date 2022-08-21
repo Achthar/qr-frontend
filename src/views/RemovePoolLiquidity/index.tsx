@@ -532,7 +532,7 @@ export default function RemovePoolLiquidity({
                     } ${parsedAmounts[PoolField.CURRENCY_SINGLE].token.symbol}`}
                 </Text>
                 <Text fontSize="12px" color={val >= 0 ? 'green' : 'red'} textAlign='right' ml='5px'>
-                  {val >= 0 ? ' advantage vs manual withdrawl' : ' disadvantage vs manual withdrawl'}
+                  {val >= 0 ? ' advantage vs manual withdrawal' : ' disadvantage vs manual withdrawal'}
                 </Text>
               </Row>
 
@@ -546,7 +546,7 @@ export default function RemovePoolLiquidity({
                     } ${parsedAmounts[PoolField.CURRENCY_SINGLE_FEE].token.symbol} `}
                 </Text>
                 <Text fontSize="12px" textAlign='right' ml='5px'>
-                  withdrawl fee
+                  withdrawal fee
                 </Text>
               </Row>)
           }
@@ -758,7 +758,7 @@ export default function RemovePoolLiquidity({
 
         <CardBody>
           <AutoColumn gap="20px">
-            <Text textAlign="center">Select withdrawl Type</Text>
+            <Text textAlign="center">Select withdrawal Type</Text>
 
             <LiquidityStateButtonWrapper>
               <ButtonMenu activeIndex={poolRemovalState} onItemClick={handleClick} scale="sm" marginBottom="1px">

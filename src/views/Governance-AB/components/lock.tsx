@@ -173,7 +173,7 @@ const LockCard: React.FC<LockCardProps> = ({
             disabled={approval !== ApprovalState.NOT_APPROVED}
             width="100%"
             mr="0.5rem"
-          >Approve withdrawl</ApprovalButton>
+          >Approve withdrawal</ApprovalButton>
 
         ) : (
           <ApprovalButton
