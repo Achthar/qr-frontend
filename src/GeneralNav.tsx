@@ -109,13 +109,13 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
           Liquidity
         </StyledNavLink>
       </StyledNavItem>
-      <StyledNavItem onClick={handleClick}>
+      {/* <StyledNavItem onClick={handleClick}>
         <StyledNavLink to={`/${chain}/farms`}>
           <img src={iconPools} alt='' />
           Farms
         </StyledNavLink>
-      </StyledNavItem>
-      <StyledNavItem onClick={handleClick}>
+      </StyledNavItem> */}
+      <StyledNavItem onClick={(handleClick)}>
         <StyledNavLink to={`/${chain}/bonds`}>
           <img src={bond} alt='' />
           Bonds
