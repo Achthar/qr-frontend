@@ -175,7 +175,7 @@ export default function RemovePoolLiquidity({
   const atMaxAmount = parsedAmounts[PoolField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
   const userPoolBalance = weightedPool?.swapStorage && new TokenAmount(
-    weightedPool?.liquidityToken,
+    new Token(chainId, weightedPool?.address, 18),
     BigNumber.from(0).toBigInt(),
   )
 
@@ -319,7 +319,7 @@ export default function RemovePoolLiquidity({
     // we have approval, use normal remove liquidity
     // removeLiquidityOneToken( uint256 lpAmount, uint8 index, uint256 minAmount,  uint256 deadline )
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidityOneToken']
+      methodNames = ['removeLiquidityOneTokenExactIn']
       args = [
         liquidityAmount.toBigNumber(),
         selectedSingle,
@@ -397,7 +397,7 @@ export default function RemovePoolLiquidity({
     let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidityImbalance']
+      methodNames = ['removeLiquidityExactOut']
       args = [
         parsedOutputTokenAmounts.map(x => x.raw.toHexString()),
         BigNumber.from(lpAmountMax.toString()),

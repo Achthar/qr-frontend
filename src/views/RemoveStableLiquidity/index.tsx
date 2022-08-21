@@ -176,7 +176,7 @@ export default function RemoveStableLiquidity({
   const atMaxAmount = parsedAmounts[StablesField.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
   const userPoolBalance = stablePool?.swapStorage && new TokenAmount(
-    new Token(chainId, stablePool?.swapStorage.lpAddress, 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
+    new Token(chainId, stablePool?.address, 18, 'RequiemStable-LP', 'Requiem StableSwap LPs'),
     BigNumber.from(0).toBigInt(),
   )
 
@@ -238,7 +238,7 @@ export default function RemoveStableLiquidity({
     let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidity']
+      methodNames = ['removeLiquidityExactIn']
       args = [
         liquidityAmount.toBigNumber(),
         amountsMin.map(x => x.toHexString()),
@@ -316,7 +316,7 @@ export default function RemoveStableLiquidity({
     // we have approval, use normal remove liquidity
     // removeLiquidityOneToken( uint256 lpAmount, uint8 index, uint256 minAmount,  uint256 deadline )
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidityOneToken']
+      methodNames = ['removeLiquidityOneTokenExactIn']
       args = [
         liquidityAmount.toBigNumber(),
         selectedSingle,
@@ -394,7 +394,7 @@ export default function RemoveStableLiquidity({
     let args: Array<string | string[] | number | boolean | BigNumber | BigNumber[]>
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
-      methodNames = ['removeLiquidityImbalance']
+      methodNames = ['removeLiquidityExactOut']
       args = [
         parsedOutputTokenAmounts.map(x => x.raw.toHexString()),
         BigNumber.from(lpAmountMax.toString()),

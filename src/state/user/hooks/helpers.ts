@@ -31,10 +31,10 @@ export enum GAS_PRICE {
   avaxDefault = '70',
   avaxFast = '80',
   avaxInstant = '90',
-  oasisTest = '30',
-  oasisDefault = '10',
-  oasisFast = '15',
-  oasisInstant = '20',
+  oasisTest = '100',
+  oasisDefault = '100',
+  oasisFast = '105',
+  oasisInstant = '110',
 }
 
 export const GAS_PRICE_GWEI = {

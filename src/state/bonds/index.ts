@@ -515,7 +515,6 @@ export const bondsSlice = createSlice({
       .addCase(changeChainIdBonds, (state, action) => {
         state.referenceChainId = action.payload.newChainId
         state = initialState(action.payload.newChainId)
-        console.log("CHID", action.payload.newChainId, state.referenceChainId)
       })
       // metadata fetch
       .addCase(fetchBondMeta.pending, state => {

@@ -145,11 +145,12 @@ export default function AddStableLiquidity({
 
     const amountMin = calculateSlippageAmount(stablesLiquidityMinted, allowedSlippage)[0]
 
-    const estimate = stableRouter.estimateGas.addLiquidity
-    const method = stableRouter.addLiquidity
+    const estimate = stableRouter.estimateGas.addLiquidityExactIn
+    const method = stableRouter.addLiquidityExactIn
     const args = [
       parsedStablesAmounts.map(bn => bn.raw.toHexString()),
       amountMin.toString(),
+      account,
       deadline.toHexString(),
     ]
     const value = null
