@@ -315,19 +315,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "POOL_TOKEN_COMMON_DECIMALS",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "uint256[]",
@@ -562,7 +549,7 @@
         "outputs": [
             {
                 "internalType": "uint256",
-                "name": "amountOut",
+                "name": "",
                 "type": "uint256"
             }
         ],
@@ -678,6 +665,19 @@
     },
     {
         "inputs": [],
+        "name": "getA",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "getCollectedFees",
         "outputs": [
             {
@@ -748,19 +748,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "getTokenWeights",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address[]",
@@ -773,11 +760,6 @@
                 "type": "uint8[]"
             },
             {
-                "internalType": "uint256[]",
-                "name": "_normalizedWeights",
-                "type": "uint256[]"
-            },
-            {
                 "internalType": "string",
                 "name": "_name",
                 "type": "string"
@@ -786,6 +768,11 @@
                 "internalType": "string",
                 "name": "_symbol",
                 "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_A",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -1062,6 +1049,24 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "futureA",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "futureATime",
+                "type": "uint256"
+            }
+        ],
+        "name": "rampA",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "lpAmount",
                 "type": "uint256"
             },
@@ -1096,7 +1101,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "maxLpBurn",
+                "name": "maxBurnAmount",
                 "type": "uint256"
             },
             {
@@ -1143,7 +1148,7 @@
         "outputs": [
             {
                 "internalType": "uint256",
-                "name": "amountReceived",
+                "name": "amount",
                 "type": "uint256"
             }
         ],
@@ -1209,6 +1214,13 @@
     },
     {
         "inputs": [],
+        "name": "stopRampA",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "swapStorage",
         "outputs": [
             {
@@ -1234,6 +1246,26 @@
             {
                 "internalType": "uint256",
                 "name": "adminSwapFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "initialA",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "futureA",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "initialATime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "futureATime",
                 "type": "uint256"
             },
             {

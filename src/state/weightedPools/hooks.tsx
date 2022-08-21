@@ -25,7 +25,7 @@ export const useWeightedPoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.weightedPools)
   const pools = poolState.poolData[chainId].pools
   if (!pools[id]) return null
-  const lpToken = pools[id]?.lpToken ? deserializeToken(pools[id]?.lpToken) : WEIGHTED_POOL_LP[chainId] // fallback
+  const lpToken = new Token(chainId, pools[id].address, 18)
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
 

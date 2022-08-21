@@ -41,24 +41,24 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
     42261: [
         {
             key: 0,
-            address: '0x90B7174ee0680d339dc4becfEDdfA19F40Af20B8',
+            address: '0x9912aafb08f9c018bd0317c673951a5f4967831f',
             name: 'req3USD',
             tokens: [
+                serializeToken(BUSD[42261]),
                 serializeToken(USDC[42261]),
-                serializeToken(USDT[42261]),
-                serializeToken(BUSD[42261])
+                serializeToken(USDT[42261])
             ],
             balances: ['1', '1', '1'],
-            lpAddress: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
+            lpAddress: '0x9912aafb08f9c018bd0317c673951a5f4967831f',
             lpToken: {
                 chainId: 42261,
                 decimals: 18,
-                address: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
+                address: '0x9912aafb08f9c018bd0317c673951a5f4967831f',
                 symbol: 'req3USD'
             },
             swapStorage: {
-                tokenMultipliers: ['1000000000000', '1000000000000', '1'],
-                lpToken: '0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22',
+                tokenMultipliers: ['1', '1000000000000', '1000000000000'],
+                lpToken: '0x9912aafb08f9c018bd0317c673951a5f4967831f',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
                 initialA: BigNumber.from('0xea60').toString(),

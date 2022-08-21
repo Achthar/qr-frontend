@@ -352,6 +352,7 @@ export function useDerivedSwapV3Info(chainId: number, account: string, tokenBala
 
   const slippageAdjustedAmounts = v3Trade && allowedSlippage && computeSlippageAdjustedAmountsV3(v3Trade, allowedSlippage)
 
+  // console.log("SA", slippageAdjustedAmounts?.[0]?.toSignificant(18),  slippageAdjustedAmounts?.[1]?.toSignificant(18),)
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
     currencyBalances[Field.INPUT],

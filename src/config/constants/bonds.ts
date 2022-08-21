@@ -1,5 +1,3 @@
-import { ChainId, WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
-import { serializeToken } from 'state/user/hooks/helpers'
 import { serializeTokens } from './tokens'
 import { BondConfig, BondAssetType } from './types'
 
@@ -139,16 +137,34 @@ export const bondConfig = (chainId: number): BondConfig[] => {
 
   return [
     {
+      name: "10/90 wROSE-USDC",
+      displayName: "10% wROSE - 90% USDC",
+      bondToken: "ROSE USDC LP",
+      payoutToken: "abREQ",
+      assetType: BondAssetType.PairLP,
+      displayUnits: '4',
+      reserveAddress: {
+        42261: "0x3B2b78e1F16985a77AFbdf63Fa594119E5D7629D",
+      },
+      tokens: [serializedTokens.wrose, serializedTokens.usdc],
+      quoteTokenIndex: 1,
+      lpProperties: {
+        weightToken: 10,
+        weightQuoteToken: 90,
+        fee: 10
+      }
+    },
+    {
       name: "req3USD LP",
-      displayName: "3-USD Stable Pool LP",
+      displayName: "3-USD Stable Pool LP Oasis",
       bondToken: "Stable Swap LP",
       payoutToken: "abREQ",
       assetType: BondAssetType.StableSwapLP,
       displayUnits: '4',
-      tokens: [serializedTokens.usdc, serializedTokens.usdt, serializedTokens.busd],
+      tokens: [serializedTokens.busd, serializedTokens.usdc, serializedTokens.usdt],
       quoteTokenIndex: 0,
       reserveAddress: {
-        42261: "0xc1876F6B14dC9ce6481Cf35782aCc5Bee3F63b22",
+        42261: "0x9912AAfB08F9C018Bd0317c673951A5f4967831F",
       },
       lpProperties: {
         weightToken: 80,
@@ -163,10 +179,10 @@ export const bondConfig = (chainId: number): BondConfig[] => {
       payoutToken: "abREQ",
       assetType: BondAssetType.WeightedPoolLP,
       displayUnits: '4',
-      tokens: [serializedTokens.weth, serializedTokens.wbtc, serializedTokens.usdc],
+      tokens: [serializedTokens.weth, serializedTokens.wbtc, serializedTokens.usdt],
       quoteTokenIndex: 2,
       reserveAddress: {
-        42261: "0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098",
+        42261: "0xb288d26a17aab729a64d8320836c2ea4794b3baf",
       },
       lpProperties: {
         weightToken: 60,

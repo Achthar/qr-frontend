@@ -151,6 +151,7 @@ export default function AddLiquidityToPool({
     const args = [
       parsedInputAmounts.map(bn => bn.raw.toHexString()),
       amountMin.toString(),
+      account,
       deadline.toHexString(),
     ]
     const value = null

@@ -37,15 +37,6 @@ export const usePollBondsWithUserData = (chainId: number) => {
   const dispatch = useAppDispatch()
   const { slowRefresh, fastRefresh } = useRefresh()
   const { account, library } = useActiveWeb3React()
-  const { referenceChainId } = useBonds()
-  useEffect(() => {
-    // set new chainId if changed - resets state, too
-    if (referenceChainId !== chainId) {
-      dispatch(changeChainIdBonds({ newChainId: chainId }))
-    }
-  },
-    [chainId, referenceChainId, dispatch]
-  )
 
   const { metaLoaded } = useBonds()
 
@@ -344,20 +335,25 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
   /** VANILLA bonds start here */
   const data = bonds.bonds[chainId].bondData
   useEffect(() => {
-    if (!metaLoaded || chainId !== bonds.referenceChainId) return;
+    if (!metaLoaded) return;
     const bondsWithIds = Object.values(data)
     bondsWithIds.map(bondWithNoPrice => {
       let price: ethers.BigNumber;
       let link: string;
       const bondType = bondWithNoPrice.assetType
 
-      if (!bondWithNoPrice.lpData) {
+      if (!bondWithNoPrice.market) {
         // eslint-disable-next-line no-useless-return
         return;
       }
 
       // pair LP
       if (bondType === BondAssetType.PairLP) {
+        if (!bondWithNoPrice.lpData) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
+
         const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))
@@ -421,13 +417,14 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
       let link: string;
       const bondType = bondWithNoPrice.assetType
 
-      if (!bondWithNoPrice.lpData) {
-        // eslint-disable-next-line no-useless-return
-        return;
-      }
-
       // pair LP
       if (bondType === BondAssetType.PairLP) {
+
+
+        if (!bondWithNoPrice.lpData) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        }
         const supply = ethers.BigNumber.from(bondWithNoPrice.lpData.lpTotalSupply)
         const amount = ethers.BigNumber.from(bondWithNoPrice.market.purchased)
         const pair: AmplifiedWeightedPair = pairs.find(p => p.address === ethers.utils.getAddress(bondWithNoPrice.reserveAddress[chainId]))

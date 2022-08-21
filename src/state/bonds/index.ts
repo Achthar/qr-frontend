@@ -24,9 +24,9 @@ import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails';
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails';
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails';
 
-function initialState(chainId: number): BondsState {
+function initialState(_chainId: number): BondsState {
   return {
-    referenceChainId: chainId,
+    referenceChainId: _chainId,
     bonds: {
       43113: {
         bondData: {},
@@ -512,6 +512,11 @@ export const bondsSlice = createSlice({
   extraReducers: (builder) => {
     // Update bonds with live data
     builder
+      .addCase(changeChainIdBonds, (state, action) => {
+        state.referenceChainId = action.payload.newChainId
+        state = initialState(action.payload.newChainId)
+        console.log("CHID", action.payload.newChainId, state.referenceChainId)
+      })
       // metadata fetch
       .addCase(fetchBondMeta.pending, state => {
         // state.metaLoaded = false;
@@ -718,8 +723,6 @@ export const bondsSlice = createSlice({
         if (action.payload.bondType === BondType.Callable) {
           state.bonds[action.payload.chainId].callableBondData[action.payload.bondId].lpLink = action.payload.link
         }
-      }).addCase(changeChainIdBonds, (state, action) => {
-        state = initialState(action.payload.newChainId)
       })
   },
 })

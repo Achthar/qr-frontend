@@ -75,9 +75,10 @@ export const priceFromData = (token: Token, quoteToken: Token, weightToken: any,
         marketPrice = price.numerator.mul(TEN_ES[quoteToken.decimals ?? 18]).div(price.denominator).toString() // 41432// await getMarketPrice({ chainId, provider });
 
     } catch (e) {
+        console.log("priceFromData failed:", e)
         marketPrice = null
     }
-    return marketPrice.toString()
+    return marketPrice?.toString() ?? '1'
 }
 
 // export const findOrLoadMarketPrice = createAsyncThunk(

@@ -84,7 +84,6 @@ export const fetchWeightedPairData = createAsyncThunk(
         address: getAddress(PAIR_FORMULA[chainId]),
         name: 'getFactoryPairData',
         params: [
-          FACTORY_ADDRESS[chainId],
           address
         ]
       }

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "state";
+import { changeChainIdBonds } from "state/bonds/actions";
 import { setChainId } from "state/globalNetwork/actions";
 import { useNetworkState } from "state/globalNetwork/hooks";
 import { changeChainIdStables } from "state/stablePools/actions";
@@ -15,6 +16,7 @@ export function useChainIdHandling(chainIdWeb3: number, account: string) {
     const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
         if (chainIdWeb3 && chainId !== chainIdWeb3 && supportedChains.includes(chainIdWeb3) && account) {
+            dispatch(changeChainIdBonds({ newChainId: chainIdWeb3 }))
             dispatch(setChainId({ chainId: chainIdWeb3 }))
             dispatch(changeChainId({ newChainId: chainIdWeb3 }))
             dispatch(changeChainIdWeighted({ newChainId: chainIdWeb3 }))

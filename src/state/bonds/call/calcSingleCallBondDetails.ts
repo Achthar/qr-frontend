@@ -9,6 +9,7 @@ import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import bondReserveOasis from 'config/abi/oasis/DigitalCallBondDepo.json'
 import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import weightedPairABIOasis from 'config/abi/oasis/RequiemWeightedPair.json'
 import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
 import { BondAssetType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
@@ -53,8 +54,7 @@ export const calcSingleCallBondDetails = createAsyncThunk(
       },
     ]
 
-    const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, bondReserveAVAX, calls)
+    const [market, debtRatio, terms, bondPrice] = await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
 
     // calls from pair used for pricing
     const callsPair = [
@@ -75,22 +75,27 @@ export const calcSingleCallBondDetails = createAsyncThunk(
       },
     ]
 
-    const [reserves, supply, purchasedQuery] = await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, callsPair)
+    const [reserves, supply, purchasedQuery] = await multicall(chainId, chainId === 43113 ? weightedPairABI : weightedPairABIOasis, callsPair)
 
-    // calculate price
-    const price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
-      deserializeToken(getNonQuoteToken(bond)),
-      deserializeToken(getQuoteToken(bond)),
-      BigNumber.from(bond.lpProperties.weightToken),
-      BigNumber.from(bond.lpProperties.weightQuoteToken),
-      reserves[0],
-      reserves[1],
-      BigNumber.from(bond.lpProperties.fee)
-    ) : '0'
-
+    let price: string
+    try {
+      // calculate price
+      price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
+        deserializeToken(getNonQuoteToken(bond)),
+        deserializeToken(getQuoteToken(bond)),
+        BigNumber.from(bond.lpProperties.weightToken),
+        BigNumber.from(bond.lpProperties.weightQuoteToken),
+        reserves.vReserve0,
+        reserves.vReserve1,
+        BigNumber.from(bond.lpProperties.fee)
+      ) : '0'
+    } catch (error) {
+      console.log("Error in pricing pair:", error)
+      price = '`1'
+    }
     const marketPrice = BigNumber.from(price)
 
-    const bondDiscount = bnParser(marketPrice.sub(bondPrice[0]), bondPrice[0])
+    const bondDiscount = bnParser(marketPrice?.sub(bondPrice[0]) ?? BigNumber.from('0'), bondPrice[0])
 
     return {
       ...bond,
@@ -124,7 +129,7 @@ export const calcSingleCallBondDetails = createAsyncThunk(
       },
       vestingTerm: Number(terms.vesting.toString()),
       bondPrice: bnParser(bondPrice[0], E_EIGHTEEN), // bondPrice.div(E_EIGHTEEN).toNumber(),
-      marketPrice: marketPrice.toString(),
+      marketPrice: marketPrice?.toString() ?? '1',
     };
   },
 );

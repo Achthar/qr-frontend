@@ -260,7 +260,8 @@ export default function SwapV3({
   const [modalOpen, setModalOpen] = useState(false)
 
   function refreshPools() {
-    dispatch(fetchWeightedPairData({ chainId, pairMetaData: pairsMeta }))
+    if (Object.values(pairsMeta).length > 0)
+      dispatch(fetchWeightedPairData({ chainId, pairMetaData: pairsMeta }))
     Object.values(weightedPools).map(
       (pool) => {
         dispatch(fetchWeightedPoolData({ pool, chainId }))

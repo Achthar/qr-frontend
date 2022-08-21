@@ -2,8 +2,18 @@
   {
     "inputs": [
       {
+        "internalType": "contract IWeightedPairCreator",
+        "name": "_creator",
+        "type": "address"
+      },
+      {
         "internalType": "address",
-        "name": "_feeToSetter",
+        "name": "_register",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_admin",
         "type": "address"
       },
       {
@@ -41,54 +51,10 @@
         "internalType": "uint32",
         "name": "tokenWeight0",
         "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "swapFee",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "name": "PairCreated",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "INIT_CODE_HASH",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "allPairs",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -101,6 +67,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IWeightedPairCreator",
+        "name": "_newCreator",
+        "type": "address"
+      }
+    ],
+    "name": "changeCreator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -122,7 +101,12 @@
       },
       {
         "internalType": "uint32",
-        "name": "swapFee",
+        "name": "initialFee",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "initialAmp",
         "type": "uint32"
       }
     ],
@@ -135,32 +119,6 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeTo",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeToSetter",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -192,11 +150,6 @@
         "internalType": "uint32",
         "name": "tokenWeightA",
         "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "swapFee",
-        "type": "uint32"
       }
     ],
     "name": "getPair",
@@ -213,12 +166,12 @@
   {
     "inputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "address",
         "name": "token0",
         "type": "address"
       },
       {
-        "internalType": "contract IERC20",
+        "internalType": "address",
         "name": "token1",
         "type": "address"
       }
@@ -238,36 +191,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "pair",
-        "type": "address"
-      }
-    ],
-    "name": "getWeightsAndSwapFee",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "tokenWeight0",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "tokenWeight1",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "swapFee",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "b",
+        "name": "",
         "type": "address"
       }
     ],
@@ -284,54 +208,41 @@
   },
   {
     "inputs": [],
-    "name": "protocolFee",
+    "name": "pairAdmin",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "pairCreator",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "_feeTo",
+        "internalType": "contract IWeightedPairCreator",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "setFeeTo",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "votingRegister",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "_feeToSetter",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "setFeeToSetter",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_protocolFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "setProtocolFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   }
 ]

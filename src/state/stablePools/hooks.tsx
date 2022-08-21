@@ -25,7 +25,7 @@ export const useStablePoolLpBalance = (chainId: number, id: number) => {
   const poolState = useSelector((state: State) => state.stablePools)
   const pools = poolState.poolData[chainId].pools
   if (!pools[id]) return null
-  const lpToken = deserializeToken(pools[id]?.lpToken)// fallback
+  const lpToken = new Token(chainId, pools[id].address, 18)// fallback
   return new TokenAmount(lpToken, pools[id]?.userData?.lpBalance ?? '0')
 }
 

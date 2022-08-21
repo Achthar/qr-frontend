@@ -34,8 +34,8 @@ export default memo(function SwapV3Route({ trade }: { trade: Swap }) {
 
                     {!isLastItem && trade.route.swapData[j] && (
                       <Text fontSize="10px" textAlign='center' marginTop='0px' >
-                        {weightedSwapInitialData[trade.route.chainId].map(p => p.address).includes(trade.route.swapData[j].poolRef) ? '3Cls' :
-                          stableSwapInitialData[trade.route.chainId].map(p => p.address).includes(trade.route.swapData[j].poolRef) ? '4USD' : 'Pair'}
+                        {weightedSwapInitialData[trade.route.chainId].map(p => p.address.toLowerCase()).includes(trade.route.swapData[j].poolRef.toLowerCase()) ? '3Cls' :
+                          stableSwapInitialData[trade.route.chainId].map(p => p.address.toLowerCase()).includes(trade.route.swapData[j].poolRef.toLowerCase()) ? '4USD' : 'Pair'}
                       </Text>)}
                   </Flex>
                 </Row>

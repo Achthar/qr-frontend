@@ -35,24 +35,24 @@ export const weightedSwapInitialData: { [chainId: number]: any[] } = {
         {
             key: 0,
             name: '3CryptoClassic',
-            address: '0xE817Fea2febC07001280750f9b6d78aDA0Bb6398',
+            address: '0xb288d26a17aab729a64d8320836c2ea4794b3baf',
             tokens: [
                 serializeToken(WETH[42261]),
                 serializeToken(WBTC[42261]),
-                serializeToken(USDC[42261])
+                serializeToken(USDT[42261])
             ],
             balances: ['1', '1', '1'],
-            lpAddress: '0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098',
+            lpAddress: '0xb288d26a17aab729a64d8320836c2ea4794b3baf',
             lpToken: {
                 chainId: 42261,
                 decimals: 18,
-                address: '0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098',
+                address: '0xb288d26a17aab729a64d8320836c2ea4794b3baf',
                 symbol: 'req4USD'
             },
             swapStorage: {
                 tokenMultipliers: ['1', '10000000000', '1000000000000',],
                 normalizedWeights: ['333333333333333333', '333333333333333333', '333333333333333334'],
-                lpToken: '0x1FDc773CDeA6beb576AcF0CD58dd6f70732Fb098',
+                lpToken: '0xb288d26a17aab729a64d8320836c2ea4794b3baf',
                 fee: '1500000000000000',
                 adminFee: '200000000000000000'
             }

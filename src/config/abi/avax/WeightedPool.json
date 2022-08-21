@@ -1,59 +1,51 @@
 [
   {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "provider",
+        "name": "previousOwner",
         "type": "address"
       },
       {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "tokenAmounts",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "invariant",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenSupply",
-        "type": "uint256"
+        "indexed": true,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
       }
     ],
-    "name": "AddLiquidity",
+    "name": "AdministrationTransferred",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "newController",
+        "name": "owner",
         "type": "address"
-      }
-    ],
-    "name": "FeeControllerChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "newController",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
       }
     ],
-    "name": "FeeDistributorChanged",
+    "name": "Approval",
     "type": "event"
   },
   {
@@ -87,42 +79,56 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "adminFee",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "withdrawFee",
         "type": "uint256"
       }
     ],
-    "name": "NewFee",
+    "name": "NewAdminFee",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "flashFee",
+        "type": "uint256"
       }
     ],
-    "name": "OwnershipTransferred",
+    "name": "NewFlashFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "swapFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewSwapFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawDuration",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "defaultWithdrawFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewWithdrawFee",
     "type": "event"
   },
   {
@@ -144,122 +150,23 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "provider",
+        "name": "from",
         "type": "address"
       },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "tokenAmounts",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenSupply",
-        "type": "uint256"
-      }
-    ],
-    "name": "RemoveLiquidity",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "provider",
+        "name": "to",
         "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "uint256[]",
-        "name": "tokenAmounts",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "invariant",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenSupply",
+        "name": "value",
         "type": "uint256"
       }
     ],
-    "name": "RemoveLiquidityImbalance",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "provider",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "coinAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "RemoveLiquidityOne",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "buyer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "soldId",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokensSold",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "boughtId",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokensBought",
-        "type": "uint256"
-      }
-    ],
-    "name": "TokenExchange",
+    "name": "Transfer",
     "type": "event"
   },
   {
@@ -274,6 +181,32 @@
     ],
     "name": "Unpaused",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "DOMAIN_SEPARATOR",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PERMIT_TYPEHASH",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -301,6 +234,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
@@ -318,11 +256,147 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "admin",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_initialAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "adminInit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "allowance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "calculateAddLiquidityExactIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "calculateCurrentWithdrawFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       }
     ],
     "name": "calculateRemoveLiquidityExactIn",
@@ -339,6 +413,30 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "calculateRemoveLiquidityExactOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -347,18 +445,18 @@
         "internalType": "uint256",
         "name": "index",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       }
     ],
-    "name": "calculateRemoveLiquidityOneToken",
+    "name": "calculateRemoveLiquidityOneTokenExactIn",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "amountOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fee",
         "type": "uint256"
       }
     ],
@@ -424,32 +522,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "deposit",
-        "type": "bool"
-      }
-    ],
-    "name": "calculateTokenAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "burnAmount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "feeController",
+    "name": "creator",
     "outputs": [
       {
         "internalType": "address",
@@ -462,15 +536,15 @@
   },
   {
     "inputs": [],
-    "name": "feeDistributor",
+    "name": "decimals",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "uint8",
         "name": "",
-        "type": "address"
+        "type": "uint8"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -510,13 +584,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getPooledTokens",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getDepositTimestamp",
     "outputs": [
       {
-        "internalType": "contract IERC20[]",
+        "internalType": "uint256",
         "name": "",
-        "type": "address[]"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -524,10 +604,10 @@
   },
   {
     "inputs": [],
-    "name": "getStaticDataTokens",
+    "name": "getPooledTokens",
     "outputs": [
       {
-        "internalType": "contract IERC20[]",
+        "internalType": "address[]",
         "name": "",
         "type": "address[]"
       }
@@ -592,18 +672,13 @@
         "type": "uint256[]"
       },
       {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      },
-      {
         "internalType": "string",
-        "name": "lpTokenName",
+        "name": "_name",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "lpTokenSymbol",
+        "name": "_symbol",
         "type": "string"
       },
       {
@@ -622,8 +697,18 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "_withdrawFee",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
-        "name": "_feeDistributor",
+        "name": "_votingRegister",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_creator",
         "type": "address"
       }
     ],
@@ -633,7 +718,44 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IFlashSwapRecipient",
+        "name": "flashContract",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "tokenIn",
@@ -648,6 +770,84 @@
         "internalType": "uint256",
         "name": "amountIn",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "onFlashSwapGivenIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IFlashSwapRecipient",
+        "name": "flashContract",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenIn",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenOut",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "onFlashSwapGivenOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenIn",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenOut",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -696,19 +896,6 @@
   },
   {
     "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "pause",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -725,6 +912,49 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "v",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "r",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "permit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -808,7 +1038,7 @@
         "type": "uint256"
       }
     ],
-    "name": "removeLiquidityOneToken",
+    "name": "removeLiquidityOneTokenExactIn",
     "outputs": [
       {
         "internalType": "uint256",
@@ -820,8 +1050,27 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newAdminFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAdminFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newFlashFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setFlashFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -832,19 +1081,9 @@
         "internalType": "uint256",
         "name": "newSwapFee",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newAdminFee",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newFlashFee",
-        "type": "uint256"
       }
     ],
-    "name": "setFee",
+    "name": "setSwapFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -852,17 +1091,17 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_feeController",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "newWithdrawDuration",
+        "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "_feeDistributor",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "newDefaultWithdrawFee",
+        "type": "uint256"
       }
     ],
-    "name": "setFeeControllerAndDistributor",
+    "name": "setWithdrawFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -872,18 +1111,8 @@
     "name": "swapStorage",
     "outputs": [
       {
-        "internalType": "contract WeightedLPToken",
-        "name": "lpToken",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "nTokens",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastInvariant",
         "type": "uint256"
       },
       {
@@ -900,6 +1129,34 @@
         "internalType": "uint256",
         "name": "adminFee",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "adminSwapFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "defaultWithdrawFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawDuration",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -925,15 +1182,81 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "newOwner",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAdmin",
         "type": "address"
       }
     ],
-    "name": "transferOwnership",
+    "name": "transferAdministration",
     "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -945,7 +1268,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      }
+    ],
     "name": "withdrawAdminFee",
     "outputs": [],
     "stateMutability": "nonpayable",

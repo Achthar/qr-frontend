@@ -15,7 +15,7 @@ interface PoolRequestData {
 
 
 export const fetchWeightedPoolData = createAsyncThunk(
-  "stablePools/fetchWeightedPoolData",
+  "weightedPools/fetchWeightedPoolData",
   async ({ pool, chainId }: PoolRequestData): Promise<SerializedWeightedPool> => {
 
     // fallback if chainId is changed
@@ -51,26 +51,16 @@ export const fetchWeightedPoolData = createAsyncThunk(
         params: []
       },
       {
-        address: getAddress(pool.lpAddress),
+        address: poolAddress,
         name: 'totalSupply',
       },
     ]
 
     const [multipliers, swapStorage, tokenBalances, tokenWeights, supply] =
-      await multicall(chainId, chainId === 43113 ? [...weightedPoolAVAX, ...erc20] : [...weightedPoolROSE, ...erc20], calls)
+      await multicall(chainId, chainId === 43113 ? [...weightedPoolAVAX, ...erc20] : weightedPoolROSE, calls)
 
 
-    let supplyValidated;
-    const match = getAddress(swapStorage.lpToken) === getAddress(pool.lpAddress)
-    if (!match) {
-      [supplyValidated] = await multicall(chainId, erc20, [
-        // total supply of LP token
-        {
-          address: swapStorage.lpAddress,
-          name: 'totalSupply',
-        },
-      ])
-    }
+
 
 
     return {
@@ -90,7 +80,7 @@ export const fetchWeightedPoolData = createAsyncThunk(
         adminFee: swapStorage.adminFee.toString(),
 
       },
-      lpTotalSupply: match ? supply[0].toString() : supplyValidated[0].toString(),
+      lpTotalSupply: supply[0].toString()
     }
   }
 );

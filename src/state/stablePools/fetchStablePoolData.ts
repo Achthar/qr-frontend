@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import multicall from 'utils/multicall';
-import stableSwapAVAX from 'config/abi/avax/RequiemStableSwap.json'
+import stableSwapAVAX from 'config/abi/oasis/StablePool.json'
 import erc20 from 'config/abi/erc20.json'
 import { stableSwapInitialData } from 'config/constants/stablePools';
 import { Fraction } from '@requiemswap/sdk';
@@ -61,7 +61,7 @@ export const fetchStablePoolData = createAsyncThunk(
         params: []
       },
       {
-        address: getAddress(pool.lpAddress),
+        address: poolAddress,
         name: 'totalSupply',
         params: []
       },
@@ -69,21 +69,9 @@ export const fetchStablePoolData = createAsyncThunk(
 
     const [multipliers, swapStorage, tokenBalances, A, supply] = await multicall(
       chainId,
-      [...stableSwapAVAX, ...erc20],
+      stableSwapAVAX,
       calls
     )
-
-    let supplyValidated;
-    const match = getAddress(swapStorage.lpToken) === getAddress(pool.lpAddress)
-    if (!match) {
-      [supplyValidated] = await multicall(chainId, erc20, [
-        // total supply of LP token
-        {
-          address: swapStorage.lpAddress,
-          name: 'totalSupply',
-        },
-      ])
-    }
 
     return {
       ...pool,
@@ -105,7 +93,7 @@ export const fetchStablePoolData = createAsyncThunk(
         futureATime: swapStorage.futureATime.toString(),
         defaultWithdrawFee: swapStorage.defaultWithdrawFee.toString(),
       },
-      lpTotalSupply: match ? supply[0].toString() : supplyValidated[0].toString(),
+      lpTotalSupply: supply[0].toString(),
       A: A.toString()
     }
   }

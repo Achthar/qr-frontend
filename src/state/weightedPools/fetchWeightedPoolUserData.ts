@@ -28,12 +28,12 @@ export interface WeightePoolUserData {
 export const fetchPoolUserAllowancesAndBalances = async (chainId: number, account: string, poolsToFetch: PoolConfig[]): Promise<WeightePoolUserData> => {
 
   const callsAllowance = poolsToFetch.map((pool) => {
-    const lpContractAddress = pool.lpAddress
+    const lpContractAddress = pool.address
     return { address: lpContractAddress, name: 'allowance', params: [account, pool.address] }
   })
 
   const callsLpBalances = poolsToFetch.map((pool) => {
-    const lpContractAddress = pool.lpAddress
+    const lpContractAddress = pool.address
     return {
       address: lpContractAddress,
       name: 'balanceOf',

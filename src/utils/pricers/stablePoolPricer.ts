@@ -22,7 +22,6 @@ export function getTotalValue(_swap: StablePool, _quote: Token): BigNumber {
             _value = _value.add(reserves[i]);
         }
     }
-
     return _value
 }
 
