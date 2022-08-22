@@ -3,10 +3,8 @@ import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { DEFAULT_LIST_OF_LISTS, UNSUPPORTED_LIST_URLS } from 'config/constants/lists'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import { AppState } from '../index'
 import { tokenList as DEFAULT_TOKEN_LIST } from '../../config/constants/tokenLists/tokenlist'
-import UNSUPPORTED_TOKEN_LIST from '../../config/constants/tokenLists/pancake-unsupported.tokenlist.json'
 import { ChainId } from '../../config/index'
 
 type TagDetails = Tags[keyof Tags]
@@ -191,13 +189,13 @@ export function useDefaultTokenList(chainId: number): TokenAddressMap {
 // list of tokens not supported on interface, used to show warnings and prevent swaps and adds
 export function useUnsupportedTokenList(): TokenAddressMap {
   // get hard coded unsupported tokens
-  const localUnsupportedListMap = listToTokenMap(UNSUPPORTED_TOKEN_LIST)
+  // const localUnsupportedListMap = listToTokenMap()
 
   // get any loaded unsupported tokens
   const loadedUnsupportedListMap = useCombinedTokenMapFromUrls(UNSUPPORTED_LIST_URLS)
 
   // format into one token address map
-  return combineMaps(localUnsupportedListMap, loadedUnsupportedListMap)
+  return loadedUnsupportedListMap
 }
 
 export function useIsListActive(url: string): boolean {

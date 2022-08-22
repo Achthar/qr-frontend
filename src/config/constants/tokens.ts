@@ -498,7 +498,7 @@ const tokens: { [tokenId: string]: TokenEntry } = {
       43113: '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
       43114: '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
       110001: '0x36A82d7B21Da814951a8a04f2e094Ee9b01f3f58',
-      42261: '0x10E38dFfFCfdBaaf590D5A9958B01C9cfcF6A63B'
+      42261: '0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D'
     },
     decimals: 18,
     projectLink: 'https://pancakeswap.finance/',

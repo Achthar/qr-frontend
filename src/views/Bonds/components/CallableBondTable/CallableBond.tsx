@@ -63,6 +63,8 @@ const CallableBond: React.FunctionComponent<CallableBondProps> = ({ label, bondI
   }
 
   const oracleData = useGetOracle(chainId, bond?.market?.underlying, bond?.market?.quote)
+  const decimalMultiplier = 10 ** oracleData?.displayDecimals
+
   return (
     <Container>
       <TokenWrapper>
@@ -74,7 +76,7 @@ const CallableBond: React.FunctionComponent<CallableBondProps> = ({ label, bondI
           <Text marginLeft='-5px' bold fontSize='1'>{`${oracleData?.token}-Linked`}</Text>
           <Flex flexDirection="row">
             <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
-            <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+            <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * decimalMultiplier) / decimalMultiplier).toLocaleString()}`}</Text>
           </Flex>
           <Text bold fontSize={isMobile ? '1' : '2'}>{label}</Text>
         </Flex>
@@ -84,7 +86,7 @@ const CallableBond: React.FunctionComponent<CallableBondProps> = ({ label, bondI
             <Text marginLeft='-5px' bold fontSize='12px'>{`${oracleData?.token}-Linked`}</Text>
             <Flex flexDirection="row">
               <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
-              <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()}`}</Text>
+              <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * decimalMultiplier) / decimalMultiplier).toLocaleString()}`}</Text>
             </Flex>
           </Flex>
         )}
