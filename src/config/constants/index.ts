@@ -255,6 +255,8 @@ export const CHAIN_INFO: ChainInfo = {
   },
 }
 
+export const FALLBACK_CHAINID = 42661
+
 export const ALL_SUPPORTED_CHAIN_IDS = [
   ChainId.BSC_MAINNET, ChainId.BSC_TESTNET,
   ChainId.MATIC_TESTNET,

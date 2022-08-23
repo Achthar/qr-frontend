@@ -1,6 +1,6 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import isArchivedBondId from 'utils/bondHelpers'
+import { FALLBACK_CHAINID } from 'config/constants'
 import { BondConfig, BondType } from 'config/constants/types'
 import multicall from 'utils/multicall';
 import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress } from 'utils/addressHelpers';
@@ -497,7 +497,7 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
 )
 
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const bondsSlice = createSlice({
   name: 'Bonds',

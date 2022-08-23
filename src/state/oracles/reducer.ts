@@ -1,6 +1,6 @@
 import { createAsyncThunk, createReducer, createSlice } from '@reduxjs/toolkit'
 import { getAddress } from 'ethers/lib/utils'
-import { SerializedBigNumber } from 'state/types'
+import { FALLBACK_CHAINID } from 'config/constants'
 import { getCallBondingDepositoryAddress } from 'utils/addressHelpers'
 import multicall from 'utils/multicall'
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
@@ -151,7 +151,7 @@ export const fetchBandOracleData = createAsyncThunk<{ oracles: { [key: string]: 
 )
 
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const bondsSlice = createSlice({
   name: 'Oracles',

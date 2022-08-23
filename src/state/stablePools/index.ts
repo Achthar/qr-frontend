@@ -1,6 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { stableSwapInitialData } from 'config/constants/stablePools';
+import { FALLBACK_CHAINID } from 'config/constants'
 import { fetchStablePoolData } from './fetchStablePoolData';
 import { PoolConfig } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchStablePoolUserData';
@@ -52,7 +53,7 @@ export const fetchStablePoolUserDataAsync = createAsyncThunk<PoolUserDataRespons
   },
 )
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const stablePoolSlice = createSlice({
   name: 'stablePools',

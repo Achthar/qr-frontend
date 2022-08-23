@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { SerializedBigNumber } from 'state/types'
-import { typeInput, typeInputTime } from './actions'
+import { FALLBACK_CHAINID } from 'config/constants'
 import { fetchStakingUserData } from './fetchStakingUserData'
 import { fetchStakingData } from './fetchStakingData'
 import { fetchTokenData } from './fetchTokenData'
@@ -59,7 +59,7 @@ export interface AssetBackedStakingState {
 }
 
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 const initialState: AssetBackedStakingState = {
   referenceChainId: initialChainId,

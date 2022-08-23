@@ -1,5 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { WRAPPED_NETWORK_TOKENS } from '@requiemswap/sdk'
+import { FALLBACK_CHAINID } from 'config/constants'
 import { STABLES, WETH, WBTC, ABREQ, USDC, USDT, DAI, BUSD, WBNB } from 'config/constants/tokens'
 import {
   addSerializedPair,
@@ -59,7 +60,7 @@ function pairKey(token0Address: string, token1Address: string) {
   return `${token0Address}-${token1Address}`
 }
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const initialState: UserState = {
   referenceChainId: initialChainId,

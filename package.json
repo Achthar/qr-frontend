@@ -5,8 +5,8 @@
   "scripts": {
     "preinstall": "bash preinstall.sh",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "CI=false react-scripts --openssl-legacy-provider build",
+    "start": "react-scripts start",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",

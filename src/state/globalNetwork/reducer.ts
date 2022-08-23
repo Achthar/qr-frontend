@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
+import { FALLBACK_CHAINID } from 'config/constants'
 import { setChainId, setAccount } from './actions'
 
 export interface GlobalNetworkState {
@@ -6,7 +7,7 @@ export interface GlobalNetworkState {
   readonly account: string
 }
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 const initialState: GlobalNetworkState = {
   chainId: initialChainId,

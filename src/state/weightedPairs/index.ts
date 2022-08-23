@@ -1,6 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createSlice } from '@reduxjs/toolkit'
 import { getAllTokenPairs } from 'config/constants/tokenPairs';
+import { FALLBACK_CHAINID } from 'config/constants'
 import { fetchWeightedPairMetaData } from './fetchWeightedPairMetaData';
 import { addTokenPair, changeChainIdWeighted, metaDataChange, setMetdataLoaded, triggerRefreshUserData } from './actions';
 import { fetchWeightedPairData, fetchWeightedPairReserves, fetchWeightedPairUserData } from './fetchWeightedPairData';
@@ -17,7 +18,7 @@ function initialState(chainId: number) {
   }
 }
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const stablePoolSlice = createSlice({
   name: 'weightedPairs',

@@ -1,6 +1,7 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { weightedSwapInitialData } from 'config/constants/weightedPool';
+import { FALLBACK_CHAINID } from 'config/constants'
 import { fetchWeightedPoolData } from './fetchWeightedPoolData';
 import { PoolConfig } from '../types'
 import { fetchPoolUserAllowancesAndBalances } from './fetchWeightedPoolUserData';
@@ -51,7 +52,7 @@ export const fetchWeightedPoolUserDataAsync = createAsyncThunk<PoolUserDataRespo
   },
 )
 
-const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+const initialChainId = Number(process?.env?.REACT_APP_DEFAULT_CHAIN_ID ?? FALLBACK_CHAINID)
 
 export const weightedPoolSlice = createSlice({
   name: 'weghtedPools',
