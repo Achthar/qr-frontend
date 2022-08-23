@@ -497,9 +497,11 @@ export const fetchClosedBondsUserAsync = createAsyncThunk<{ vanillaMarkets: RawB
 )
 
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 export const bondsSlice = createSlice({
   name: 'Bonds',
-  initialState: initialState(43113), // TODO: make that more flexible
+  initialState: initialState(initialChainId), // TODO: make that more flexible
   reducers: {
     setLoadArchivedBondsData: (state, action) => {
       const loadArchivedBondsData = action.payload

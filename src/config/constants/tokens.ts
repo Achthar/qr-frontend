@@ -607,7 +607,7 @@ const tokens: { [tokenId: string]: TokenEntry } = {
 }
 
 // const tokenList = (): TokenList => {
-//   const chainId = process.env.REACT_APP_CHAIN_ID
+//   const chainId = process.env.REACT_APP_DEFAULT_CHAIN_ID
 
 //   // // If testnet - return list comprised of testnetTokens wherever they exist, and mainnetTokens where they don't
 //   // if (parseInt(chainId, 10) === ChainId.BSC_TESTNET) {

@@ -51,11 +51,12 @@ export const fetchWeightedPoolUserDataAsync = createAsyncThunk<PoolUserDataRespo
   },
 )
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
 
 export const weightedPoolSlice = createSlice({
   name: 'weghtedPools',
   initialState: {
-    referenceChain: 43113,
+    referenceChain: initialChainId,
     poolData: {
       43113: initialState(43113),
       42261: initialState(42261)

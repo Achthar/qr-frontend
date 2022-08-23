@@ -15,7 +15,7 @@ import { nodes } from './getRpcUrl'
 export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
   const provider = window.ethereum
   if (provider) {
-    // const chainId = parseInt(process.env.REACT_APP_CHAIN_ID, 10)
+    // const chainId = parseInt(process.env.REACT_APP_DEFAULT_CHAIN_ID, 10)
     const formattedChainId = hexStripZeros(BigNumber.from(chainId ?? 43113).toHexString()) // chainId === 43113 ? chainId : hexStripZeros(BigNumber.from(chainId).toHexString())
     try {
       if (!chainId && library?.getNetwork) {

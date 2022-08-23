@@ -59,8 +59,10 @@ function pairKey(token0Address: string, token1Address: string) {
   return `${token0Address}-${token1Address}`
 }
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 export const initialState: UserState = {
-  referenceChainId: 43113,
+  referenceChainId: initialChainId,
   userExpertMode: false,
   userSingleHopOnly: false,
   userSlippageTolerance: INITIAL_ALLOWED_SLIPPAGE,

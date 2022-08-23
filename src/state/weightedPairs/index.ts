@@ -17,10 +17,12 @@ function initialState(chainId: number) {
   }
 }
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 export const stablePoolSlice = createSlice({
   name: 'weightedPairs',
   initialState: {
-    currentChain: 43113,
+    currentChain: initialChainId,
     43113: initialState(43113),
     42261: initialState(42261)
   }, // TODO: make that more flexible

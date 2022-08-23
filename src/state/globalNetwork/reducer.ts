@@ -6,8 +6,10 @@ export interface GlobalNetworkState {
   readonly account: string
 }
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 const initialState: GlobalNetworkState = {
-  chainId: 43113,
+  chainId: initialChainId,
   account: undefined
 }
 

@@ -6,8 +6,8 @@ import { ethers } from 'ethers'
 
 
 export const getAddress = (chainId: number, address: Address): string => {
-  // const chainId = process.env.REACT_APP_CHAIN_ID
-  return address[chainId ?? 43113] ? address[chainId ?? 43113] : address[process.env.REACT_APP_CHAIN_ID ?? 43113]
+  // const chainId = process.env.REACT_APP_DEFAULT_CHAIN_ID
+  return address[chainId ?? 43113] ? address[chainId ?? 43113] : address[process.env.REACT_APP_DEFAULT_CHAIN_ID ?? 43113]
 }
 
 export const getCakeAddress = (chainId: number) => {

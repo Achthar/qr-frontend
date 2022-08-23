@@ -151,9 +151,11 @@ export const fetchBandOracleData = createAsyncThunk<{ oracles: { [key: string]: 
 )
 
 
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 export const bondsSlice = createSlice({
   name: 'Oracles',
-  initialState: initialState(43113), // TODO: make that more flexible
+  initialState: initialState(initialChainId), // TODO: make that more flexible
   reducers: {
   },
   extraReducers: (builder) =>

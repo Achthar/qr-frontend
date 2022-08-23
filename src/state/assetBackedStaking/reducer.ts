@@ -58,8 +58,11 @@ export interface AssetBackedStakingState {
   }
 }
 
+
+const initialChainId = Number(process.env.REACT_APP_DEFAULT_CHAIN_ID)
+
 const initialState: AssetBackedStakingState = {
-  referenceChainId: 43113,
+  referenceChainId: initialChainId,
   staking: {
     43113: {
       implemented: true,

@@ -12,7 +12,7 @@ import getNodeUrl from './getRpcUrl'
 
 const POLLING_INTERVAL = 12000
 
-const chainId = parseInt(process.env.REACT_APP_CHAIN_ID, 10)
+const chainId = parseInt(process.env.REACT_APP_DEFAULT_CHAIN_ID, 10)
 
 const rpcUrl = getNodeUrl(chainId)
 
