@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
+  NETWORK_CCY,
   TokenAmount,
   ZERO,
 } from '@requiemswap/sdk'
@@ -18,7 +19,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { LightCard } from 'components/Card'
 import getChain from 'utils/getChain'
 import { AutoColumn } from 'components/Layout/Column'
-import { DAI, REQT } from 'config/constants/tokens'
+import { DAI, REQT, USDC } from 'config/constants/tokens'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
 import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
@@ -191,7 +192,7 @@ export default function AddLiquidityToPool({
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             as={Link}
-            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+            to={`/${getChain(chainId)}/add/50-${NETWORK_CCY[chainId].symbol}/50-${USDC[chainId].address}`}
             variant="secondary"
             width="100%"
             mb="8px"

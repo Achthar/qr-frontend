@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -8,7 +8,8 @@ import {
   CurrencyAmount,
   NETWORK_CCY,
   TokenAmount,
-  WRAPPED_NETWORK_TOKENS
+  WRAPPED_NETWORK_TOKENS,
+  AmplifiedWeightedPair
 } from '@requiemswap/sdk'
 import {
   Button,
@@ -21,7 +22,8 @@ import {
   ChevronLeftIcon,
   ArrowUpIcon,
   Box,
-  useMatchBreakpoints
+  useMatchBreakpoints,
+  Toggle
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
 // import {Svg, SvgProps} from '@requiemswap/uikit'
@@ -35,8 +37,9 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { SWAP_ROUTER } from 'config/constants'
 import { useGetWeightedPairsState } from 'hooks/useGetWeightedPairsState'
 import useRefresh from 'hooks/useRefresh'
-import { deserializeToken, serializeToken } from 'state/user/hooks/helpers'
+import { serializeToken } from 'state/user/hooks/helpers'
 import AmpInputPanel from 'components/CurrencyInputPanel/AmpInput'
+import { USDC } from 'config/constants/tokens'
 
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
@@ -44,6 +47,7 @@ import TransactionConfirmationModal, { ConfirmationModalContent } from 'componen
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { DoubleCurrencyLogo } from 'components/Logo'
 import { AppHeader, AppBody } from 'components/App'
+import PairSelect from 'components/Select/PairSelect'
 import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPairPosition'
 import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
@@ -51,6 +55,7 @@ import { useCurrency, useAllTokens } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback, useApproveCallbackWithAllowance } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
+import GeneralAppBoody from 'components/App/GeneralAppBody'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
 import { WeightedPairState } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
@@ -105,8 +110,8 @@ export default function AddLiquidity({
     () => {
       if (!currencyA && !currencyB)
         return [{ token0: undefined, token1: undefined }, false]
-      const tokenA = wrappedCurrency(currencyA, chainId)
-      const tokenB = wrappedCurrency(currencyB, chainId)
+      const tokenA = currencyA ? wrappedCurrency(currencyA, chainId) : WRAPPED_NETWORK_TOKENS[chainId]
+      const tokenB = currencyB ? wrappedCurrency(currencyB, chainId) : USDC[chainId]
       return tokenA?.address.toLowerCase() < tokenB?.address.toLocaleLowerCase() ?
         [{
           token0: serializeToken(tokenA),
@@ -118,7 +123,6 @@ export default function AddLiquidity({
     },
     [chainId, currencyA, currencyB],
   )
-
 
   // first, we fetch all weighted pairs from the state
   // and add some, if not yet included
@@ -177,8 +181,8 @@ export default function AddLiquidity({
     account,
     weightA,
     weightB,
-    currencyA ?? undefined,
-    currencyB ?? undefined,
+    currencyA ?? NETWORK_CCY[chainId],
+    currencyB ?? USDC[chainId],
     tokenBalances,
     networkCcyBalance,
     pairs,
@@ -377,6 +381,70 @@ export default function AddLiquidity({
 
   const pairsAvailable = pairs.filter(pair => pair.token0.address === tokens.token0.address && pair.token1.address === tokens.token1.address)
 
+
+
+  const [isCreatorMode, setCreatorMode] = useState(false);
+  // const poolDropdown = () => {
+
+  // }
+
+  useEffect(() => {
+    if (!isCreatorMode && pairsAvailable.length === 0) {
+      setCreatorMode(true)
+    }
+  },
+    [isCreatorMode, pairsAvailable.length]
+  )
+
+  // console.log("NL", noLiquidity, isCreatorMode)
+
+  const MacroConfigurator = () => {
+    return (
+      <Flex flexDirection={isMobile ? 'column' : 'row'} marginTop='5px' marginBottom='5px' justifyContent='space-between'>
+        <Flex borderRadius='20px'
+          width={isMobile ? '90%' : '350px'}
+          justifyContent='space-between'
+          alignItems='center'
+          marginLeft='10px'
+          style={{ borderRadius: '16x', background: 'rgba(255, 255, 255, 0.33)' }}
+
+        >
+          <Toggle onChange={() => {
+            if (pairsAvailable[0]) {
+              feeInput(pairsAvailable[0].fee0.toString())
+              ampInput(pairsAvailable[0].amp.toString())
+              weightAInput(aIs0 ? pairsAvailable[0].weight0.toString() : pairsAvailable[0].weight1.toString())
+              setCreatorMode(!isCreatorMode)
+            }
+          }} disabled={isCreatorMode && pairsAvailable.length === 0} />
+          <Flex borderRadius='20px'
+            marginLeft='10px'
+            alignItems='center'
+            style={{ borderRadius: '16x', background: 'rgba(0, 0, 0, 0.33)', height: '40px' }}
+          >
+            <Text textAlign='center' marginLeft='10px' marginRight='20px' fontSize='15px' bold  >
+              {!isCreatorMode ? (pairsAvailable.length > 0 ? 'Add liquidity to existing pair' : 'No pair exists: Create') : 'Create a new pair'}
+            </Text>
+          </Flex>
+
+        </Flex>
+        {(pairsAvailable.length > 0 && (
+
+          <Flex marginRight={isMobile ? '' : '40px'} justifyContent='flex-start' marginTop={isMobile ? '10px' : ''}>
+            <PairSelect pairsAvailable={pairsAvailable} setPair={(pairData: AmplifiedWeightedPair) => {
+              if (pairData) {
+                feeInput(pairData.fee0.toString())
+                ampInput(pairData.amp.toString())
+                weightAInput(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString())
+                setCreatorMode(false)
+              }
+            }} />
+          </Flex>
+        ))
+        }
+      </Flex>)
+  }
+
   const modalHeader = () => {
     return noLiquidity ? (
       <Flex alignItems="center">
@@ -528,9 +596,34 @@ export default function AddLiquidity({
     'addLiquidityModal',
   )
 
+  const PoolDataView = () => {
+    return (<>
+      {currencies[WeightedField.CURRENCY_A] && currencies[WeightedField.CURRENCY_B] && weightedPairState !== WeightedPairState.INVALID && (
+        <Flex flexDirection='column'>
+          <PoolPriceBar
+            currencies={currencies}
+            poolTokenPercentage={poolTokenPercentage}
+            noLiquidity={noLiquidity}
+            price={price}
+            priceRatio={priceActual}
+          />
+          {!addIsUnsupported ? (
+            weightedPair ? (
+              <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
+                <MinimalWeightedPositionCard showUnwrapped={oneCurrencyIsWETH} weightedPair={weightedPair} />
+              </AutoColumn>
+            ) : null
+          ) : (
+            <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]} />
+          )}
+        </Flex>
+      )}
+    </>)
+  }
+
   return (
     <Page>
-      <AppBody>
+      <GeneralAppBoody isMobile={isMobile}>
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             variant="primary"
@@ -573,258 +666,206 @@ export default function AddLiquidity({
           )}
           backTo={`/${getChain(chainId)}/liquidity`}
         />
-        <CardBody>
-          <AutoColumn gap="20px">
-            {noLiquidity && (
-              <ColumnCenter>
-                <Message variant="warning">
-                  <div>
-                    <Text bold mb="8px">
-                      {t('You are the first liquidity provider.')}
-                    </Text>
-                    <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
-                    <Text>{t('Once you are happy with the rate click supply to review.')}</Text>
-                  </div>
-                </Message>
-              </ColumnCenter>
-            )}
-            <Box>
-              <Row grid-row-gap='5px'>
-                <span>
-                  <CurrencyInputPanelExpanded
-                    chainId={chainId}
-                    account={account}
-                    balances={tokenBalances}
-                    networkCcyBalance={networkCcyBalance}
-                    isLoading={isLoading}
-                    borderRadius='5px'
-                    width={isMobile ? '210px' : '280px'}
-                    value={formattedAmounts[WeightedField.CURRENCY_A]}
-                    onUserInput={onFieldAInput}
-                    onMax={() => {
-                      onFieldAInput(maxAmounts[WeightedField.CURRENCY_A]?.toExact() ?? '')
-                    }}
-                    onCurrencySelect={handleCurrencyASelect}
-                    showMaxButton={false}
-                    currency={currencies[WeightedField.CURRENCY_A]}
-                    id="add-liquidity-input-tokena"
-                    showCommonBases
-                  />
-                </span>
-                <ChevronLeftIcon width="16px" />
-                <span>
-                  <PercentageInputPanel
-                    borderRadius='5px'
-                    width='30%'
-                    value={weights[WeightedField.WEIGHT_A]}
-                    onUserInput={
-                      weightAInput
-                    }
-                    label={`Weight ${currencies[WeightedField.CURRENCY_A]?.symbol ?? ''}`}
-                    id='weight0'
-                    onHover
-                  />
-                </span>
-              </Row>
-            </Box>
-            {/* <ColumnCenter> */}
-            <Box>
-              <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px' width='80%'>
-
-                <BpsInputPanel
-                  borderRadius='5px'
-                  width='100px'
-                  value={noLiquidity ? _fee === '-' ? '' : _fee : weightedPair.fee0.toString()}
-                  onUserInput={noLiquidity ? feeInput : (x) => null}
-                  label='Swap Fee'
-                  id='fee'
-                  onHover
-                />
-                <AddIcon width="24px" marginLeft='5px' marginRight='5px' />
-
-                <AmpInputPanel
-                  borderRadius='5px'
-                  width='180px'
-                  value={noLiquidity ? amp : weightedPair.amp.toString()}
-                  onUserInput={noLiquidity ? ampInput : (x) => null}
-                  label='Amplification'
-                  id='Amplification'
-                  onHover
-                />
-
-              </Flex>
-            </Box>
-            {/* </ColumnCenter> */}
-            <Row grid-row-gap='5px'>
-              <span>
-                <CurrencyInputPanelExpanded
-                  chainId={chainId}
-                  account={account}
-                  balances={tokenBalances}
-                  networkCcyBalance={networkCcyBalance}
-                  isLoading={isLoading}
-                  borderRadius='5px'
-                  width={isMobile ? '210px' : '280px'}
-                  value={formattedAmounts[WeightedField.CURRENCY_B]}
-                  onUserInput={onFieldBInput}
-                  onCurrencySelect={handleCurrencyBSelect}
-                  onMax={() => {
-                    onFieldBInput(maxAmounts[WeightedField.CURRENCY_B]?.toExact() ?? '')
-                  }}
-                  showMaxButton={false}
-                  currency={currencies[WeightedField.CURRENCY_B]}
-                  id="add-liquidity-input-tokenb"
-                  showCommonBases
-                />
-              </span>
-              <ChevronLeftIcon width="16px" />
-              <span>
-                <PercentageInputPanel
-                  borderRadius='5px'
-                  width='30%'
-                  value={weights[WeightedField.WEIGHT_B]}
-                  onUserInput={weightBInput}
-                  label={`Weight ${currencies[WeightedField.CURRENCY_B]?.symbol ?? ''}`}
-                  id='weight0'
-                  onHover
-                />
-              </span>
-            </Row>
-            {currencies[WeightedField.CURRENCY_A] && currencies[WeightedField.CURRENCY_B] && weightedPairState !== WeightedPairState.INVALID && (
-              <>
-                <LightCard padding="0px" borderRadius="20px">
-                  <RowBetween padding="1rem">
-                    <Text fontSize="14px">
-                      {noLiquidity ? t('Initial pool ratio, market prices and pool share') : t('Pool ratios, market prices and pool share')}
-                    </Text>
-                  </RowBetween>{' '}
-                  <LightCard padding="1rem" borderRadius="20px">
-                    <PoolPriceBar
-                      currencies={currencies}
-                      poolTokenPercentage={poolTokenPercentage}
-                      noLiquidity={noLiquidity}
-                      price={price}
-                      priceRatio={priceActual}
-                    />
-                  </LightCard>
-                </LightCard>
-              </>
-            )}
-
-            {addIsUnsupported ? (
-              <Button disabled mb="4px">
-                {t('Unsupported Asset')}
-              </Button>
-            ) : !account ? (
-              <ConnectWalletButton />
-            ) : (
-              <AutoColumn gap="md">
-                {(approvalA === ApprovalState.NOT_APPROVED ||
-                  approvalA === ApprovalState.PENDING ||
-                  approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING) &&
-                  isValid && (
-                    <RowBetween>
-                      {approvalA !== ApprovalState.APPROVED && (
-                        <Button
-                          onClick={approveACallback}
-                          disabled={approvalA === ApprovalState.PENDING}
-                          width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
-                        >
-                          {approvalA === ApprovalState.PENDING ? (
-                            <Dots>{t('Enabling %asset%', { asset: currencies[WeightedField.CURRENCY_A]?.symbol })}</Dots>
-                          ) : (
-                            t('Enable %asset%', { asset: currencies[WeightedField.CURRENCY_A]?.symbol })
-                          )}
-                        </Button>
-                      )}
-                      {approvalB !== ApprovalState.APPROVED && (
-                        <Button
-                          onClick={approveBCallback}
-                          disabled={approvalB === ApprovalState.PENDING}
-                          width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
-                        >
-                          {approvalB === ApprovalState.PENDING ? (
-                            <Dots>{t('Enabling %asset%', { asset: currencies[WeightedField.CURRENCY_B]?.symbol })}</Dots>
-                          ) : (
-                            t('Enable %asset%', { asset: currencies[WeightedField.CURRENCY_B]?.symbol })
-                          )}
-                        </Button>
-                      )}
-                    </RowBetween>
-                  )}
-                <Button
-                  variant={
-                    !isValid && !!parsedAmounts[WeightedField.CURRENCY_A] && !!parsedAmounts[WeightedField.CURRENCY_B]
-                      ? 'danger'
-                      : 'primary'
-                  }
-                  onClick={() => {
-                    if (expertMode) {
-                      onAdd()
-                    } else {
-                      onPresentAddLiquidityModal()
-                    }
-                  }}
-                  disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-                >
-                  {error ?? t('Supply')}
-                </Button>
-              </AutoColumn>
-            )}
-          </AutoColumn>
-          {pairsAvailable.length > 0 && (
-            <Box>
-              <AutoColumn gap="sm" justify="center">
-                <Text bold fontSize='15px'>
-                  Available constellations
-                </Text>
-                {pairsAvailable.map((pairData) => (
-                  <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px' marginRight='5px' marginLeft='5px'>
-                    <AutoColumn>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currencyA.symbol} ${aIs0 ? pairData.weight0.toString() : pairData.weight1.toString()}%`}
-                      </Text>
-                      <Text fontSize='13px' width='100px'>
-                        {`${currencyB.symbol} ${aIs0 ? pairData.weight1.toString() : pairData.weight0.toString()}%`}
-                      </Text>
-                    </AutoColumn>
-                    <AutoColumn>
-                      <Text fontSize='13px' width='100px' marginLeft='10px' marginRight='10px'>
-                        {`Fee ${pairData.fee0.toString()}Bps`}
-                      </Text>
-                      <Text fontSize='13px' width='100px' marginLeft='10px' marginRight='10px'>
-                        {`Amp ${Number(pairData.amp.toString()) / 10000}x`}
-                      </Text>
-                    </AutoColumn>
-                    <StyledButton
-                      height='20px'
-                      endIcon={<ArrowUpIcon />}
-                      onClick={() => {
-                        feeInput(pairData.fee0.toString())
-                        ampInput(pairData.amp.toString())
-                        weightAInput(aIs0 ? pairData.weight0.toString() : pairData.weight1.toString())
-                      }}
-                    >
-                      <Text fontSize='15px'>
-                        Set
-                      </Text>
-                    </StyledButton>
-                  </Flex>
-                ))}
-              </AutoColumn>
+        {MacroConfigurator()}
+        <Flex flexDirection='row' justifyContent='space-between'>
+          {!isMobile && (
+            <Box marginLeft='10px' marginRight='10px' marginTop='20px'>
+              {PoolDataView()}
             </Box>
           )}
-        </CardBody>
-      </AppBody>
-      {!addIsUnsupported ? (
+          <Flex justifyContent='center' justifyItems='center'>
+            <AutoColumn gap="20px">
+              {noLiquidity && (
+                <ColumnCenter>
+                  <Message variant="warning">
+                    <div>
+                      <Text bold mb="8px">
+                        {t('You are the first liquidity provider.')}
+                      </Text>
+                      <Text mb="8px">{t('The ratio of tokens you add will set the price of this pool.')}</Text>
+                      <Text>{t('Once you are happy with the rate click supply to review.')}</Text>
+                    </div>
+                  </Message>
+                </ColumnCenter>
+              )}
+              <Flex marginRight={isMobile ? '' : '10px'} marginLeft={isMobile ? '' : '10px'} flexDirection='column' alignItems='center' justifyContent='center'>
+                <Box>
+                  <Box>
+                    <Row grid-row-gap='5px'>
+                      <span>
+                        <CurrencyInputPanelExpanded
+                          chainId={chainId}
+                          account={account}
+                          balances={tokenBalances}
+                          networkCcyBalance={networkCcyBalance}
+                          isLoading={isLoading}
+                          borderRadius='5px'
+                          width={isMobile ? '210px' : '280px'}
+                          value={formattedAmounts[WeightedField.CURRENCY_A]}
+                          onUserInput={onFieldAInput}
+                          onMax={() => {
+                            onFieldAInput(maxAmounts[WeightedField.CURRENCY_A]?.toExact() ?? '')
+                          }}
+                          onCurrencySelect={handleCurrencyASelect}
+                          showMaxButton={false}
+                          currency={currencies[WeightedField.CURRENCY_A]}
+                          id="add-liquidity-input-tokena"
+                          showCommonBases
+                        />
+                      </span>
+                      <ChevronLeftIcon width="16px" />
+                      <span>
+                        <PercentageInputPanel
+                          borderRadius='5px'
+                          width='30%'
+                          value={weights[WeightedField.WEIGHT_A]}
+                          onUserInput={isCreatorMode ? weightAInput : () => null}
+                          label={`Weight ${currencies[WeightedField.CURRENCY_A]?.symbol ?? ''}`}
+                          id='weightA'
+                          onHover
+                        />
+                      </span>
+                    </Row>
+                  </Box>
+                  {/* <ColumnCenter> */}
+                  <Box>
+                    <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='5px' width='80%'>
+
+                      <BpsInputPanel
+                        borderRadius='5px'
+                        width='100px'
+                        value={noLiquidity ? _fee === '-' ? '' : _fee : weightedPair.fee0.toString()}
+                        onUserInput={(isCreatorMode) ? feeInput : (x) => null}
+                        label='Swap Fee'
+                        id='fee'
+                        onHover
+                      />
+                      <AddIcon width="24px" marginLeft='5px' marginRight='5px' marginTop='20px' marginBottom='20px' />
+
+                      <AmpInputPanel
+                        borderRadius='5px'
+                        width='180px'
+                        value={noLiquidity ? amp : weightedPair.amp.toString()}
+                        onUserInput={(isCreatorMode) ? ampInput : (x) => null}
+                        label='Amplification'
+                        id='Amplification'
+                        onHover
+                      />
+
+                    </Flex>
+                  </Box>
+                  {/* </ColumnCenter> */}
+                  <Box>
+                    <Row grid-row-gap='5px'>
+                      <span>
+                        <CurrencyInputPanelExpanded
+                          chainId={chainId}
+                          account={account}
+                          balances={tokenBalances}
+                          networkCcyBalance={networkCcyBalance}
+                          isLoading={isLoading}
+                          borderRadius='5px'
+                          width={isMobile ? '210px' : '280px'}
+                          value={formattedAmounts[WeightedField.CURRENCY_B]}
+                          onUserInput={onFieldBInput}
+                          onCurrencySelect={handleCurrencyBSelect}
+                          onMax={() => {
+                            onFieldBInput(maxAmounts[WeightedField.CURRENCY_B]?.toExact() ?? '')
+                          }}
+                          showMaxButton={false}
+                          currency={currencies[WeightedField.CURRENCY_B]}
+                          id="add-liquidity-input-tokenb"
+                          showCommonBases
+                        />
+                      </span>
+                      <ChevronLeftIcon width="16px" />
+                      <span>
+                        <PercentageInputPanel
+                          borderRadius='5px'
+                          width='30%'
+                          value={weights[WeightedField.WEIGHT_B]}
+                          onUserInput={isCreatorMode ? weightBInput : () => null}
+                          label={`Weight ${currencies[WeightedField.CURRENCY_B]?.symbol ?? ''}`}
+                          id='weightB'
+                          onHover
+                        />
+                      </span>
+                    </Row>
+                  </Box>
+                </Box>
+              </Flex>
+              {isMobile && PoolDataView()}
+              {addIsUnsupported ? (
+                <Button disabled mb="4px">
+                  {t('Unsupported Asset')}
+                </Button>
+              ) : !account ? (
+                <ConnectWalletButton />
+              ) : (
+                <AutoColumn gap="md">
+                  {(approvalA === ApprovalState.NOT_APPROVED ||
+                    approvalA === ApprovalState.PENDING ||
+                    approvalB === ApprovalState.NOT_APPROVED ||
+                    approvalB === ApprovalState.PENDING) &&
+                    isValid && (
+                      <RowBetween>
+                        {approvalA !== ApprovalState.APPROVED && (
+                          <Button
+                            onClick={approveACallback}
+                            disabled={approvalA === ApprovalState.PENDING}
+                            width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
+                          >
+                            {approvalA === ApprovalState.PENDING ? (
+                              <Dots>{t('Enabling %asset%', { asset: currencies[WeightedField.CURRENCY_A]?.symbol })}</Dots>
+                            ) : (
+                              t('Enable %asset%', { asset: currencies[WeightedField.CURRENCY_A]?.symbol })
+                            )}
+                          </Button>
+                        )}
+                        {approvalB !== ApprovalState.APPROVED && (
+                          <Button
+                            onClick={approveBCallback}
+                            disabled={approvalB === ApprovalState.PENDING}
+                            width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
+                          >
+                            {approvalB === ApprovalState.PENDING ? (
+                              <Dots>{t('Enabling %asset%', { asset: currencies[WeightedField.CURRENCY_B]?.symbol })}</Dots>
+                            ) : (
+                              t('Enable %asset%', { asset: currencies[WeightedField.CURRENCY_B]?.symbol })
+                            )}
+                          </Button>
+                        )}
+                      </RowBetween>
+                    )}
+                  <Button
+                    variant={
+                      !isValid && !!parsedAmounts[WeightedField.CURRENCY_A] && !!parsedAmounts[WeightedField.CURRENCY_B]
+                        ? 'danger'
+                        : 'primary'
+                    }
+                    onClick={() => {
+                      if (expertMode) {
+                        onAdd()
+                      } else {
+                        onPresentAddLiquidityModal()
+                      }
+                    }}
+                    disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                  >
+                    {error ?? t('Supply')}
+                  </Button>
+                </AutoColumn>
+              )}
+            </AutoColumn>
+          </Flex>
+        </Flex>
+      </GeneralAppBoody>
+      {!addIsUnsupported && isMobile && (
         weightedPair && weightedPairState !== WeightedPairState.INVALID ? (
           <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
             <MinimalWeightedPositionCard showUnwrapped={oneCurrencyIsWETH} weightedPair={weightedPair} />
           </AutoColumn>
         ) : null
-      ) : (
-        <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]} />
       )}
     </Page>
   )

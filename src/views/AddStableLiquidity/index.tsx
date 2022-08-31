@@ -4,12 +4,17 @@ import {
   STABLE_POOL_ADDRESS,
   STABLES_INDEX_MAP,
   ZERO,
+  NETWORK_CCY,
+  Price,
 } from '@requiemswap/sdk'
 import {
   Button,
   CardBody,
   useMatchBreakpoints,
-  Text
+  Text,
+  Table,
+  Th,
+  Td,
 } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps, Link } from 'react-router-dom'
@@ -17,7 +22,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { LightCard } from 'components/Card'
 import getChain from 'utils/getChain'
 import { AutoColumn } from 'components/Layout/Column'
-import { DAI, REQT } from 'config/constants/tokens'
+import { DAI, REQT, USDC } from 'config/constants/tokens'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
 import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
@@ -181,6 +186,71 @@ export default function AddStableLiquidity({
       })
   }
 
+
+
+  const priceMatrix = []
+  if (publicDataLoaded)
+    for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
+      priceMatrix.push([])
+      for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
+        if (i !== j) {
+          priceMatrix?.[i].push(
+            new Price(
+              stablePool?.tokens[i],
+              stablePool?.tokens[j],
+              stablePool.calculateSwapGivenIn(
+                stablePool.tokenFromIndex(j),
+                stablePool.tokenFromIndex(i),
+                stablePool.getBalances()[j].div(10000)
+              ),
+              stablePool.getBalances()[i].div(10000)
+            ),
+          )
+        } else {
+          priceMatrix?.[i].push(undefined)
+        }
+      }
+    }
+
+
+  function priceMatrixComponent(fontsize: string, width: string) {
+    return (
+      <>
+        <Table width={width}>
+          <thead>
+            <tr>
+              <Th textAlign="left">Base</Th>
+              {stablePool && stablePool.tokens.map(tok => {
+                return (
+                  <Th> {tok.symbol}</Th>
+                )
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              stablePool && stablePool.tokens.map((tokenRow, i) => {
+                return (
+                  <tr>
+                    <Td textAlign="left" fontSize={fontsize}>
+                      1 {tokenRow.symbol} =
+                    </Td>
+                    {stablePool.tokens.map((__, j) => {
+                      return (
+
+                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
+            }
+          </tbody>
+        </Table>
+      </>
+    )
+  }
+
   const bttm = useMemo(() => { return stablePool?.tokens.length - 1 }, [stablePool])
 
   return (
@@ -189,7 +259,7 @@ export default function AddStableLiquidity({
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             as={Link}
-            to={`/${getChain(chainId)}/add/80-${REQT[chainId].address}/20-${DAI[chainId].address}`}
+            to={`/${getChain(chainId)}/add/50-${NETWORK_CCY[chainId].symbol}/50-${USDC[chainId].address}`}
             variant="secondary"
             width="100%"
             mb="8px"
