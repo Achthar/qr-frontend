@@ -1,18 +1,21 @@
 /* eslint no-continue: 0 */
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import useTheme from 'hooks/useTheme'
-import { REQT, DAI, ABREQ } from 'config/constants/tokens'
+import { DAI, ABREQ } from 'config/constants/tokens'
 import { AmplifiedWeightedPair, TokenAmount } from '@requiemswap/sdk'
-import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Box } from '@requiemswap/uikit'
+import { Text, Flex, CardBody, CardFooter, Button, AddIcon, Box, useMatchBreakpoints, ChevronUpIcon, ChevronDownIcon } from '@requiemswap/uikit'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useTranslation } from 'contexts/Localization'
-import { useNetworkState } from 'state/globalNetwork/hooks'
-import { useChainIdHandling } from 'hooks/useChainIdHandle'
+import GeneralAppBody from 'components/App/GeneralAppBody'
 import getChain from 'utils/getChain'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useUserPairs } from 'state/user/hooks'
+import { PairGeneralPositionCard, PoolGeneralPositionCard, PoolsHeader, PoolsSectionHeader } from 'components/PositionCard/GeneralPositionCards'
+import { useSerializedWeightedPairsData } from 'state/weightedPairs/hooks'
 import Column from 'components/Column'
+import { SerializedWeightedPair } from 'state/types'
+import { BigNumber } from 'ethers'
 import Row from 'components/Row'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
@@ -54,8 +57,9 @@ export default function PoolList({
 }: RouteComponentProps<{ chain: string }>) {
   const { chainId, library, account } = useActiveWeb3React()
 
+  const { isMobile, isDesktop } = useMatchBreakpoints()
+
   const { t } = useTranslation()
-  const { theme } = useTheme()
 
   useEffect(() => {
     const _chain = getChain(chainId ?? 43113)
@@ -67,6 +71,9 @@ export default function PoolList({
     [chain, chainId, history],
   )
 
+  const [showPairs, setShowPairs] = useState(isDesktop)
+  const [showWeightedPools, setShowWeightedPools] = useState(isDesktop)
+  const [showStablePools, setShowStablePools] = useState(isDesktop)
 
   const { slowRefresh, fastRefresh } = useRefresh()
 
@@ -88,6 +95,20 @@ export default function PoolList({
     reservesAndWeightsLoaded,
     userBalancesLoaded
   } = useGetWeightedPairsState(chainId, account, userPairs, slowRefresh, fastRefresh)
+
+  const { pairs: allSerializedWeightedPairs } = useSerializedWeightedPairsData(chainId)
+
+  const allPairsNoBalance = useMemo(() => {
+    const arrOfArrs = Object.values(allSerializedWeightedPairs).map(p => Object.values(p))
+    const finalArr: SerializedWeightedPair[] = []
+    for (let i = 0; i < arrOfArrs.length; i++) {
+      arrOfArrs[i].forEach(arr => {
+        finalArr.push(arr)
+      });
+    }
+    return finalArr.filter(dat => BigNumber.from(dat?.userData?.balance ?? 0).eq(0))
+  }, [allSerializedWeightedPairs])
+
 
   const dataWithUserBalances: { pair: AmplifiedWeightedPair, balance: TokenAmount, supply: TokenAmount }[] = useMemo(
     () =>
@@ -177,97 +198,149 @@ export default function PoolList({
     )
   }
 
-
-
-
+  const renderGeneralView = () => {
+    return (
+      <Flex flexDirection='column'>
+        <PoolsHeader>
+          <Text textAlign='center' bold fontSize='15px' letterSpacing='2px' textTransform="uppercase">
+            Pools available
+          </Text>
+        </PoolsHeader>
+        <Body>
+          <Flex flexDirection='column'>
+            <PoolsSectionHeader onClick={() => setShowPairs(!showPairs)}>
+              <Text textAlign='center' marginLeft='15px' bold>
+                Amplified Weighted Pairs
+              </Text>
+              {showPairs ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </PoolsSectionHeader>
+            {showPairs && allPairsNoBalance.map(_p =>
+              <>
+                <PairGeneralPositionCard weightedPair={_p} isMobile={isMobile} />
+              </>)}
+            <PoolsSectionHeader onClick={() => setShowWeightedPools(!showWeightedPools)}>
+              <Text textAlign='center' marginLeft='15px' bold>
+                Weighted Pools
+              </Text>
+              {showWeightedPools ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </PoolsSectionHeader>
+            {showWeightedPools && weightedPools.map(_wp =>
+              <>
+                <PoolGeneralPositionCard pool={_wp} />
+              </>)}
+            <PoolsSectionHeader onClick={() => setShowStablePools(!showStablePools)} >
+              <Text textAlign='center' marginLeft='15px' bold>
+                Stable Pools
+              </Text>
+              {showStablePools ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </PoolsSectionHeader>
+            {showStablePools && stablePools.map(_wp =>
+              <>
+                <PoolGeneralPositionCard pool={_wp} />
+              </>)}
+          </Flex>
+        </Body>
+      </Flex>
+    )
+  }
 
   return (
     <Page>
-      <AppBody>
+      <GeneralAppBody isMobile={isMobile}>
         <AppHeader
           chainId={chainId}
           account={account}
-          title={t('Your Liquidity')}
-          subtitle={t('Remove liquidity to receive tokens back')} />
-        <Body>
-          {renderBody()}
-          {account && !weightedIsLoading && (
-            <Flex flexDirection="column" alignItems="center" mt="24px">
-              <Text color="textSubtle" mb="8px">
-                {t("Don't see a pool you joined?")}
+          title="Requiem Liquidity Overview"
+          subtitle="Add liquidity to pools to earn fees or burn LP tokens to withdraw pooled tokens." />
+        <Flex flexDirection={isMobile ? 'column' : 'row'} justifyContent='space-between'>
+          {renderGeneralView()}
+          <Flex flexDirection="column" marginBottom='15px' width={isMobile ? '100%' : '400px'}>
+            <PoolsHeader>
+              <Text textAlign='center' bold fontSize='15px' letterSpacing='2px' textTransform="uppercase">
+                Your personal pool positions
               </Text>
-              <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to={`/${getChain(chainId)}/find`}>
-                {t('Find other LP tokens')}
-              </Button>
-            </Flex>
-          )}
-        </Body>
-        <CardFooter style={{ textAlign: 'center' }}>
-          <Flex flexDirection="row" marginBottom='15px'>
-            <Line />
-            <Text fontSize='15px' textAlign='center' bold>
-              Add Liquidity by Risk Profile
-            </Text>
-            <Line />
+            </PoolsHeader>
+            <Body>
+              {renderBody()}
+              {account && !weightedIsLoading && (
+                <Flex flexDirection="column" alignItems="center" mt="24px">
+                  <Text color="textSubtle" mb="8px">
+                    {t("Don't see a pool you joined?")}
+                  </Text>
+                  <Button id="import-pool-link" variant="secondary" scale="sm" as={Link} to={`/${getChain(chainId)}/find`}>
+                    {t('Find other LP tokens')}
+                  </Button>
+                </Flex>
+              )}
+            </Body>
+            <CardFooter style={{ textAlign: 'center' }}>
+              <Flex flexDirection="row" marginBottom='15px'>
+                <Line />
+                <Text fontSize='15px' textAlign='center' bold>
+                  Add Liquidity by Risk Profile
+                </Text>
+                <Line />
+              </Flex>
+              <Row width='100%' height='50px' marginTop='10px'>
+                <Button
+                  as={Link}
+                  to={`/${getChain(chainId)}/add/80-${ABREQ[chainId].address}/20-${DAI[chainId].address}`}
+                  variant="secondary"
+                  width="33%"
+                  height='70px'
+                  mb="8px"
+                  style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+                >
+                  <Flex flexDirection="column">
+                    <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                      Amplified Pairs
+                    </Text>
+                    <Text fontSize='10px' textAlign='center'>
+                      Volatile
+                    </Text>
+                  </Flex>
+                </Button>
+                <Button
+                  as={Link}
+                  to={`/${getChain(chainId)}/add/weighted`}
+                  variant="secondary"
+                  width="33%"
+                  height='70px'
+                  mb="8px"
+                  style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+                >
+                  <Flex flexDirection="column">
+                    <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                      Weighted Pools
+                    </Text>
+                    <Text fontSize='10px' textAlign='center'>
+                      Diversified
+                    </Text>
+                  </Flex>
+                </Button>
+                <Button
+                  as={Link}
+                  to={`/${getChain(chainId)}/add/stables`}
+                  variant="secondary"
+                  width="33%"
+                  height='70px'
+                  mb="8px"
+                  style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
+                >
+                  <Flex flexDirection="column">
+                    <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
+                      Stable Pools
+                    </Text>
+                    <Text fontSize='10px' textAlign='center'>
+                      Conservative
+                    </Text>
+                  </Flex>
+                </Button>
+              </Row>
+            </CardFooter>
           </Flex>
-          <Row width='100%' height='50px' marginTop='10px'>
-            <Button
-              as={Link}
-              to={`/${getChain(chainId)}/add/80-${ABREQ[chainId].address}/20-${DAI[chainId].address}`}
-              variant="secondary"
-              width="33%"
-              height='70px'
-              mb="8px"
-              style={{ borderTopRightRadius: '3px', borderBottomRightRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
-            >
-              <Flex flexDirection="column">
-                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-                  Amplified Pairs
-                </Text>
-                <Text fontSize='10px' textAlign='center'>
-                  Volatile
-                </Text>
-              </Flex>
-            </Button>
-            <Button
-              as={Link}
-              to={`/${getChain(chainId)}/add/weighted`}
-              variant="secondary"
-              width="33%"
-              height='70px'
-              mb="8px"
-              style={{ borderRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
-            >
-              <Flex flexDirection="column">
-                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-                  Weighted Pools
-                </Text>
-                <Text fontSize='10px' textAlign='center'>
-                  Diversified
-                </Text>
-              </Flex>
-            </Button>
-            <Button
-              as={Link}
-              to={`/${getChain(chainId)}/add/stables`}
-              variant="secondary"
-              width="33%"
-              height='70px'
-              mb="8px"
-              style={{ borderTopLeftRadius: '3px', borderBottomLeftRadius: '3px', marginLeft: '3px', marginRight: '3px', marginBottom: '5px' }}
-            >
-              <Flex flexDirection="column">
-                <Text fontSize='15px' textAlign='center' lineHeight='16px' bold>
-                  Stable Pools
-                </Text>
-                <Text fontSize='10px' textAlign='center'>
-                  Conservative
-                </Text>
-              </Flex>
-            </Button>
-          </Row>
-        </CardFooter>
-      </AppBody>
+        </Flex>
+      </GeneralAppBody>
     </Page >
   )
 }

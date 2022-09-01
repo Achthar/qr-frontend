@@ -70,7 +70,7 @@ export default function PoolData({
   return (
     <Flex flexDirection='column' >
       <HeaderWrapper background=''>
-        <Text fontSize='17px' textAlign='center' textTransform="uppercase"> Pool ratio and market rates</Text>
+        <Text fontSize='17px' textAlign='center' textTransform="uppercase" bold letterSpacing='2px'> Pool ratio and market rates</Text>
       </HeaderWrapper>
       <BodyWrapper background=''>
         <Text fontSize="17px" pt={1} bold marginLeft='3px' marginBottom='10px' marginTop='2px' textAlign='center'>
