@@ -216,7 +216,7 @@ export default function PoolList({
             </PoolsSectionHeader>
             {showPairs && allPairsNoBalance.map(_p =>
               <>
-                <PairGeneralPositionCard weightedPair={_p} isMobile={isMobile} />
+                <PairGeneralPositionCard weightedPair={_p} isMobile={isMobile} marginTop='2px' />
               </>)}
             <PoolsSectionHeader onClick={() => setShowWeightedPools(!showWeightedPools)}>
               <Text textAlign='center' marginLeft='15px' bold>
@@ -226,7 +226,7 @@ export default function PoolList({
             </PoolsSectionHeader>
             {showWeightedPools && weightedPools.map(_wp =>
               <>
-                <PoolGeneralPositionCard pool={_wp} />
+                <PoolGeneralPositionCard pool={_wp} marginTop='2px' />
               </>)}
             <PoolsSectionHeader onClick={() => setShowStablePools(!showStablePools)} >
               <Text textAlign='center' marginLeft='15px' bold>
@@ -236,7 +236,7 @@ export default function PoolList({
             </PoolsSectionHeader>
             {showStablePools && stablePools.map(_wp =>
               <>
-                <PoolGeneralPositionCard pool={_wp} />
+                <PoolGeneralPositionCard pool={_wp} marginTop='2px' />
               </>)}
           </Flex>
         </Body>

@@ -94,7 +94,7 @@ export function PairGeneralPositionCard({ weightedPair, isMobile, ...props }: We
                 <AutoColumn gap="8px" style={{ padding: '5px' }}>
                     <Flex flexDirection='row' justifyContent='space-between'>
 
-                        <Flex flexDirection='column' marginRight='20px'>
+                        <Flex flexDirection='column' marginRight='20px' marginLeft='5px'>
                             <Field />
                             <Field> <CurrencyLogo chainId={chainId} size="20px" currency={currency0} /></Field>
                             <Field> <CurrencyLogo chainId={chainId} size="20px" currency={currency1} /></Field>
@@ -118,8 +118,8 @@ export function PairGeneralPositionCard({ weightedPair, isMobile, ...props }: We
                     </Flex>
 
 
-                    <FixedHeightRow padding='3px'>
-                        <Text color="textSubtle">LP token total supply</Text>
+                    <FixedHeightRow padding='5px'>
+                        <Text color="textSubtle" marginLeft='10px'>LP token total supply</Text>
                         <Text fontSize="14px" color="textSubtle">
                             {Math.round(Number(ethers.utils.formatEther(weightedPair?.totalSupply ?? '0')) * 1e8) / 1e8}
                         </Text>
@@ -206,7 +206,7 @@ export function PoolGeneralPositionCard({ pool, ...props }: PositionCardProps) {
                     <AutoColumn gap="8px" style={{ padding: '16px' }}>
                         <Flex flexDirection='row' justifyContent='space-between'>
 
-                            <Flex flexDirection='column' marginRight='20px'>
+                            <Flex flexDirection='column' marginRight='20px' marginLeft='5px'>
                                 <Field />
                                 {tokens.map(_t => <Field> <CurrencyLogo chainId={chainId} size="20px" currency={_t} /></Field>)}
                             </Flex>
@@ -221,8 +221,8 @@ export function PoolGeneralPositionCard({ pool, ...props }: PositionCardProps) {
                             </Flex>
                         </Flex>
 
-                        <FixedHeightRow>
-                            <Text color="textSubtle">LP token total supply</Text>
+                        <FixedHeightRow padding='5px'>
+                            <Text color="textSubtle" marginLeft='10px'>LP token total supply</Text>
                             <Text fontSize="14px" color="textSubtle">
                                 {Math.round(Number(ethers.utils.formatEther(pool?.lpTotalSupply)) * 1e8) / 1e8}
                             </Text>
