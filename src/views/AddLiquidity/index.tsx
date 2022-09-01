@@ -55,7 +55,7 @@ import { useCurrency, useAllTokens } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallback, useApproveCallbackWithAllowance } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
-import GeneralAppBoody from 'components/App/GeneralAppBody'
+import GeneralAppBody from 'components/App/GeneralAppBody'
 import { useDerivedMintWeightedPairInfo, useMintWeightedPairActionHandlers, useMintWeightedPairState } from 'state/mintWeightedPair/hooks'
 import { WeightedPairState } from 'hooks/useWeightedPairs'
 import { useTransactionAdder } from 'state/transactions/hooks'
@@ -623,7 +623,7 @@ export default function AddLiquidity({
 
   return (
     <Page>
-      <GeneralAppBoody isMobile={isMobile}>
+      <GeneralAppBody isMobile={isMobile}>
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             variant="primary"
@@ -859,7 +859,7 @@ export default function AddLiquidity({
             </AutoColumn>
           </Flex>
         </Flex>
-      </GeneralAppBoody>
+      </GeneralAppBody>
     </Page>
   )
 }

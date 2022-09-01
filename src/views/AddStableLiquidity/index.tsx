@@ -33,7 +33,7 @@ import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, g
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 import PoolData from 'components/PoolPriceBar';
-import GeneralAppBoody from 'components/App/GeneralAppBody'
+import GeneralAppBody from 'components/App/GeneralAppBody'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Page from '../Page'
 
@@ -186,7 +186,7 @@ export default function AddStableLiquidity({
 
   return (
     <Page>
-      <GeneralAppBoody isMobile={isMobile}>
+      <GeneralAppBody isMobile={isMobile}>
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             as={Link}
@@ -321,7 +321,7 @@ export default function AddStableLiquidity({
             )}
           </AutoColumn>
         </Flex>
-      </GeneralAppBoody>
+      </GeneralAppBody>
     </Page>
   )
 }

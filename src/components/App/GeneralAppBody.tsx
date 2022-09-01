@@ -13,6 +13,6 @@ export const BodyWrapper = styled(Card) <{ isMobile: boolean }>`
 /**
  * The styled container element that wraps the content of most pages and the tabs.
  */
-export default function GeneralAppBoody({ children, isMobile }: { children: React.ReactNode, isMobile: boolean }) {
+export default function GeneralAppBody({ children, isMobile }: { children: React.ReactNode, isMobile: boolean }) {
   return <BodyWrapper isMobile={isMobile} background=''>{children}</BodyWrapper>
 }
