@@ -1,34 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   TokenAmount,
-  STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP,
   ZERO,
   NETWORK_CCY,
-  Price,
 } from '@requiemswap/sdk'
 import {
   Button,
   CardBody,
   useMatchBreakpoints,
   Text,
-  Table,
-  Th,
-  Td,
+  Flex,
+  Box,
 } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { LightCard } from 'components/Card'
 import getChain from 'utils/getChain'
 import { AutoColumn } from 'components/Layout/Column'
-import { DAI, REQT, USDC } from 'config/constants/tokens'
+import { USDC } from 'config/constants/tokens'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
-import { AppHeader, AppBody } from 'components/App'
-import Row, { RowBetween } from 'components/Layout/Row'
-import { ApprovalState, useApproveCallback, useApproveCallbacks } from 'hooks/useApproveCallback'
+import { AppHeader } from 'components/App'
+import Row from 'components/Layout/Row'
+import { ApprovalState, useApproveCallbacks } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
-import { StablesField } from 'state/mintStables/actions'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
 import { useDerivedMintStablesInfo, useMintStablePoolActionHandlers, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
@@ -38,10 +32,12 @@ import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance
 import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
-
+import PoolData from 'components/PoolPriceBar';
+import GeneralAppBoody from 'components/App/GeneralAppBody'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import StablePoolPriceBar from './StablePoolPriceBar'
 import Page from '../Page'
+
+
 
 export default function AddStableLiquidity({
   match: {
@@ -186,76 +182,11 @@ export default function AddStableLiquidity({
       })
   }
 
-
-
-  const priceMatrix = []
-  if (publicDataLoaded)
-    for (let i = 0; i < Object.values(stablePool?.tokens).length; i++) {
-      priceMatrix.push([])
-      for (let j = 0; j < Object.values(stablePool?.tokens).length; j++) {
-        if (i !== j) {
-          priceMatrix?.[i].push(
-            new Price(
-              stablePool?.tokens[i],
-              stablePool?.tokens[j],
-              stablePool.calculateSwapGivenIn(
-                stablePool.tokenFromIndex(j),
-                stablePool.tokenFromIndex(i),
-                stablePool.getBalances()[j].div(10000)
-              ),
-              stablePool.getBalances()[i].div(10000)
-            ),
-          )
-        } else {
-          priceMatrix?.[i].push(undefined)
-        }
-      }
-    }
-
-
-  function priceMatrixComponent(fontsize: string, width: string) {
-    return (
-      <>
-        <Table width={width}>
-          <thead>
-            <tr>
-              <Th textAlign="left">Base</Th>
-              {stablePool && stablePool.tokens.map(tok => {
-                return (
-                  <Th> {tok.symbol}</Th>
-                )
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              stablePool && stablePool.tokens.map((tokenRow, i) => {
-                return (
-                  <tr>
-                    <Td textAlign="left" fontSize={fontsize}>
-                      1 {tokenRow.symbol} =
-                    </Td>
-                    {stablePool.tokens.map((__, j) => {
-                      return (
-
-                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
-            }
-          </tbody>
-        </Table>
-      </>
-    )
-  }
-
   const bttm = useMemo(() => { return stablePool?.tokens.length - 1 }, [stablePool])
 
   return (
     <Page>
-      <AppBody>
+      <GeneralAppBoody isMobile={isMobile}>
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             as={Link}
@@ -299,66 +230,76 @@ export default function AddStableLiquidity({
           )}
           backTo={`/${getChain(chainId)}/liquidity`}
         />
-        <CardBody>
-
+        <Flex flexDirection='row' justifyContent='space-between'>
+          {!isMobile && (
+            <Box marginLeft='10px' marginRight='10px' marginTop='20px'>
+              <PoolData pool={stablePool} poolDataLoaded={publicDataLoaded} poolPercentage={stablesPoolTokenPercentage} parsedAmounts={parsedStablesAmounts} fontsize='14px' width='350px' />
+            </Box>
+          )}
           <AutoColumn gap="5px">
-            {
-              stablePool && parsedStablesAmounts?.map(((amount, i) => {
-                return (
-                  <Row align='center'>
-                    <CurrencyInputPanelStable
-                      chainId={chainId}
-                      account={account}
-                      width={account && approvalStates[i] !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
-                      value={values?.[i]}
-                      onUserInput={(val) => { return onFieldInput(val, i) }}
-                      onMax={() => {
-                        onFieldInput(maxAmountsStables[i]?.toExact() ?? '', i)
-                      }}
-                      showMaxButton={!atMaxAmountsStables[i]}
-                      stableCurrency={stablePool.tokens[i]}
-                      balances={balances}
-                      id="add-liquidity-input-token1"
-                      isTop={i === 0}
-                      isBottom={i === bttm}
-                    />
+            <Flex flexDirection='column' justifyContent='center' marginTop='20px'>
+              {
+                stablePool && parsedStablesAmounts?.map(((amount, i) => {
+                  return (
+                    <Row
+                      marginBottom='5px'
+                      maxWidth={isMobile ? '100vw' : '350px'}
+                      justify={isMobile ? '' : 'center'}
+                      align={isMobile ? '' : 'center'}
+                    >
+                      <Flex
+                        maxWidth={isMobile && account && approvalStates[i] !== ApprovalState.APPROVED ? '100vw' : '100%'}
+                        minWidth={isMobile ? '88vw' : ''}
+                        width={isMobile ? '88vw' : '350px'}
+                      >
+                        <CurrencyInputPanelStable
+                          chainId={chainId}
+                          account={account}
+                          width={account && approvalStates[i] !== ApprovalState.APPROVED ? isMobile ? '100%' : '270px' : '100%'}
+                          value={values?.[i]}
+                          onUserInput={(val) => { return onFieldInput(val, i) }}
+                          onMax={() => {
+                            onFieldInput(maxAmountsStables[i]?.toExact() ?? '', i)
+                          }}
+                          showMaxButton={!atMaxAmountsStables[i]}
+                          stableCurrency={stablePool.tokens[i]}
+                          balances={balances}
+                          id="add-liquidity-input-token1"
+                          isTop={i === 0}
+                          isBottom={i === bttm}
+                        />
+                      </Flex>
+                      {
+                        account && (
+                          approvalStates[i] !== ApprovalState.APPROVED && (
+                            <ButtonStableApprove
+                              onClick={() => approveCallback(i)}
+                              disabled={approvalStates[i] === ApprovalState.PENDING}
+                              width="75px"
+                              minWidth="75px"
+                              maxHeight={isMobile ? '60px' : '70px'}
+                              height={isMobile ? '100%' : ''}
+                              margin={isMobile ? '5px' : ''}
+                              marginLeft={isMobile ? '-65vw' : "1px"}
+                            >
+                              <Text fontSize='12px' color='black'>
+                                {approvalStates[i] === ApprovalState.PENDING ? (
+                                  <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
+                                ) : (
+                                  !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
+                                )
+                                }
+                              </Text>
+                            </ButtonStableApprove>
+                          ))
+                      }
+                    </Row>
 
-                    {
-                      account && (
-                        approvalStates[i] !== ApprovalState.APPROVED && (
-                          <ButtonStableApprove
-                            onClick={() => approveCallback(i)}
-                            disabled={approvalStates[i] === ApprovalState.PENDING}
-                            width="75px"
-                            marginLeft="5px"
-                          >
-                            <Text fontSize='12px' color='black'>
-                              {approvalStates[i] === ApprovalState.PENDING ? (
-                                <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
-                              ) : (
-                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading approvals</Dots>
-                              )
-                              }
-                            </Text>
-                          </ButtonStableApprove>
-                        ))
-                    }
-                  </Row>
-
-                )
-              }))
-            }
-
-            <>
-              <LightCard padding="0px" borderRadius="20px">
-                <LightCard padding="1rem" borderRadius="20px">
-                  <StablePoolPriceBar poolTokenPercentage={stablesPoolTokenPercentage} stablePool={stablePool} formattedStablesAmounts={parsedStablesAmounts} />
-                </LightCard>
-              </LightCard>
-            </>
-
+                  )
+                }))
+              }
+            </Flex>
             <AutoColumn gap="md">
-
               {!account ? (<ConnectWalletButton align='center' maxWidth='100%' />)
                 :
                 (<Button
@@ -375,11 +316,12 @@ export default function AddStableLiquidity({
                 </Button>)
               }
             </AutoColumn>
-
+            {isMobile && (
+              <PoolData pool={stablePool} poolDataLoaded={publicDataLoaded} poolPercentage={stablesPoolTokenPercentage} parsedAmounts={parsedStablesAmounts} fontsize='14px' width='100%' />
+            )}
           </AutoColumn>
-
-        </CardBody>
-      </AppBody>
+        </Flex>
+      </GeneralAppBoody>
     </Page>
   )
 }

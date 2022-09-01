@@ -21,12 +21,13 @@ const InputRow = styled.div<{ selected: boolean }>`
 
 const LabelRow = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  justify-content: flex-end;
   align-items: right;
   color: ${({ theme }) => theme.colors.text};
   font-size: 0.75rem;
   line-height: 1rem;
   padding: 0.75rem 1rem 0 1rem;
+  magin-bottom: 2px;
 `
 const InputPanel = styled.div<{ width: string }>`
   display: flex;
@@ -35,7 +36,9 @@ const InputPanel = styled.div<{ width: string }>`
   border-radius: 17px;
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1;
-  width: ${(props) => props.width}
+  width: ${({ width }) => width};
+  min-width: ${({ width }) => width};
+  max-width: ${({ width }) => width};
 `
 const Container = styled.div<{ hideInput: boolean, onHover: boolean, isTop: boolean, isBottom: boolean }>`
   border-top-left-radius: ${({ isTop }) => isTop ? '16px' : '0px'};
@@ -95,10 +98,10 @@ export default function CurrencyInputPanelStable({
     <InputPanel id={id} width={width}>
       <Container hideInput={false} onHover={onHover} isTop={isTop} isBottom={isBottom}>
 
-        <RowBetween>
+        {/* <RowBetween> */}
           <LabelRow >
             {!hideBalance && account && (
-              <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} ml='215px' textAlign='right'>
+              <Text onClick={onMax} fontSize="13px" style={{ display: 'inline', cursor: 'pointer' }} width='140px'  textAlign='left'>
                 {!hideBalance && !!stableCurrency && selectedCurrencyBalance
                   ? `Balance: ${Number(selectedCurrencyBalance?.toSignificant(8)).toLocaleString() ?? ''}`
                   : ' -'}
@@ -107,7 +110,7 @@ export default function CurrencyInputPanelStable({
             }
           </LabelRow>
 
-        </RowBetween>
+        {/* </RowBetween> */}
         <InputRow style={{ padding: '0px', borderRadius: '8px', alignItems: 'center' }} selected={true}>
           <>
             <NumericalInput

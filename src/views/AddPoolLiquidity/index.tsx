@@ -8,7 +8,9 @@ import {
   Button,
   CardBody,
   useMatchBreakpoints,
-  Text
+  Text,
+  Box,
+  Flex
 } from '@requiemswap/uikit'
 
 import { useDerivedMintPoolInfo, useMintPoolLpActionHandlers, useMintPoolState } from 'state/mintPoolLp/hooks'
@@ -35,7 +37,8 @@ import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance
 import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract, getWeightedPoolContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
-
+import GeneralAppBoody from 'components/App/GeneralAppBody'
+import PoolData from 'components/PoolPriceBar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
@@ -188,7 +191,7 @@ export default function AddLiquidityToPool({
 
   return (
     <Page>
-      <AppBody>
+      <GeneralAppBoody isMobile={isMobile}>
         <Row width='100%' height='50px' marginTop='3px'>
           <Button
             as={Link}
@@ -230,66 +233,77 @@ export default function AddLiquidityToPool({
           )}
           backTo={`/${getChain(chainId)}/liquidity`}
         />
-        <CardBody>
+        <Flex flexDirection='row' justifyContent='space-between'>
+          {!isMobile && (
+            <Box marginLeft='10px' marginRight='10px' marginTop='20px'>
+              <PoolData pool={pool} poolDataLoaded={publicDataLoaded} poolPercentage={poolTokenPercentage} parsedAmounts={parsedInputAmounts} fontsize='14px' width='350px' />
+            </Box>
+          )}
 
           <AutoColumn gap="5px">
-            {
-              pool && parsedInputAmounts?.map(((amount, i) => {
-                return (
-                  <Row align='center'>
-                    <CurrencyInputPanelStable
-                      chainId={chainId}
-                      account={account}
-                      width={account && approvalStates[i] !== ApprovalState.APPROVED ? isMobile ? '100px' : '300px' : '100%'}
-                      value={values?.[i]}
-                      onUserInput={(val) => { return onFieldInput(val, i) }}
-                      onMax={() => {
-                        onFieldInput(maxAmountsStables[i]?.toExact() ?? '', i)
-                      }}
-                      showMaxButton={!atMaxAmountsStables[i]}
-                      stableCurrency={pool.tokens[i]}
-                      balances={balances}
-                      id="add-liquidity-input-token1"
-                      isTop={i === 0}
-                      isBottom={i === bttm}
-                    />
+            <Flex flexDirection='column' justifyContent='center' marginTop='20px'>
+              {
+                pool && parsedInputAmounts?.map(((amount, i) => {
+                  return (
+                    <Row
+                      marginBottom='5px'
+                      maxWidth={isMobile ? '100vw' : '350px'}
+                      justify={isMobile ? '' : 'center'}
+                      align={isMobile ? '' : 'center'}
+                    >
+                      <Flex
+                        maxWidth={isMobile && account && approvalStates[i] !== ApprovalState.APPROVED ? '100vw' : '100%'}
+                        minWidth={isMobile ? '88vw' : ''}
+                        width={isMobile ? '88vw' : '350px'}
+                      >
+                        <CurrencyInputPanelStable
+                          chainId={chainId}
+                          account={account}
+                          width={account && approvalStates[i] !== ApprovalState.APPROVED ? isMobile ? '100%' : '270px' : '100%'}
+                          value={values?.[i]}
+                          onUserInput={(val) => { return onFieldInput(val, i) }}
+                          onMax={() => {
+                            onFieldInput(maxAmountsStables[i]?.toExact() ?? '', i)
+                          }}
+                          showMaxButton={!atMaxAmountsStables[i]}
+                          stableCurrency={pool.tokens[i]}
+                          balances={balances}
+                          id="add-liquidity-input-token1"
+                          isTop={i === 0}
+                          isBottom={i === bttm}
+                        />
+                      </Flex>
+                      {
+                        account && (
+                          approvalStates[i] !== ApprovalState.APPROVED && (
+                            <ButtonStableApprove
+                              onClick={() => approveCallback(i)}
+                              disabled={approvalStates[i] === ApprovalState.PENDING}
+                              width="75px"
+                              minWidth="75px"
+                              maxHeight={isMobile ? '60px' : '70px'}
+                              height={isMobile ? '100%' : ''}
+                              margin={isMobile ? '5px' : ''}
+                              marginLeft={isMobile ? '-65vw' : "1px"}
+                            >
+                              <Text fontSize='12px' color='black'>
+                                {approvalStates[i] === ApprovalState.PENDING ? (
+                                  <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
+                                ) : (
+                                  !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading allowance</Dots>
+                                )
+                                }
+                              </Text>
+                            </ButtonStableApprove>
+                          ))
+                      }
+                    </Row>
 
-                    {
-                      account && (
-                        approvalStates[i] !== ApprovalState.APPROVED && (
-                          <ButtonStableApprove
-                            onClick={() => approveCallback(i)}
-                            disabled={approvalStates[i] === ApprovalState.PENDING}
-                            width="75px"
-                            marginLeft="5px"
-                          >
-                            <Text fontSize='12px' color='black'>
-                              {approvalStates[i] === ApprovalState.PENDING ? (
-                                <Dots>{t('Enabling %asset%', { asset: amount.token.symbol })}</Dots>
-                              ) : (
-                                !approvalLoading ? t('Enable %asset%', { asset: amount.token.symbol }) : <Dots>Loading allowance</Dots>
-                              )
-                              }
-                            </Text>
-                          </ButtonStableApprove>
-                        ))
-                    }
-                  </Row>
-
-                )
-              }))
-            }
-
-            <>
-              <LightCard padding="0px" borderRadius="20px">
-                <LightCard padding="1rem" borderRadius="20px">
-                  <PoolPriceBar poolTokenPercentage={poolTokenPercentage} pool={pool} formattedStablesAmounts={parsedInputAmounts} />
-                </LightCard>
-              </LightCard>
-            </>
-
-            <AutoColumn gap="md">
-
+                  )
+                }))
+              }
+            </Flex>
+            <AutoColumn gap="md" style={{ width: '95%' }}>
               {!account ? (<ConnectWalletButton align='center' maxWidth='100%' />)
                 :
                 (<Button
@@ -306,11 +320,12 @@ export default function AddLiquidityToPool({
                   {approvalLoading ? <Dots>Fetching allowances</Dots> : apporvalsPending ? (<Dots >Approvals still pending</Dots>) : !poolError ? 'Supply Liquidity' : poolError}
                 </Button>)}
             </AutoColumn>
-
+            {isMobile && (
+              <PoolData pool={pool} poolDataLoaded={publicDataLoaded} poolPercentage={poolTokenPercentage} parsedAmounts={parsedInputAmounts} fontsize='12px' width='95%' />
+            )}
           </AutoColumn>
-
-        </CardBody>
-      </AppBody>
+        </Flex>
+      </GeneralAppBoody>
     </Page>
   )
 }
