@@ -173,47 +173,39 @@ const PairSelect: React.FunctionComponent<SelectProps> = ({ setPair, pairsAvaila
   }
 
   useEffect(
-    // eslint-disable-next-line consistent-return
     () => {
-      if (pairsAvailable.length !== 1) {
-        setContainerSize({
-          width: dropdownRef?.current?.offsetWidth, // Consider border
-          height: dropdownRef?.current?.offsetHeight,
-        })
+      setContainerSize({
+        width: dropdownRef?.current?.offsetWidth, // Consider border
+        height: dropdownRef?.current?.offsetHeight,
+      })
 
-        const handleClickOutside = () => {
-          setIsOpen(false)
-        }
-
-        document.addEventListener('click', handleClickOutside)
-        return () => {
-          document.removeEventListener('click', handleClickOutside)
-        }
+      const handleClickOutside = () => {
+        setIsOpen(false)
       }
-      // eslint-disable-next-line no-useless-return
-      return () => null;
-    }, [pairsAvailable.length])
+
+      document.addEventListener('click', handleClickOutside)
+      return () => {
+        document.removeEventListener('click', handleClickOutside)
+      }
+    }, [])
 
   if (pairsAvailable.length === 1) {
     return (
       <DropDownContainerSingle width='400px' height='40px'>
         {containerSize.width !== 0 && (
           <DropDownHeader onClick={() => { return setPair(pairsAvailable[0]) }}>
-            <PairLabel pairData={pairsAvailable[selectedOptionIndex]} />
-            {/* <Text>{options[selectedOptionIndex].label}</Text> */}
+            {pairsAvailable[0] && (<PairLabel pairData={pairsAvailable[0]} />)}
           </DropDownHeader>
         )}
       </DropDownContainerSingle>
     )
   }
 
-  console.log("SELECT", pairsAvailable, selectedOptionIndex)
   return (
     <DropDownContainer isOpen={isOpen} ref={containerRef} width='400px' height='40px'>
       {containerSize.width !== 0 && (
         <DropDownHeader onClick={toggling}>
-          <PairLabel pairData={pairsAvailable[selectedOptionIndex]} />
-          {/* <Text>{options[selectedOptionIndex].label}</Text> */}
+          {pairsAvailable[selectedOptionIndex] && (<PairLabel pairData={pairsAvailable[selectedOptionIndex]} />)}
         </DropDownHeader>
       )}
       <ArrowDropDownIcon color="text" onClick={toggling} />

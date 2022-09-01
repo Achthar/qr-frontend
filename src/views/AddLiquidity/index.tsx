@@ -794,7 +794,6 @@ export default function AddLiquidity({
                   </Box>
                 </Box>
               </Flex>
-              {isMobile && PoolDataView()}
               {addIsUnsupported ? (
                 <Button disabled mb="4px">
                   {t('Unsupported Asset')}
@@ -856,17 +855,11 @@ export default function AddLiquidity({
                   </Button>
                 </AutoColumn>
               )}
+              {isMobile && PoolDataView()}
             </AutoColumn>
           </Flex>
         </Flex>
       </GeneralAppBoody>
-      {!addIsUnsupported && isMobile && (
-        weightedPair && weightedPairState !== WeightedPairState.INVALID ? (
-          <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-            <MinimalWeightedPositionCard showUnwrapped={oneCurrencyIsWETH} weightedPair={weightedPair} />
-          </AutoColumn>
-        ) : null
-      )}
     </Page>
   )
 }
