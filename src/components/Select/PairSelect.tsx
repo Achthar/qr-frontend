@@ -175,7 +175,7 @@ const PairSelect: React.FunctionComponent<SelectProps> = ({ setPair, pairsAvaila
   useEffect(
     // eslint-disable-next-line consistent-return
     () => {
-      if (pairsAvailable.length === 1) {
+      if (pairsAvailable.length !== 1) {
         setContainerSize({
           width: dropdownRef?.current?.offsetWidth, // Consider border
           height: dropdownRef?.current?.offsetHeight,
@@ -207,6 +207,7 @@ const PairSelect: React.FunctionComponent<SelectProps> = ({ setPair, pairsAvaila
     )
   }
 
+  console.log("SELECT", pairsAvailable, selectedOptionIndex)
   return (
     <DropDownContainer isOpen={isOpen} ref={containerRef} width='400px' height='40px'>
       {containerSize.width !== 0 && (

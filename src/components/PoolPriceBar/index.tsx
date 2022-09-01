@@ -1,33 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from 'react'
 import {
-  TokenAmount,
-  STABLE_POOL_ADDRESS,
-  STABLES_INDEX_MAP,
-  ZERO,
-  NETWORK_CCY,
-  Price,
   Pool,
   Percent,
-  CurrencyAmount,
-  StablePool,
+  CurrencyAmount
 } from '@requiemswap/sdk'
 import {
-  Button,
-  CardBody,
-  useMatchBreakpoints,
   Text,
-  Table,
-  Th,
-  Td,
   Flex,
-  Box,
   Card,
 } from '@requiemswap/uikit'
 import styled from "styled-components";
-import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { BigNumber } from 'ethers'
 
 import PoolPriceBar from './PoolPriceBar'
+import PoolPriceMatrix from './PoolPriceMatrix';
 
 
 export const HeaderWrapper = styled(Card)`
@@ -38,7 +23,7 @@ export const HeaderWrapper = styled(Card)`
   max-width: 2000px;
   height: 35px;
   width: 100%;
-  background: rgba(46, 46, 46, 0.8);
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(145, 36, 36, 0.1));
   z-index: 1;
   align:center;
   justify-content: center;
@@ -82,41 +67,10 @@ export default function PoolData({
   fontsize,
   width
 }: { pool: Pool, poolDataLoaded: boolean, poolPercentage: Percent, parsedAmounts: CurrencyAmount[], fontsize: string, width: string }) {
-
-
-  const priceMatrix = useMemo(() => {
-    const _priceMatrix = []
-    if (poolDataLoaded && pool)
-      for (let i = 0; i < Object.values(pool?.tokens).length; i++) {
-        _priceMatrix.push([])
-        for (let j = 0; j < Object.values(pool?.tokens).length; j++) {
-          if (i !== j) {
-            _priceMatrix?.[i].push(
-              new Price(
-                pool?.tokens[i],
-                pool?.tokens[j],
-                pool?.calculateSwapGivenIn(
-                  pool.tokenFromIndex(j),
-                  pool.tokenFromIndex(i),
-                  pool?.getBalances()[j]?.div(1000)
-                ) ?? BigNumber.from('1'),
-                pool?.getBalances()[j]?.div(1000) ?? '1'
-              ),
-            )
-          } else {
-            _priceMatrix?.[i].push(undefined)
-          }
-        }
-      }
-    return _priceMatrix
-  }, [pool, poolDataLoaded]
-  )
-
-
   return (
     <Flex flexDirection='column' >
       <HeaderWrapper background=''>
-        <Text bold fontSize='20px' textAlign='center' textTransform="capitalize"> Pool ratio and market rate overview</Text>
+        <Text fontSize='17px' textAlign='center' textTransform="uppercase"> Pool ratio and market rates</Text>
       </HeaderWrapper>
       <BodyWrapper background=''>
         <Text fontSize="17px" pt={1} bold marginLeft='3px' marginBottom='10px' marginTop='2px' textAlign='center'>
@@ -126,39 +80,9 @@ export default function PoolData({
       </BodyWrapper>
       <BodyWrapperPrice background=''>
         <Text fontSize="17px" pt={1} bold marginLeft='3px' marginBottom='10px' marginTop='2px' textAlign='center'>
-          Pool prices
+          Pool Prices
         </Text>
-        <Table width={width}>
-          <thead>
-            <tr>
-              <Th textAlign="left">Base</Th>
-              {pool && pool.tokens.map(tok => {
-                return (
-                  <Th> {tok.symbol}</Th>
-                )
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              pool && pool.tokens.map((tokenRow, i) => {
-                return (
-                  <tr>
-                    <Td textAlign="left" fontSize={fontsize}>
-                      1 {tokenRow.symbol} =
-                    </Td>
-                    {pool.tokens.map((__, j) => {
-                      return (
-
-                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i]?.[j]?.toSignificant(pool instanceof StablePool ? 5 : 4) ?? ' '}</Td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
-            }
-          </tbody>
-        </Table>
+        <PoolPriceMatrix pool={pool} poolDataLoaded={poolDataLoaded} fontsize={fontsize} width={width} />
       </BodyWrapperPrice>
     </Flex>
   )

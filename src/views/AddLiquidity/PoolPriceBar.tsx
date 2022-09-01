@@ -17,7 +17,7 @@ export const HeaderWrapper = styled(Card)`
   max-width: 2000px;
   height: 35px;
   width: 100%;
-  background: rgba(46, 46, 46, 0.8);
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(145, 36, 36, 0.1));
   z-index: 1;
   align:center;
   justify-content: center;
@@ -73,7 +73,7 @@ function PoolPriceBar({
   return (
     <AutoColumn gap="5px">
       <HeaderWrapper background=''>
-        <Text bold fontSize='20px' textAlign='center' textTransform="capitalize"> Pool ratio and market rate overview</Text>
+      <Text fontSize='17px' textAlign='center' textTransform="uppercase"> Pool ratio and market rates</Text>
       </HeaderWrapper>
       <BodyWrapper background=''>
         <Text fontSize="17px" pt={1} bold marginLeft='3px' marginBottom='10px' marginTop='2px' textAlign='center'>
