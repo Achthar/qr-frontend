@@ -156,6 +156,7 @@ const dictToArray = (dict: { [pastedAddresses: string]: { [weight0Fee: string]: 
 interface PairAddress {
   address: string
 }
+
 /**
  * Function to fetch user data
  */
@@ -173,9 +174,6 @@ export const reduceDataFromDict = (pairData: { [pastedAddresses: string]: { [wei
   for (let i = 0; i < sortedKeys.length; i++) {
 
     const key = sortedKeys[i]
-    // sometimes these entries can be empty, we skip them
-    // if (!pairData[key])
-    //   continue;
 
     reducedDict[key] = {}
     const sortedPairDataKeys = Object.keys(pairData[key]).sort()
@@ -275,13 +273,16 @@ export const fetchWeightedPairUserData = createAsyncThunk(
   }
 );
 
-
+interface PairQueryData {
+  chainId: number,
+  pairMetaData: { [addresses: string]: WeightedPairMetaData[] }
+}
 
 // for a provided list of token pairs the function returns a dictionary with the addresses of the
 // tokens in the pairs as keys and arrays of addresses as values
 export const refreshWeightedPairReserves = createAsyncThunk(
   "weightedPairs/refreshWeightedPairReserves",
-  async ({ chainId, pairMetaData: pairData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: SerializedWeightedPair[] }> => {
+  async ({ chainId, pairMetaData: pairData }: PairQueryData): Promise<{ [pastedAddresses: string]: SerializedWeightedPair[] }> => {
     const dataPoints = Object.keys(pairData).map(key => pairData[key].length)
     // // cals for existing pool addresses
     let pairAddresses = []
@@ -298,7 +299,16 @@ export const refreshWeightedPairReserves = createAsyncThunk(
       }
     })
 
-    const rawData = await multicall(chainId, weightedPairABI, calls)
+    const callsSupply = pairAddresses.map((address, index) => {
+      return {
+        address,
+        name: 'totalSupply'
+      }
+    })
+
+    const rawData = await multicall(chainId, weightedPairABI,
+   [...calls, ...callsSupply]
+    )
 
     return Object.assign(
       {}, ...Object.keys(pairData).map(
@@ -328,9 +338,10 @@ export const refreshWeightedPairReserves = createAsyncThunk(
 // for a provided list of token pairs the function returns a dictionary with the addresses of the
 // tokens in the pairs as keys and arrays of addresses as values
 export const fetchWeightedPairReserves = createAsyncThunk(
-  "weightedPairs/fetchWeightedPairSupplyBalancesAndAllowance",
+  "weightedPairs/fetchWeightedPairReserves",
   async ({ chainId, pairMetaData: pairData }: PairRequestMetaData): Promise<{ [pastedAddresses: string]: SerializedWeightedPair[] }> => {
-
+    
+    if (!pairData[Object.keys(pairData)[0]][0]?.weight0) return {};
     const dataPoints = Object.keys(pairData).map(key => pairData[key].length)
 
     // // cals for existing pool addresses
@@ -343,14 +354,14 @@ export const fetchWeightedPairReserves = createAsyncThunk(
     }
     const callsReserves = pairAddresses.map((address, index) => {
       return {
-        address: getAddress(PAIR_FORMULA[chainId]),
+        address,
         name: 'getReserves'
       }
     })
 
     const callsSupply = pairAddresses.map((address, index) => {
       return {
-        address: getAddress(PAIR_FORMULA[chainId]),
+        address,
         name: 'totalSupply',
       }
     })
@@ -358,6 +369,7 @@ export const fetchWeightedPairReserves = createAsyncThunk(
 
     const rawData = await multicall(chainId, weightedPairABI, [...callsReserves, ...callsSupply])
 
+    const supplyData = rawData.slice(callsReserves.length, 2 * callsSupply.length)
 
     return Object.assign(
       {}, ...Object.keys(pairData).map(
@@ -365,14 +377,21 @@ export const fetchWeightedPairReserves = createAsyncThunk(
           const dataIndex = indexAt(dataPoints, index)
           return (
             {
-              [key]: pairData[key].map((data, subIndex) => {
-                return {
-                  ...data,
-                  reserve0: rawData[dataIndex + subIndex].reserveA.toString(),
-                  reserve1: rawData[dataIndex + subIndex].reserveB.toString(),
+              // the key is address0-address1
+              [key]: Object.assign({},
+                ...pairData[key].map((data, subIndex) => {
+                  return {
+                    [data.weight0]: {
+                      ...data,
+                      reserve0: rawData[dataIndex + subIndex][0].reserve0.toString(),
+                      reserve1: rawData[dataIndex + subIndex][0].reserve1.toString(),
+                      vReserve0: rawData[dataIndex + subIndex][0].vReserve0.toString(),
+                      vReserve1: rawData[dataIndex + subIndex][0].vReserve1.toString(),
+                      totalSupply: supplyData[dataIndex + subIndex][0].toString()
+                    }
+                  }
                 }
-              }
-              ),
+                )),
 
             }
           )

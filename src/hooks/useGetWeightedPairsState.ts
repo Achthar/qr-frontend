@@ -35,6 +35,15 @@ export const cleanTokenPairs = (additionalTokens: TokenPair[], referenceTokens: 
     return [...newPairs, ...referenceTokens]
 }
 
+/**
+ * Flattens 2nd level of state dictionary to make it easier to prepare calldata for chain
+ * @param weightedPairs / paris dictionary as provided from state
+ * @returns dictionary with 2nd level being an array
+ */
+const flattenPairs = (weightedPairs: { [key0: string]: { [key1: number]: any } }): { [key0: string]: any[] } => {
+    return Object.assign({}, ...Object.keys(weightedPairs).map(k => { return { [k]: Object.values(weightedPairs[k]) } }))
+}
+
 export function useGetWeightedPairsState(
     chainId: number,
     account: string,
@@ -90,8 +99,7 @@ export function useGetWeightedPairsState(
         reservesAndWeightsLoaded
     } = useWeightedPairsState(chainId)
 
-    // reserves are fetched in cycles
-    // weights and fee should be separated from reserves later on
+    // this is fetched once - includes weights and fee
     useEffect(() => {
         if (metaDataLoaded && !reservesAndWeightsLoaded && referenceChain === chainId) {
             dispatch(fetchWeightedPairData({ chainId, pairMetaData: weightedPairMeta }))
@@ -104,6 +112,15 @@ export function useGetWeightedPairsState(
         weightedPairs
     } = useWeightedPairsState(chainId)
 
+    // refreshes reserves only - in cycles
+    useEffect(() => {
+        if (metaDataLoaded && reservesAndWeightsLoaded) {
+            dispatch(fetchWeightedPairReserves({ chainId, pairMetaData: flattenPairs(weightedPairs) }))
+        }
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dispatch, refreshGeneral, reservesAndWeightsLoaded]
+    )
     // use reduced data (to addresses) for next input
     const pairData = useMemo(() => {
         if (metaDataLoaded) {
@@ -212,15 +229,20 @@ export function useGetWeightedPairsTradeState(
         [dispatch, metaDataLoaded, chainId, reservesAndWeightsLoaded, referenceChain]
     )
 
+    const {
+        weightedPairs: pairsPre,
+    } = useWeightedPairsState(chainId)
+
+
     // reserves are fetched in cycles
     // refreshes reserves only
     useEffect(() => {
-        if (metaDataLoaded && reservesAndWeightsLoaded && reservesAndWeightsLoaded) {
-            dispatch(fetchWeightedPairReserves({ chainId, pairMetaData: weightedPairMeta }))
+        if (metaDataLoaded && reservesAndWeightsLoaded) {
+            dispatch(fetchWeightedPairReserves({ chainId, pairMetaData: flattenPairs(pairsPre) }))
         }
     },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [dispatch, refreshGeneral]
+        [dispatch, refreshGeneral, reservesAndWeightsLoaded]
     )
 
     // finally we get all pairs as class objects in an array 
@@ -346,7 +368,7 @@ export function useGetWeightedPairsPricerState(
     // reserves are fetched in cycles
     // refreshes reserves only
     useEffect(() => {
-        if (metaDataLoaded && reservesAndWeightsLoaded && reservesAndWeightsLoaded) {
+        if (metaDataLoaded && reservesAndWeightsLoaded) {
             dispatch(fetchWeightedPairReserves({ chainId, pairMetaData: weightedPairMeta }))
         }
     },
