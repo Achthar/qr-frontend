@@ -16,17 +16,25 @@ const Logo: React.FC<LogoProps> = ({ srcs, alt, ...rest }) => {
   const src: string | undefined = srcs.find((s) => !BAD_SRCS[s])
 
   if (src) {
-    return (
-      <img
+    try {
+      return (
+        <img
+          {...rest}
+          alt={alt}
+          src={src}
+
+        />
+      )
+    } catch (err) {
+      console.error(err)
+      if (src) BAD_SRCS[src] = true
+      refresh((i) => i + 1)
+      return <img
         {...rest}
         alt={alt}
         src={src}
-        onError={() => {
-          if (src) BAD_SRCS[src] = true
-          refresh((i) => i + 1)
-        }}
       />
-    )
+    }
   }
 
   return <HelpIcon {...rest} />
