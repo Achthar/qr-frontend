@@ -69,6 +69,9 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
+const LiquidityStateButtonWrapper = styled.div`
+margin-bottom: 5px;
+`
 
 export default function RemovePoolLiquidity({
   history,
@@ -139,10 +142,6 @@ export default function RemovePoolLiquidity({
     BY_TOKENS,
     BY_SINGLE_TOKEN,
   }
-
-  const LiquidityStateButtonWrapper = styled.div`
-    margin-bottom: 5px;
-  `
 
   const [poolRemovalState, setPoolRemovalState] = useState<PoolRemovalState>(PoolRemovalState.BY_LP)
 
@@ -512,7 +511,8 @@ export default function RemovePoolLiquidity({
             {
               liquidityTradeValues && liquidityTradeValues.map(lpVal => {
                 return (
-                  <Row justify="start" gap="7px">
+                  <Row justify="start" gap="7px"
+                    key={`tv-${lpVal?.token.symbol}-row`}>
                     <CurrencyLogo chainId={weightedPool?.chainId} currency={lpVal.token} size='15px' style={{ marginRight: '4px' }} />
                     <Text fontSize="14px" >
                       {
@@ -578,7 +578,7 @@ export default function RemovePoolLiquidity({
               <Th textAlign="left">Base</Th>
               {weightedPool && weightedPool.tokens.map(tok => {
                 return (
-                  <Th> {tok.symbol}</Th>
+                  <Th key={tok.symbol}> {tok.symbol}</Th>
                 )
               })}
             </tr>
@@ -587,14 +587,14 @@ export default function RemovePoolLiquidity({
             {
               weightedPool && weightedPool.tokens.map((tokenRow, i) => {
                 return (
-                  <tr>
+                  <tr key={tokenRow.symbol}>
                     <Td textAlign="left" fontSize={fontsize}>
                       1 {tokenRow.symbol} =
                     </Td>
                     {weightedPool.tokens.map((__, j) => {
                       return (
 
-                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
+                        <Td fontSize={fontsize} key={__.symbol}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
                       )
                     })}
                   </tr>
@@ -840,11 +840,11 @@ export default function RemovePoolLiquidity({
                     <AutoColumn>
                       {parsedOutputTokenAmounts && sliceIntoChunks(parsedOutputTokenAmounts, 2).map(amntArray => {
                         return (
-                          <Flex justifyContent="space-between" alignItems='center' mb='10px' ml='10px'>
+                          <Flex justifyContent="space-between" alignItems='center' mb='10px' ml='10px' key={`${amntArray.length}-amnt`}>
                             {amntArray.map(amnt => {
                               return (
 
-                                <Flex justifyContent="space-between" ml='20px'>
+                                <Flex justifyContent="space-between" ml='20px' key={`${amnt.token.symbol}-amnt`}>
                                   <Flex>
                                     <CurrencyLogo chainId={chainId} currency={amnt.token} />
                                     <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">

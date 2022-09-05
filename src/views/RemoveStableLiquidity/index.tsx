@@ -70,6 +70,9 @@ const BorderCard = styled.div`
   padding: 16px;
 `
 
+const LiquidityStateButtonWrapper = styled.div`
+margin-bottom: 5px;
+`
 
 export default function RemoveStableLiquidity({
   history,
@@ -140,10 +143,6 @@ export default function RemoveStableLiquidity({
     BY_TOKENS,
     BY_SINGLE_TOKEN,
   }
-
-  const LiquidityStateButtonWrapper = styled.div`
-    margin-bottom: 5px;
-  `
 
   const [stableRemovalState, setStableRemovalState] = useState<StableRemovalState>(StableRemovalState.BY_LP)
 
@@ -455,7 +454,7 @@ export default function RemoveStableLiquidity({
         {stablePool && stablePool.tokens.map((tk, i) => {
           return (
 
-            <>
+            <div key={`${tk.symbol}-header`}>
               <RowBetween align="flex-end">
                 <Text fontSize="24px">{parsedOutputTokenAmounts[i]?.toSignificant(6)}</Text>
                 <RowFixed gap="4px">
@@ -470,7 +469,7 @@ export default function RemoveStableLiquidity({
                   <AddIcon width="15px" />
                 </RowFixed>)
               }
-            </>
+            </div>
           )
         })}
 
@@ -509,7 +508,7 @@ export default function RemoveStableLiquidity({
             {
               liquidityTradeValues && liquidityTradeValues.map(lpVal => {
                 return (
-                  <Row justify="start" gap="7px">
+                  <Row justify="start" gap="7px" key={`${lpVal.token.address}-val`}>
                     <CurrencyLogo chainId={stablePool?.chainId} currency={lpVal.token} size='15px' style={{ marginRight: '4px' }} />
                     <Text fontSize="14px" >
                       {
@@ -575,7 +574,7 @@ export default function RemoveStableLiquidity({
               <Th textAlign="left">Base</Th>
               {stablePool && stablePool.tokens.map(tok => {
                 return (
-                  <Th> {tok.symbol}</Th>
+                  <Th key={tok.symbol}> {tok.symbol}</Th>
                 )
               })}
             </tr>
@@ -584,14 +583,14 @@ export default function RemoveStableLiquidity({
             {
               stablePool && stablePool.tokens.map((tokenRow, i) => {
                 return (
-                  <tr>
+                  <tr key={tokenRow.symbol}>
                     <Td textAlign="left" fontSize={fontsize}>
                       1 {tokenRow.symbol} =
                     </Td>
                     {stablePool.tokens.map((__, j) => {
                       return (
 
-                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
+                        <Td fontSize={fontsize} key={__.symbol}>{i === j ? '-' : priceMatrix?.[i][j]?.toSignificant(4) ?? ' '}</Td>
                       )
                     })}
                   </tr>
@@ -837,11 +836,11 @@ export default function RemoveStableLiquidity({
                     <AutoColumn>
                       {parsedOutputTokenAmounts && sliceIntoChunks(parsedOutputTokenAmounts, 2).map(amntArray => {
                         return (
-                          <Flex justifyContent="space-between" alignItems='center' mb='10px' ml='10px'>
+                          <Flex justifyContent="space-between" alignItems='center' mb='10px' ml='10px' key={`${amntArray.length}-amnt`}>
                             {amntArray.map(amnt => {
                               return (
 
-                                <Flex justifyContent="space-between" ml='20px'>
+                                <Flex justifyContent="space-between" ml='20px' key={`${amnt.token.symbol}-amnt`}>
                                   <Flex>
                                     <CurrencyLogo chainId={chainId} currency={amnt.token} />
                                     <Text small color="textSubtle" id="remove-liquidity-tokenb-symbol" ml="4px" mr="8px">
@@ -909,6 +908,7 @@ export default function RemoveStableLiquidity({
                           balances={relevantTokenBalances}
                           isBottom={index === parsedOutputTokenAmounts.length - 1}
                           isTop={index === 0}
+                          key={`${amnt.token.address}-panel`}
                         />
                       )
                     }

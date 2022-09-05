@@ -228,7 +228,7 @@ export default function FullPoolPositionCard({ userLpPoolBalance, pool, ...props
             {amountsDeposited && amountsDeposited?.map(amnt => {
               return (
 
-                <FixedHeightRow>
+                <FixedHeightRow key={amnt.token.symbol}>
 
                   <RowFixed>
                     <CurrencyLogo chainId={chainId} size="20px" currency={amnt?.token} />
