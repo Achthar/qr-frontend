@@ -490,7 +490,7 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     projectLink: 'https://pancakeswap.finance/',
   },
   'abreq': {
-    symbol: 'abREQ',
+    symbol: 'ABREQ',
     address: {
       56: '',
       97: '',

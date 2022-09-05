@@ -610,7 +610,7 @@ export default function SwapV3({
         </Wrapper>
       </AppBody>
       {!swapIsUnsupported ? (
-        <AdvancedSwapDetailsDropdown trade={trade} />
+        <AdvancedSwapDetailsDropdown trade={trade} poolDict={poolDict} />
       ) : (
         <UnsupportedCurrencyFooter chainId={chainId} currencies={[currencies.INPUT, currencies.OUTPUT]} />
       )}

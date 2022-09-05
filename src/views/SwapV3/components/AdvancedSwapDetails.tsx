@@ -1,5 +1,5 @@
 import React from 'react'
-import { Swap, SwapType } from '@requiemswap/sdk'
+import { PoolDictionary, Swap, SwapType } from '@requiemswap/sdk'
 import { Text } from '@requiemswap/uikit'
 import { Field } from 'state/swapV3/actions'
 import { useUserSlippageTolerance } from 'state/user/hooks'
@@ -73,9 +73,10 @@ function TradeV3Summary({ trade, allowedSlippage }: { trade: Swap; allowedSlippa
 
 export interface AdvancedSwapV3DetailsProps {
   trade?: Swap
+  poolDict:PoolDictionary
 }
 
-export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
+export function AdvancedSwapDetails({ trade, poolDict }: AdvancedSwapV3DetailsProps) {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const showRoute = Boolean(trade && trade.route.path.length > 2)
@@ -98,7 +99,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapV3DetailsProps) {
                     ml="4px"
                   />
                 </span>
-                {trade && (<SwapV3Route trade={trade} />)}
+                {trade && (<SwapV3Route trade={trade} poolDict={poolDict} />)}
               </RowBetween>
             </>
 
