@@ -172,6 +172,7 @@ export default function PoolList({
             userLpPoolBalance={stablePoolBalance}
             pool={stablePoolReceived}
             mb='20px'
+            key={`stable-pool-${0}`}
           />)}
 
         {wPoolLoaded && weightedPoolBalance?.toBigNumber().gt(0) && weightedPoolReceived != null && (
@@ -179,6 +180,7 @@ export default function PoolList({
             userLpPoolBalance={weightedPoolBalance}
             pool={weightedPoolReceived}
             mb='20px'
+            key={`weighted-pool-${0}`}
           />)}
         {allWeightedPairsWithLiquidity?.length > 0 && (allWeightedDataWithLiquidity.map((data, index) => (
           <FullWeightedPositionCardExtended
@@ -214,30 +216,29 @@ export default function PoolList({
               </Text>
               {showPairs ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </PoolsSectionHeader>
-            {showPairs && allPairsNoBalance.map(_p =>
-              <>
-                <PairGeneralPositionCard weightedPair={_p} isMobile={isMobile} marginTop='2px' />
-              </>)}
+            {showPairs && allPairsNoBalance.map((_p, i) =>
+
+              <PairGeneralPositionCard weightedPair={_p} isMobile={isMobile} marginTop='2px' key={`pgc-p-${_p.address}`} />
+            )}
             <PoolsSectionHeader onClick={() => setShowWeightedPools(!showWeightedPools)}>
               <Text textAlign='center' marginLeft='15px' bold>
                 Weighted Pools
               </Text>
               {showWeightedPools ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </PoolsSectionHeader>
-            {showWeightedPools && weightedPools.map(_wp =>
-              <>
-                <PoolGeneralPositionCard pool={_wp} marginTop='2px' />
-              </>)}
+            {showWeightedPools && weightedPools.map((_wp, i) =>
+
+              <PoolGeneralPositionCard pool={_wp} marginTop='2px' key={`pgc-w-${_wp.address}`} />
+            )}
             <PoolsSectionHeader onClick={() => setShowStablePools(!showStablePools)} >
               <Text textAlign='center' marginLeft='15px' bold>
                 Stable Pools
               </Text>
               {showStablePools ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </PoolsSectionHeader>
-            {showStablePools && stablePools.map(_wp =>
-              <>
-                <PoolGeneralPositionCard pool={_wp} marginTop='2px' />
-              </>)}
+            {showStablePools && stablePools.map((_wp, i) =>
+              <PoolGeneralPositionCard pool={_wp} marginTop='2px' key={`pgc-s-${_wp.address}`} />
+            )}
           </Flex>
         </Body>
       </Flex>

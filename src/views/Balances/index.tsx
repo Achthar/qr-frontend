@@ -117,6 +117,7 @@ export default function Balances() {
                   gap='1px'
                   padding='0px'
                   showSymbol
+                  key={`pos-card-${tokenAmount.token.symbol}-0`}
                 />) : (
                   <CurrencyPositionCard
                     chainId={chainId}
@@ -125,6 +126,7 @@ export default function Balances() {
                     gap='1px'
                     padding='0px'
                     showSymbol
+                    key={`pos-card-${tokenAmount.currency.symbol}-1`}
                   />
                 )))}
           </Column>
@@ -136,6 +138,7 @@ export default function Balances() {
                 gap='1px'
                 padding='0px'
                 showSymbol
+                key={`s-pos-card-${tokenAmount.token.symbol}-s`}
               />))}
           </Column>
         </Flex >

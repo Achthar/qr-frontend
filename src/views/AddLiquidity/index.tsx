@@ -722,7 +722,7 @@ export default function AddLiquidity({
                           onUserInput={isCreatorMode ? weightAInput : () => null}
                           label={`Weight ${currencies[WeightedField.CURRENCY_A]?.symbol ?? ''}`}
                           id='weightA'
-                          onHover
+                          hoverActive
                         />
                       </span>
                     </Row>
@@ -738,7 +738,7 @@ export default function AddLiquidity({
                         onUserInput={(isCreatorMode) ? feeInput : (x) => null}
                         label='Swap Fee'
                         id='fee'
-                        onHover
+                        hoverActive
                       />
                       <AddIcon width="24px" marginLeft='5px' marginRight='5px' marginTop='20px' marginBottom='20px' />
 
@@ -749,7 +749,7 @@ export default function AddLiquidity({
                         onUserInput={(isCreatorMode) ? ampInput : (x) => null}
                         label='Amplification'
                         id='Amplification'
-                        onHover
+                        hoverActive
                       />
 
                     </Flex>
@@ -787,7 +787,7 @@ export default function AddLiquidity({
                           onUserInput={isCreatorMode ? weightBInput : () => null}
                           label={`Weight ${currencies[WeightedField.CURRENCY_B]?.symbol ?? ''}`}
                           id='weightB'
-                          onHover
+                          hoverActive
                         />
                       </span>
                     </Row>

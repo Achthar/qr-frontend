@@ -112,37 +112,37 @@ export default function PoolPriceMatrix({
 
 
   return (
-        <Table width={width}>
-          <thead>
-            <tr>
-              <Th textAlign="left">Base</Th>
-              {pool && pool.tokens.map(tok => {
-                return (
-                  <Th> {tok.symbol}</Th>
-                )
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {
-              pool && pool.tokens.map((tokenRow, i) => {
-                return (
-                  <tr>
-                    <Td textAlign="left" fontSize={fontsize}>
-                      1 {tokenRow.symbol} =
-                    </Td>
-                    {pool.tokens.map((__, j) => {
-                      return (
+    <Table width={width}>
+      <thead>
+        <tr>
+          <Th textAlign="left">Base</Th>
+          {pool && pool.tokens.map(tok => {
+            return (
+              <Th key={`header-${tok?.symbol}`}> {tok.symbol}</Th>
+            )
+          })}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          pool && pool.tokens.map((tokenRow, i) => {
+            return (
+              <tr key={`row-${tokenRow?.symbol}`}>
+                <Td textAlign="left" fontSize={fontsize} key={`row-${tokenRow?.symbol}`}>
+                  1 {tokenRow.symbol} =
+                </Td>
+                {pool.tokens.map((__, j) => {
+                  return (
 
-                        <Td fontSize={fontsize}>{i === j ? '-' : priceMatrix?.[i]?.[j]?.toSignificant(pool instanceof StablePool ? 5 : 4) ?? ' '}</Td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
-            }
-          </tbody>
-        </Table>
+                    <Td fontSize={fontsize} key={`rowVals-${__?.symbol}`}>{i === j ? '-' : priceMatrix?.[i]?.[j]?.toSignificant(pool instanceof StablePool ? 5 : 4) ?? ' '}</Td>
+                  )
+                })}
+              </tr>
+            )
+          })
+        }
+      </tbody>
+    </Table>
   )
 
 }

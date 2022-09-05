@@ -32,12 +32,12 @@ const InputPanel = styled.div<{ width: string }>`
   z-index: 1;
   width: ${(props) => props.width}
 `
-const Container = styled.div<{ hideInput: boolean, onHover: boolean, borderRadius:string }>`
+const Container = styled.div<{ hideInput: boolean, hoverActive: boolean, borderRadius:string }>`
   border-radius: ${(props) => props.borderRadius};
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
   &:hover 
-  ${({ onHover }) => (onHover ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
+  ${({ hoverActive }) => (hoverActive ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
 `
 interface PercentageInputPanelProps {
   borderRadius: string
@@ -46,7 +46,7 @@ interface PercentageInputPanelProps {
   onUserInput: (value: string) => void
   label?: string
   id: string
-  onHover?: boolean
+  hoverActive?: boolean
   alignInput?: 'left'|'right'
 }
 
@@ -57,12 +57,12 @@ export default function PercentageInputPanel({
   onUserInput,
   label,
   id,
-  onHover = false,
+  hoverActive = false,
   alignInput = 'left'
 }: PercentageInputPanelProps) {
   return (
     <InputPanel id={id} width={width}>
-      <Container hideInput={false} onHover={onHover} borderRadius={borderRadius}>
+      <Container hideInput={false} hoverActive={hoverActive} borderRadius={borderRadius}>
 
         <RowBetween>
           <LabelRow >

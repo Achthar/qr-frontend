@@ -1,4 +1,4 @@
-import { Currency,  Token, NETWORK_CCY } from '@requiemswap/sdk'
+import { Currency, Token, NETWORK_CCY } from '@requiemswap/sdk'
 import { BinanceIcon } from '@requiemswap/uikit'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
@@ -16,7 +16,7 @@ export default function CurrencyLogo({
   chainId,
   currency,
   size = '24px',
-  style,
+  style
 }: {
   chainId?: number
   currency?: Currency

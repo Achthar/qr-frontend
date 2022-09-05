@@ -41,14 +41,16 @@ export default function PoolLogo({
       {chunks.map((ts, rowIndex) => {
 
         return (
-          <Wrapper margin={margin}>
+          <Wrapper margin={margin} key={`pool-logo-${ts.length}-${tokensInRow}`}>
             <Flex alignContent='center' justifyContent='center'>
               {ts && ts.map((t, colIndex) => {
                 return (
                   <CurrencyLogo chainId={chainId} currency={t} size={`${size.toString()}px`}
                     style={
                       { marginLeft: colIndex === 0 ? '0px' : overlap, marginTop: rowIndex === 0 ? '0px' : overlap }
-                    } />
+                    }
+                    key={`pool-logo-${t?.symbol}`}
+                  />
                 )
               })}
             </Flex>

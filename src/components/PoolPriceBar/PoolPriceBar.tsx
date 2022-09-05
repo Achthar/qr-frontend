@@ -46,7 +46,7 @@ function PoolPriceBar({
               </Row>
 
               {pool && pool?.getTokenAmounts().map((amount, index) => {
-                return (<Row justify="start" gap="7px">
+                return (<Row justify="start" gap="7px" key={`row-${amount?.token?.symbol}`}>
                   <CurrencyLogo chainId={pool?.chainId} currency={amount.token} size='15px' style={{ marginRight: '4px' }} />
                   <Text fontSize="14px" >
                     {

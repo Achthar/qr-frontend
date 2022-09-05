@@ -32,13 +32,13 @@ const InputPanel = styled.div<{ width: string }>`
   z-index: 1;
   width: ${(props) => props.width}
 `
-const Container = styled.div<{ hideInput: boolean, onHover: boolean, borderRadius: string }>`
+const Container = styled.div<{ hideInput: boolean, hoverActive: boolean, borderRadius: string }>`
   border-radius: ${(props) => props.borderRadius};
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
   width: 180px;
   &:hover 
-  ${({ onHover }) => (onHover ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
+  ${({ hoverActive }) => (hoverActive ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
 `
 interface MultiplierInputPanelProps {
   borderRadius: string
@@ -47,7 +47,7 @@ interface MultiplierInputPanelProps {
   onUserInput: (value: string) => void
   label?: string
   id: string
-  onHover?: boolean
+  hoverActive?: boolean
 
 }
 
@@ -58,12 +58,12 @@ export default function AmpInputPanel({
   onUserInput,
   label,
   id,
-  onHover = false
+  hoverActive = false
 }: MultiplierInputPanelProps) {
   return (
     <InputPanel id={id} width={width}>
       <Flex flexDirection="column" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
-        <Container hideInput={false} onHover={onHover} borderRadius={borderRadius}>
+        <Container hideInput={false} hoverActive={hoverActive} borderRadius={borderRadius}>
 
           <Flex flexDirection="row" justifyContent='space-between' alignItems="center" grid-row-gap='10px'>
             <LabelRow >

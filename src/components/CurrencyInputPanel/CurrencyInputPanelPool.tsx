@@ -38,7 +38,7 @@ const InputPanel = styled.div<{ width: string }>`
   z-index: 1;
   width: ${(props) => props.width}
 `
-const Container = styled.div<{ hideInput: boolean, onHover: boolean, isTop: boolean, isBottom: boolean }>`
+const Container = styled.div<{ hideInput: boolean, hoverActive: boolean, isTop: boolean, isBottom: boolean }>`
   border-top-left-radius: ${({ isTop }) => isTop ? '16px' : '0px'};
   border-top-right-radius: ${({ isTop }) => isTop ? '16px' : '0px'};
   border-bottom-left-radius: ${({ isBottom }) => isBottom ? '16px' : '0px'};
@@ -46,7 +46,7 @@ const Container = styled.div<{ hideInput: boolean, onHover: boolean, isTop: bool
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
   &:hover 
-  ${({ onHover }) => (onHover ? '{ outline: 1px solid black; border-color: solid black; }' : '')}
+  ${({ hoverActive }) => (hoverActive ? '{ outline: 1px solid black; border-color: solid black; }' : '{}')};
 `
 interface CurrencyInputPanelPool {
   width: string
@@ -64,7 +64,7 @@ interface CurrencyInputPanelPool {
   balances: { [address: string]: TokenAmount }
   id: string
   showCommonBases?: boolean
-  onHover?: boolean
+  hoverActive?: boolean
   isTop?: boolean
   isBottom?: boolean
 
@@ -85,7 +85,7 @@ export default function CurrencyInputPanelPool({
   pool = null, // used for double token logo
   hideInput = true,
   id,
-  onHover = false,
+  hoverActive = false,
   isTop = true,
   isBottom = true
 }: CurrencyInputPanelPool) {
@@ -94,7 +94,7 @@ export default function CurrencyInputPanelPool({
 
   return (
     <InputPanel id={id} width={width}>
-      <Container hideInput={false} onHover={onHover} isTop={isTop} isBottom={isBottom}>
+      <Container hideInput={false} hoverActive={hoverActive} isTop={isTop} isBottom={isBottom}>
 
         <RowBetween>
           <LabelRow >
@@ -134,7 +134,7 @@ export default function CurrencyInputPanelPool({
                   <Text mr='5px' width='30px' >
                     {/* {`${pool?._name} LP`} */}
                     Pool LP
-                    </Text>
+                  </Text>
                 </Row>
               ) : token ? (
                 <Row>

@@ -246,6 +246,7 @@ export default function AddStableLiquidity({
                       maxWidth={isMobile ? '100vw' : '350px'}
                       justify={isMobile ? '' : 'center'}
                       align={isMobile ? '' : 'center'}
+                      key={`add-liquidity-input-${amount.token.symbol}-row`}
                     >
                       <Flex
                         maxWidth={isMobile && account && approvalStates[i] !== ApprovalState.APPROVED ? '100vw' : '100%'}
@@ -264,7 +265,7 @@ export default function AddStableLiquidity({
                           showMaxButton={!atMaxAmountsStables[i]}
                           stableCurrency={stablePool.tokens[i]}
                           balances={balances}
-                          id="add-liquidity-input-token1"
+                          id={`add-liquidity-input-${amount.token.symbol}`}
                           isTop={i === 0}
                           isBottom={i === bttm}
                         />

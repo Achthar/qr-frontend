@@ -27,10 +27,7 @@ import { AppHeader, AppBody } from 'components/App'
 import Row, { RowBetween } from 'components/Layout/Row'
 import { ApprovalState, useApproveCallback, useApproveCallbacks } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
-import { StablesField } from 'state/mintStables/actions'
-import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
-import { useDerivedMintStablesInfo, useMintStablePoolActionHandlers, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
@@ -40,7 +37,6 @@ import Dots from 'components/Loader/Dots'
 import GeneralAppBody from 'components/App/GeneralAppBody'
 import PoolData from 'components/PoolPriceBar'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
 
 export default function AddLiquidityToPool({
@@ -250,6 +246,7 @@ export default function AddLiquidityToPool({
                       maxWidth={isMobile ? '100vw' : '350px'}
                       justify={isMobile ? '' : 'center'}
                       align={isMobile ? '' : 'center'}
+                      key={`${amount.token.symbol}-row`}
                     >
                       <Flex
                         maxWidth={isMobile && account && approvalStates[i] !== ApprovalState.APPROVED ? '100vw' : '100%'}
@@ -268,7 +265,7 @@ export default function AddLiquidityToPool({
                           showMaxButton={!atMaxAmountsStables[i]}
                           stableCurrency={pool.tokens[i]}
                           balances={balances}
-                          id="add-liquidity-input-token1"
+                          id={`add-liquidity-input-${i}`}
                           isTop={i === 0}
                           isBottom={i === bttm}
                         />

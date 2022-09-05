@@ -156,9 +156,9 @@ export function PoolGeneralPositionCard({ pool, ...props }: PositionCardProps) {
 
     const balances = pool.getBalances()
 
-    const values: string[] = useMemo(() => {
+    const values: [string, string][] = useMemo(() => {
         if (!(pool))
-            return tokens.map((tk) => { return '0' })
+            return tokens.map((tk) => { return [tk.symbol, '0'] })
         const _vals: BigNumber[] = pool.getBalances()
         for (let i = 0; i < tokens.length; i++) {
             for (let k = 0; k < tokens.length; k++) {
@@ -167,7 +167,7 @@ export function PoolGeneralPositionCard({ pool, ...props }: PositionCardProps) {
                 }
             }
         }
-        return _vals.map((v, j) => formatReserve(v.toString(), tokens[j]))
+        return _vals.map((v, j) => [tokens[j].symbol, formatReserve(v.toString(), tokens[j])])
     },
         [pool, balances, tokens]
     )
@@ -208,16 +208,16 @@ export function PoolGeneralPositionCard({ pool, ...props }: PositionCardProps) {
 
                             <Flex flexDirection='column' marginRight='20px' marginLeft='5px'>
                                 <Field />
-                                {tokens.map(_t => <Field> <CurrencyLogo chainId={chainId} size="20px" currency={_t} /></Field>)}
+                                {tokens.map(_t => <Field key={`${_t.symbol}-logo`}> <CurrencyLogo chainId={chainId} size="20px" currency={_t} /></Field>)}
                             </Flex>
 
                             <Flex flexDirection='column' marginRight='20px'>
                                 <Field>  <Text>Reserves</Text></Field>
-                                {pool?.getBalances().map((_b, i) => <Field>  <Text fontSize={tableFontSize}>{formatReserve(_b.toString(), tokens[i])}</Text></Field>)}
+                                {pool?.getTokenAmounts().map((_b, i) => <Field key={`${_b.token.symbol}-bals`}>  <Text fontSize={tableFontSize}>{formatReserve(_b.raw.toString(), tokens[i])}</Text></Field>)}
                             </Flex>
                             <Flex flexDirection='column'>
                                 <Field> <Text>Pool value</Text></Field>
-                                {values.map(_v => <Field> <Text fontSize={tableFontSize}>{_v}</Text></Field>)}
+                                {values.map(_v => <Field key={`${_v[0]}-vals`}> <Text fontSize={tableFontSize}>{_v[1]}</Text></Field>)}
                             </Flex>
                         </Flex>
 
