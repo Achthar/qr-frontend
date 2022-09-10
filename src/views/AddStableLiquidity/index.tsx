@@ -6,7 +6,6 @@ import {
 } from '@requiemswap/sdk'
 import {
   Button,
-  CardBody,
   useMatchBreakpoints,
   Text,
   Flex,
@@ -25,11 +24,11 @@ import { ApprovalState, useApproveCallbacks } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { useGetStablePoolState } from 'hooks/useGetStablePoolState'
 import useRefresh from 'hooks/useRefresh'
-import { useDerivedMintStablesInfo, useMintStablePoolActionHandlers, useMintStablesActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
+import { useDerivedMintStablesInfo, useMintStablePoolActionHandlers, useMintStablesState } from 'state/mintStables/hooks'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
-import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract } from 'utils'
+import { useGasPrice, useUserSlippageTolerance } from 'state/user/hooks'
+import { calculateGasMargin, calculateSlippageAmount,  getStableSwapContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 import PoolData from 'components/PoolPriceBar';

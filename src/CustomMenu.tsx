@@ -1,7 +1,6 @@
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'
 import UserMenu from 'components/Menu/UserMenu'
-import GlobalSettings from 'components/Menu/GlobalSettings'
 import ChainIdSelector from 'ChainIdSelector'
 import styled from "styled-components";
 import { useMatchBreakpoints } from '@requiemswap/uikit'

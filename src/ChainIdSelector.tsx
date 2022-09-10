@@ -1,15 +1,15 @@
 /* eslint default-case: 0 */
 import styled from "styled-components";
-import React, { HTMLProps, useCallback, useRef } from 'react'
+import React, { useRef } from 'react'
 import {
   CHAIN_INFO,
   L2_CHAIN_IDS,
   SupportedL2ChainId,
 } from 'config/constants/index'
 import { ChainId } from '@requiemswap/sdk'
-import { ArrowDownCircle, ChevronDown } from 'react-feather'
+import { ArrowDownCircle } from 'react-feather'
 import { switchToNetwork } from 'utils/switchToNetwork'
-import { UserMenu as UIKitUserMenu, useMatchBreakpoints, Button, UserMenuItem, Flex, UserMenuDivider, Text, ChevronDownIcon, CogIcon, TuneIcon, TestnetIcon } from '@requiemswap/uikit'
+import { useMatchBreakpoints, Flex, UserMenuDivider, Text, TuneIcon, TestnetIcon } from '@requiemswap/uikit'
 import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { useGlobalNetworkActionHandlers, useNetworkState } from "state/globalNetwork/hooks";
 import { ApplicationModal } from 'state/application/actions'
@@ -19,7 +19,6 @@ import { useOnClickOutside } from "hooks/useOnClickOutside";
 import { useDispatch } from "react-redux";
 import { setChainId } from "state/globalNetwork/actions";
 import { AppDispatch } from "state";
-import { useWeb3React } from "@web3-react/core";
 
 
 export const Wrapper = styled.div`
@@ -166,9 +165,7 @@ const FlyoutMenu = styled.div<{ isMobile: boolean }>`
     display: none;
   }
   border: 1px solid white;
-
 `
-
 
 const LinkOutCircle = styled(ArrowDownCircle)`
   transform: rotate(230deg);
@@ -180,15 +177,6 @@ const ImageContainer = styled.div`
   width: 40px;
   height: 40px;
   margin-left: -13px;
-`
-
-
-const FlyoutHeader = styled.div`
-  color: white;
-  font-weight: 400;
-  align-items: center;
-  text-align: center;
-  vertical-align: middle;
 `
 
 interface IDropdownItem {

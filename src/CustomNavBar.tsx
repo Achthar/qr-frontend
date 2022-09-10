@@ -1,4 +1,4 @@
-import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints } from '@requiemswap/uikit'
+import { ButtonMenu, ButtonMenuItem, useMatchBreakpoints } from '@requiemswap/uikit'
 import config from 'components/Menu/config'
 import { useTranslation } from 'contexts/Localization'
 import React from 'react'
@@ -44,21 +44,21 @@ const CustomNavBar: React.FC = () => {
       }}
     >
 
-        <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md">
-          {menuItems.map((menuItem) =>
-            isMobile ? (
-              <ButtonMenuItem key={menuItem.label}>
-                <StyledLogo
-                  size="24px"
-                  srcs={[current.label === menuItem.label ? menuItem.iconSelected : menuItem.icon]}
-                  alt={menuItem.label.charAt(0)}
-                />
-              </ButtonMenuItem>
-            ) : (
-              <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>
-            ),
-          )}
-        </ButtonMenu>
+      <ButtonMenu activeIndex={activeIndex} onItemClick={handleMenuItemClick} scale="md">
+        {menuItems.map((menuItem) =>
+          isMobile ? (
+            <ButtonMenuItem key={menuItem.label}>
+              <StyledLogo
+                size="24px"
+                srcs={[current.label === menuItem.label ? menuItem.iconSelected : menuItem.icon]}
+                alt={menuItem.label.charAt(0)}
+              />
+            </ButtonMenuItem>
+          ) : (
+            <ButtonMenuItem key={menuItem.label}>{menuItem.label}</ButtonMenuItem>
+          ),
+        )}
+      </ButtonMenu>
     </div>
   )
 }

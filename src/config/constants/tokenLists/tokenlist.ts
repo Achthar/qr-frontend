@@ -339,7 +339,7 @@ export const tokenList = {
             },
             {
                 "name": "Asset Backed Requiem",
-                "symbol": "abREQ",
+                "symbol": "ABREQ",
                 "address": "0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63",
                 "chainId": 43113,
                 "decimals": 18,
@@ -413,7 +413,7 @@ export const tokenList = {
             },
             {
                 "name": "Asset-Backed Requiem",
-                "symbol": "abREQ",
+                "symbol": "ABREQ",
                 "address": "0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D",
                 "chainId": 42261,
                 "decimals": 18,

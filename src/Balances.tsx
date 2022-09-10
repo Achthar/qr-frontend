@@ -2,10 +2,7 @@
 /* eslint no-useless-return: 0 */
 import styled from "styled-components";
 import React, { useState } from 'react'
-
 import { Button, Box, CurrencyIcon } from '@requiemswap/uikit'
-import { useWeb3React } from "@web3-react/core";
-
 import UserBalances from 'views/Balances'
 
 const Row = styled(Box) <{

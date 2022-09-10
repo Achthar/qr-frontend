@@ -4,8 +4,6 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import application from './application/reducer'
 import blockReducer from './block'
 import farmsReducer from './farms'
-import assetBackedStakingReducer from './assetBackedStaking/reducer'
-// import votingReducer from './voting'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
 import transactions from './transactions/reducer'
@@ -17,7 +15,6 @@ import globalNetwork from './globalNetwork/reducer'
 import mintStables from './mintStables/reducer'
 import mintPoolLp from './mintPoolLp/reducer'
 import mintWeightedPair from './mintWeightedPair/reducer'
-import governance from './governance/reducer'
 import oracles from './oracles/reducer'
 import weightedPairReducer from './weightedPairs'
 import lists from './lists/reducer'
@@ -37,12 +34,9 @@ const store = configureStore({
     bonds: bondReducer,
     oracles,
     farms: farmsReducer,
-    // voting: votingReducer,
     stablePools: stablePoolsReducer,
     weightedPools: weightedPoolsReducer,
     weightedPairs: weightedPairReducer,
-    governance,
-    assetBackedStaking: assetBackedStakingReducer,
     // Exchange
     user,
     transactions,

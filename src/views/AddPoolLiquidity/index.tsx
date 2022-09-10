@@ -6,32 +6,29 @@ import {
 } from '@requiemswap/sdk'
 import {
   Button,
-  CardBody,
   useMatchBreakpoints,
   Text,
   Box,
   Flex
 } from '@requiemswap/uikit'
-
 import { useDerivedMintPoolInfo, useMintPoolLpActionHandlers, useMintPoolState } from 'state/mintPoolLp/hooks'
 import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 import { useTranslation } from 'contexts/Localization'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { LightCard } from 'components/Card'
 import getChain from 'utils/getChain'
 import { AutoColumn } from 'components/Layout/Column'
-import { DAI, REQT, USDC } from 'config/constants/tokens'
+import {  USDC } from 'config/constants/tokens'
 import CurrencyInputPanelStable from 'components/CurrencyInputPanel/CurrencyInputPanelStable'
-import { AppHeader, AppBody } from 'components/App'
-import Row, { RowBetween } from 'components/Layout/Row'
-import { ApprovalState, useApproveCallback, useApproveCallbacks } from 'hooks/useApproveCallback'
+import { AppHeader} from 'components/App'
+import Row from 'components/Layout/Row'
+import { ApprovalState, useApproveCallbacks } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import useRefresh from 'hooks/useRefresh'
 import { ButtonStableApprove } from 'components/Button'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { useGasPrice, useIsExpertMode, useUserBalances, useUserSlippageTolerance } from 'state/user/hooks'
-import { calculateGasMargin, calculateSlippageAmount, getStableRouterContract, getStableSwapContract, getWeightedPoolContract } from 'utils'
+import { useGasPrice, useUserSlippageTolerance } from 'state/user/hooks'
+import { calculateGasMargin, calculateSlippageAmount, getWeightedPoolContract } from 'utils'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Dots from 'components/Loader/Dots'
 import GeneralAppBody from 'components/App/GeneralAppBody'

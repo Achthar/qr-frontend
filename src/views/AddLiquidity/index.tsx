@@ -26,8 +26,6 @@ import {
   Toggle
 } from '@requiemswap/uikit'
 import { RouteComponentProps, Link } from 'react-router-dom'
-// import {Svg, SvgProps} from '@requiemswap/uikit'
-import styled from 'styled-components'
 import { useIsTransactionUnsupported } from 'hooks/TradesV3'
 import PercentageInputPanel from 'components/CurrencyInputPanel/PercentageInputPanel'
 import BpsInputPanel from 'components/CurrencyInputPanel/BpsInputPanel'
@@ -69,16 +67,6 @@ import getChain from 'utils/getChain'
 import ConfirmAddModalBottom from './ConfirmAddModalBottom'
 import PoolPriceBar from './PoolPriceBar'
 import Page from '../Page'
-
-const StyledButton = styled(Button)`
-  background-color: ${({ theme }) => theme.colors.input};
-  color: ${({ theme }) => theme.colors.text};
-  box-shadow: none;
-  border-radius: 16px;
-  width: 80%;
-  align: right;
-`
-
 
 export default function AddLiquidity({
   match: {

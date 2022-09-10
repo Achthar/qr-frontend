@@ -109,14 +109,14 @@ export const ABREQ: { [chainId: number]: Token } = {
     ChainId.AVAX_TESTNET,
     '0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63',
     18,
-    'abREQ',
+    'ABREQ',
     'Asset-Backed Requiem Token',
   ),
   [ChainId.OASIS_TESTNET]: new Token(
     ChainId.OASIS_TESTNET,
     '0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D',
     18,
-    'abREQ',
+    'ABREQ',
     'Asset-Backed Requiem Token',
   )
 }
