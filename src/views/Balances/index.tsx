@@ -2,19 +2,14 @@
 import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Text, Flex, CardBody, Card } from '@requiemswap/uikit'
-
-import { useDispatch } from 'react-redux'
 import Column from 'components/Column'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import TokenPositionCard from 'components/PositionCard/TokenPosition'
 import { fetchUserTokenData } from 'state/user/fetchUserTokenBalances'
-import { useChainIdHandling } from 'hooks/useChainIdHandle'
 import useUserAddedTokens from 'state/user/hooks/useUserAddedTokens'
 import { CurrencyAmount, Token, TokenAmount } from '@requiemswap/sdk'
 import { serializeToken } from 'state/user/hooks/helpers'
 import CurrencyPositionCard from 'components/PositionCard/NetworkCcyPosition'
-
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import useRefresh from 'hooks/useRefresh'
 import { fetchUserNetworkCcyBalance } from 'state/user/fetchUserNetworkCcyBalance'
 import {
@@ -23,11 +18,7 @@ import {
   useUserBalances,
 } from '../../state/user/hooks'
 import Dots from '../../components/Loader/Dots'
-import { AppDispatch, useAppDispatch } from '../../state'
-
-const Body = styled(CardBody)`
-  background-color: ${({ theme }) => theme.colors.dropdownDeep};
-`
+import { useAppDispatch } from '../../state'
 
 export const BodyWrapper = styled(Card)`
   border-radius: 24px;

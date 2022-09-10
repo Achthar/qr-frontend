@@ -1,19 +1,11 @@
-import { UserMenu as UIKitUserMenu, ButtonMenu, ButtonMenuItem, useMatchBreakpoints, UserMenuItem, Flex, ChevronRightIcon, MenuEntry, Text, ChevronDownIcon, UserMenuDivider, SwapIcon } from '@requiemswap/uikit'
-import config, { configData, getIcon } from 'components/Menu/config'
-import Sidebar from 'components/Sidebar'
-import { ChevronsLeft } from 'react-feather'
+import {useMatchBreakpoints, Flex,  MenuEntry, Text,  UserMenuDivider } from '@requiemswap/uikit'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import { useHistory, useLocation } from 'react-router'
-import { useNetworkState } from 'state/globalNetwork/hooks'
 import styled from 'styled-components'
 import getChain from 'utils/getChain'
 import React, { useCallback, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useChainIdHandling } from 'hooks/useChainIdHandle'
-import logo from './assets/logoTransparent.svg'
-import bgSidebar from './assets/sidebar/bg-sidebar.png';
-import iconHome from './assets/sidebar/ic-home.svg';
 import iconBank from './assets/swap.svg';
 import iconGovernment from './assets/sidebar/ic-government.svg';
 import iconPools from './assets/farms.svg';
@@ -24,7 +16,6 @@ import iconGithub from './assets/sidebar/ic-github.svg';
 import iconTwitter from './assets/sidebar/ic-twitter.svg';
 import iconDoc from './assets/sidebar/ic-doc.svg';
 import iconLiquidity from './assets/liquidity.svg';
-import iconAudit from './assets/sidebar/audit.svg';
 
 import bond from './assets/bonds2.svg'
 import iconREQTransparent from './assets/REQ_Transparent.png';
@@ -109,12 +100,6 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
           Liquidity
         </StyledNavLink>
       </StyledNavItem>
-      {/* <StyledNavItem onClick={handleClick}>
-        <StyledNavLink to={`/${chain}/farms`}>
-          <img src={iconPools} alt='' />
-          Farms
-        </StyledNavLink>
-      </StyledNavItem> */}
       <StyledNavItem onClick={(handleClick)}>
         <StyledNavLink to={`/${chain}/bonds`}>
           <img src={bond} alt='' />
@@ -132,24 +117,6 @@ const NavContainer: React.FC<NavContainerProps> = ({ isMobile, chainId, onClickI
           <i className="fas fa-external-link" />
         </StyledLinkHref>
       </StyledNavItem>
-
-      {/* <StyledNavItemDynamic open={open}> */}
-      {/* <StyledNavText onClick={() => { setOpen(!open) }}>
-          <div onClick={() => { setOpen(!open) }} role="button" onKeyPress={() => { return null }}
-            tabIndex={0}>
-            <ImageGov src={iconGovernment} alt='' open={open} />
-          </div>
-          Governance
-        </StyledNavText>
-        <Collapsible open={open} isMobile={isMobile}>
-          <StyledNavLink to={`/${chain}/governance`}>
-            Requiem Reward
-          </StyledNavLink>
-          <StyledNavLink to={`/${chain}/governance-ab`}>
-            Asset-Backed Requiem
-          </StyledNavLink>
-        </Collapsible> */}
-      {/* </StyledNavItemDynamic> */}
       <StyledNavItem onClick={handleClick}>
         <StyledLinkHref
           href={ExternalLinks.documentations}
@@ -239,29 +206,6 @@ export const getMenuIcon: (label: string) => any = (label) => {
   return null
 }
 
-
-const StyledAudit = styled.a`
-  align-self: center;
-  img {
-    width: 93px;
-    margin-bottom: 23px;
-  }
-`;
-
-const Collapsible = styled.div<{ open: boolean, isMobile: boolean }>`
-  display: flex;
-  flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  justify-content: center;
-  text-align: left;
-  width: 100%;
-  height:  ${({ open }) => !open ? '0%' : '100%'};
-  transform: ${({ open, isMobile }) => (isMobile ? !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-99%)  scaleY(1.0)' :
-    !open ? 'translateX(0%) scaleY(0.0)' : 'translateX(-99%)  scaleY(1.0)')};
-  transition: transform 300ms ease-in-out;
-  position:relative;
-`
-
 const StyledExternalLink = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
@@ -315,16 +259,6 @@ const StyledSidebar = styled.div`
   border: 1px solid white;
 `;
 
-const StyledLogoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  h1 {
-    color: ${({ theme }) => theme.colors.primaryDark};
-    padding: 0;
-    margin: 0;
-  }
-`;
-
 const StyledNavContainer = styled.ul`
   padding: 0px;
   margin-top: 25px;
@@ -359,46 +293,6 @@ const StyledNavItemDynamic = styled.div<{ open: boolean }>`
 
 
 const StyledNavLink = styled(NavLink)`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 52px;
-  padding: 0px 28px;
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  color: #8f929a;
-  border-left: solid 5px transparent;
-  img {
-    width: 20px;
-    height: 20px;
-    margin-right: 15px;
-  }
-  &.active,
-  &.matched {
-    font-weight: 500;
-    background: #1a1d2f;
-    color: ${({ theme }) => theme.colors.primaryBright};
-    border-left: solid 5px #54051d;
-    img {
-      filter: brightness(0) invert(1);
-    }
-  }
-  &:not(.active):hover {
-    font-weight: 500;
-    background: #1a1d2f;
-    color: ${({ theme }) => theme.colors.primaryBright};
-    border-left: solid 5px #54051d22;
-    img {
-      filter: brightness(0) invert(1);
-    }
-  }
-  @media screen and (min-width: 720px) {
-    top: 50px;
-  }
-`;
-
-const StyledNavText = styled(Text)`
   display: flex;
   align-items: center;
   width: 100%;

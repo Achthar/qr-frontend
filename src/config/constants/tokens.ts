@@ -521,7 +521,7 @@ const tokens: { [tokenId: string]: TokenEntry } = {
     projectLink: ''
   },
   'wrose': {
-    symbol: 'wROSE',
+    symbol: 'WROSE',
     address: {
       42261: '0x792296e2a15e6Ceb5f5039DecaE7A1f25b00B0B0',
     },
