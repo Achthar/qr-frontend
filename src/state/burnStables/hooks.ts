@@ -89,7 +89,7 @@ export function useDerivedBurnStablesInfo(
     percentToRemove = new Percent(typedValueLiquidity, '100')
 
     if (stablePool && percentToRemove.greaterThan('0')) {
-      stableAmountsFromLp = stablePool.calculateRemoveLiquidity( // BigNumber.from(percentToRemove.multiply(userLiquidity))
+      stableAmountsFromLp = stablePool.calculateRemoveLiquidity(
         BigNumber.from(percentToRemove.numerator).mul(userLiquidity.toBigNumber()).div(BigNumber.from(percentToRemove.denominator)
         )
       )

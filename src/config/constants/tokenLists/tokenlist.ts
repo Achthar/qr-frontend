@@ -409,7 +409,7 @@ export const tokenList = {
                 "address": "0x792296e2a15e6Ceb5f5039DecaE7A1f25b00B0B0",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/wROSE.png"
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WROSE.png"
             },
             {
                 "name": "Asset-Backed Requiem",
