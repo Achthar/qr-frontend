@@ -5,7 +5,7 @@ import { Address } from 'config/constants/types'
 import BigNumber from 'bignumber.js'
 import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathParts'
-import { Skeleton } from '@requiemswap/uikit'
+import { Skeleton, Text } from '@requiemswap/uikit'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { useBondFromBondId } from 'state/bonds/hooks'
 
@@ -69,11 +69,11 @@ const Roi: React.FC<RoiProps> = ({
   })
 
   const addLiquidityUrl = `${BASE_ADD_LIQUIDITY_URL}/${liquidityUrlPathParts}`
-
+  const disoplayValue = originalValue > 0 ? `${originalValue}%` : '-'
   return (
 
     <Container>
-      <RoiWrapper>{originalValue > 0 ? `${originalValue}%` : '-'}</RoiWrapper>
+      {isMobile ? (<Text fontSize='13px'>{disoplayValue}</Text>) : (<RoiWrapper>{disoplayValue}</RoiWrapper>)}
     </Container>
   )
 }

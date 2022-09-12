@@ -13,11 +13,7 @@ import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRedeemNote from 'views/Bonds/hooks/useRedeemBond'
 import { VanillaNote } from 'state/types'
-import { ActionTitles, ActionContent } from './styles'
-
-const IconButtonWrapper = styled.div`
-  display: flex;
-`
+import { ActionContent } from './styles'
 
 export const ButtonContainer = styled.div`
   padding: 16px;

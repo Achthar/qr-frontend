@@ -347,7 +347,7 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
         <DescriptionCol>
           <Text>Moneyness:</Text>
           <Text>Option Payout:</Text>
-          <Text>Notional Payout:</Text>
+          <Text>Notional:</Text>
 
         </DescriptionCol>
         <DescriptionCol>

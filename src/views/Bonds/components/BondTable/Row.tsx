@@ -289,7 +289,6 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   {!loading ? (<Roi {...props.roi} hideButton isMobile />) : <CircleLoader />}
                 </CellLayout>
               </AprMobileCell>
-
               <CellInner>
                 <CellLayout>
                   <Details actionPanelToggled={actionPanelExpanded} />

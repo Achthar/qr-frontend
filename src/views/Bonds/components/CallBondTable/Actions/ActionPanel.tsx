@@ -6,7 +6,6 @@ import useActiveWeb3React from "hooks/useActiveWeb3React";
 import { getAddress } from 'utils/addressHelpers'
 import { getNetworkExplorerLink } from 'utils'
 import { ethers } from 'ethers';
-
 import { CallBondWithStakedValue } from 'views/Bonds/components/types'
 import BondingAction from './BondingAction'
 import RedemptionMulti from './RedemptionActionMulti'
@@ -156,18 +155,10 @@ const ActionContainerNoBond = styled.div`
   margin-top:2px;
 `
 
-
-const ActionContainerNoBondButton = styled.div`
-  width: 50%;
-  margin-left:20%;
-`
-
-
 const InfoContainer = styled.div`
   min-width: 200px;
   flex-direction: column;
 `
-
 
 const ValueContainer = styled.div`
   display: block;
@@ -177,22 +168,6 @@ const ValueContainer = styled.div`
     display: none;
   }
 `
-
-const ValueWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 4px 0px;
-`
-
-const Line = styled.hr`
-  z-index:5;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  color: ${({ theme }) => theme.colors.backgroundAlt};
-  width: 100%;
-  size: 0.2;
-`;
 
 const ActionPanel: React.FunctionComponent<CallActionPanelProps> = ({
   details,

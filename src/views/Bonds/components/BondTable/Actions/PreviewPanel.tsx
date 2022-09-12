@@ -56,7 +56,6 @@ export const ButtonContainer = styled.div`
   }
 `
 
-
 export const PreviewPanelContainer = styled.div`
   padding: 1px;
   border-radius: 2px;
@@ -95,7 +94,6 @@ const StyledInput = styled(Input)`
     width: auto;
   }
 `
-
 
 interface PreviewPanelProps {
   reqPrice: number

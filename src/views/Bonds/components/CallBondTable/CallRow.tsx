@@ -17,7 +17,7 @@ import CellLayout from './CellLayout'
 import Roi from './Roi'
 import CallBond, { CallBondProps } from './CallBond'
 import Details from './Details'
-import { MobileColumnSchema } from '../types'
+import { MobileColumnSchemaCall } from '../types'
 
 
 interface PurchasedProps {
@@ -89,10 +89,6 @@ const StyledTr = styled.tr<{ isLast: boolean }>`
   ${({ isLast }) => !isLast ? `border-bottom: 2px solid #4a4a4a;` : ''}
 `
 
-const EarnedMobileCell = styled.td`
-  padding: 16px 0 24px 16px;
-`
-
 const TermMobileCell = styled.td`
   padding: 16px 0 24px 8px;
   padding-right: 10px;
@@ -108,7 +104,7 @@ const DiscountMobileCell = styled.td`
 const AprMobileCell = styled.td`
   padding-top: 16px;
   padding-bottom: 24px;
-  width: 25%;
+  width: 12.5%;
 `
 
 const BondMobileCell = styled.td`
@@ -136,7 +132,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { isDesktop, isMobile } = useMatchBreakpoints()
 
   const isSmallerScreen = !isDesktop
-  const tableSchema = isSmallerScreen ? MobileColumnSchema : DesktopColumnSchemaCall
+  const tableSchema = isSmallerScreen ? MobileColumnSchemaCall : DesktopColumnSchemaCall
   const columnNames = tableSchema.map((column) => column.name)
 
   const vesting = () => {
@@ -300,7 +296,14 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
                   </Text>) : <CircleLoader />}
                 </CellLayout>
               </AprMobileCell>
-
+              <AprMobileCell>
+                <CellLayout label={t('Digital')}>
+                  {!loading ? (
+                    <Text fontSize='13px'>
+                      {Math.round(Number(ethers.utils.formatEther(props.payout)) * 10000) / 100}%
+                    </Text>) : <CircleLoader />}
+                </CellLayout>
+              </AprMobileCell>
               <CellInner>
                 <CellLayout>
                   <Details actionPanelToggled={actionPanelExpanded} />
