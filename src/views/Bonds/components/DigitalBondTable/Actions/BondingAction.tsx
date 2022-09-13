@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { ethers } from 'ethers'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useCallBondFromBondId, useCallBondUser } from 'state/bonds/hooks'
+import { useDigitalBondFromBondId, useDigitalBondUser } from 'state/bonds/hooks'
 import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
@@ -74,8 +74,8 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
   const [requestedApproval, setRequestedApproval] = useState(false)
-  const { allowance, tokenBalance, stakedBalance } = useCallBondUser(bondId,chainId)
-  const bond = useCallBondFromBondId(bondId,chainId)
+  const { allowance, tokenBalance, stakedBalance } = useDigitalBondUser(bondId,chainId)
+  const bond = useDigitalBondFromBondId(bondId,chainId)
   const { onBonding } = useDepositBond(chainId, account, library, bond)
   const location = useLocation()
 

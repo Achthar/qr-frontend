@@ -217,13 +217,13 @@ export const useBondFromBondIds = (bondIds: number[], chainId: number): Bond[] =
 }
 
 
-export const useCallBondFromBondId = (bondId: number, chainId: number): DigitalBond => {
+export const useDigitalBondFromBondId = (bondId: number, chainId: number): DigitalBond => {
 
   const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData[bondId])
   return bond
 }
 
-export const useCallBondFromBondIds = (bondIds: number[], chainId: number): DigitalBond[] => {
+export const useDigitalBondFromBondIds = (bondIds: number[], chainId: number): DigitalBond[] => {
 
   const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData)
   return bondIds.map(bId => bond[bId])
@@ -268,8 +268,8 @@ export const useBondUser = (bondId: number, chainId: number) => {
 /**
  *  Returns call bond user data for id
  */
-export const useCallBondUser = (bondId: number, chainId: number) => {
-  const bond = useCallBondFromBondId(bondId, chainId)
+export const useDigitalBondUser = (bondId: number, chainId: number) => {
+  const bond = useDigitalBondFromBondId(bondId, chainId)
   if (bond) {
     return {
       allowance: bond.userData ? new BigNumber(bond.userData.allowance) : BIG_ZERO,

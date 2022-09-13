@@ -7,7 +7,7 @@ import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { useTranslation } from 'contexts/Localization'
 import useClaimRewards from 'views/Bonds/hooks/callBond/useClaimRewards'
 import useToast from 'hooks/useToast'
-import { useCallBondFromBondIds } from 'state/bonds/hooks'
+import { useDigitalBondFromBondIds } from 'state/bonds/hooks'
 import { useAppDispatch } from 'state'
 import Dots from 'components/Loader/Dots'
 
@@ -30,7 +30,7 @@ const Claim: React.FunctionComponent<ClaimActionProps> = ({
   const { account, chainId } = useActiveWeb3React()
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
-  const bonds = useCallBondFromBondIds(bondIds, chainId)
+  const bonds = useDigitalBondFromBondIds(bondIds, chainId)
   const { onClaim } = useClaimRewards(chainId)
 
 

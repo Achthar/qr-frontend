@@ -6,7 +6,7 @@ import { CallBondWithStakedValue, DesktopColumnSchemaCall } from 'views/Bonds/co
 import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useDelayedUnmount from 'hooks/useDelayedUnmount'
-import { useCallBondFromBondId, useCallBondUser } from 'state/bonds/hooks'
+import { useDigitalBondFromBondId, useDigitalBondUser } from 'state/bonds/hooks'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 import { prettifySeconds } from 'config'
 import CircleLoader from 'components/Loader/CircleLoader'
@@ -114,12 +114,12 @@ const BondMobileCell = styled.td`
 const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
   const { details, userDataReady, isLast } = props
   const { chainId } = useNetworkState()
-  const hasStakedAmount = !!useCallBondUser(details.bondId, chainId).stakedBalance.toNumber()
+  const hasStakedAmount = !!useDigitalBondUser(details.bondId, chainId).stakedBalance.toNumber()
   const [actionPanelExpanded, setActionPanelExpanded] = useState(hasStakedAmount)
   const shouldRenderChild = useDelayedUnmount(actionPanelExpanded, 300)
   const { t } = useTranslation()
 
-  const bond = useCallBondFromBondId(details.bondId, chainId)
+  const bond = useDigitalBondFromBondId(details.bondId, chainId)
 
   const toggleActionPanel = () => {
     setActionPanelExpanded(!actionPanelExpanded)

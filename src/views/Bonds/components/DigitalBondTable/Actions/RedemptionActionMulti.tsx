@@ -12,7 +12,7 @@ import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
 import { DigitalBond } from 'state/types'
-import { useCallBondFromBondIds } from 'state/bonds/hooks'
+import { useDigitalBondFromBondIds } from 'state/bonds/hooks'
 import { useRedeemCallNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { ActionContent } from './styles'
 
@@ -126,7 +126,7 @@ const RedemptionMulti: React.FunctionComponent<RedeemMultiProps> = ({
   hasPosition
 }) => {
 
-  const bonds = useCallBondFromBondIds(bondIds, chainId)
+  const bonds = useDigitalBondFromBondIds(bondIds, chainId)
   const { onRedeem } = useRedeemCallNotes(chainId, account, indexes)
 
   const handleRedemption = async () => {

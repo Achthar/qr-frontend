@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useBondUser, useCallBondFromBondId, useCallBondUser, useGetOracleData } from 'state/bonds/hooks'
+import { useBondUser, useDigitalBondFromBondId, useDigitalBondUser, useGetOracleData } from 'state/bonds/hooks'
 import { useTranslation } from 'contexts/Localization'
 import { Flex, Text, useMatchBreakpoints } from '@requiemswap/uikit'
 import { getBalanceNumber } from 'utils/formatBalance'
@@ -46,8 +46,8 @@ const StyledLogo = styled(Logo) <{ size: string }>`
 
 const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, tokens }) => {
   const { chainId } = useNetworkState()
-  const { stakedBalance } = useCallBondUser(bondId, chainId)
-  const bond = useCallBondFromBondId(bondId, chainId)
+  const { stakedBalance } = useDigitalBondUser(bondId, chainId)
+  const bond = useDigitalBondFromBondId(bondId, chainId)
   const { t } = useTranslation()
   const rawStakedBalance = getBalanceNumber(stakedBalance)
   const { isDesktop, isMobile } = useMatchBreakpoints()

@@ -7,7 +7,7 @@ import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
 import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { useCallBondFromBondId } from 'state/bonds/hooks'
+import { useDigitalBondFromBondId } from 'state/bonds/hooks'
 import { blocksToDays, prettifySeconds } from 'config'
 import { priceBonding } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
@@ -54,7 +54,7 @@ const CallBondingModal: React.FC<CallBondingModalProps> = (
     reqPrice
   }
 ) => {
-  const bond = useCallBondFromBondId(bondId,chainId)
+  const bond = useDigitalBondFromBondId(bondId,chainId)
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
