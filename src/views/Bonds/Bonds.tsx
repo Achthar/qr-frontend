@@ -377,7 +377,7 @@ function Bonds({
 
   const [bondData, callBondData, callableBondData] = useMemo(() => [
     allBonds.bondData,
-    allBonds.callBondData,
+    allBonds.digitalBondData,
     allBonds.callableBondData
   ],
     [

@@ -31,7 +31,7 @@ const store = configureStore({
     globalNetwork,
     application,
     block: blockReducer,
-    bonds: bondReducer,
+    bondState: bondReducer,
     oracles,
     farms: farmsReducer,
     stablePools: stablePoolsReducer,

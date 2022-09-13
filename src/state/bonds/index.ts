@@ -30,12 +30,12 @@ function initialState(_chainId: number): BondsState {
     bonds: {
       43113: {
         bondData: {},
-        callBondData: {},
+        digitalBondData: {},
         callableBondData: {},
       },
       42261: {
         bondData: {},
-        callBondData: {},
+        digitalBondData: {},
         callableBondData: {},
       }
     },
@@ -533,7 +533,7 @@ export const bondsSlice = createSlice({
         // call
         for (let i = 0; i < callBondConfigWithIds.length; i++) {
           const bond = callBondConfigWithIds[i]
-          state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...bond };
+          state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId], ...bond };
         }
 
         // callables
@@ -568,7 +568,7 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallBondDetails.rejected, (state, { error }) => {
         console.log(error, state)
@@ -608,11 +608,11 @@ export const bondsSlice = createSlice({
       })
       .addCase(calcSingleCallBondPoolDetails.fulfilled, (state, action) => {
         const bond = action.payload
-        state.bonds[action.meta.arg.chainId].callBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].callBondData[bond.bondId], ...action.payload };
+        state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId], ...action.payload };
       })
       .addCase(calcSingleCallBondPoolDetails.rejected, (state, action) => {
-        if (state.bonds[action.meta.arg.chainId].callBondData[action.meta.arg.bond.bondId]?.publicLoaded)
-          state.bonds[action.meta.arg.chainId].callBondData[action.meta.arg.bond.bondId].publicLoaded = true
+        if (state.bonds[action.meta.arg.chainId].digitalBondData[action.meta.arg.bond.bondId]?.publicLoaded)
+          state.bonds[action.meta.arg.chainId].digitalBondData[action.meta.arg.bond.bondId].publicLoaded = true
         console.log(action.error, state)
         console.error(action.error.message)
       })
@@ -651,7 +651,7 @@ export const bondsSlice = createSlice({
       .addCase(fetchCallBondUserDataAsync.fulfilled, (state, action) => {
         const callBondData = action.payload.dataAssignedToBonds
         Object.keys(callBondData.bondUserData).forEach((bondId) => {
-          state.bonds[action.meta.arg.chainId].callBondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].callBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
+          state.bonds[action.meta.arg.chainId].digitalBondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
         })
         state.closedNotes[action.meta.arg.chainId].callNotesClosed = action.payload.closedNotes
         state.userRewardCall = callBondData.rewards
@@ -706,7 +706,7 @@ export const bondsSlice = createSlice({
           state.bonds[action.payload.chainId].bondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
         if (action.payload.bondType === BondType.Call) {
-          state.bonds[action.payload.chainId].callBondData[action.payload.bondId].purchasedInQuote = action.payload.price
+          state.bonds[action.payload.chainId].digitalBondData[action.payload.bondId].purchasedInQuote = action.payload.price
         }
         if (action.payload.bondType === BondType.Callable) {
           state.bonds[action.payload.chainId].callableBondData[action.payload.bondId].purchasedInQuote = action.payload.price
@@ -718,7 +718,7 @@ export const bondsSlice = createSlice({
         }
 
         if (action.payload.bondType === BondType.Call) {
-          state.bonds[action.payload.chainId].callBondData[action.payload.bondId].lpLink = action.payload.link
+          state.bonds[action.payload.chainId].digitalBondData[action.payload.bondId].lpLink = action.payload.link
         }
 
         if (action.payload.bondType === BondType.Callable) {

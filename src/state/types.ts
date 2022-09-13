@@ -328,7 +328,7 @@ export interface BondsState {
       bondData: {
         [bondId: number]: Bond
       },
-      callBondData: {
+      digitalBondData: {
         [bondId: number]: DigitalBond
       },
       callableBondData: {
@@ -966,7 +966,7 @@ export interface SerializedFarmsState {
 export interface State {
   achievements: AchievementState
   block: BlockState
-  bonds: BondsState
+  bondState: BondsState
   farms: SerializedFarmsState
   // pools: PoolsState
   weightedPairs: WeightedPairState

@@ -54,7 +54,7 @@ export const usePollBondsWithUserData = (chainId: number) => {
   useEffect(() => {
     if (metaLoaded) {
       const bondsToFetch = Object.values(bonds[chainId].bondData)
-      const callBondsToFetch = Object.values(bonds[chainId].callBondData)
+      const callBondsToFetch = Object.values(bonds[chainId].digitalBondData)
       const callableBondsToFetch = Object.values(bonds[chainId].callableBondData)
 
       bondsToFetch.map(
@@ -141,7 +141,7 @@ export const usePollBondsWithUserData = (chainId: number) => {
           dispatch(fetchBondUserDataAsync({ chainId, account, bonds: vanillas }))
         }
 
-        const digitals = Object.values(bondsAfter[chainId].callBondData)
+        const digitals = Object.values(bondsAfter[chainId].digitalBondData)
         if (!userCallDataLoaded && digitals.length > 0) {
           dispatch(fetchCallBondUserDataAsync({ chainId, account, bonds: digitals }))
         }
@@ -177,67 +177,67 @@ export const usePollBondsWithUserData = (chainId: number) => {
  */
 
 export const useBonds = (): BondsState => {
-  const bonds = useSelector((state: State) => state.bonds)
+  const bonds = useSelector((state: State) => state.bondState)
   return bonds
 }
 
 export const useClosedVanillaMarkets = (chainId: number) => {
-  const bonds = useSelector((state: State) => state.bonds)
+  const bonds = useSelector((state: State) => state.bondState)
   return bonds.bondsClosed[chainId].vanillaBondsClosed
 }
 
 export const useClosedCallMarkets = (chainId: number) => {
-  const bonds = useSelector((state: State) => state.bonds)
+  const bonds = useSelector((state: State) => state.bondState)
   return bonds.bondsClosed[chainId].callBondsClosed
 }
 
 
 export const useClosedCallableMarkets = (chainId: number) => {
-  const bonds = useSelector((state: State) => state.bonds)
+  const bonds = useSelector((state: State) => state.bondState)
   return bonds.bondsClosed[chainId].callableBondsClosed
 }
 
 
 export const useReserveAddressFromBondIds = (chainId: number, bondIds: number[]): string[] => {
-  const bonds = useSelector((state: State) => state.bonds)
+  const bonds = useSelector((state: State) => state.bondState)
   return bondIds.map(id => bonds.bonds[chainId].bondData[id].reserveAddress[chainId])
 
 }
 
 export const useBondFromBondId = (bondId: number, chainId: number): Bond => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].bondData[bondId])
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].bondData[bondId])
   return bond
 }
 
 export const useBondFromBondIds = (bondIds: number[], chainId: number): Bond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].bondData)
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].bondData)
   return bondIds.map(bId => bond[bId])
 }
 
 
 export const useDigitalBondFromBondId = (bondId: number, chainId: number): DigitalBond => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData[bondId])
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].digitalBondData[bondId])
   return bond
 }
 
 export const useDigitalBondFromBondIds = (bondIds: number[], chainId: number): DigitalBond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData)
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].digitalBondData)
   return bondIds.map(bId => bond[bId])
 }
 
 export const useCallableBondFromBondId = (bondId: number, chainId: number): CallableBond => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callableBondData[bondId])
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].callableBondData[bondId])
   return bond
 }
 
 export const useCallableBondFromBondIds = (bondIds: number[], chainId: number): CallableBond[] => {
 
-  const bond = useSelector((state: State) => state.bonds.bonds[chainId].callableBondData)
+  const bond = useSelector((state: State) => state.bondState.bonds[chainId].callableBondData)
   return bondIds.map(bId => bond[bId])
 }
 
@@ -407,7 +407,7 @@ export const useLpPricing = ({ chainId, weightedPools, weightedLoaded, stablePoo
   )
 
   /** CALL bonds start here */
-  const callData = bonds.bonds[chainId].callBondData
+  const callData = bonds.bonds[chainId].digitalBondData
 
   useEffect(() => {
     if (!metaLoaded) return;
