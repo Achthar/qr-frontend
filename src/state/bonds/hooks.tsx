@@ -26,7 +26,7 @@ import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDeta
 import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails'
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails'
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails'
-import { State, Bond, CallBond, CallableBond, BondsState } from '../types'
+import { State, Bond, DigitalBond, CallableBond, BondsState } from '../types'
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -217,13 +217,13 @@ export const useBondFromBondIds = (bondIds: number[], chainId: number): Bond[] =
 }
 
 
-export const useCallBondFromBondId = (bondId: number, chainId: number): CallBond => {
+export const useCallBondFromBondId = (bondId: number, chainId: number): DigitalBond => {
 
   const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData[bondId])
   return bond
 }
 
-export const useCallBondFromBondIds = (bondIds: number[], chainId: number): CallBond[] => {
+export const useCallBondFromBondIds = (bondIds: number[], chainId: number): DigitalBond[] => {
 
   const bond = useSelector((state: State) => state.bonds.bonds[chainId].callBondData)
   return bondIds.map(bId => bond[bId])

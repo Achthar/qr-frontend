@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useTable, Button, ChevronUpIcon, ColumnType } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 
-import Row, { CallRowProps } from './CallRow'
+import Row, { CallRowProps } from './DigitalRow'
 
 export interface ITableProps {
   data: CallRowProps[]

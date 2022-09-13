@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { CallBondWithStakedValue } from 'views/Bonds/components/types'
 import BondingAction from './BondingAction'
 import RedemptionMulti from './RedemptionActionMulti'
-import CallNoteRow, { CallNoteHeaderRow } from '../CallNoteRow'
+import CallNoteRow, { CallNoteHeaderRow } from '../DigitalNoteRow'
 import { PreviewPanel } from './PreviewPanel'
 
 

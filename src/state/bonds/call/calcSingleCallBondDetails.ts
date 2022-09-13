@@ -15,14 +15,14 @@ import { BondAssetType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
 import { ICalcCallBondDetailsAsyncThunk } from '../types';
 import { priceFromData } from '../loadMarketPrice';
-import { BondsState, CallBond } from '../../types'
+import { BondsState, DigitalBond } from '../../types'
 
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 
 export const calcSingleCallBondDetails = createAsyncThunk(
   "bonds/calcSingleCallBondDetails",
-  async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<CallBond> => {
+  async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<DigitalBond> => {
 
     const bondContract = getContractForCallBondDepo(chainId, provider);
 

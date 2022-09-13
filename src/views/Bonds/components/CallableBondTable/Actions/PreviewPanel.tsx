@@ -10,7 +10,7 @@ import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { priceBonding } from 'utils/bondUtils'
-import { CallableBond, CallBond } from 'state/types'
+import { CallableBond, DigitalBond } from 'state/types'
 
 
 export const InputContainer = styled.div<{ isMobile: boolean }>`

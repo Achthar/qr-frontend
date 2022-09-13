@@ -15,7 +15,7 @@ import Liquidity from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
 import Roi from './Roi'
-import CallBond, { CallBondProps } from './CallBond'
+import CallBond, { CallBondProps } from './DigitalBond'
 import Details from './Details'
 import { MobileColumnSchemaCall } from '../types'
 

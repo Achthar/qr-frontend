@@ -39,12 +39,10 @@ const TokenWrapper = styled.div`
   }
 `
 
-
 const StyledLogo = styled(Logo) <{ size: string }>`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
 `
-
 
 const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, tokens }) => {
   const { chainId } = useNetworkState()

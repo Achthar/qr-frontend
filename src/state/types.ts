@@ -163,7 +163,7 @@ export interface ClosedVanillaBond {
 
 }
 
-export interface ClosedCallBond {
+export interface ClosedDigitalBond {
   market: ClosedCallMarket
   terms: ClosedCallTerms;
 }
@@ -227,7 +227,7 @@ export interface Bond extends BondConfig, IBondDetails {
 }
 
 
-export interface CallBond extends BondConfig, IBondDetails {
+export interface DigitalBond extends BondConfig, IBondDetails {
   currentUnderlyingPrice?: SerializedBigNumber;
   underlyingDecimals?: number;
   tokenAmount?: SerializedBigNumber
@@ -329,7 +329,7 @@ export interface BondsState {
         [bondId: number]: Bond
       },
       callBondData: {
-        [bondId: number]: CallBond
+        [bondId: number]: DigitalBond
       },
       callableBondData: {
         [bondId: number]: CallableBond
@@ -349,7 +349,7 @@ export interface BondsState {
   bondsClosed: {
     [chainId: number]: {
       vanillaBondsClosed: { [bondId: number]: ClosedVanillaBond }
-      callBondsClosed: { [bondId: number]: ClosedCallBond }
+      callBondsClosed: { [bondId: number]: ClosedDigitalBond }
       callableBondsClosed: { [bondId: number]: ClosedCallableBond }
     }
   }

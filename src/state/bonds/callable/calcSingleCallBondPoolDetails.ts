@@ -8,7 +8,7 @@ import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
 import bondReserveOasis from 'config/abi/oasis/CallableBondDepo.json'
 import { ICalcCallableBondDetailsAsyncThunk } from '../types';
-import { CallableBond, CallBond } from '../../types'
+import { CallableBond, DigitalBond } from '../../types'
 
 const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')

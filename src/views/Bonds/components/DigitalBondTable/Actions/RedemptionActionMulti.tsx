@@ -11,7 +11,7 @@ import { useAppDispatch } from 'state'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { priceBonding } from 'utils/bondUtils'
-import { CallBond } from 'state/types'
+import { DigitalBond } from 'state/types'
 import { useCallBondFromBondIds } from 'state/bonds/hooks'
 import { useRedeemCallNotes } from 'views/Bonds/hooks/callBond/useRedeemBond'
 import { ActionContent } from './styles'
@@ -107,7 +107,7 @@ interface RedeemMultiProps {
   indexes: number[]
   bondIds: number[]
   reqPrice: number
-  thisBond: CallBond
+  thisBond: DigitalBond
   isMobile: boolean
   account: string
   chainId: number

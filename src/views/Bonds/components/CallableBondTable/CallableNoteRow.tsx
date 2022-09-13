@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
-import { CallableBond, CallableNote, CallBond, CallNote } from 'state/types'
+import { CallableBond, CallableNote, DigitalBond, CallNote } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'

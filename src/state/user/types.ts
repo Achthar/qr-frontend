@@ -25,7 +25,6 @@ export interface UserProps {
 
 }
 
-
 export interface UserBalanceState {
     // that component is stpored separately for different chainIds
     // to simplify the management of chain switches

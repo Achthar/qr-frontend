@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js"
-import { Bond, CallableBond, CallBond } from "state/types"
+import { Bond, CallableBond, DigitalBond } from "state/types"
 
 export type TableProps = {
   data?: TableDataTypes[]
@@ -321,7 +321,7 @@ export interface BondWithStakedValue extends Bond {
 }
 
 
-export interface CallBondWithStakedValue extends CallBond {
+export interface CallBondWithStakedValue extends DigitalBond {
   apr?: number
   lpRewardsApr?: number
   liquidity?: BigNumber

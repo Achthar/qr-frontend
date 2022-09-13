@@ -1,7 +1,7 @@
 import { AmplifiedWeightedPair, Token, TokenAmount } from "@requiemswap/sdk"
 import { BondConfig, SerializedToken } from "config/constants/types"
 import { BigNumber, ethers } from "ethers"
-import { Bond, CallableBond, CallableNote, CallBond, CallNote, ClosedCallableTerms, ClosedCallBond, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
+import { Bond, CallableBond, CallableNote, DigitalBond, CallNote, ClosedCallableTerms, ClosedDigitalBond, ClosedCallTerms, ClosedVanillaBond, ClosedVanillaMarket, SerializedWeightedPair, VanillaNote } from "state/types"
 import { deserializeToken } from "state/user/hooks/helpers"
 
 const ONE18 = ethers.BigNumber.from('1000000000000000000')
@@ -41,7 +41,7 @@ export const deserializeWeightedPair = (serializedPair: SerializedWeightedPair):
 /**
  * Price an input amount with bond - assumes that bond has all data loaded
  */
-export const priceBonding = (amount: BigNumber, bond: Bond | CallBond | CallableBond): ethers.BigNumber => {
+export const priceBonding = (amount: BigNumber, bond: Bond | DigitalBond | CallableBond): ethers.BigNumber => {
     if (!bond || !bond.market || !bond.purchasedInQuote) return ethers.BigNumber.from(0)
     return amount.mul(bond.purchasedInQuote).div(bond.market.purchased)
 }
@@ -55,7 +55,7 @@ export const calculatePayoff = (
     return _kMinusS.div(_initialPrice);
 }
 
-export const calculateUserPay = (note: CallNote | CallableNote, bond: CallBond | CallableBond, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
+export const calculateUserPay = (note: CallNote | CallableNote, bond: DigitalBond | CallableBond, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
     const strike = ethers.BigNumber.from(bond.bondTerms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
     const moneyness = Number(ethers.utils.formatEther(payoff))

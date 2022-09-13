@@ -1,4 +1,4 @@
-import { CallBond, Bond, CallableBond } from "state/types";
+import { DigitalBond, Bond, CallableBond } from "state/types";
 
 export interface ICalcBondDetailsAsyncThunk {
     bond: Bond
@@ -7,7 +7,7 @@ export interface ICalcBondDetailsAsyncThunk {
 }
 
 export interface ICalcCallBondDetailsAsyncThunk {
-    bond: CallBond
+    bond: DigitalBond
     chainId: number
     provider: any
 }
