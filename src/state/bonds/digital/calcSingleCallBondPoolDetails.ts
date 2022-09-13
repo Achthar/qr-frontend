@@ -1,6 +1,6 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getContractForBondDepo, getContractForCallBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { getContractForBondDepo, getContractForDigitalBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
 import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
@@ -10,15 +10,13 @@ import bondReserveOasis from 'config/abi/oasis/DigitalCallBondDepo.json'
 import { ICalcCallBondDetailsAsyncThunk } from '../types';
 import { DigitalBond } from '../../types'
 
-const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
-
 
 export const calcSingleCallBondPoolDetails = createAsyncThunk(
   "bonds/calcSingleCallBondPoolDetails",
   async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<DigitalBond> => {
 
-    const bondContract = getContractForCallBondDepo(chainId, provider);
+    const bondContract = getContractForDigitalBondDepo(chainId, provider);
 
     // cals for general bond data
     const calls = [

@@ -5,7 +5,6 @@ import { BondConfig, BondType, PoolCategory } from 'config/constants/types'
 
 // Addresses
 import {
-  getAddress,
   getCakeAddress,
   getMasterChefAddress,
   getPointCenterIfoAddress,
@@ -18,14 +17,13 @@ import {
   getRequiemAddress,
   getStableSwapAddress,
   getAddressForReserve,
-  getAddressForBondingCalculator,
   getAddressForWeightedPairFactory,
   getAddressForLpReserve,
   getBondingDepositoryAddress,
   getRedRequiemStakingAddress,
   getRedRequiemAddress,
   getAssetBackedStakingAddress,
-  getCallBondingDepositoryAddress,
+  getDigitalBondingDepositoryAddress,
   getCallableBondingDepositoryAddress
 } from 'utils/addressHelpers'
 
@@ -185,8 +183,8 @@ export const getContractForBondDepo = (chainId: number, signer?: ethers.Signer |
   return new ethers.Contract(bondAddress, ABI, signer);
 }
 
-export const getContractForCallBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
-  const bondAddress = getCallBondingDepositoryAddress(chainId) || "";
+export const getContractForDigitalBondDepo = (chainId: number, signer?: ethers.Signer | ethers.providers.Provider) => {
+  const bondAddress = getDigitalBondingDepositoryAddress(chainId) || "";
   const ABI = new Interface(chainId === 43113 ? callBondReserveAVAX : callBondReserveOasis)
   return new ethers.Contract(bondAddress, ABI, signer);
 }

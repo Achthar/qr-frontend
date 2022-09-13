@@ -1,6 +1,6 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getContractForBondDepo, getContractForCallableBondDepo, getContractForCallBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { getContractForCallableBondDepo } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
 import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';
@@ -8,9 +8,8 @@ import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/CallableBondDepository.json'
 import bondReserveOasis from 'config/abi/oasis/CallableBondDepo.json'
 import { ICalcCallableBondDetailsAsyncThunk } from '../types';
-import { CallableBond, DigitalBond } from '../../types'
+import { CallableBond } from '../../types'
 
-const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
 

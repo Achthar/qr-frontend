@@ -91,8 +91,8 @@ export const getBondingDepositoryAddress = (chainId: number) => {
   return addresses.bondDepository[chainId] ? getAddress(chainId, addresses.bondDepository) : undefined
 }
 
-export const getCallBondingDepositoryAddress = (chainId: number) => {
-  return addresses.callBondDepository[chainId] ? getAddress(chainId, addresses.callBondDepository) : undefined
+export const getDigitalBondingDepositoryAddress = (chainId: number) => {
+  return addresses.digitalBondDepository[chainId] ? getAddress(chainId, addresses.digitalBondDepository) : undefined
 }
 
 export const getCallableBondingDepositoryAddress = (chainId: number) => {

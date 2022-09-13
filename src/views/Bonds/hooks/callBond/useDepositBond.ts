@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import {  startCallBonding } from 'utils/calls'
-import { getContractForCallBondDepo } from 'utils/contractHelpers'
+import { getContractForDigitalBondDepo } from 'utils/contractHelpers'
 import { BondConfig } from 'config/constants/types'
 
 const useDepositBond = (chainId: number, account: string, library: any, bond: BondConfig) => {
-  const bondDepositoryContract = getContractForCallBondDepo(chainId, account ? library.getSigner() : library)
+  const bondDepositoryContract = getContractForDigitalBondDepo(chainId, account ? library.getSigner() : library)
 
   const handleBonding = useCallback(
     async (amount: string, maxPrice: string) => {

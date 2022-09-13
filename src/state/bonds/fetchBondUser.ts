@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import erc20ABI from 'config/abi/erc20.json'
 import masterchefABI from 'config/abi/masterchef.json'
 import multicall from 'utils/multicall'
-import { getAddress, getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress } from 'utils/addressHelpers'
+import { getAddress, getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getDigitalBondingDepositoryAddress } from 'utils/addressHelpers'
 import { BondConfig } from 'config/constants/types'
 import bondReserveAVAX from 'config/abi/avax/BondDepository.json'
 import callBondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
@@ -74,7 +74,7 @@ export interface CallBondUserData {
 // payout and interest fetch for call bond
 export const fetchCallBondUserPendingPayoutData = async (chainId: number, account: string): Promise<CallBondUserData> => {
 
-  const bondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
+  const bondDepositoryAddress = getDigitalBondingDepositoryAddress(chainId)
 
   const callInfoIndexes = [{ address: bondDepositoryAddress, name: 'indexesFor', params: [account] }]
 
@@ -167,7 +167,7 @@ export const fetchUserClosedMarkets = async (chainId: number, bIds: number[], bi
   })
 
   // call
-  const callBondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
+  const callBondDepositoryAddress = getDigitalBondingDepositoryAddress(chainId)
   const callsC = bidsCall.map((biC) => {
     return { address: callBondDepositoryAddress, name: 'markets', params: [biC] }
   })
@@ -269,7 +269,7 @@ export const fetchBondUserAllowancesAndBalances = async (chainId: number, accoun
 // simple allowance fetch together with balances in multicall
 export const fetchCallBondUserAllowancesAndBalances = async (chainId: number, account: string, bondsToFetch: BondConfig[]): Promise<BondTokenData> => {
 
-  const bondDepositoryAddress = getCallBondingDepositoryAddress(chainId)
+  const bondDepositoryAddress = getDigitalBondingDepositoryAddress(chainId)
 
   const callsAllowance = bondsToFetch.map((bond) => {
     const lpContractAddress = getAddress(chainId, bond.reserveAddress)

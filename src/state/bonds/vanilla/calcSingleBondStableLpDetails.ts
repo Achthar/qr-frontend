@@ -1,6 +1,6 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getContractForBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { getContractForBondDepo } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
 import { bnParser } from 'utils/helper';
 import multicall from 'utils/multicall';

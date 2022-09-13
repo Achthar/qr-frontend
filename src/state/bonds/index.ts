@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { FALLBACK_CHAINID } from 'config/constants'
 import { BondConfig, BondType } from 'config/constants/types'
 import multicall from 'utils/multicall';
-import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress } from 'utils/addressHelpers';
+import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getDigitalBondingDepositoryAddress } from 'utils/addressHelpers';
 import { getAddress } from 'ethers/lib/utils';
 import bondReserveAVAX from 'config/abi/avax/BondDataProvider.json'
 import {
@@ -145,7 +145,7 @@ export const fetchBondMeta = createAsyncThunk<{ bondConfigWithIds: BondConfig[],
   async ({ chainId, bondMeta }) => {
     const addresses = bondMeta.map(cfg => getAddress(cfg.reserveAddress[chainId]))
     const depoAddress = getBondingDepositoryAddress(chainId)
-    const callDepoAddress = getCallBondingDepositoryAddress(chainId)
+    const callDepoAddress = getDigitalBondingDepositoryAddress(chainId)
     const callableDepoAddress = getCallableBondingDepositoryAddress(chainId)
     // fetch all bond data for provided assets addresses
     const calls = addresses.map(_address => {

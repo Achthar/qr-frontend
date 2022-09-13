@@ -1,7 +1,7 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { deserializeToken } from 'state/user/hooks/helpers';
-import { getContractForCallableBondDepo, getContractForCallBondDepo } from 'utils/contractHelpers';
+import { getContractForCallableBondDepo } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
@@ -14,7 +14,7 @@ import { BondAssetType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
 import { ICalcCallableBondDetailsAsyncThunk } from '../types';
 import { priceFromData } from '../loadMarketPrice';
-import { BondsState, CallableBond } from '../../types'
+import { CallableBond } from '../../types'
 
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 

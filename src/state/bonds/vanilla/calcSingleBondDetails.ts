@@ -1,8 +1,8 @@
 /** eslint no-empty-interface: 0 */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { deserializeToken } from 'state/user/hooks/helpers';
 import { getContractForBondDepo } from 'utils/contractHelpers';
-import { ethers, BigNumber, BigNumberish } from 'ethers'
+import { BigNumber } from 'ethers'
 import { getAddress } from 'ethers/lib/utils';
 import { addresses } from 'config/constants/contracts';
 import multicall from 'utils/multicall';
@@ -13,11 +13,9 @@ import { BondAssetType } from 'config/constants/types';
 import { bnParser } from 'utils/helper';
 import { ICalcBondDetailsAsyncThunk } from '../types';
 import { priceFromData } from '../loadMarketPrice';
-import { BondsState, Bond } from '../../types'
+import { Bond } from '../../types'
 
-const E_NINE = BigNumber.from('1000000000')
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
-
 
 export const calcSingleBondDetails = createAsyncThunk(
   "bonds/calcBondDetails",

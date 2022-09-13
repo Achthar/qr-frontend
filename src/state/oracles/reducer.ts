@@ -1,7 +1,7 @@
 import { createAsyncThunk, createReducer, createSlice } from '@reduxjs/toolkit'
 import { getAddress } from 'ethers/lib/utils'
 import { FALLBACK_CHAINID } from 'config/constants'
-import { getCallBondingDepositoryAddress } from 'utils/addressHelpers'
+import { getDigitalBondingDepositoryAddress } from 'utils/addressHelpers'
 import multicall from 'utils/multicall'
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import bondReserveOasis from 'config/abi/oasis/bandOracle.json'
@@ -80,7 +80,7 @@ export const fetchChainLinkOracleDataFromBond = createAsyncThunk<{ oracles: { [k
   async ({ chainId, oracleAddresses, oracleType }) => {
 
 
-    const callDepoAddress = getCallBondingDepositoryAddress(chainId)
+    const callDepoAddress = getDigitalBondingDepositoryAddress(chainId)
 
     // works for chainLink only
     if (oracleType === Oracle.ChainLink) {

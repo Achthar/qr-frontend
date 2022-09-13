@@ -24,7 +24,7 @@ import {
 
 import { Interface } from '@ethersproject/abi'
 import { Web3Provider } from '@ethersproject/providers'
-import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getCallBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
+import { getBondingDepositoryAddress, getCallableBondingDepositoryAddress, getDigitalBondingDepositoryAddress, getMulticallAddress } from 'utils/addressHelpers'
 // import { useNetworkState } from 'state/globalNetwork/hooks'
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
@@ -216,7 +216,7 @@ export function useBondContract(chainId: number, withSignerIfPossible?: boolean)
 }
 
 export function useCallBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(chainId ? getCallBondingDepositoryAddress(chainId) : undefined, new Interface(chainId === 43113 ? CALL_BOND_DEPO_AVAX : CALL_BOND_DEPO_OASIS), withSignerIfPossible)
+  return useContract(chainId ? getDigitalBondingDepositoryAddress(chainId) : undefined, new Interface(chainId === 43113 ? CALL_BOND_DEPO_AVAX : CALL_BOND_DEPO_OASIS), withSignerIfPossible)
 }
 
 export function useCallableBondContract(chainId: number, withSignerIfPossible?: boolean): Contract | null {
