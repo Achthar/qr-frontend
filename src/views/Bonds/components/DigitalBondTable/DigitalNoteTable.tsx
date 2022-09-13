@@ -29,7 +29,7 @@ import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
  * - filter
  */
 
-interface CallNoteProps {
+interface DigitalNoteProps {
   isMobile: boolean
   userDataReady: boolean
   note: CallNote
@@ -38,7 +38,7 @@ interface CallNoteProps {
   isLast: boolean
 }
 
-interface CallNoteHeaderProps {
+interface DigitalNoteHeaderProps {
   userDataReady: boolean
   isMobile: boolean
   notes: CallNote[]
@@ -205,7 +205,7 @@ height: ${({ size }) => size};
 `
 
 
-export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
+export const DigitalNoteHeaderRow: React.FC<DigitalNoteHeaderProps> = ({ notes, isMobile, reqPrice }) => {
 
 
   const [totalPayout, avgVesting] = useMemo(() => {
@@ -265,7 +265,7 @@ export const CallNoteHeaderRow: React.FC<CallNoteHeaderProps> = ({ notes, isMobi
 
 
 
-const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
+const DigitalNoteRow: React.FC<DigitalNoteProps> = ({ isLast, isFirst, note, userDataReady, isMobile, reqPrice }) => {
   const { chainId } = useNetworkState()
   const closed = useClosedCallMarkets(chainId)
 
@@ -375,7 +375,7 @@ function compareMaturities(a: CallNote, b: CallNote) {
   return 0;
 }
 
-export const CallNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
+export const DigitalNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
   notes, reqPrice, userDataReady, expanded
 }) => {
 
@@ -385,13 +385,13 @@ export const CallNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPric
   return (
     <GeneralNoteContainer isMobile={isMobile} expanded={expanded}>
       {notes.length > 0 && (
-        <CallNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
+        <DigitalNoteHeaderRow notes={notes} isMobile={isMobile} userDataReady={userDataReady} reqPrice={reqPrice} />
       )}
       {orderedNotes.map((
         note, index) => {
         const isLast = index === notes.length - 1
         return (
-          <CallNoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
+          <DigitalNoteRow note={note} userDataReady={userDataReady} isMobile={isMobile} reqPrice={reqPrice} isLast={isLast} isFirst={index === 0} />
         )
       }
       )}

@@ -4,7 +4,7 @@ import { BondAssetType, SerializedToken } from 'config/constants/types'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import PoolLogo from 'components/Logo/PoolLogo'
 
-export interface CallBondProps {
+export interface DigitalBondProps {
   label: string
   bondId: number
   bondType: BondAssetType
@@ -30,7 +30,7 @@ const TokenWrapper = styled.div`
   }
 `
 
-const CallBondMobile: React.FunctionComponent<CallBondProps> = ({ tokens, label, bondId, bondType }) => {
+const DigitalBondMobile: React.FunctionComponent<DigitalBondProps> = ({ tokens, label, bondId, bondType }) => {
 
   return (
     <Container>
@@ -39,4 +39,4 @@ const CallBondMobile: React.FunctionComponent<CallBondProps> = ({ tokens, label,
   )
 }
 
-export default CallBondMobile
+export default DigitalBondMobile

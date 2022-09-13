@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import { useTable, Button, ChevronUpIcon, ColumnType } from '@requiemswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 
-import Row, { CallRowProps } from './DigitalRow'
+import Row, { DigitalRowProps } from './DigitalRow'
 
 export interface ITableProps {
-  data: CallRowProps[]
-  columns: ColumnType<CallRowProps>[]
+  data: DigitalRowProps[]
+  columns: ColumnType<DigitalRowProps>[]
   userDataReady: boolean
   sortColumn?: string
 }

@@ -36,8 +36,8 @@ import CallTable from './components/DigitalBondTable/DigitalBondTable'
 import CallableTable from './components/CallableBondTable/CallableBondTable'
 import BondTabButtons from './components/BondTabButtons'
 import { NoteTable } from './components/BondTable/NoteTable'
-import { CallRowProps } from './components/DigitalBondTable/DigitalRow'
-import { CallNoteTable } from './components/DigitalBondTable/DigitalNoteTable'
+import { DigitalRowProps } from './components/DigitalBondTable/DigitalRow'
+import { DigitalNoteTable } from './components/DigitalBondTable/DigitalNoteTable'
 import { CallableRowProps } from './components/CallableBondTable/CallableRow'
 import { CallableNoteTable } from './components/CallableBondTable/CallableNoteTable'
 
@@ -464,7 +464,7 @@ function Bonds({
   const callRowData = Object.values(callBondData).map((bond) => {
     const purchasedUnits = Math.round(Number(formatSerializedBigNumber(bond.market?.purchased ?? '0', 18, 18)) * 10000) / 10000 // 7002000
     const purchasedInQuote = Number(ethers.utils.formatEther(bond?.purchasedInQuote ?? '0'))
-    const row: CallRowProps = {
+    const row: DigitalRowProps = {
       bond: {
         label: bond.name,
         bondId: bond.bondId,
@@ -858,7 +858,7 @@ function Bonds({
       id: column.id,
       name: column.name,
       label: column.label,
-      sort: (a: RowType<CallRowProps>, b: RowType<CallRowProps>) => {
+      sort: (a: RowType<DigitalRowProps>, b: RowType<DigitalRowProps>) => {
         switch (column.name) {
           case 'bond':
             return b.id - a.id
@@ -909,7 +909,7 @@ function Bonds({
 
         {renderGeneralCallHeader()}
         {liveSelectedCall && Object.values(callableBondData).length > 0 && renderCallContent()}
-        <CallNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />
+        <DigitalNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />
 
 
         {renderGeneralCallableHeader()}

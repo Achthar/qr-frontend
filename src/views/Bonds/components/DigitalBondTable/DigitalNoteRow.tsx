@@ -201,7 +201,7 @@ export const CallNoteHeaderRow: React.FC<NoteHeaderProps> = ({ notes, userDataRe
 
 
 
-const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
+const DigitalNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataReady, bond, isMobile, reqPrice }) => {
     const chainId = bond?.tokens[0]?.chainId
     const now = Math.floor(Date.now() / 1000);
     const vestingTime = () => {
@@ -295,4 +295,4 @@ const CallNoteRow: React.FC<CallNoteProps> = ({ isLast, isFirst, note, userDataR
 
 }
 
-export default CallNoteRow
+export default DigitalNoteRow

@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { CallBondWithStakedValue } from 'views/Bonds/components/types'
 import BondingAction from './BondingAction'
 import RedemptionMulti from './RedemptionActionMulti'
-import CallNoteRow, { CallNoteHeaderRow } from '../DigitalNoteRow'
+import DigitalNoteRow, { CallNoteHeaderRow } from '../DigitalNoteRow'
 import { PreviewPanel } from './PreviewPanel'
 
 
@@ -258,7 +258,7 @@ const ActionPanel: React.FunctionComponent<CallActionPanelProps> = ({
           note, index) => {
           const isLast = index === details?.userData?.notes.length - 1
           return (
-            <CallNoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
+            <DigitalNoteRow note={note} userDataReady={userDataReady} bond={bond} isMobile={isMobile} reqPrice={price.reqPrice} isLast={isLast} isFirst={index === 0} />
           )
         }
         )}

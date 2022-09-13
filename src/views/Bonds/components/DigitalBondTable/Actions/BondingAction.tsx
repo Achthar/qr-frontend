@@ -18,7 +18,7 @@ import getWeightedLiquidityUrlPathParts from 'utils/getWeightedLiquidityUrlPathP
 import useDepositBond from 'views/Bonds/hooks/callBond/useDepositBond'
 import useApproveBond from '../../../hooks/callBond/useApproveBond'
 import { ActionTitles, ActionContent } from './styles'
-import CallBondingModal from '../DigitalBondingModal'
+import DigitalBondingModal from '../DigitalBondingModal'
 
 
 export const BondActionContainer = styled.div<{ isMobile: boolean }>`
@@ -115,7 +115,7 @@ const Bonded: React.FunctionComponent<StackedActionProps> = ({
   })
 
   const [onPresentBonding] = useModal(
-    <CallBondingModal
+    <DigitalBondingModal
       chainId={chainId}
       bondId={bondId}
       max={tokenBalance}

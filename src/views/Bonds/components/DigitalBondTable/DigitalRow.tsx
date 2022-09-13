@@ -15,7 +15,7 @@ import Liquidity from './Liquidity'
 import ActionPanel from './Actions/ActionPanel'
 import CellLayout from './CellLayout'
 import Roi from './Roi'
-import CallBond, { CallBondProps } from './DigitalBond'
+import DigitalBond, { DigitalBondProps } from './DigitalBond'
 import Details from './Details'
 import { MobileColumnSchemaCall } from '../types'
 
@@ -32,8 +32,8 @@ interface PriceProps {
   price: number
 }
 
-export interface CallRowProps {
-  bond: CallBondProps
+export interface DigitalRowProps {
+  bond: DigitalBondProps
   details: CallBondWithStakedValue
   discount: number
   price: PriceProps
@@ -45,13 +45,13 @@ export interface CallRowProps {
   // prices: PriceProps
 }
 
-interface RowPropsWithLoading extends CallRowProps {
+interface RowPropsWithLoading extends DigitalRowProps {
   userDataReady: boolean
   isLast: boolean
 }
 
 const cells = {
-  bond: CallBond,
+  bond: DigitalBond,
   // earned: Earned,
   details: Details,
   liquidity: Liquidity,
@@ -262,7 +262,7 @@ const Row: React.FunctionComponent<RowPropsWithLoading> = (props) => {
           <tr>
             <BondMobileCell>
               <CellLayout>
-                <CallBond {...props.bond} />
+                <DigitalBond {...props.bond} />
               </CellLayout>
             </BondMobileCell>
             <BondMobileCell>

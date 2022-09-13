@@ -13,7 +13,7 @@ import { CurrencyLogo } from 'components/Logo'
 import Logo from 'components/Logo/Logo'
 import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
 
-export interface CallBondProps {
+export interface DigitalBondProps {
   label: string
   bondId: number
   bondType: BondAssetType
@@ -44,7 +44,7 @@ const StyledLogo = styled(Logo) <{ size: string }>`
   height: ${({ size }) => size};
 `
 
-const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, tokens }) => {
+const DigitalBond: React.FunctionComponent<DigitalBondProps> = ({ label, bondId, tokens }) => {
   const { chainId } = useNetworkState()
   const { stakedBalance } = useDigitalBondUser(bondId, chainId)
   const bond = useDigitalBondFromBondId(bondId, chainId)
@@ -96,4 +96,4 @@ const CallBond: React.FunctionComponent<CallBondProps> = ({ label, bondId, token
   )
 }
 
-export default CallBond
+export default DigitalBond

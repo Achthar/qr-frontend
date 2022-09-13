@@ -27,7 +27,7 @@ const AnnualRoiDisplay = styled(Text)`
   text-overflow: ellipsis;
 `
 
-interface CallBondingModalProps {
+interface DigitalBondingModalProps {
   chainId: number
   bondId: number
   max: BigNumber
@@ -42,7 +42,7 @@ interface CallBondingModalProps {
   reqPrice?: number
 }
 
-const CallBondingModal: React.FC<CallBondingModalProps> = (
+const DigitalBondingModal: React.FC<DigitalBondingModalProps> = (
   {
     chainId,
     bondId,
@@ -258,4 +258,4 @@ const CallBondingModal: React.FC<CallBondingModalProps> = (
   )
 }
 
-export default CallBondingModal
+export default DigitalBondingModal
