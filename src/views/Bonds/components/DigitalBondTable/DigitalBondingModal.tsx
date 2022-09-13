@@ -1,31 +1,18 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import React, { useCallback, useMemo, useState } from 'react'
-import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal } from '@requiemswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance, formatSerializedBigNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { useDigitalBondFromBondId } from 'state/bonds/hooks'
-import { blocksToDays, prettifySeconds } from 'config'
+import { prettifySeconds } from 'config'
 import { priceBonding } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { ABREQ } from 'config/constants/tokens'
 import { TokenImage } from 'components/TokenImage'
-
-const AnnualRoiContainer = styled(Flex)`
-  cursor: pointer;
-`
-
-const AnnualRoiDisplay = styled(Text)`
-  width: 72px;
-  max-width: 72px;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-`
 
 interface DigitalBondingModalProps {
   chainId: number

@@ -77,7 +77,6 @@ const BondTable: React.FC<ITableProps> = (props) => {
           <StyledTable>
             <TableBody>
               {rows.map((row, index) => {
-
                 return <Row {...row.original} userDataReady={userDataReady} key={`table-row-${row.id}`} isLast={(rows.length - 1 === index) || data.length > 4} />
               })}
             </TableBody>

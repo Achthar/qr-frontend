@@ -905,16 +905,16 @@ function Bonds({
         {renderHeader()}
         {renderGeneralHeader()}
         {liveSelected && renderContent()}
-        <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} expanded={!liveSelected} />
+        {account && <NoteTable notes={vanillaNotesClosed} userDataReady={userDataLoaded} reqPrice={reqPrice} expanded={!liveSelected} />}
 
         {renderGeneralCallHeader()}
         {liveSelectedCall && Object.values(callableBondData).length > 0 && renderCallContent()}
-        <DigitalNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />
+        {account && <DigitalNoteTable notes={callNotesClosed} userDataReady={userCallDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCall} />}
 
 
         {renderGeneralCallableHeader()}
         {liveSelectedCallable && Object.values(callableBondData).length > 0 && renderCallableContent()}
-        <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCallable} />
+        {account && <CallableNoteTable notes={callableNotesClosed} userDataReady={userCallableDataLoaded} reqPrice={reqPrice} expanded={!liveSelectedCallable} />}
 
         {account && !userDataLoaded && (
           <Flex justifyContent="center">

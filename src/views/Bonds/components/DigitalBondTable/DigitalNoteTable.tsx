@@ -290,12 +290,8 @@ const DigitalNoteRow: React.FC<DigitalNoteProps> = ({ isLast, isFirst, note, use
     closed[note?.marketId]?.market?.quote
   )
 
-  // const oracleData = useGetOracleData(chainId, closed[note?.marketId]?.market?.underlying, oracleState.oracles)
-
   const [moneynessPerc, optPayout] = useMemo(() => {
     const { moneyness, pay } = calculateUserPayCallClosed(note, closed[note?.marketId]?.terms, oracleData?.value)
-    // const numberVal = formatSerializedBigNumber(pay.toString(), isMobile ? 3 : 5, 18)
-    // const val = pay.gt(0) && numberVal === '0'? isMobile? '>0.01':'>0.00001' : pay
     return [Math.round(moneyness * 10000) / 100, formatSerializedBigNumber(pay.toString(), isMobile ? 3 : 5, 18)]
 
   }, [note, closed, oracleData, isMobile])
@@ -324,13 +320,11 @@ const DigitalNoteRow: React.FC<DigitalNoteProps> = ({ isLast, isFirst, note, use
       <Flex flexDirection='column' width='35%' justifyContent='center'>
         {config?.tokens && (<PoolLogo tokens={config?.tokens?.map(tk => deserializeToken(tk))} overlap='-5px' size={16} />)}
         <Text bold fontSize='12px' textAlign='center'>{config?.name}</Text>
-        {/* <Flex flexDirection="column" mr='3px' ml='3px'> */}
         <Text marginLeft='1px' bold fontSize='12px' textAlign='center'>{`${oracleData?.token} -Linked`}</Text>
         <Flex flexDirection="row" alignSelf='center'>
           <StyledLogo size='15px' srcs={[getTokenLogoURLFromSymbol(oracleData?.token)]} alt={`${oracleData?.token ?? 'token'} logo`} />
           <Text marginLeft='1px' bold fontSize='10px'>{`${oracleData && (Math.round(Number(oracleData?.value) / 10 ** oracleData?.decimals * 100) / 100).toLocaleString()} `}</Text>
         </Flex>
-        {/* </Flex> */}
       </Flex>
       <ContentRow>
         <DescriptionCol>
