@@ -10,7 +10,7 @@ import { useTranslation } from 'contexts/Localization'
 
 import { ethers } from 'ethers'
 import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { CallNote } from 'state/types'
+import { DigitalNote } from 'state/types'
 import { ActionContent } from './styles'
 
 const IconButtonWrapper = styled.div`
@@ -43,7 +43,7 @@ export const ButtonContainer = styled.div`
 interface StackedActionProps {
   userDataReady: boolean
   reqPrice: BigNumber
-  note: CallNote
+  note: DigitalNote
 }
 
 const GeneralRedemption: React.FunctionComponent<StackedActionProps> = ({

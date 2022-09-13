@@ -96,7 +96,7 @@ export interface VanillaNote {
   noteIndex: number;
 }
 
-export interface CallNote extends VanillaNote {
+export interface DigitalNote extends VanillaNote {
   cryptoIntitialPrice: SerializedBigNumber; // reference price at opening
 
 }
@@ -122,7 +122,7 @@ export interface VanillaMarket {
   purchased: SerializedBigNumber;
 }
 
-export interface CallMarket extends VanillaMarket {
+export interface DigitalMarket extends VanillaMarket {
   underlying: string;
   quote?: string
 }
@@ -133,7 +133,7 @@ export interface ClosedVanillaMarket {
   purchased: string;
 }
 
-export interface ClosedCallMarket extends ClosedVanillaMarket {
+export interface ClosedDigitalMarket extends ClosedVanillaMarket {
   underlying?: string;
   quote?: string;
 }
@@ -143,7 +143,7 @@ export interface ClosedVanillaTerms {
   vesting: number; // length of time from deposit to maturity if fixed-term
 }
 
-export interface ClosedCallTerms extends ClosedVanillaTerms {
+export interface ClosedDigitalTerms extends ClosedVanillaTerms {
   thresholdPercentage: SerializedBigNumber;
   payoffPercentage: SerializedBigNumber;
   exerciseDuration?: number;
@@ -164,12 +164,12 @@ export interface ClosedVanillaBond {
 }
 
 export interface ClosedDigitalBond {
-  market: ClosedCallMarket
-  terms: ClosedCallTerms;
+  market: ClosedDigitalMarket
+  terms: ClosedDigitalTerms;
 }
 
 export interface ClosedCallableBond {
-  market: ClosedCallMarket
+  market: ClosedDigitalMarket
   terms: ClosedCallableTerms;
 }
 
@@ -248,7 +248,7 @@ export interface DigitalBond extends BondConfig, IBondDetails {
     interestDue: string
     balance: string
     bondMaturationBlock: number
-    notes: CallNote[]
+    notes: DigitalNote[]
   },
   lpData?: {
     lpTotalSupply: SerializedBigNumber
@@ -263,7 +263,7 @@ export interface DigitalBond extends BondConfig, IBondDetails {
     priceInQuote: SerializedBigNumber
   },
   bondTerms?: CallBondTerms
-  market?: CallMarket
+  market?: DigitalMarket
   purchasedInQuote?: SerializedBigNumber
   lpLink?: string
 }
@@ -306,7 +306,7 @@ export interface CallableBond extends BondConfig, IBondDetails {
     priceInQuote: SerializedBigNumber
   },
   bondTerms?: CallBondTerms
-  market?: CallMarket
+  market?: DigitalMarket
   purchasedInQuote?: SerializedBigNumber
   lpLink?: string
 }
@@ -316,9 +316,9 @@ export interface BondsState {
   loadArchivedBondsData: boolean
   userDataLoaded: boolean
   userDataLoading: boolean
-  userCallDataLoaded: boolean
+  userDigitalDataLoaded: boolean
   userCallableDataLoaded: boolean
-  userCallDataLoading: boolean
+  userDigitalDataLoading: boolean
   publicDataLoading: boolean
   status?: string
   liveMarkets?: number[]
@@ -337,12 +337,12 @@ export interface BondsState {
     }
   }
   userReward: string
-  userRewardCall: string
+  userRewardDigital: string
   userRewardCallable: string
   closedNotes: {
     [chainId: number]: {
       vanillaNotesClosed: VanillaNote[]
-      callNotesClosed: CallNote[]
+      digitalNotesClosed: DigitalNote[]
       callableNotesClosed: CallableNote[]
     }
   }

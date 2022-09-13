@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { ethers } from 'ethers'
-import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
-import { DigitalBond, CallNote } from 'state/types'
+import { Text, Flex } from '@requiemswap/uikit'
+import { DigitalBond, DigitalNote } from 'state/types'
 import { prettifySeconds } from 'config'
-import { timeConverter, timeConverterNoMinutes, timeConverterNoYear } from 'utils/time'
+import { timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
 import BigNumber from 'bignumber.js'
-import { useGetOracle, useOracleState } from 'state/oracles/hooks'
-import { useGetOracleData } from 'state/bonds/hooks'
+import { useGetOracle } from 'state/oracles/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { calculateUserPay } from 'utils/bondUtils'
@@ -18,7 +17,7 @@ import { mobileTableFontSize } from '../styles'
 interface CallNoteProps {
     isMobile: boolean
     userDataReady: boolean
-    note: CallNote
+    note: DigitalNote
     bond: DigitalBond
     reqPrice: number
     isFirst: boolean
@@ -28,25 +27,10 @@ interface CallNoteProps {
 interface NoteHeaderProps {
     userDataReady: boolean
     isMobile: boolean
-    notes: CallNote[]
+    notes: DigitalNote[]
     bond: DigitalBond
     reqPrice: number
 }
-
-
-const ContentCol = styled.div`
-  flex-direction: column;
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-right: 8px;
-  color: ${({ theme }) => theme.colors.primary};
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    padding-right: 0px;
-  }
-`
 
 const DescriptionCol = styled.div`
   flex-direction: column;

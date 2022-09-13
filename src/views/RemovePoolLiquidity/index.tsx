@@ -33,12 +33,10 @@ import getChain from 'utils/getChain'
 import { sliceIntoChunks } from 'utils/arraySlicer'
 import Row from 'components/Row'
 import SingleTokenInputPanel from 'components/CurrencyInputPanel/SingleTokenInputPanel'
-
 import { useBurnPoolLpActionHandlers, useBurnPoolLpState, useDerivedBurnPoolLpInfo } from 'state/burnPoolLp/hooks'
 import { useGetWeightedPoolState } from 'hooks/useGetWeightedPoolState'
 import { PoolField } from 'state/burnPoolLp/actions'
 import { MinimalPoolPositionCard } from 'components/PositionCard/PoolPosition'
-
 import Page from '../Page'
 import { AutoColumn, ColumnCenter } from '../../components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -51,17 +49,12 @@ import { LightGreyCard } from '../../components/Card'
 import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
-
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getStableSwapContract, getWeightedPoolContract } from '../../utils'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
 import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
 import Dots from '../../components/Loader/Dots'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
-
-
-
-// const function getStableIndex(token)
 
 const BorderCard = styled.div`
   border: solid 3px ${({ theme }) => theme.colors.cardBorder};

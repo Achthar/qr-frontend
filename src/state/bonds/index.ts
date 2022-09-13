@@ -19,8 +19,8 @@ import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 import { changeChainIdBonds, setLpLink, setLpPrice } from './actions';
-import { calcSingleCallBondPoolDetails } from './digital/calcSingleCallBondPoolDetails';
-import { calcSingleCallBondDetails } from './digital/calcSingleCallBondDetails';
+import { calcSingleDigitalBondPoolDetails } from './digital/calcSingleDigitalBondPoolDetails';
+import { calcSingleDigitalBondDetails } from './digital/calcSingleDigitalBondDetails';
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails';
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails';
 
@@ -41,25 +41,25 @@ function initialState(_chainId: number): BondsState {
     },
     loadArchivedBondsData: false,
     userDataLoaded: false,
-    userCallDataLoading: false,
-    userCallDataLoaded: false,
+    userDigitalDataLoading: false,
+    userDigitalDataLoaded: false,
     userCallableDataLoaded: false,
     metaLoaded: false,
     userDataLoading: false,
     publicDataLoading: false,
     userReward: '0',
-    userRewardCall: '0',
+    userRewardDigital: '0',
     userRewardCallable: '0',
     status: 'idle',
     closedNotes: {
       43113: {
         vanillaNotesClosed: [],
-        callNotesClosed: [],
+        digitalNotesClosed: [],
         callableNotesClosed: [],
       },
       42261: {
         vanillaNotesClosed: [],
-        callNotesClosed: [],
+        digitalNotesClosed: [],
         callableNotesClosed: [],
       }
     },
@@ -563,14 +563,14 @@ export const bondsSlice = createSlice({
         console.error(error.message);
       })
       // CALL
-      .addCase(calcSingleCallBondDetails.pending, state => {
+      .addCase(calcSingleDigitalBondDetails.pending, state => {
         // state.userDataLoading = true;
       })
-      .addCase(calcSingleCallBondDetails.fulfilled, (state, action) => {
+      .addCase(calcSingleDigitalBondDetails.fulfilled, (state, action) => {
         const bond = action.payload
         state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId], ...action.payload };
       })
-      .addCase(calcSingleCallBondDetails.rejected, (state, { error }) => {
+      .addCase(calcSingleDigitalBondDetails.rejected, (state, { error }) => {
         console.log(error, state)
         console.error(error.message);
       })
@@ -603,14 +603,14 @@ export const bondsSlice = createSlice({
       })
       // Call Bond
       // detail fetch for stable pool (and currently weighted pool)
-      .addCase(calcSingleCallBondPoolDetails.pending, state => {
+      .addCase(calcSingleDigitalBondPoolDetails.pending, state => {
         // state.userDataLoaded = false;
       })
-      .addCase(calcSingleCallBondPoolDetails.fulfilled, (state, action) => {
+      .addCase(calcSingleDigitalBondPoolDetails.fulfilled, (state, action) => {
         const bond = action.payload
         state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId] = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bond.bondId], ...action.payload };
       })
-      .addCase(calcSingleCallBondPoolDetails.rejected, (state, action) => {
+      .addCase(calcSingleDigitalBondPoolDetails.rejected, (state, action) => {
         if (state.bonds[action.meta.arg.chainId].digitalBondData[action.meta.arg.bond.bondId]?.publicLoaded)
           state.bonds[action.meta.arg.chainId].digitalBondData[action.meta.arg.bond.bondId].publicLoaded = true
         console.log(action.error, state)
@@ -653,13 +653,13 @@ export const bondsSlice = createSlice({
         Object.keys(callBondData.bondUserData).forEach((bondId) => {
           state.bonds[action.meta.arg.chainId].digitalBondData[bondId].userData = { ...state.bonds[action.meta.arg.chainId].digitalBondData[bondId].userData, ...callBondData.bondUserData[bondId] }
         })
-        state.closedNotes[action.meta.arg.chainId].callNotesClosed = action.payload.closedNotes
-        state.userRewardCall = callBondData.rewards
-        state.userCallDataLoaded = true
+        state.closedNotes[action.meta.arg.chainId].digitalNotesClosed = action.payload.closedNotes
+        state.userRewardDigital = callBondData.rewards
+        state.userDigitalDataLoaded = true
       }).addCase(fetchCallBondUserDataAsync.pending, state => {
-        state.userCallDataLoading = true;
+        state.userDigitalDataLoading = true;
       }).addCase(fetchCallBondUserDataAsync.rejected, (state, { error }) => {
-        state.userCallDataLoaded = true;
+        state.userDigitalDataLoaded = true;
         console.log(error, state)
         console.error(error.message);
       })

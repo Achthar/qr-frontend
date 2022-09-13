@@ -1,19 +1,26 @@
 /** eslint no-empty-interface: 0 */
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getContractForBondDepo, getContractForDigitalBondDepo, getContractForLpReserve } from 'utils/contractHelpers';
+import { deserializeToken } from 'state/user/hooks/helpers';
+import { getContractForDigitalBondDepo } from 'utils/contractHelpers';
 import { BigNumber } from 'ethers'
-import { bnParser } from 'utils/helper';
-import multicall from 'utils/multicall';
 import { getAddress } from 'ethers/lib/utils';
+import { addresses } from 'config/constants/contracts';
+import multicall from 'utils/multicall';
 import bondReserveAVAX from 'config/abi/avax/CallBondDepository.json'
 import bondReserveOasis from 'config/abi/oasis/DigitalCallBondDepo.json'
+import weightedPairABI from 'config/abi/avax/RequiemWeightedPair.json'
+import weightedPairABIOasis from 'config/abi/oasis/RequiemWeightedPair.json'
+import { getNonQuoteToken, getQuoteToken } from 'utils/bondUtils';
+import { BondAssetType } from 'config/constants/types';
+import { bnParser } from 'utils/helper';
 import { ICalcCallBondDetailsAsyncThunk } from '../types';
+import { priceFromData } from '../loadMarketPrice';
 import { DigitalBond } from '../../types'
 
 const E_EIGHTEEN = BigNumber.from('1000000000000000000')
 
-export const calcSingleCallBondPoolDetails = createAsyncThunk(
-  "bonds/calcSingleCallBondPoolDetails",
+export const calcSingleDigitalBondDetails = createAsyncThunk(
+  "bonds/calcSingleDigitalBondDetails",
   async ({ bond, provider, chainId }: ICalcCallBondDetailsAsyncThunk): Promise<DigitalBond> => {
 
     const bondContract = getContractForDigitalBondDepo(chainId, provider);
@@ -46,17 +53,48 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
       },
     ]
 
-    const [market, debtRatio, terms, bondPrice] =
-      await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
+    const [market, debtRatio, terms, bondPrice] = await multicall(chainId, chainId === 43113 ? bondReserveAVAX : bondReserveOasis, calls)
 
-    const [reserves, supply] = [['0', '0'], '0']
+    // calls from pair used for pricing
+    const callsPair = [
+      // max payout
+      {
+        address: market.asset,
+        name: 'getReserves'
+      },
+      // debt ratio
+      {
+        address: market.asset,
+        name: 'totalSupply',
+      },
+      {
+        address: market.asset,
+        name: 'balanceOf',
+        params: [getAddress(addresses.treasury[chainId])]
+      },
+    ]
 
-    // calculate price
-    const price = '0'
+    const [reserves, supply, purchasedQuery] = await multicall(chainId, chainId === 43113 ? weightedPairABI : weightedPairABIOasis, callsPair)
 
+    let price: string
+    try {
+      // calculate price
+      price = bond.tokens && bond.quoteTokenIndex && bond.assetType === BondAssetType.PairLP ? priceFromData(
+        deserializeToken(getNonQuoteToken(bond)),
+        deserializeToken(getQuoteToken(bond)),
+        BigNumber.from(bond.lpProperties.weightToken),
+        BigNumber.from(bond.lpProperties.weightQuoteToken),
+        reserves.vReserve0,
+        reserves.vReserve1,
+        BigNumber.from(bond.lpProperties.fee)
+      ) : '0'
+    } catch (error) {
+      console.log("Error in pricing pair:", error)
+      price = '`1'
+    }
     const marketPrice = BigNumber.from(price)
 
-    const bondDiscount = bnParser(marketPrice.sub(bondPrice[0]), bondPrice[0])
+    const bondDiscount = bnParser(marketPrice?.sub(bondPrice[0]) ?? BigNumber.from('0'), bondPrice[0])
 
     return {
       ...bond,
@@ -90,7 +128,7 @@ export const calcSingleCallBondPoolDetails = createAsyncThunk(
       },
       vestingTerm: Number(terms.vesting.toString()),
       bondPrice: bnParser(bondPrice[0], E_EIGHTEEN), // bondPrice.div(E_EIGHTEEN).toNumber(),
-      marketPrice: marketPrice.toString(),
+      marketPrice: marketPrice?.toString() ?? '1',
     };
   },
 );

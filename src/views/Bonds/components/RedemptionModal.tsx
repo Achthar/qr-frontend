@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import React, { useCallback, useMemo, useState } from 'react'
-import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal } from '@requiemswap/uikit'
 import { ModalActions } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'

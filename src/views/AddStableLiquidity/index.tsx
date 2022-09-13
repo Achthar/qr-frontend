@@ -36,8 +36,6 @@ import GeneralAppBody from 'components/App/GeneralAppBody'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import Page from '../Page'
 
-
-
 export default function AddStableLiquidity({
   match: {
     params: { chain },

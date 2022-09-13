@@ -1,15 +1,13 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Flex, Text, Button, Modal, LinkExternal} from '@requiemswap/uikit'
 import { ModalActions } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
 import { useBondFromBondId } from 'state/bonds/hooks'
 import { prettifySeconds} from 'config'
 import { bnParser } from 'utils/helper'
-import { useBlock } from 'state/block/hooks'
 import { useNetworkState } from 'state/globalNetwork/hooks'
 
 

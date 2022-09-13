@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
+import { Flex, Input, Text } from '@requiemswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
@@ -10,7 +10,7 @@ import { prettifySeconds } from 'config'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import { priceBonding } from 'utils/bondUtils'
-import { CallableBond, DigitalBond } from 'state/types'
+import { CallableBond } from 'state/types'
 
 
 export const InputContainer = styled.div<{ isMobile: boolean }>`
@@ -23,12 +23,12 @@ export const InputContainer = styled.div<{ isMobile: boolean }>`
   margin-bottom: 16px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    max-height: 140px;
+    max-height: 210px;
   }
 
   ${({ theme }) => theme.mediaQueries.xl} {
 
-    max-height: 150px;
+    max-height: 220px;
   }
   `
 

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { Button, Flex, Input, Skeleton, Text } from '@requiemswap/uikit'
+import { Flex, Input, Text } from '@requiemswap/uikit'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
@@ -23,16 +23,14 @@ export const InputContainer = styled.div<{ isMobile: boolean }>`
   margin-bottom: 16px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
-    max-height: 140px;
+    max-height: 210px;
   }
 
   ${({ theme }) => theme.mediaQueries.xl} {
 
-    max-height: 150px;
+    max-height: 220px;
   }
   `
-
-
 
 export const ButtonContainer = styled.div`
   padding: 16px;
@@ -55,7 +53,6 @@ export const ButtonContainer = styled.div`
     max-height: 100px;
   }
 `
-
 
 export const PreviewPanelContainer = styled.div`
   padding: 1px;
@@ -223,7 +220,7 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
         </Flex>
         {percentage && payout > 0 && (<Flex flexDirection="column" width='100%' justifyContent='space-between' marginTop='5px'>
           <Text bold width='100%' fontSize={isMobile ? '13px' : '15px'} textAlign='center'>
-            {`Digital Option Payoff If Index Rises More Than ${(Math.round(strike * 100)).toLocaleString()}%:`}
+            {`Additional Payoff If Index Rises More Than ${(Math.round(strike * 100)).toLocaleString()}%:`}
           </Text>
           <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='100%' bold>
             {percentage && payout > 0 ? `${(Math.round(percentage * 100)).toLocaleString()}%  /  $${(Math.round((percentage * payout * reqPrice / thisBond.bondPrice) * 1000) / 1000).toLocaleString()}` : ''}

@@ -41,75 +41,6 @@ import { DigitalNoteTable } from './components/DigitalBondTable/DigitalNoteTable
 import { CallableRowProps } from './components/CallableBondTable/CallableRow'
 import { CallableNoteTable } from './components/CallableBondTable/CallableNoteTable'
 
-
-
-const ControlContainer = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  position: relative;
-
-  justify-content: space-between;
-  flex-direction: column;
-  margin-bottom: 32px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 16px 32px;
-    margin-bottom: 0;
-  }
-`
-
-const ToggleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-
-  ${Text} {
-    margin-left: 8px;
-  }
-`
-
-const LabelWrapper = styled.div`
-  > ${Text} {
-    font-size: 12px;
-  }
-`
-
-const FilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 8px 0px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    width: auto;
-    padding: 0;
-  }
-`
-
-const ViewControls = styled.div`
-  flex-wrap: wrap;
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-  width: 100%;
-
-  > div {
-    padding: 8px 0px;
-  }
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    justify-content: flex-start;
-    width: auto;
-
-    > div {
-      padding: 0;
-    }
-  }
-`
-
 const StyledIconAbs = styled.div<{ height?: number, width?: number }>`
   margin-left:5px
   position:relative;
@@ -164,19 +95,6 @@ const HeaderBoxBond = styled(Box) <{ btl: string, btr: string, bbl: string, bbr:
   align-items: center;
 `
 
-const ExpandingContainer = styled.div<{ expanded: boolean }>`
-  transition:all 1s ease;
-  pointer-events: none;
-  z-index: 1;
-  position: relative;
-  align: center;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: ${({ expanded }) => (!expanded ? '0%' : '100%')};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.cardBorder};
-`
-
 const Line = styled.hr`
   height: 2px;
   border:  none;
@@ -219,13 +137,13 @@ function Bonds({
 
   usePollBondsWithUserData(chainId)
 
-  const { bonds, userDataLoaded, userReward, userCallDataLoaded, userCallableDataLoaded, closedNotes } = useBonds()
+  const { bonds, userDataLoaded, userReward, userDigitalDataLoaded: userCallDataLoaded, userCallableDataLoaded, closedNotes } = useBonds()
 
   const [bondsLP, vanillaNotesClosed, callNotesClosed, callableNotesClosed] = useMemo(() => {
     return [
       bonds[chainId].bondData,
       closedNotes[chainId].vanillaNotesClosed,
-      closedNotes[chainId].callNotesClosed,
+      closedNotes[chainId].digitalNotesClosed,
       closedNotes[chainId].callableNotesClosed
     ]
   },
@@ -247,12 +165,8 @@ function Bonds({
 
   const handleSelectCallableMarkets = () => setLiveCallable(!liveSelectedCallable)
 
-
-
   const [sortOption, setSortOption] = useState('hot')
   const chosenBondsLength = useRef(0)
-
-
 
   const { slowRefresh, fastRefresh } = useRefresh()
 
@@ -271,8 +185,6 @@ function Bonds({
   )
 
   const { oracles } = useOracles(chainId)
-
-
 
   // Users with no wallet connected should see 0 as Earned amount
   // Connected users should see loading indicator until first userData has loaded

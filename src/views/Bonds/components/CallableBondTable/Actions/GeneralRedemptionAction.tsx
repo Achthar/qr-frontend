@@ -8,7 +8,7 @@ import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import useRedeemCallableNote from 'views/Bonds/hooks/callableBond/useRedeemBond'
-import { CallableNote, CallNote } from 'state/types'
+import { CallableNote, DigitalNote } from 'state/types'
 import { ActionTitles, ActionContent } from './styles'
 
 

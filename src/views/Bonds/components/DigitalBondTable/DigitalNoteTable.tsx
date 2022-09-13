@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import { ChevronDownIcon, useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
-import { CallNote } from 'state/types'
+import { useMatchBreakpoints, Text, Flex } from '@requiemswap/uikit'
+import { DigitalNote } from 'state/types'
 import { prettifySeconds } from 'config'
 import { timeConverterNoYear } from 'utils/time'
 import { formatSerializedBigNumber } from 'utils/formatBalance'
@@ -11,8 +11,8 @@ import { bondConfig } from 'config/constants/bonds'
 import { calculateUserPayCallClosed, getConfigForVanillaNote } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
-import { useClosedCallMarkets, useGetOracleData } from 'state/bonds/hooks'
-import { useGetOracle, useOracleState } from 'state/oracles/hooks'
+import { useClosedCallMarkets } from 'state/bonds/hooks'
+import { useGetOracle } from 'state/oracles/hooks'
 import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
@@ -32,7 +32,7 @@ import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
 interface DigitalNoteProps {
   isMobile: boolean
   userDataReady: boolean
-  note: CallNote
+  note: DigitalNote
   reqPrice: number
   isFirst: boolean
   isLast: boolean
@@ -41,7 +41,7 @@ interface DigitalNoteProps {
 interface DigitalNoteHeaderProps {
   userDataReady: boolean
   isMobile: boolean
-  notes: CallNote[]
+  notes: DigitalNote[]
   reqPrice: number
 }
 
@@ -359,7 +359,7 @@ const DigitalNoteRow: React.FC<DigitalNoteProps> = ({ isLast, isFirst, note, use
 
 
 
-function compareMaturities(a: CallNote, b: CallNote) {
+function compareMaturities(a: DigitalNote, b: DigitalNote) {
   if (a.matured < b.matured) {
     return -1;
   }
@@ -369,7 +369,7 @@ function compareMaturities(a: CallNote, b: CallNote) {
   return 0;
 }
 
-export const DigitalNoteTable: React.FunctionComponent<{ notes: CallNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
+export const DigitalNoteTable: React.FunctionComponent<{ notes: DigitalNote[], reqPrice: number, userDataReady: boolean, expanded: boolean }> = ({
   notes, reqPrice, userDataReady, expanded
 }) => {
 

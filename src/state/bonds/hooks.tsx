@@ -2,28 +2,26 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from 'state'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { BIG_ZERO } from 'utils/bigNumber'
 import { bondConfig } from 'config/constants/bonds'
-import { AmplifiedWeightedPair, Price, StablePool, TokenAmount, WeightedPool, ZERO } from '@requiemswap/sdk'
+import { AmplifiedWeightedPair, StablePool, WeightedPool } from '@requiemswap/sdk'
 import { pairValuation } from 'utils/pricers/weightedPairPricer'
 import { stablePoolValuation } from 'utils/pricers/stablePoolPricer'
 import { weightedPoolValuation } from 'utils/pricers/weightedPoolPricer'
 import { ethers } from 'ethers'
 import getChain from 'utils/getChain'
-import { BASE_ADD_LIQUIDITY_URL } from 'config'
 import { deserializeToken } from 'state/user/hooks/helpers'
 import useRefresh from 'hooks/useRefresh'
 import { simpleRpcProvider } from 'utils/providers'
-import { OracleData, OracleState } from 'state/oracles/reducer'
+import { OracleData } from 'state/oracles/reducer'
 import { BondAssetType, BondType } from 'config/constants/types'
 import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails'
 import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails'
-import { changeChainIdBonds, setLpLink, setLpPrice } from './actions'
+import { setLpLink, setLpPrice } from './actions'
 import { fetchBondMeta, fetchBondUserDataAsync, fetchCallableBondUserDataAsync, fetchCallBondUserDataAsync, fetchClosedBondsUserAsync } from '.'
-import { calcSingleCallBondPoolDetails } from './digital/calcSingleCallBondPoolDetails'
-import { calcSingleCallBondDetails } from './digital/calcSingleCallBondDetails'
+import { calcSingleDigitalBondPoolDetails } from './digital/calcSingleDigitalBondPoolDetails'
+import { calcSingleDigitalBondDetails } from './digital/calcSingleDigitalBondDetails'
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails'
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails'
 import { State, Bond, DigitalBond, CallableBond, BondsState } from '../types'
@@ -54,7 +52,7 @@ export const usePollBondsWithUserData = (chainId: number) => {
   useEffect(() => {
     if (metaLoaded) {
       const bondsToFetch = Object.values(bonds[chainId].bondData)
-      const callBondsToFetch = Object.values(bonds[chainId].digitalBondData)
+      const digitalBondsToFetch = Object.values(bonds[chainId].digitalBondData)
       const callableBondsToFetch = Object.values(bonds[chainId].callableBondData)
 
       bondsToFetch.map(
@@ -75,15 +73,15 @@ export const usePollBondsWithUserData = (chainId: number) => {
         }
       )
 
-      callBondsToFetch.map(
+      digitalBondsToFetch.map(
         (bond) => {
           // if (!bond.publicLoaded) {
           if (bond.bondType === BondType.Call) {
             if (bond.assetType === BondAssetType.PairLP) {
-              dispatch(calcSingleCallBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              dispatch(calcSingleDigitalBondDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
             if (bond.assetType === BondAssetType.StableSwapLP || bond.assetType === BondAssetType.WeightedPoolLP) {
-              dispatch(calcSingleCallBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
+              dispatch(calcSingleDigitalBondPoolDetails({ bond, provider: library ?? simpleRpcProvider(chainId), chainId }))
             }
           }
           return 0
@@ -125,7 +123,7 @@ export const usePollBondsWithUserData = (chainId: number) => {
   const {
     bonds: bondsAfter,
     userDataLoaded,
-    userCallDataLoaded,
+    userDigitalDataLoaded: userCallDataLoaded,
     userCallableDataLoaded,
     closedMarketsLoaded,
     closedNotes
@@ -151,11 +149,11 @@ export const usePollBondsWithUserData = (chainId: number) => {
           dispatch(fetchCallableBondUserDataAsync({ chainId, account, bonds: callables }))
         }
 
-        if (!closedMarketsLoaded && userDataLoaded && (closedNotes[chainId].callNotesClosed.length > 0 || closedNotes[chainId].vanillaNotesClosed.length > 0 || closedNotes[chainId].callableNotesClosed.length > 0)) {
+        if (!closedMarketsLoaded && userDataLoaded && (closedNotes[chainId].digitalNotesClosed.length > 0 || closedNotes[chainId].vanillaNotesClosed.length > 0 || closedNotes[chainId].callableNotesClosed.length > 0)) {
           dispatch(fetchClosedBondsUserAsync({
             chainId,
             bIds: closedNotes[chainId].vanillaNotesClosed.map(no => no.marketId).filter(onlyUnique),
-            bIdsC: closedNotes[chainId].callNotesClosed.map(noC => noC.marketId).filter(onlyUnique),
+            bIdsC: closedNotes[chainId].digitalNotesClosed.map(noC => noC.marketId).filter(onlyUnique),
             bIdsCallable: closedNotes[chainId].callableNotesClosed.map(noC => noC.marketId).filter(onlyUnique)
           }))
         }

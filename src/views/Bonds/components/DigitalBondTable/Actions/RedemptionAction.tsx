@@ -11,13 +11,8 @@ import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { CallNote} from 'state/types'
+import { DigitalNote} from 'state/types'
 import { ActionContent } from './styles'
-
-
-const IconButtonWrapper = styled.div`
-  display: flex;
-`
 
 export const ButtonContainer = styled.div`
   padding: 5px;
@@ -41,11 +36,10 @@ export const ButtonContainer = styled.div`
   }
 `
 
-
 interface StackedActionProps extends BondWithStakedValue {
   userDataReady: boolean
   reqPrice: BigNumber
-  note: CallNote
+  note: DigitalNote
 }
 
 const Redemption: React.FunctionComponent<StackedActionProps> = ({

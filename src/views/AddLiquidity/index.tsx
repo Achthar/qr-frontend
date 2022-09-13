@@ -15,12 +15,10 @@ import {
   Button,
   Text,
   Flex,
-  CardBody,
   Message,
   useModal,
   AddIcon,
   ChevronLeftIcon,
-  ArrowUpIcon,
   Box,
   useMatchBreakpoints,
   Toggle
@@ -38,19 +36,17 @@ import useRefresh from 'hooks/useRefresh'
 import { serializeToken } from 'state/user/hooks/helpers'
 import AmpInputPanel from 'components/CurrencyInputPanel/AmpInput'
 import { USDC } from 'config/constants/tokens'
-
-import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Layout/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
 import CurrencyInputPanelExpanded from 'components/CurrencyInputPanel/CurrencyInputPanelExpanded'
 import { DoubleCurrencyLogo } from 'components/Logo'
-import { AppHeader, AppBody } from 'components/App'
+import { AppHeader } from 'components/App'
 import PairSelect from 'components/Select/PairSelect'
 import { MinimalWeightedPositionCard } from 'components/PositionCard/WeightedPairPosition'
 import Row, { RowBetween } from 'components/Layout/Row'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useCurrency, useAllTokens } from 'hooks/Tokens'
-import { ApprovalState, useApproveCallback, useApproveCallbackWithAllowance } from 'hooks/useApproveCallback'
+import { ApprovalState, useApproveCallbackWithAllowance } from 'hooks/useApproveCallback'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { WeightedField } from 'state/mintWeightedPair/actions'
 import GeneralAppBody from 'components/App/GeneralAppBody'

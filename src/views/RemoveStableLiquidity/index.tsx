@@ -43,10 +43,9 @@ import { AppHeader, AppBody } from '../../components/App'
 import { RowBetween, RowFixed } from '../../components/Layout/Row'
 import ConnectWalletButton from '../../components/ConnectWalletButton'
 import { LightGreyCard } from '../../components/Card'
-import { CurrencyLogo, DoubleCurrencyLogo } from '../../components/Logo'
+import { CurrencyLogo } from '../../components/Logo'
 import useActiveWeb3React from '../../hooks/useActiveWeb3React'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
-
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getStableSwapContract } from '../../utils'
 import useDebouncedChangeHandler from '../../hooks/useDebouncedChangeHandler'
@@ -57,12 +56,8 @@ import {
   useDerivedBurnStablesInfo,
   useBurnStableState,
 } from '../../state/burnStables/hooks'
-
 import { StablesField } from '../../state/burnStables/actions'
 import { useGasPrice, useUserSlippageTolerance } from '../../state/user/hooks'
-
-
-// const function getStableIndex(token)
 
 const BorderCard = styled.div`
   border: solid 3px ${({ theme }) => theme.colors.cardBorder};
