@@ -5,10 +5,10 @@ import styled from 'styled-components'
 import { Flex, Text, Button, Modal, LinkExternal } from '@requiemswap/uikit'
 import { ModalActions, ModalInput } from 'components/Modal'
 import { useTranslation } from 'contexts/Localization'
-import { getFullDisplayBalance, formatNumber, formatSerializedBigNumber, formatBigNumber } from 'utils/formatBalance'
+import { getFullDisplayBalance, formatSerializedBigNumber } from 'utils/formatBalance'
 import useToast from 'hooks/useToast'
-import { useCallableBondFromBondId, useDigitalBondFromBondId } from 'state/bonds/hooks'
-import { blocksToDays, prettifySeconds } from 'config'
+import { useCallableBondFromBondId } from 'state/bonds/hooks'
+import { prettifySeconds } from 'config'
 import { priceBonding } from 'utils/bondUtils'
 import PoolLogo from 'components/Logo/PoolLogo'
 import { deserializeToken } from 'state/user/hooks/helpers'
@@ -179,9 +179,9 @@ const CallBondingModal: React.FC<CallBondingModalProps> = (
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
-          Your Profits
+          {profits > 0 ? 'Your Profits' : 'The Premium You Pay'}
         </Text>
-        <Text mr="8px" textAlign='center' bold color='green'>
+        <Text mr="8px" textAlign='center' bold color={profits > 0 ? 'green' : 'red'}>
           {inputUSD > 0 ?
             (`~$${(Math.round(profits * 10) / 10).toLocaleString()}`) : (`-`)}
         </Text>

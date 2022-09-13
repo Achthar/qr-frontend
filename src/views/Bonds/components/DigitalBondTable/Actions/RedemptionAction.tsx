@@ -1,18 +1,18 @@
-import React, { useState, useCallback } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Button, Skeleton } from '@requiemswap/uikit'
 import { BigNumber } from 'bignumber.js'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
-import { useBondFromBondId, useBondUser, useDigitalBondFromBondId } from 'state/bonds/hooks'
+import { useDigitalBondFromBondId } from 'state/bonds/hooks'
 import { fetchCallBondUserDataAsync } from 'state/bonds'
 import { BondWithStakedValue } from 'views/Bonds/components/types'
 import { useTranslation } from 'contexts/Localization'
 import { ethers } from 'ethers'
 import { useAppDispatch } from 'state'
 import useRedeemCallNote from 'views/Bonds/hooks/callBond/useRedeemBond'
-import { CallNote, VanillaNote } from 'state/types'
-import { ActionTitles, ActionContent } from './styles'
+import { CallNote} from 'state/types'
+import { ActionContent } from './styles'
 
 
 const IconButtonWrapper = styled.div`
@@ -20,7 +20,7 @@ const IconButtonWrapper = styled.div`
 `
 
 export const ButtonContainer = styled.div`
-  padding: 16px;
+  padding: 5px;
   border-radius: 2px;
   flex-grow: 1;
   flex-basis: 0;

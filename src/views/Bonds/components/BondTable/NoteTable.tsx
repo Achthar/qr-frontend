@@ -16,6 +16,7 @@ import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import GeneralRedemption from './Actions/GeneralRedemptionAction'
 import GeneralRedemptionMulti from './Actions/GeneralRedemptionActionMulti'
+import { mobileTableFontSize } from '../styles'
 
 
 /**
@@ -294,12 +295,12 @@ const NoteRow: React.FC<NoteProps> = ({ isLast, isFirst, note, userDataReady, is
             <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
                 <ContentRow>
                     <DescriptionCol>
-                        <Text>Payout:</Text>
-                        <Text>End: </Text>
+                        <Text fontSize={mobileTableFontSize}>Payout:</Text>
+                        <Text fontSize={mobileTableFontSize}>End: </Text>
                     </DescriptionCol>
                     <DescriptionCol>
-                        <Text>{payout}</Text>
-                        <Text>{vestingTime()}</Text>
+                        <Text fontSize={mobileTableFontSize}>{payout}</Text>
+                        <Text fontSize={mobileTableFontSize}>{vestingTime()}</Text>
                     </DescriptionCol>
                 </ContentRow>
                 <GeneralRedemption userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} />

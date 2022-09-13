@@ -12,6 +12,7 @@ import { TokenImage } from 'components/TokenImage'
 import { ABREQ } from 'config/constants/tokens'
 import { calculateUserPay } from 'utils/bondUtils'
 import RedemptionAction from './Actions/RedemptionAction'
+import { mobileTableFontSize } from '../styles'
 
 interface CallableNoteProps {
     isMobile: boolean
@@ -49,7 +50,7 @@ const DescriptionCol = styled.div`
   flex-direction: column;
   display: flex;
   width: 100%;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
   padding-right: 2px;
   color: ${({ theme }) => theme.colors.primary};
@@ -222,32 +223,38 @@ const CallNoteRow: React.FC<CallableNoteProps> = ({ isLast, isFirst, note, userD
     if (isMobile) {
         return (
             <Container isLast={isLast} isFirst={false} isMobile={isMobile}>
-                <Flex flexDirection='column'>
-                    <Flex flexDirection='row' marginBottom='7px'>
-                        <ContentRow>
+                <Flex flexDirection='column' width='100%'>
+                    <Flex flexDirection='row' marginBottom='3px' height='70px'>
+                        <Flex flexDirection='row' flexWrap='nowrap' justifyContent='flex-end' width='50%' marginLeft='7px' marginBottom='0px'>
                             <DescriptionCol>
-                                <Text>Payout:</Text>
-                                <Text>End: </Text>
+                                <Text fontSize={mobileTableFontSize}>Payout:</Text>
+                                <Text fontSize={mobileTableFontSize}>End: </Text>
                             </DescriptionCol>
                             <DescriptionCol>
-                                <Text>{payout}</Text>
-                                <Text>{vestingTime()}</Text>
+                                <Text fontSize={mobileTableFontSize}>{payout}</Text>
+                                <Text fontSize={mobileTableFontSize}>{vestingTime()}</Text>
                             </DescriptionCol>
-                        </ContentRow>
-                        <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc} />
+                        </Flex>
+                        <Flex width='15%' alignContent='center'>
+                            <RedemptionAction {...bond} userDataReady={userDataReady} note={note} reqPrice={new BigNumber(reqPrice)} moneyness={moneynessPerc} />
+                        </Flex>
                     </Flex>
-                    <Flex flexDirection='row' justifyContent='space-between' marginLeft='7px'>
+                    <Flex flexDirection='row' justifyContent='space-between' marginLeft='7px' marginBottom='5px' marginTop='0px' width='90%'>
                         <DescriptionCol>
-                            <Text>Moneyness:</Text>
-                            <Text>Option Payout:</Text>
-                            <Text>Notional:</Text>
-
+                            <Text fontSize={mobileTableFontSize}>Moneyness:</Text>
+                            <Text fontSize={mobileTableFontSize}>Option Payout:</Text>
+                            <Text fontSize={mobileTableFontSize}>Notional:</Text>
                         </DescriptionCol>
                         <DescriptionCol>
-                            <Text color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
-                            <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{optPayout}</Text></Flex>
-                            <Flex flexDirection='row'>  <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' /><Text marginLeft='3px'>{payout}</Text></Flex>
-
+                            <Text fontSize={mobileTableFontSize} color={moneynessPerc > 0 ? 'green' : 'red'}>{moneynessPerc.toLocaleString()}%</Text>
+                            <Flex flexDirection='row'>
+                                <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' />
+                                <Text fontSize={mobileTableFontSize} marginLeft='3px'>{optPayout}</Text>
+                            </Flex>
+                            <Flex flexDirection='row'>
+                                <TokenImage token={ABREQ[chainId]} chainId={chainId} width={22} height={22} marginTop='1px' />
+                                <Text fontSize={mobileTableFontSize} marginLeft='3px'>{payout}</Text>
+                            </Flex>
                         </DescriptionCol>
 
                     </Flex>

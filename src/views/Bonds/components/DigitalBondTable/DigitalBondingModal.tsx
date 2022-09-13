@@ -54,7 +54,7 @@ const DigitalBondingModal: React.FC<DigitalBondingModalProps> = (
     reqPrice
   }
 ) => {
-  const bond = useDigitalBondFromBondId(bondId,chainId)
+  const bond = useDigitalBondFromBondId(bondId, chainId)
   const [val, setVal] = useState('')
   const { toastSuccess, toastError } = useToast()
   const [pendingTx, setPendingTx] = useState(false)
@@ -130,7 +130,7 @@ const DigitalBondingModal: React.FC<DigitalBondingModalProps> = (
   const profits = useMemo(() => { return payout * reqPrice / bond.bondPrice - inputUSD }, [payout, reqPrice, bond.bondPrice, inputUSD])
 
   return (
-    <Modal title={t('Bond LP tokens')} onDismiss={onDismiss}>
+    <Modal title="Bond LP tokens for abREQ." onDismiss={onDismiss}>
       <ModalInput
         value={val}
         onSelectMax={handleSelectMax}
@@ -179,9 +179,9 @@ const DigitalBondingModal: React.FC<DigitalBondingModalProps> = (
       </Flex>
       <Flex mt="24px" alignItems="center" justifyContent="space-between">
         <Text mr="8px" color="textSubtle">
-          Your Profits
+          {profits > 0 ? 'Your Profits' : 'The Premium You Pay'}
         </Text>
-        <Text mr="8px" textAlign='center' bold color='green'>
+        <Text mr="8px" textAlign='center' bold color={profits > 0 ? 'green' : 'red'}>
           {inputUSD > 0 ?
             (`~$${(Math.round(profits * 10) / 10).toLocaleString()}`) : (`-`)}
         </Text>
