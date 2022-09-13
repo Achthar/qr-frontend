@@ -19,8 +19,8 @@ import { calcSingleBondDetails } from './vanilla/calcSingleBondDetails';
 import { calcSingleBondStableLpDetails } from './vanilla/calcSingleBondStableLpDetails';
 import { BondsState, Bond } from '../types'
 import { changeChainIdBonds, setLpLink, setLpPrice } from './actions';
-import { calcSingleCallBondPoolDetails } from './call/calcSingleCallBondPoolDetails';
-import { calcSingleCallBondDetails } from './call/calcSingleCallBondDetails';
+import { calcSingleCallBondPoolDetails } from './digital/calcSingleCallBondPoolDetails';
+import { calcSingleCallBondDetails } from './digital/calcSingleCallBondDetails';
 import { calcSingleCallableBondDetails } from './callable/calcSingleCallBondDetails';
 import { calcSingleCallableBondPoolDetails } from './callable/calcSingleCallBondPoolDetails';
 

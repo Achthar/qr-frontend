@@ -143,6 +143,15 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
     thisBond
   ])
 
+  const [percentage, strike] = useMemo(
+    () => {
+      return [thisBond?.bondTerms?.payoffPercentage && Number(ethers.utils.formatEther(thisBond?.bondTerms?.payoffPercentage)),
+      thisBond?.bondTerms?.thresholdPercentage && Number(ethers.utils.formatEther(thisBond?.bondTerms?.thresholdPercentage))
+      ]
+    },
+    [thisBond?.bondTerms?.payoffPercentage, thisBond?.bondTerms?.thresholdPercentage]
+  )
+
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
@@ -166,7 +175,6 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
           <Text width='30%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px' marginRight='3px' height='20px'>
             You pay
           </Text>
-          {/* <Flex flexDirection="row" width='100%' justifyContent='center' alignItems='center'> */}
           <StyledInput
             pattern={`^[0-9]*[.,]?[0-9]{0,${decimals}}$`}
             inputMode="decimal"
@@ -178,7 +186,6 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
             style={{ height: '20px', borderRadius: '3px', width: '40%', alignSelf: 'center' }}
           />
           {thisBond?.tokens && (<PoolLogo tokens={thisBond.tokens.map(t => deserializeToken(t))} overlap='-8px' size={15} width='20px' />)}
-          {/* </Flex> */}
           <Text fontSize='10px' textAlign='center' width='30%'>
             {`~$${(Math.round(inputUSD))?.toLocaleString()}`}
           </Text>
@@ -210,11 +217,18 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
           <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
             {isMobile ? 'Your Profits' : 'Generated Profits'}
           </Text>
-          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='50%'>
+          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color={payout >= 0 ? 'green' : 'red'} width='50%'>
             {thisBond.bondPrice > 0 ? `+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}` : ''}
           </Text>
         </Flex>
-
+        {percentage && payout > 0 && (<Flex flexDirection="column" width='100%' justifyContent='space-between' marginTop='5px'>
+          <Text bold width='100%' fontSize={isMobile ? '13px' : '15px'} textAlign='center'>
+            {`Max. Option Payout Starting When Index Rises More Than ${(Math.round(strike * 100)).toLocaleString()}%:`}
+          </Text>
+          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='100%' bold>
+            {percentage && payout > 0 ? `${(Math.round(percentage * 100)).toLocaleString()}%  / $${(Math.round((percentage * payout * reqPrice / thisBond.bondPrice) * 1000) / 1000).toLocaleString()}` : ''}
+          </Text>
+        </Flex>)}
         <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
           <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
             Vesting Term

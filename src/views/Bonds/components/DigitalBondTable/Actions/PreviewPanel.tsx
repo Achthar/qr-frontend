@@ -143,6 +143,13 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
     thisBond
   ])
 
+  const [percentage, strike] = useMemo(
+    () => { return [thisBond?.bondTerms?.payoffPercentage && Number(ethers.utils.formatEther(thisBond?.bondTerms?.payoffPercentage)),
+      thisBond?.bondTerms?.thresholdPercentage && Number(ethers.utils.formatEther(thisBond?.bondTerms?.thresholdPercentage))
+     ] },
+    [thisBond?.bondTerms?.payoffPercentage, thisBond?.bondTerms?.thresholdPercentage]
+  )
+
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       if (e.currentTarget.validity.valid) {
@@ -210,11 +217,18 @@ export const PreviewPanel: React.FunctionComponent<PreviewPanelProps> = ({
           <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
             {isMobile ? 'Your Profits' : 'Generated Profits'}
           </Text>
-          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='50%'>
+          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color={payout >= 0 ? 'green' : 'red'} width='50%'>
             {thisBond.bondPrice > 0 ? `+ $${(Math.round((payout * reqPrice / thisBond.bondPrice - inputUSD) * 100) / 100).toLocaleString()}` : ''}
           </Text>
         </Flex>
-
+        {percentage && payout > 0 && (<Flex flexDirection="column" width='100%' justifyContent='space-between' marginTop='5px'>
+          <Text bold width='100%' fontSize={isMobile ? '13px' : '15px'} textAlign='center'>
+            {`Digital Option Payoff If Index Rises More Than ${(Math.round(strike * 100)).toLocaleString()}%:`}
+          </Text>
+          <Text fontSize={isMobile ? '13px' : '15px'} textAlign='center' color='green' width='100%' bold>
+            {percentage && payout > 0 ? `${(Math.round(percentage * 100)).toLocaleString()}%  /  $${(Math.round((percentage * payout * reqPrice / thisBond.bondPrice) * 1000) / 1000).toLocaleString()}` : ''}
+          </Text>
+        </Flex>)}
         <Flex flexDirection="row" width='70%' justifyContent='space-between' marginTop='5px'>
           <Text width='50%' fontSize={isMobile ? '13px' : '15px'} marginLeft='5px'>
             Vesting Term
