@@ -10,8 +10,20 @@ import { UserProps } from './types';
 
 
 export function getMainTokens(chainId: number): Token[] {
-    return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], GREQ[chainId], WBTC[chainId], WETH[chainId], LINK[chainId]] :
-        [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]]
+    switch (chainId) {
+        case 43113: {
+            return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], GREQ[chainId], WBTC[chainId], WETH[chainId], LINK[chainId]];
+        }
+        case 42261: {
+            return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]];
+        }
+        case 18: {
+            return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]];
+        }
+        default: {
+            return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]];
+        }
+    }
 }
 
 export function getStables(chainId: number): Token[] {

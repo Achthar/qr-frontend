@@ -77,7 +77,7 @@ export default function Balances() {
     [chainId, allBalances]
   )
 
-  const mainAmounts = useMemo(() => { return [CurrencyAmount.networkCCYAmount(chainId, networkCcyBalance), ...getMainAmounts(chainId, allBalances)] },
+  const mainAmounts = useMemo(() => { return [CurrencyAmount.networkCCYAmount(chainId, networkCcyBalance ?? '0'), ...getMainAmounts(chainId, allBalances)] },
     [chainId, allBalances, networkCcyBalance]
   )
 

@@ -40,6 +40,10 @@ export const nodesOASIST = [
   NETWORK_URLS[ChainId.OASIS_TESTNET]
 ]
 
+export const nodesTT = [
+  NETWORK_URLS[ChainId.TT_TESTNET]
+]
+
 export const nodesQuarkChain = [
   NETWORK_URLS[ChainId.QUARKCHAIN_DEV_S0]
 ]

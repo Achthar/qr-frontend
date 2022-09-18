@@ -1,7 +1,7 @@
 import { ChainId, STABLECOINS } from '@requiemswap/sdk'
 import { BigNumber } from 'ethers'
 import { serializeToken } from 'state/user/hooks/helpers'
-import { BUSD, STABLES, USDC, USDT } from './tokens'
+import { BUSD, DAI, STABLES, USDC, USDT } from './tokens'
 
 // we hard code this data as it only changes if
 // the admin changes it manually via the contract itself
@@ -59,6 +59,37 @@ export const stableSwapInitialData: { [chainId: number]: any[] } = {
             swapStorage: {
                 tokenMultipliers: ['1', '1000000000000', '1000000000000'],
                 lpToken: '0x9912aafb08f9c018bd0317c673951a5f4967831f',
+                fee: BigNumber.from('0x0f4240').toString(),
+                adminFee: BigNumber.from('0x012a05f200').toString(),
+                initialA: BigNumber.from('0xea60').toString(),
+                futureA: BigNumber.from('0xea60').toString(),
+                initialATime: BigNumber.from('0x00').toString(),
+                futureATime: BigNumber.from('0x00').toString(),
+                defaultWithdrawFee: BigNumber.from('0x02faf080').toString(),
+            }
+        },
+    ],
+    18: [
+        {
+            key: 0,
+            address: '0x3bdc229cd04cebbccfdaf20c379bcc0a6a25167d',
+            name: 'req3USD',
+            tokens: [
+                serializeToken(BUSD[18]),
+                serializeToken(DAI[18]),
+                serializeToken(USDC[18])
+            ],
+            balances: ['1', '1', '1'],
+            lpAddress: '0x3bdc229cd04cebbccfdaf20c379bcc0a6a25167d',
+            lpToken: {
+                chainId: 18,
+                decimals: 18,
+                address: '0x3bdc229cd04cebbccfdaf20c379bcc0a6a25167d',
+                symbol: 'req3USD'
+            },
+            swapStorage: {
+                tokenMultipliers: ['1', '1', '1000000000000'],
+                lpToken: '0x3bdc229cd04cebbccfdaf20c379bcc0a6a25167d',
                 fee: BigNumber.from('0x0f4240').toString(),
                 adminFee: BigNumber.from('0x012a05f200').toString(),
                 initialA: BigNumber.from('0xea60').toString(),

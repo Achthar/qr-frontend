@@ -44,10 +44,10 @@ export const setupNetwork = async (chainId: number, library?: Web3Provider) => {
           params: [
             {
               chainId: formattedChainId,
-              chainName: CHAIN_INFO[chainId ?? 43113].label,
-              rpcUrls: CHAIN_INFO[chainId ?? 43113].rpcUrls,
-              nativeCurrency: CHAIN_INFO[chainId ?? 43113].nativeCurrency,
-              blockExplorerUrls: [CHAIN_INFO[chainId ?? 43113].explorer],
+              chainName: CHAIN_INFO[chainId ?? 42261].label,
+              rpcUrls: CHAIN_INFO[chainId ?? 42261].rpcUrls,
+              nativeCurrency: CHAIN_INFO[chainId ?? 42261].nativeCurrency,
+              blockExplorerUrls: [CHAIN_INFO[chainId ?? 42261].explorer],
             },
           ],
         })

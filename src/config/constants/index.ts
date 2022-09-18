@@ -59,17 +59,20 @@ export const WEIGHTED_POOL_ADDRESSES = {
 
 export const PAIR_FORMULA = {
   43113: '0x5556288c865d9e9DecC22c9f3F764F00E244fB39',
-  42261: '0x7B514a86382f4482C23FdE9c8128f0ca757AfAdE'
+  42261: '0x7B514a86382f4482C23FdE9c8128f0ca757AfAdE',
+  18: '0xb3a65e1bF6884eC96fdA1e8F09e477d203357BF0'
 }
 // store factory address directly in frontend repo
 export const FACTORY_ADDRESS = {
   43113: '0xC4331b86eF182b85c200CcCe1B132499019af3B5',
-  42261: '0xB0c904E2aD98c78FF9Bc5d61006c6E5ab123CDfA'
+  42261: '0xB0c904E2aD98c78FF9Bc5d61006c6E5ab123CDfA',
+  18: '0xc00d9cf36e1d223A815c8446694A165858B973Db'
 }
 
 export const SWAP_ROUTER = {
   43113: '0x34F289B3AB3d0f7876421d659478Cb848d90Fa44',
-  42261: '0x9959c550652c8F0f08cE655828DE0285f9322407'
+  42261: '0x9959c550652c8F0f08cE655828DE0285f9322407',
+  18: '0x00c9ac8d414Ea3C7466F27431133dD989d8f20Df'
 }
 
 export const L1_CHAIN_IDS = [
@@ -79,7 +82,8 @@ export const L1_CHAIN_IDS = [
   ChainId.AVAX_TESTNET,
   ChainId.OASIS_MAINNET,
   ChainId.OASIS_TESTNET,
-  ChainId.QUARKCHAIN_DEV_S0
+  ChainId.QUARKCHAIN_DEV_S0,
+  ChainId.TT_TESTNET
 ] as const
 
 export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number]
@@ -253,6 +257,19 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: 'Quarkchain Dev S0', symbol: 'QKC', decimals: 10 },
     // statusPage: 'https://optimism.io/status',
   },
+  [ChainId.TT_TESTNET]: {
+    blockWaitMsBeforeWarning: ms`10m`,
+    // bridge: 'https://gateway.optimism.io/',
+    docs: 'https://docs.developers.thundercore.com/network-details/thundercore-testnet',
+    explorer: 'https://explorer-testnet.thundercore.com/',
+    infoLink: 'https://docs.developers.thundercore.com/',
+    label: 'Thunder Testnet',
+    rpcUrls: ['https://testnet-rpc.thundercore.com'],
+    logoUrl: 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/TT.png',
+    nativeCurrency: { name: 'Thunder Core Token', symbol: 'TT', decimals: 18 },
+    faucet: 'https://faucet-testnet.thundercore.com/'
+    // statusPage: 'https://optimism.io/status',
+  },
 }
 
 export const FALLBACK_CHAINID = 42661
@@ -262,7 +279,8 @@ export const ALL_SUPPORTED_CHAIN_IDS = [
   ChainId.MATIC_TESTNET,
   ChainId.AVAX_MAINNET, ChainId.AVAX_TESTNET,
   ChainId.ARBITRUM_TETSNET_RINKEBY,
-  ChainId.OASIS_MAINNET, ChainId.OASIS_TESTNET, ChainId.QUARKCHAIN_DEV_S0
+  ChainId.OASIS_MAINNET, ChainId.OASIS_TESTNET, ChainId.QUARKCHAIN_DEV_S0,
+  ChainId.TT_TESTNET
 ]
 
 export const SUPPORTED_IDS_TO_RPC_URL = {
@@ -292,6 +310,9 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   USDT[ChainId.OASIS_TESTNET], DAI[ChainId.OASIS_TESTNET], USDC[ChainId.OASIS_TESTNET]],
   [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], REQT[ChainId.QUARKCHAIN_DEV_S0],
   USDT[ChainId.QUARKCHAIN_DEV_S0], DAI[ChainId.QUARKCHAIN_DEV_S0], USDC[ChainId.QUARKCHAIN_DEV_S0]],
+  [ChainId.TT_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_TESTNET], ABREQ[ChainId.TT_TESTNET]],
+  [ChainId.TT_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_MAINNET]],
+
 
 }
 
@@ -315,6 +336,8 @@ export const BASES_TO_CHECK_TRADES_AGAINST_WEIGHTED: ChainTokenList = {
   USDC[ChainId.OASIS_TESTNET], DAI[ChainId.OASIS_TESTNET], TUSD[ChainId.OASIS_TESTNET]],
   [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], REQT[ChainId.QUARKCHAIN_DEV_S0],
   USDC[ChainId.QUARKCHAIN_DEV_S0], DAI[ChainId.QUARKCHAIN_DEV_S0]],
+  [ChainId.TT_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_MAINNET]],
+  [ChainId.TT_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_TESTNET]],
 
 
 }
@@ -350,6 +373,8 @@ export const SUGGESTED_BASES: ChainTokenList = {
   [ChainId.OASIS_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_MAINNET]],
   [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], USDT[ChainId.OASIS_TESTNET]],
   [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], USDT[ChainId.QUARKCHAIN_DEV_S0]],
+  [ChainId.TT_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_TESTNET], USDC[ChainId.TT_TESTNET]],
+  [ChainId.TT_MAINNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_MAINNET], USDC[ChainId.TT_MAINNET]],
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
@@ -365,6 +390,8 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   [ChainId.OASIS_MAINNET]: [],
   [ChainId.OASIS_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.OASIS_TESTNET], USDT[ChainId.OASIS_TESTNET]],
   [ChainId.QUARKCHAIN_DEV_S0]: [WRAPPED_NETWORK_TOKENS[ChainId.QUARKCHAIN_DEV_S0], USDT[ChainId.QUARKCHAIN_DEV_S0]],
+  [ChainId.TT_TESTNET]: [WRAPPED_NETWORK_TOKENS[ChainId.TT_TESTNET], USDC[ChainId.TT_TESTNET]],
+  [ChainId.TT_MAINNET]: [],
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {

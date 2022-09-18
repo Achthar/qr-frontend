@@ -60,7 +60,9 @@ const EMPTY_LIST: TokenAddressMap = {
   [ChainId.MATIC_TESTNET]: {},
   [ChainId.OASIS_MAINNET]: {},
   [ChainId.OASIS_TESTNET]: {},
-  [ChainId.QUARKCHAIN_DEV_S0]: {}
+  [ChainId.QUARKCHAIN_DEV_S0]: {},
+  [ChainId.TT_TESTNET]: {},
+  [ChainId.TT_MAINNET]: {}
 }
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =
@@ -122,6 +124,8 @@ function combineMaps(map1: TokenAddressMap, map2: TokenAddressMap): TokenAddress
     [ChainId.OASIS_MAINNET]: { ...map1[ChainId.OASIS_MAINNET], ...map2[ChainId.OASIS_MAINNET] },
     [ChainId.OASIS_TESTNET]: { ...map1[ChainId.OASIS_TESTNET], ...map2[ChainId.OASIS_TESTNET] },
     [ChainId.QUARKCHAIN_DEV_S0]: { ...map1[ChainId.QUARKCHAIN_DEV_S0], ...map2[ChainId.QUARKCHAIN_DEV_S0] },
+    [ChainId.TT_TESTNET]: { ...map1[ChainId.TT_TESTNET], ...map2[ChainId.TT_TESTNET] },
+    [ChainId.TT_MAINNET]: { ...map1[ChainId.TT_MAINNET], ...map2[ChainId.TT_MAINNET] },
   }
 }
 

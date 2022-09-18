@@ -558,4 +558,93 @@ export const tokenList = {
             },
         ]
     },
+    18: {
+        "name": "RequiemSwap Default List Thunder Core Test",
+        "timestamp": "2021-09-29T00:00:00Z",
+        "version": {
+            "major": 3,
+            "minor": 0,
+            "patch": 0
+        },
+        "tags": {},
+        "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/REQT_large.png",
+        "keywords": [
+            "pancake",
+            "default"
+        ],
+        "tokens": [
+            {
+                "name": "Wrapped Thunder Token",
+                "symbol": "WTT",
+                "address": "0x0ed2776E65984933f1066f4904FC34D4c083952B",
+                "chainId": 18,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WROSE.png"
+            },
+            {
+                "name": "Asset-Backed Requiem",
+                "symbol": "ABREQ",
+                "address": "0xC657ba703D8CBBAD56DC2249c33FF88AB2ca578C",
+                "chainId": 18,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ABREQ.png"
+            },
+            // {
+            //     "name": "Tether USD",
+            //     "symbol": "USDT",
+            //     "address": "0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107",
+            //     "chainId": 18,
+            //     "decimals": 6,
+            //     "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+            // },
+            {
+                "name": "Dai Stablecoin",
+                "symbol": "DAI",
+                "address": "0x31A936852dfc5A1aAb1c541F11e5fe6417b28F9d",
+                "chainId": 18,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+            },
+            {
+                "name": "USD Coin",
+                "symbol": "USDC",
+                "address": "0x28eBB49B3543b6c86CeD4Bd39907e2fdFc95E45D",
+                "chainId": 18,
+                "decimals": 6,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+            },
+            {
+                "name": "Wrapped Bitcoin",
+                "symbol": "WBTC",
+                "address": "0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b",
+                "chainId": 18,
+                "decimals": 8,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+            },
+            {
+                "name": "Wrapped Ethereum",
+                "symbol": "WETH",
+                "address": "0xE88Cae7399bd545b9eD47aba7ec158e29e480EDb",
+                "chainId": 18,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+            },
+            // {
+            //     "name": "WBNB Multichain Token",
+            //     "symbol": "WBNB",
+            //     "address": "0xC05E74836C708E4dB327218Be3B22453f21156AF",
+            //     "chainId": 18,
+            //     "decimals": 18,
+            //     "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png"
+            // },
+            {
+                "name": "Binance-Peg USD Token",
+                "symbol": "BUSD",
+                "address": "0xc2FEE91e549A0468Aa45BA391a72b4F10F9a8bFf",
+                "chainId": 18,
+                "decimals": 18,
+                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BUSD.png"
+            },
+        ]
+    },
 }

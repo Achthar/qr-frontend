@@ -25,7 +25,8 @@ export const stablePoolSlice = createSlice({
   initialState: {
     currentChain: initialChainId,
     43113: initialState(43113),
-    42261: initialState(42261)
+    42261: initialState(42261),
+    18: initialState(18)
   }, // TODO: make that more flexible
   reducers: {       // 0) chainmId change - new init
     // resetWeightedPairChainId: (state, action) => {

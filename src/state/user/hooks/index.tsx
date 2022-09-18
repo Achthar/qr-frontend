@@ -392,11 +392,37 @@ export function useTrackedTokenWeightedPairs(): [Token, Token, number, number][]
 
 
 export function getMainTokens(chainId: number): Token[] {
-  return chainId === 43113 ? [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]] : [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]]
+  switch (chainId) {
+    case 43113: {
+      return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]];
+    }
+    case 42261: {
+      return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId], WBNB[chainId]];
+    }
+    case 18: {
+      return [WRAPPED_NETWORK_TOKENS[chainId], ABREQ[chainId], WBTC[chainId], WETH[chainId]];
+    }
+    default: {
+      return [WRAPPED_NETWORK_TOKENS[chainId]]
+    }
+  }
 }
 
 export function geAdditionalTokens(chainId: number): Token[] {
-  return chainId === 43113 ? [] : [WBNB[chainId]]
+  switch (chainId) {
+    case 43113: {
+      return [];
+    }
+    case 42261: {
+      return [ WBNB[chainId]];
+    }
+    case 18: {
+      return [];
+    }
+    default: {
+      return []
+    }
+  }
 }
 
 export function getStables(chainId: number): Token[] {
@@ -474,7 +500,7 @@ export function getMainAmounts(chainId: number, balances: {
       WBTC[chainId],
       WETH[chainId]
     ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
-    
+
   if (chainId === 42261)
     return [
       WRAPPED_NETWORK_TOKENS[chainId],
@@ -483,6 +509,15 @@ export function getMainAmounts(chainId: number, balances: {
       WETH[chainId],
       WBNB[chainId]
     ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+
+  if (chainId === 18)
+    return [
+      WRAPPED_NETWORK_TOKENS[chainId],
+      ABREQ[chainId],
+      WBTC[chainId],
+      WETH[chainId]
+    ].map(token => new TokenAmount(token, balances[getAddress(token.address)]?.balance ?? '0'))
+
 
   return [
     WRAPPED_NETWORK_TOKENS[chainId],

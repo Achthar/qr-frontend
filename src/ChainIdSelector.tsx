@@ -327,7 +327,8 @@ const ChainIdSelector = () => {
         chainId === 43114 ? smallText ? 'AVAX' : 'Avalanche' :
           chainId === 43113 ? smallText ? 'AVAX Test' : 'Avalanche Testnet' :
             chainId === 42261 ? smallText ? 'ROSE Test' : 'Oasis Testnet' :
-              chainId === 110001 ? smallText ? 'QKC Test S0' : 'Quarkchain Dev S0' : 'no Network'
+              chainId === 110001 ? smallText ? 'QKC Test S0' : 'Quarkchain Dev S0' :
+                chainId === 18 ? smallText ? 'TT Test' : 'Thunder Core Test' : 'no Network'
   return (
     // <UIKitUserMenu text={buttonText} avatarSrc={CHAIN_INFO[chainId ?? 43113].logoUrl}>
     <SelectorWrapper ref={wrapperRef}>
@@ -371,7 +372,7 @@ const ChainIdSelector = () => {
             </Flex>
             <Row targetChain={ChainId.AVAX_TESTNET} />
             <UserMenuDivider />
-            <Row targetChain={ChainId.AVAX_MAINNET} />
+            <Row targetChain={ChainId.TT_TESTNET} />
             <UserMenuDivider />
             <Row targetChain={ChainId.OASIS_TESTNET} />
             <UserMenuDivider />
