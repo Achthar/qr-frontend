@@ -15,7 +15,7 @@ import { setupNetwork } from 'utils/wallet'
 import useToast from 'hooks/useToast'
 import { useAppDispatch } from 'state'
 import { useTranslation } from 'contexts/Localization'
-import { useActiveWeb3React } from 'hooks'
+import useActiveWeb3React from './useActiveWeb3React'
 
 const useAuth = () => {
   const { t } = useTranslation()
