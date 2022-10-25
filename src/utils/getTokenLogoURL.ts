@@ -15,12 +15,12 @@ export const getTokenLogoURLFromSymbol = (symbol: string) =>
 const getTokenLogo = (symbol: string) => {
 
 
-  if (symbol.toLowerCase() === 'abreq') {
+  if (symbol?.toLowerCase() === 'abreq') {
     return abreq
   }
 
-  if (symbol.toLowerCase() === 'rose' || symbol.toLowerCase() === 'wrose') {
+  if (symbol?.toLowerCase() === 'rose' || symbol?.toLowerCase() === 'wrose') {
     return rose
   }
-  return tokenList[42261].tokens.find(t => t.symbol.toLowerCase() === symbol.toLowerCase())?.logoURI
+  return tokenList[42261].tokens.find(t => t?.symbol?.toLowerCase() === symbol?.toLowerCase())?.logoURI
 }
