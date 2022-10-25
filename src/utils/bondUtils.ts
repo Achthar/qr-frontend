@@ -65,7 +65,7 @@ export const calculateUserPay = (note: DigitalNote | CallableNote, bond: Digital
 }
 
 export const calculateUserPayClosed = (note: DigitalNote | CallableNote, terms: ClosedDigitalTerms | ClosedCallableTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
-    if (!terms || !note) return { moneyness: 0, pay: ZERO }
+    if (!terms || !note || !_priceNow) return { moneyness: 0, pay: ZERO }
 
     const strike = ethers.BigNumber.from(terms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
@@ -77,7 +77,7 @@ export const calculateUserPayClosed = (note: DigitalNote | CallableNote, terms: 
 }
 
 export const calculateUserPayCallClosed = (note: DigitalNote, terms: ClosedDigitalTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
-    if (!terms || !note) return { moneyness: 0, pay: ZERO }
+    if (!terms || !note || !_priceNow) return { moneyness: 0, pay: ZERO }
 
     const strike = ethers.BigNumber.from(terms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
@@ -89,7 +89,7 @@ export const calculateUserPayCallClosed = (note: DigitalNote, terms: ClosedDigit
 }
 
 export const calculateUserPayCallableClosed = (note: CallableNote, terms: ClosedCallableTerms, _priceNow: string): { moneyness: number, pay: ethers.BigNumber } => {
-    if (!terms || !note) return { moneyness: 0, pay: ZERO }
+    if (!terms || !note || !_priceNow) return { moneyness: 0, pay: ZERO }
 
     const strike = ethers.BigNumber.from(terms.thresholdPercentage)
     const payoff = calculatePayoff(ethers.BigNumber.from(note.cryptoIntitialPrice), ethers.BigNumber.from(_priceNow), strike)
