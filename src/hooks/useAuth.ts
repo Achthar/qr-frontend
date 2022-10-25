@@ -15,11 +15,12 @@ import { setupNetwork } from 'utils/wallet'
 import useToast from 'hooks/useToast'
 import { useAppDispatch } from 'state'
 import { useTranslation } from 'contexts/Localization'
+import { useActiveWeb3React } from 'hooks'
 
 const useAuth = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { activate, deactivate, chainId, library } = useWeb3React()
+  const { activate, deactivate, chainId, library } = useActiveWeb3React()
   const { toastError } = useToast()
 
   const login = useCallback(
@@ -28,7 +29,6 @@ const useAuth = () => {
       if (connector) {
         activate(connector, async (error: Error) => {
           if (error instanceof UnsupportedChainIdError) {
-            console.log("YTEST", chainId)
             const hasSetup = await setupNetwork(chainId ?? 42261 , library)
             if (hasSetup) {
               activate(connector)
