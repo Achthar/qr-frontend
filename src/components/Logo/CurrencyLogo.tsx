@@ -42,13 +42,13 @@ export default function CurrencyLogo({
       return <BinanceIcon width={size} style={style} />
     }
     if (chainId === 137 || chainId === 80001) {
-      return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WMATIC.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
+      return <StyledLogo size={size} srcs={["https://cryptologos.cc/logos/polygon-matic-logo.svg?v=023"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
     }
     if (chainId === 43114 || chainId === 43113) {
-      return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/AVAX.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
+      return <StyledLogo size={size} srcs={["https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=023"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
     }
     if (chainId === 42261 || chainId === 42261) {
-      return <StyledLogo size={size} srcs={["https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/networks/ROSE.svg"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
+      return <StyledLogo size={size} srcs={["https://cryptologos.cc/logos/oasis-network-rose-logo.svg?v=023"]} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
     }
     return <BinanceIcon width={size} style={style} />
 

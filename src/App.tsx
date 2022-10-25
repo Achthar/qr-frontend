@@ -9,12 +9,12 @@ import Popups from 'components/Popups'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
 import { ToastListener } from './contexts/ToastsContext'
 import PageLoader from './components/Loader/PageLoader'
-
+import bg from './assets/fractal2.0.mp4'
+import bgStatic from './assets/fractalStatic.jpg'
 import history from './routerHistory'
 // Views included in the main bundle
 // import Swap from './views/Swap' // weighted + stable
 import SwapV3 from './views/SwapV3' // uniswapv2 + stable
-
 
 import {
   RedirectDuplicateTokenIds,
@@ -55,8 +55,8 @@ const App: React.FC = () => {
       <ResetCSS />
       <GlobalStyle />
       {/* <CustomMenu /> */}
-      <video id="background-video" autoPlay loop muted poster="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractalStatic.jpg">
-        <source src="https://requiem-finance.s3.eu-west-2.amazonaws.com/background/fractal2.0.mp4" type="video/mp4" />
+      <video id="background-video" autoPlay loop muted poster={bgStatic}>
+        <source src={bg} type="video/mp4" />
       </video>
       <SuspenseWithChunkError fallback={<PageLoader />}>
         <Popups />

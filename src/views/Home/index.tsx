@@ -6,7 +6,8 @@ import Container from 'components/Layout/Container'
 import { Text, Step, Stepper, Card, CardBody, useMatchBreakpoints } from '@requiemswap/uikit'
 import { Status } from '@requiemswap/uikit/src/components/Stepper/types'
 import Row from 'components/Row'
-
+import MobileLogo from '../../assets/requiem-finance.svg'
+import GeneralLogo from '../../assets/requiem-finance-column.svg'
 
 const RequiemImage = styled.img`
   width: 100%;
@@ -65,7 +66,7 @@ const Home: React.FC = () => {
 
 
               <RequiemImage
-                src={isMobile ? 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance.svg' : 'https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/requiem/requiem-finance-column.svg'}
+                src={isMobile ? MobileLogo : GeneralLogo}
               />
 
             </Row>

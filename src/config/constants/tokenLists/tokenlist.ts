@@ -1,3 +1,5 @@
+import abreq from "../../../assets/tokens/abREQ.png"
+
 export const tokenList = {
     56: {
         "name": "PancakeSwap Default List",
@@ -181,7 +183,7 @@ export const tokenList = {
                 "address": "0x8a9424745056eb399fd19a0ec26a14316684e274",
                 "chainId": 97,
                 "decimals": 18,
-                "logoURI": "https://tokens.pancakeswap.finance/images/0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             }
         ]
     },
@@ -222,7 +224,7 @@ export const tokenList = {
                 "address": "0xeaBc4b91d9375796AA4F69cC764A4aB509080A58",
                 "chainId": 80001,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+                "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             },
             {
                 "name": "USDC",
@@ -230,7 +232,7 @@ export const tokenList = {
                 "address": "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
                 "chainId": 80001,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+                "logoURI": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Ethereum Token",
@@ -238,7 +240,7 @@ export const tokenList = {
                 "address": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
                 "chainId": 80001,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=023"
             },
             {
                 "name": "DAI Token",
@@ -246,7 +248,7 @@ export const tokenList = {
                 "address": "0x001b3b4d0f3714ca98ba10f6042daebf0b1b7b6f",
                 "chainId": 80001,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             }
         ]
     },
@@ -295,7 +297,7 @@ export const tokenList = {
                 "address": "0xffb3ed4960cac85372e6838fbc9ce47bcf2d073e",
                 "chainId": 43113,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+                "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             },
             {
                 "name": "Dai Stablecoin",
@@ -303,7 +305,7 @@ export const tokenList = {
                 "address": "0xaea51e4fee50a980928b4353e852797b54deacd8",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             },
             {
                 "name": "USD coin",
@@ -311,7 +313,7 @@ export const tokenList = {
                 "address": "0xca9ec7085ed564154a9233e1e7d8fef460438eea",
                 "chainId": 43113,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+                "logoURI": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=023"
             },
             {
                 "name": "True USD",
@@ -327,7 +329,7 @@ export const tokenList = {
                 "address": "0x31AbD3aA54cb7bdda3f52e304A5Ed9c1a783D289",
                 "chainId": 43113,
                 "decimals": 8,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+                "logoURI": "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Ethereum",
@@ -335,7 +337,7 @@ export const tokenList = {
                 "address": "0x70dC2c5F81BC18e115759398aF197e99f228f713",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=023"
             },
             {
                 "name": "Asset Backed Requiem",
@@ -343,7 +345,7 @@ export const tokenList = {
                 "address": "0x337AaE5Dd7e0b98d3F558E2eeeA6cE5b9A5b3E63",
                 "chainId": 43113,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ABREQ.png"
+                "logoURI": abreq
             },
             {
                 "name": "ChainLink Token",
@@ -384,7 +386,7 @@ export const tokenList = {
                 "address": "0xde3A24028580884448a5397872046a019649b084",
                 "chainId": 43114,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+                "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             }
         ]
     },
@@ -409,7 +411,7 @@ export const tokenList = {
                 "address": "0x792296e2a15e6Ceb5f5039DecaE7A1f25b00B0B0",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WROSE.png"
+                "logoURI": "https://cryptologos.cc/logos/oasis-network-rose-logo.svg?v=023"
             },
             {
                 "name": "Asset-Backed Requiem",
@@ -417,7 +419,7 @@ export const tokenList = {
                 "address": "0xe01a4418477d0Dce744Ee6aa3C2D89b48408fD0D",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ABREQ.png"
+                "logoURI": abreq
             },
             {
                 "name": "Tether USD",
@@ -425,7 +427,7 @@ export const tokenList = {
                 "address": "0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107",
                 "chainId": 42261,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+                "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             },
             {
                 "name": "Dai Stablecoin",
@@ -433,7 +435,7 @@ export const tokenList = {
                 "address": "0xBe06eF2E4a0891CA2761012523af75769bDB2668",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             },
             {
                 "name": "USD Coin",
@@ -441,7 +443,7 @@ export const tokenList = {
                 "address": "0x2AD57C6d4144e218c02760640685cdF6CB58669E",
                 "chainId": 42261,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+                "logoURI": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Bitcoin",
@@ -449,7 +451,7 @@ export const tokenList = {
                 "address": "0xB5421Ef8e226D9Dd8C210B62a2d919DF6Bf5Af53",
                 "chainId": 42261,
                 "decimals": 8,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+                "logoURI": "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Ethereum",
@@ -457,7 +459,7 @@ export const tokenList = {
                 "address": "0xe3B60b4b30AB59c749f4f7edb859F7E8b735CC40",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=023"
             },
             {
                 "name": "WBNB Multichain Token",
@@ -465,7 +467,7 @@ export const tokenList = {
                 "address": "0xC05E74836C708E4dB327218Be3B22453f21156AF",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png"
+                "logoURI": "https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=023"
             },
             {
                 "name": "Binance-Peg USD Token",
@@ -473,7 +475,7 @@ export const tokenList = {
                 "address": "0x8391032ef5654B796A7719D106ee74c2e48e03aa",
                 "chainId": 42261,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BUSD.png"
+                "logoURI": "https://cryptologos.cc/logos/binance-usd-busd-logo.svg?v=023"
             },
         ]
     },
@@ -514,7 +516,7 @@ export const tokenList = {
                 "address": "0x1a69a6e206c680A8559c59b951527437CBCe6Ed7",
                 "chainId": 110001,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+                "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             },
             {
                 "name": "Dai Stablecoin",
@@ -522,7 +524,7 @@ export const tokenList = {
                 "address": "0x51b90a5Bc99B7c76EDf3863E1d61ca6197a6e542",
                 "chainId": 110001,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             },
             {
                 "name": "USD coin",
@@ -530,7 +532,7 @@ export const tokenList = {
                 "address": "0xE59c1Ddf4fAAC4Fa7C8c93d9392d4bBa55383268",
                 "chainId": 110001,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+                "logoURI": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=023"
             },
             {
                 "name": "True USD",
@@ -546,7 +548,7 @@ export const tokenList = {
                 "address": "0x1e32DAE021A5B2c9546a5aF148984Fa278f09D9a",
                 "chainId": 110001,
                 "decimals": 8,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+                "logoURI": "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Ethereum",
@@ -554,7 +556,7 @@ export const tokenList = {
                 "address": "0x6116979278577af89C51f108e802569C6456fa00",
                 "chainId": 110001,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=023"
             },
         ]
     },
@@ -579,7 +581,7 @@ export const tokenList = {
                 "address": "0x0ed2776E65984933f1066f4904FC34D4c083952B",
                 "chainId": 18,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/WROSE.png"
+                "logoURI": "https://cryptologos.cc/logos/oasis-network-rose-logo.svg?v=023"
             },
             {
                 "name": "Asset-Backed Requiem",
@@ -587,7 +589,7 @@ export const tokenList = {
                 "address": "0xC657ba703D8CBBAD56DC2249c33FF88AB2ca578C",
                 "chainId": 18,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ABREQ.png"
+                "logoURI": abreq
             },
             // {
             //     "name": "Tether USD",
@@ -595,7 +597,7 @@ export const tokenList = {
             //     "address": "0x24A9FFA6A525F87F37fAb756cA0D47632f2cD107",
             //     "chainId": 18,
             //     "decimals": 6,
-            //     "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDT.png"
+            //     "logoURI": "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=023"
             // },
             {
                 "name": "Dai Stablecoin",
@@ -603,7 +605,7 @@ export const tokenList = {
                 "address": "0x31A936852dfc5A1aAb1c541F11e5fe6417b28F9d",
                 "chainId": 18,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/DAI.png"
+                "logoURI": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg?v=023"
             },
             {
                 "name": "USD Coin",
@@ -611,7 +613,7 @@ export const tokenList = {
                 "address": "0x28eBB49B3543b6c86CeD4Bd39907e2fdFc95E45D",
                 "chainId": 18,
                 "decimals": 6,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/USDC.png"
+                "logoURI": "https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Bitcoin",
@@ -619,7 +621,7 @@ export const tokenList = {
                 "address": "0xf7fCD3BEB3CA6cB131d44fA67931cFAEC7dE013b",
                 "chainId": 18,
                 "decimals": 8,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BTC.png"
+                "logoURI": "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=023"
             },
             {
                 "name": "Wrapped Ethereum",
@@ -627,7 +629,7 @@ export const tokenList = {
                 "address": "0xE88Cae7399bd545b9eD47aba7ec158e29e480EDb",
                 "chainId": 18,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/ETH.png"
+                "logoURI": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=023"
             },
             // {
             //     "name": "WBNB Multichain Token",
@@ -635,7 +637,7 @@ export const tokenList = {
             //     "address": "0xC05E74836C708E4dB327218Be3B22453f21156AF",
             //     "chainId": 18,
             //     "decimals": 18,
-            //     "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BNB.png"
+            //     "logoURI": "https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=023"
             // },
             {
                 "name": "Binance-Peg USD Token",
@@ -643,7 +645,7 @@ export const tokenList = {
                 "address": "0xc2FEE91e549A0468Aa45BA391a72b4F10F9a8bFf",
                 "chainId": 18,
                 "decimals": 18,
-                "logoURI": "https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/BUSD.png"
+                "logoURI": "https://cryptologos.cc/logos/binance-usd-busd-logo.svg?v=023"
             },
         ]
     },

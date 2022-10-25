@@ -7,6 +7,7 @@ import {
 } from '@requiemswap/uikit'
 import { getAddress } from 'utils/addressHelpers'
 import { NETWORK_CCY, WRAPPED_NETWORK_TOKENS, Token } from '@requiemswap/sdk'
+import { getTokenLogoURLFromSymbol } from 'utils/getTokenLogoURL'
 
 interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc' | 'secondarySrc'> {
   chainId: number,
@@ -16,7 +17,7 @@ interface TokenPairImageProps extends Omit<UIKitTokenPairImageProps, 'primarySrc
 
 const getImageUrlFromToken = (chainId: number, token: Token) => {
   // const address = getAddress(chainId ?? 56, token.symbol === NETWORK_CCY[chainId ?? 56].symbol ? WRAPPED_NETWORK_TOKENS[chainId].address : token.address)
-  return `https://requiem-finance.s3.eu-west-2.amazonaws.com/logos/tokens/${token.symbol}.png`
+  return getTokenLogoURLFromSymbol(token.symbol)
 }
 
 export const TokenPairImage: React.FC<TokenPairImageProps> = ({ chainId, primaryToken, secondaryToken, ...props }) => {
